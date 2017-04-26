@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>添加地址</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		
+		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/scripts.js" ></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+				if (!isLogined()) {
+ 					location.href = "pleaselogin.html";
+				}
+ 				else {
+	 				var u = getCookie("editAddress");
+	 				if ('0' == u) {
+	 					// do nothing
+	 				}
+	 				else if ('1' == u) {
+		 				document.getElementById("func").value = "editaddress";
+		 				var a = getCookie("receiver");
+		 				var b = getCookie("rece_phone");
+		 				var c = getCookie("rece_add");
+		 				var d = getCookie("rece_zip");
+		 				
+		 				document.getElementById("receiver").value = a;
+		 				document.getElementById("phonenum").value = b;
+		 				document.getElementById("address").value = c;
+// 		 				document.getElementById("zipcode").value = d;
+		 				document.getElementById("addressid").value = getCookie("editAddressId");
+		 				
+		 				deleteCookie("editAddress");
+		 				deleteCookie("editAddressId");
+		 				deleteCookie("receiver");
+		 				deleteCookie("rece_phone");
+		 				deleteCookie("rece_add");
+		 				deleteCookie("rece_zip");
+	 				}
+ 				}	
+			});
+			
+
+			function submitCheck()
+			{				
+				// check phone num
+				var text = document.getElementById("phonenum").value;
+				text = $.trim(text);
+				var val = isPhoneNumValid(text);
+				if (!val) {
+					document.getElementById("phonenum").focus();
+					return false;
+				}
+				
+				// check address, assume length can't be less than 8 chars
+				var add = document.getElementById("address").value;
+				add = $.trim(add);
+				if (add.length < 8) {
+					document.getElementById("address").focus();
+					return false;
+				}
+				
+				// check name
+				var name = document.getElementById("receiver").value;
+				name = $.trim(name);
+				if (name == '') {
+					document.getElementById("receiver").focus();
+					return false;
+				}
+				return true;
+			}
+
+		</script>
+	</head>
+	<body>
+		<div id="banner_bar" class="banner_info">			
+			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
+ 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
+ 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		</div>
+		
+        <div>
+	       <form method="post" action="../php/address.php" onsubmit="return submitCheck()" >
+		       <input id="func" type="hidden" name="func" value="addaddress" />
+		       <input id="addressid" type="hidden" name="addressid" value="-1" />
+	           收件人:<input id="receiver" type="text" name="receiver" placeholder="请输入收件人" />
+	           <br>
+	           收件人电话:<input id="phonenum" type="text" name="phonenum" placeholder="请输入收件人电话" onkeypress="return onlyNumber(event);" /> 
+	           <br>
+	           收件人地址:<input id="address" type="text" name="address" placeholder="请输入收件人地址" />
+	           <br>
+<!-- 	           邮编:<input id="zipcode" type="text" name="zipcode" placeholder="请输入邮编" /> -->
+<!-- 	           <br> -->
+	           <input id="default" type="checkbox" name="default" checked="checked" value="default" /> 设为默认地址
+	           <br>
+	           <input id="btnSave" type="submit" name="submit" value="保存"/>
+	       </form>
+        </div>
+        
+    </body>
+    <div style="text-align:center;">
+    </div>
+</html>

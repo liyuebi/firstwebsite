@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>分享人员</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		
+		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/scripts.js" ></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+
+				if (isNotLoginAndJump()) {
+					return;
+				}
+ 				 				
+				var data = 'func=getRecommended';
+				$.getJSON("../php/recommend.php", data, function(json){
+
+					if (json.error == "true") {
+						
+					}	
+					else {
+						var list = json.list;
+						var container = document.getElementById("user_list");
+						var count = 0;
+						for (var key in list) {
+							
+							var time = list[key]["time"];
+							var uid = list[key]["id"];
+							var phone = list[key]["phone"];
+							
+							var i = parseInt(time);
+							var then = new Date(i * 1000);
+							var y = then.getFullYear();
+							var m = then.getMonth() + 1;
+							var d = then.getDate();
+							var h = then.getHours();
+							var min = then.getMinutes();
+							var str = y + "年" + m + "月" + d + "日" + h + ":" + min;
+							
+							var n = document.createElement("p");
+							n.innerHTML = "推荐用户" + uid + ",手机号为" + phone + ",时间是" + str;
+							container.appendChild(n);
+							
+							++count;
+						}
+						document.getElementById("count").innerHTML = count;
+					}				
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div id="banner_bar" class="banner_info">			
+			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
+ 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
+ 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		</div>
+        
+        <div id="user_list">
+	        <p>您已经推荐了<span id="count">0</span>名用户</p>
+        </div>
+    </body>
+    <div style="text-align:center;">
+    </div>
+</html>

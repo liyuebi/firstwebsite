@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>地址管理</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/buttons.css" />
+		
+		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/scripts.js" ></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function(){
+
+				if (isNotLoginAndJump()) {
+					return;
+				}
+ 				 				
+				var data = 'func=getAddresses';
+				var container = document.getElementById("add_list");
+				$.getJSON("../php/address.php", data, function(json){
+					var defaultId = json.defAdd;
+					var addresses = json.addresses;
+					
+					for (var key in addresses) {
+						
+		 				var h = document.createElement("ul");
+		 				h.className = "add_block";
+		 				
+		 				var k = document.createElement("li");
+		 				k.className = "receiver";
+		 				k.innerHTML = addresses[key]["receiver"];
+		 				k.id = "receiver" + key;
+		 				h.appendChild(k);
+		 				
+		 				var j = document.createElement("li");
+		 				j.className = "receiver_phone";
+		 				j.innerHTML= addresses[key]["phone"];
+		 				j.id = "receiver_phone" + key;
+		 				h.appendChild(j);
+		 				
+		 				var l = document.createElement("li");
+		 				l.className = "receiver_add";
+		 				l.innerHTML= addresses[key]["address"];
+		 				l.id = "receiver_add" + key;
+		 				h.appendChild(l);
+		 				
+// 		 				var i = document.createElement("li");
+// 		 				i.className = "receiver_zipcode";
+// 		 				i.innerHTML= addresses[key]["zipcode"];
+// 		 				i.id = "receiver_zipcode" + key;
+// 		 				h.appendChild(i);
+		 				
+		 				var hr = document.createElement("hr");
+		 				h.appendChild(hr);
+		 				
+		 				var p = document.createElement("input");
+		 				p.type = "checkbox";
+		 				p.name = "checkbox";
+// 		 				p.id = "checkbox" + key;
+		 				p.var = key;
+		 				if (p.addEventListener) {
+			 				p.addEventListener('click', changeDefaultAddress);
+		 				}
+		 				else if (p.attachEvent) {
+			 				p.attachEvent('onclick', changeDefaultAddress);
+		 				}
+		 				h.appendChild(p);
+		 				if (defaultId == key) {
+			 				p.checked = true;
+		 				}
+		 				
+		 				var q = document.createTextNode("设为默认");
+		 				h.appendChild(q);
+		 				
+		 				var u = document.createElement("input");
+		 				u.type = "button";
+		 				u.value = "删除";
+		 				u.className = "add_btn";
+		 				u.var = key;
+						if (u.addEventListener) {
+							u.addEventListener('click', deleteAddress, false);
+						}
+						else if (u.attachEvent) {
+							u.attachEvent('onclick', deleteAddress);
+						}
+		 				h.appendChild(u);
+		 				
+		 				var o = document.createElement("input");
+		 				o.type = "button";
+		 				o.value = "编辑";
+		 				o.className = "add_btn";
+		 				o.var = key;
+// 		 				o.onclick = "editAddress()";
+						if (o.addEventListener) {
+							o.addEventListener('click', editAddress, false);
+						}
+						else if (o.attachEvent) {
+							o.attachEvent('onclick', editAddress);
+						}
+		 				h.appendChild(o);
+		 				
+		 				container.appendChild(h);
+					}
+				});
+			});
+			
+			function addNewAddress()
+			{
+				setCookie("editAddress", '0', 0.5)
+				location.href = "addAddress.html";
+			}
+			
+			function editAddress(e)
+			{
+				var key = e.target.var;
+				setCookie("editAddress", '1', 0.5);
+				setCookie("editAddressId", key, 0.5);
+				setCookie("receiver", document.getElementById("receiver" + key).innerHTML, 0.5);
+				setCookie("rece_phone", document.getElementById("receiver_phone" + key).innerHTML, 0.5);
+				setCookie("rece_add", document.getElementById("receiver_add" + key).innerHTML, 0.5);
+// 				setCookie("rece_zip", document.getElementById("receiver_zipcode" + key).innerHTML, 0.5);
+				location.href = "addAddress.html";
+			}
+			
+			function deleteAddress(e)
+			{
+				alert(e.target.var);
+			}
+			
+			function changeDefaultAddress(e)
+			{
+				var key = e.target.var;
+				
+				if (e.target.checked) {
+					var checkboxes = document.getElementsByName("checkbox");
+					for (var i = 0; i < checkboxes.length; ++i)
+					{
+						checkboxes[i].checked = false;
+					}
+					e.target.checked = true;
+					
+					var data = 'func=changeDefaultAdd&defaultId=' + key;
+					$.getJSON("../php/address.php", data, function(json){
+						if (json.error == 'true') {
+							alert("error change default address: " + json.error_msg);
+						}
+					});
+				}
+				else {
+					e.target.checked = true;
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div id="banner_bar" class="banner_info">			
+			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
+ 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
+ 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		</div>
+		
+        <div>
+            <h3>地址管理</h3>
+        </div>
+        
+        <div id="add_list" style="margin-bottom: 5%;">
+<!--
+	        <b display="inline">Peter</b>
+	        <b display="inline">15801434852</b>
+	        <p>北京市海淀区科学院南路2号融科资讯中心</p>
+-->
+	        
+<!--
+	        <ul class="one_address">
+		        <li class="receiver">葫芦娃</li>
+		        <li class="receiver_phone">13398765432</li>
+		        <br>
+		        <li class="receiver_add">芝麻胡同世界包括好坏区分</li>
+		        <br>
+		        <li class="receiver_zipcode">100001</li>
+	        </ul>
+-->
+        </div>
+        <input id="btnAdd" type="button" class="button-border button-rounded button-primary" value="添加新地址" style="width: 100%;" onclick="addNewAddress()" />
+    </body>
+    <div style="text-align:center;">
+    </div>
+</html>

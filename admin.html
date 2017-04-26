@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>茗菊春管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/scripts.js" ></script>
+		<script type="text/javascript">
+			function login()
+			{
+				var user = document.getElementById("user").value;
+				var pwd = document.getElementById("pwd").value;
+				var data = "func=loginAdmin,user=" + user +",pwd="+pwd;
+				$.post("php/login.php", {"func":"loginAdmin","user":user,"pwd":pwd}, function(data){
+					if (data.isLogin == "true") {
+						location.href = "admin/adminhome.html";
+					}
+					else {
+						
+					}
+				}, "json");
+			}
+		</script>
+	</head>
+	<body>
+        <div>
+            用户名
+            <input id="user" type="text" placeholder="请输入管理员账号" />
+            <br>
+            密码
+            <input id="pwd" type="password" placeholder="请输入密码" />
+            <br>
+            <input type="button" value="登录" onclick="login()" />
+        </div>
+    </body>
+    <div style="text-align:center;">
+    </div>
+</html>
