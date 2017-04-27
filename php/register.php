@@ -105,8 +105,10 @@ else
 		else {
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
-				$result = mysql_query("insert into Credit (UserId)
-					VALUES('$newuserid')");
+				$vault = $refererConsumePoint;
+				$dynVault = $refererConsumePoint * ($retRate - 1);
+				$result = mysql_query("insert into Credit (UserId, Vault, DynamicVault)
+					VALUES('$newuserid', '$vault', '$dynVault')");
 				if (!$result) {
 					echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'创建积分失败，请稍后重试！','sql_error'=>mysql_error()));
 					return;
@@ -127,6 +129,11 @@ else
 	}
 	
 	echo json_encode(array('error'=>'false'));
+	
+	// 添加初始订单
+	$res2 = mysql_query("insert into Transcation (UserId, ProductId, Price, Count, OrderTime, Status)
+					VALUES('$newuserid', '1', '$refererConsumePoint', '1', '$now', '$OrderStatusDefault') ");
+	$bInsertOrder = $res2 != false;
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
 	$leftCredit = $credit - $refererConsumePoint;
@@ -152,17 +159,25 @@ else
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
+		$newOrderCount = 1;
+		$newOrder = $refererConsumePoint;
+		if (!$bInsertOrder) {
+			$newOrderCount = 0;
+			$newOrder = 0;
+		}
 		
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
 			$newUserCount = $row["NewUserCount"] + 1;
 			$fee = $row["RecommendFee"] + $refererConsumePoint;
-			mysql_query("update Statistics set NewUserCount='$newUserCount', RecommendFee='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
+			$orderNum = $row["OrderNum"] + $newOrderCount;
+			$orderGross = $row["OrderGross"] + $newOrder;
+			mysql_query("update Statistics set NewUserCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NewUserCount, RecommendFee)
-					VALUES('$year', '$month', '$day', '1', $refererConsumePoint)");
+			mysql_query("insert into Statistics (Ye, Mon, Day, NewUserCount, RecommendFee, OrderGross, OrderNum)
+					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount')");
 		}
 	}
 

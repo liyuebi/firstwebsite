@@ -4,13 +4,36 @@ include "../php/database.php";
 include "../php/constant.php";
 
 session_start();
+if (!$_SESSION['isLogin']) {	
+	$home_url = '../index.html';
+	header('Location: ' . $home_url);
+	exit();
+}
 $userid = $_SESSION["userId"];
+$new = false;
+
+// 如果是新用户，推他去修改个人信息
+if ($_SESSION["password"] == '000000'
+	&& $_SESSION["name"] == '') {
+		
+	$new = true;
+}
 
 $row = false;
 $con = connectToDB();
 $feng = 0;
 if ($con) {
+	
 	mysql_select_db("my_db", $con);
+	
+	$isDynamic = false;
+	
+	$res1 = mysql_query("select * from User where UserId='$userid'");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		$row1 = mysql_fetch_assoc($res1);
+		$isDynamic = $row1["RecommendingCount"] > 0;
+	}
+	
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if (!$result || mysql_num_rows($result) <= 0) {
 		
@@ -22,14 +45,6 @@ if ($con) {
 		$dynamicFeng = $row["DynamicVault"];
 		
 		if ($dynamicFeng > 0) {
-		
-			$isDynamic = false;
-			
-			$res1 = mysql_query("select * from User where UserId='$userid'");
-			if ($res1 && mysql_num_rows($res1) > 0) {
-				$row1 = mysql_fetch_assoc($res1);
-				$isDynamic = $row1["RecommendingCount"] > 0;
-			}
 			
 			if ($isDynamic) {
 				$staticFeng += $dynamicFeng;
@@ -66,10 +81,19 @@ $feng = ceil($feng / $fengzhiValue);
 			
 			$(document).ready(function(){
 				
-				if (isNotLoginAndJump()) {
-					return;
+// 				if (isNotLoginAndJump()) {
+// 					return;
+// 				}
+				if (<?php echo $new; ?>) {
+					setTimeout("countDown()", 1000);
 				}
 			});
+			
+			function countDown()
+			{
+				alert("请先去完善您的个人资料，以便我们为您发货！");
+				location.href = 'editme.php?new=1';
+			}
 		</script>
 	</head>
 	

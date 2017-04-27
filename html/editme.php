@@ -6,6 +6,11 @@ $phone = $_SESSION["phonenum"];
 $name = $_SESSION["name"];
 $idnum = $_SESSION["idnum"]; 
 
+$new = 0;
+if (isset($_GET['new'])) {
+	$new = $_GET['new'];
+}
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -61,8 +66,14 @@ $idnum = $_SESSION["idnum"];
 					$.post("../php/login.php", {"func":"editprofile","name":name,"idnum":idNum}, function(data){
 						
 						if (data.error == "false") {
-							alert("设置成功！");	
-							location.href = "pwd.php";
+							if (<?php echo $new; ?> != 0) {
+								alert("设置成功，现在请设置购物密码！");	
+								location.href = "changeBuyPwd.html?new=1";								
+							}
+							else {
+								alert("设置成功！");	
+								location.href = "me.php";
+							}
 						}
 						else {
 							alert("设置失败: " + data.error_msg);

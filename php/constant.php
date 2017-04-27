@@ -1,14 +1,15 @@
 <?php 
-	$retRate = 1.5;				// 用户使用积分后相应增加返还额度的比例
-	$rewardRate = 0.66;			// 从每日的充值额中取出多少来返还给用户
+	$retRate = 5;				// 用户使用积分后相应增加返还额度的比例
+	$rewardRate = 11/30;		// 从每日的充值额中取出多少来返还给用户
 	$rewardStaticRate = 0.55;	// 在每日返还用户的总积分中给静态用户的比例
 	$rewardDynamicRate = 0.45;	// 在每日返还用户的总积分中给动态用户的比例
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
-	$withdrawFloorAmount = 100;	// 提现最少的积分额度
+	$withdrawFloorAmount = 300;	// 提现最少的积分额度
+	$withdrawCeilAmoutOneDay = 3000;	// 用户一天可以提现的上限数额
 	$withdrawHandleRate = 0.05;	// 提现手续费率
 	$transferHandleRate = 0.05;	// 转账手续费率 
-	$fengzhiValue = 450;		// 1蜂值等于多少蜜券值
+	$fengzhiValue = 1500;		// 1蜂值等于多少蜜券值
 	
 	// credit code
 	$codeRecharge = 1;	// 充值积分变化
@@ -20,6 +21,8 @@
 	$codeRecommend = 7;	// 推荐用户，扣除积分
 	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
-	$OrderStatusDelivery = 2; 	// 订单状态，卖家已发货
-	$OrderStatusAccept = 3; 	// 订单状态，用户已收货
+	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息
+	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
+	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
+	
 ?> 

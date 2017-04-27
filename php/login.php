@@ -255,6 +255,11 @@ function changeLoginPwd()
 		return;
 	}
 	
+	if ($newpwd == '000000') {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不能使用初始默认密码作为新的密码，请重新输入！'));
+		return;
+	}
+	
 	$con = connectToDB();
 	if (!$con)
 	{
