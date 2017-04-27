@@ -57,6 +57,7 @@ function getRecommended()
 			while($row = mysql_fetch_array($result))
 			{
 				$man = array("id"=>$row["UserId"],
+								"name"=>$row["Name"],
 							 	"phone"=>$row["PhoneNum"],
 							 	"time"=>$row["RegisterTime"]);
 			 	$arr[$idx] = $man;

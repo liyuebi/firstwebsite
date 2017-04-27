@@ -10,13 +10,13 @@ if (!$_SESSION['isLogin']) {
 	exit();
 }
 $userid = $_SESSION["userId"];
-$new = false;
+$new = 0;
 
 // 如果是新用户，推他去修改个人信息
 if ($_SESSION["password"] == '000000'
 	&& $_SESSION["name"] == '') {
 		
-	$new = true;
+	$new = 1;
 }
 
 $row = false;
@@ -84,7 +84,7 @@ $feng = ceil($feng / $fengzhiValue);
 // 				if (isNotLoginAndJump()) {
 // 					return;
 // 				}
-				if (<?php echo $new; ?>) {
+				if (<?php echo $new; ?> > 0) {
 					setTimeout("countDown()", 1000);
 				}
 			});
@@ -166,7 +166,8 @@ $feng = ceil($feng / $fengzhiValue);
 		<div class="btn_box" width="auto">
 			<ul>
 				<li><a class="icon_btn1" href="recommend.php">推荐蜜粉</a></li>
-				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li>
+<!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
+				<li><a class="icon_btn1" href="productdetail.php?product_id=1">蜂值倍增</a></li>
 				<li><a class="icon_btn2" href="recommended.html">蜜粉好友</a></li>
 				<li><a class="icon_btn6" href="charge.php">购买蜜券</a></li>
 				<li><a class="icon_btn5" href="withdraw.php">蜜券提现</a></li>
