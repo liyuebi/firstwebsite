@@ -52,8 +52,8 @@ if ($con) {
 				$dynamicFeng = 0;
 				mysql_query("update Credit set Vault='$staticFeng', DynamicVault='$dynamicFeng' where UserId='$userid'");
 			}
-			$feng = $staticFeng;
 		}
+		$feng = $staticFeng;
 	}
 }
 
