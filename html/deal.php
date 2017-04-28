@@ -6,13 +6,13 @@ if (!$_SESSION["isLogin"]) {
 	exit();
 }
 $isPayPwdSet = $_SESSION["buypwd"] != "";
-$orderid = '';
+$orderid = 0;
 if (isset($_GET['orderId'])) {
 	$orderid = $_GET['orderId'];
 }
 
 $userid = $_SESSION['userId'];
-$productId = '';
+$productId = 0;
 $count = 0;
 if ($orderid != '') {
 	include "../php/database.php";
