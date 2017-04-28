@@ -66,6 +66,7 @@ $result = getTranscation();
 					<th>确认发货</th>
 				</tr>
 				<?php
+					include "constant.php";
 					while($row = mysql_fetch_array($result)) {
 				?>
 						<tr>
@@ -74,7 +75,7 @@ $result = getTranscation();
 							<th></th>
 							<th><?php echo $row["Price"]; ?></th>
 							<th><?php echo $row["Count"] ?></th>
-							<th><?php if (1 == $row["Status"]) echo "等待发货"; else if (2 == $row["Status"]) echo "已发货"; else if (3 == $row["Status"]) echo "已收货"; ?></th>
+							<th><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></th>
 							<th><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></th>
 						</tr>
 				<?php
