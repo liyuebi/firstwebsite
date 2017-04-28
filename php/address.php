@@ -72,11 +72,7 @@ function getAddresses()
 }
 	
 function addAddress() 
-{
-	if (!isset($_POST["submit"])) {
-		exit("非法访问！<br>");
-	}
-	
+{	
 	session_start();
 	if (!$_SESSION["isLogin"]) {
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
@@ -84,11 +80,11 @@ function addAddress()
 	}
 	
 	$userId = $_SESSION['userId'];
-	$receiver = $_POST["receiver"];
-	$phonenum = $_POST["phonenum"];
-	$address = $_POST["address"];
-	$zipcode = $_POST["zipcode"];
-	// $isdefault = $_POST["default"];
+	$receiver = trim(htmlspecialchars($_POST["receiver"]));
+	$phonenum = trim(htmlspecialchars($_POST["phonenum"]));
+	$address = trim(htmlspecialchars($_POST["address"]));
+// 	$zipcode = $_POST["zipcode"];
+	$isdefault = trim(htmlspecialchars($_POST["default"]));
 	
 	/*
 		if ($isdefault) {
@@ -107,32 +103,28 @@ function addAddress()
 	}
 	
 	mysql_select_db("my_db", $con);
-	$result = createAddressTable();
-	if (!$result) {
-		echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'创建地址表失败，请稍后重试！'));
+	
+	include "func.php";
+	$msg = '';
+	
+	if (!isValidAddress($receiver, $phonenum, $address, $msg)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>$msg));
 		return;
 	}
-	else {
-		$result = mysql_query("insert into Address (UserId, Receiver, PhoneNum, Address, ZipCode)
-		 	VALUES('$userId', '$receiver', '$phonenum', '$address', '$zipcode')");
-		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'插入地址失败，请稍后重试！'));
-			return;
-		}
-		else {
-			echo json_encode(array('error'=>'false'));
-			$home_url = '../html/address.html';
-			header('Location: ' . $home_url);
-		}
-	}
+	
+	$bDefault = $isdefault != '0';
+	
+    $ret = addOneAddress($con, $userId, $receiver, $phonenum, $address, $bDefault, $msg);
+    if (!$ret) {
+	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>$msg));
+	    return;
+    }	
+    
+    echo json_encode(array('error'=>'false'));
 }
 
 function editAddress()
-{
-	if (!isset($_POST["submit"])) {
-		exit("非法访问！<br>");
-	}
-	
+{	
 	session_start();
 	if (!$_SESSION["isLogin"]) {
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
@@ -145,11 +137,12 @@ function editAddress()
 	}
 
 	$userId = $_SESSION['userId'];
-	$addId = $_POST["addressid"];
-	$receiver = $_POST["receiver"];
-	$phonenum = $_POST["phonenum"];
-	$address = $_POST["address"];
-	$zipcode = $_POST["zipcode"];
+	$addId = trim(htmlspecialchars($_POST["addressid"]));
+	$receiver = trim(htmlspecialchars($_POST["receiver"]));
+	$phonenum = trim(htmlspecialchars($_POST["phonenum"]));
+	$address = trim(htmlspecialchars($_POST["address"]));
+// 	$zipcode = $_POST["zipcode"];
+	$isdefault = trim(htmlspecialchars($_POST["default"]));
 	
 	$con = connectToDB();
 	if (!$con)
@@ -158,17 +151,20 @@ function editAddress()
 		return;
 	}
 	mysql_select_db("my_db", $con);
+	
 	$result = mysql_query("select * from Address where UserId='$userId' and AddressId='$addId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的地址数据，请稍后重试！'));
 		return;
 	}
 	else {
-		mysql_query("update Address set Receiver='$receiver', PhoneNum='$phonenum', Address='$address', ZipCode='$zipcode' where UserId='$userId' and AddressId='$addId'");
+		mysql_query("update Address set Receiver='$receiver', PhoneNum='$phonenum', Address='$address' where UserId='$userId' and AddressId='$addId'");
 		
+		$bDefault = $isdefault != '0';
+		if ($bDefault) {
+			mysql_query("update User set DefaultAddressId='$addId' where UserId='$userId'");
+		}
 		echo json_encode(array('error'=>'false'));
-		$home_url = '../html/address.html';
-		header('Location: ' . $home_url);
 	}
 }
 

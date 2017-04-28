@@ -107,5 +107,51 @@ function distributeReferBonus($con, $userid, $count)
 	}
 	return $ret;
 }
+
+function isValidAddress($receiver, $phone, $address, &$error_str)
+{
+	if ($receiver == '') {
+		$error_str = '输入的姓名无效！';
+		return false;
+	}
+	
+	if ($address == '') {
+		$error_str = '输入的地址无效！';
+		return false;
+	}
+	
+	include "regtest.php";
+	if (!isValidCellPhoneNum($phone)) {
+		$error_str = '输入的电话号码有误，请重新输入！';
+		return false;
+	}
+	
+	return true;
+}
+
+function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &$error_str)
+{	
+	$result = createAddressTable();
+	if (!$result) {
+		$error_str = "创建地址表失败，请稍后重试！";
+		return false;
+	}
+	else {
+		$result = mysql_query("insert into Address (UserId, Receiver, PhoneNum, Address)
+		 	VALUES('$userid', '$receiver', '$phone', '$address')");
+		if (!$result) {
+			$error_str = "插入地址失败，请稍后重试！";
+			return false;
+		}
+		else {
+			// 更新默认地址,出错了不做处理
+			if ($isDefault) {
+				$addId = mysql_insert_id();
+				mysql_query("update User set DefaultAddressId='$addId' where UserId='$userid'");
+			}
+		}
+	}
+	return true;
+}
 	
 ?>

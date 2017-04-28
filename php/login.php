@@ -328,6 +328,26 @@ function editProfile()
 		$_SESSION["idnum"] = $idNum;
 	}
 	
+	// 如果是新用户修改信息，可能会让他同时添加地址，确认地址信息的对错
+	if (isset($_POST['receiver'])) {
+		$rece = trim(htmlspecialchars($_POST['receiver']));
+		$rece_phone = trim(htmlspecialchars($_POST['rece_phone']));
+		$rece_add = trim(htmlspecialchars($_POST['rece_add'])); 
+		
+		include "func.php";
+		$str = '';
+		
+		if (!isValidAddress($rece, $rece_phone, $rece_add, $str)) {
+			echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'1',"1"=>$rece_phone,"2"=>$rece));
+			return;
+		}
+
+		$ret = addOneAddress($con, $userid, $rece, $rece_phone, $rece_add, true, $str);
+		if (!$ret) {
+			echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'2'));
+		}
+	}
+	
 	echo json_encode(array('error'=>'false'));
 	return;		
 }

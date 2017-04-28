@@ -1,7 +1,7 @@
 <?php
 
 session_start();
-$userId = $_SESSION["userId"];
+$userid = $_SESSION["userId"];
 $phone = $_SESSION["phonenum"];
 $name = $_SESSION["name"];
 $idnum = $_SESSION["idnum"]; 
@@ -9,6 +9,26 @@ $idnum = $_SESSION["idnum"];
 $new = 0;
 if (isset($_GET['new'])) {
 	$new = $_GET['new'];
+}
+
+$noAddress = false;
+if ($new) {
+	include "../php/database.php";
+	$con = connectToDB();
+	if ($con)
+	{
+		$db_selected = mysql_select_db("my_db", $con);
+		if ($db_selected) {
+			$result = mysql_query("select * from Address where UserId='$userid'");
+			if ($result) {
+				if (mysql_num_rows($result) > 0) {
+				}
+				else {
+					$noAddress = true;
+				}
+			}
+		}
+	}
 }
 
 ?>
@@ -63,10 +83,30 @@ if (isset($_GET['new'])) {
 					return;
 				}
 				else {
-					$.post("../php/login.php", {"func":"editprofile","name":name,"idnum":idNum}, function(data){
+					var data = {"func":"editprofile","name":name,"idnum":idNum};
+					if (<?php if($noAddress) echo '1'; else echo '0'; ?>) {
+						var receiver = document.getElementById("receiver").value;
+						var rece_phone = document.getElementById("receiver_phone").value;
+						var rece_add = document.getElementById("receiver_add").value;
+						var data = {"func":"editprofile","name":name,"idnum":idNum,"receiver":receiver,"rece_phone":rece_phone,"rece_add":rece_add};
+					}
+					$.post("../php/login.php", data, function(data){
 						
 						if (data.error == "false") {
 							if (<?php echo $new; ?> != 0) {
+								if (data.add_address == "failed") {
+									
+									alert("个人信息修改成功，但地址信息有误，请修改！");
+									
+									setCookie("editAddress", '2', 0.5);
+									setCookie("receiver", document.getElementById("receiver").value, 0.5);
+									setCookie("rece_phone", document.getElementById("receiver_phone").value, 0.5);
+									setCookie("rece_add", document.getElementById("receiver_add").value, 0.5);
+
+									location.href = "addAddress.php?new=1";
+									return;	
+								}
+								
 								alert("设置成功，现在请设置购物密码！");	
 								location.href = "setBuyPwd.html?new=1";								
 							}
@@ -91,32 +131,50 @@ if (isset($_GET['new'])) {
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
 		
+		<h3>请更新资料</h3>
         <div>
-            <h3>请更新资料</h3>
             <table width="100%" align="center">
 	            <tr>
-		            <td>手机号</td>
-		            <td><?php echo "$phone" ?></td>
+		            <td width="30%" style="text-align: right;">手机号</td>
+		            <td width="70%" style="text-align: left;"><?php echo "$phone" ?></td>
 	            </tr>
 	            <tr>
-		            <td>姓名</td>
-		            <td><input type="text" id="name" value="<?php echo "$name" ?>" /></td>
+		            <td style="text-align: right;">姓名</td>
+		            <td width="70%" style="text-align: left;"><input type="text" id="name" value="<?php echo "$name" ?>" /></td>
 	            </tr>
 	            <tr>
-		            <td>身份证号</td>
-		            <td><input type="text" id="idNum" value="<?php echo "$idnum" ?>" /></td>
+		            <td style="text-align: right;">身份证号</td>
+		            <td width="70%" style="text-align: left;"><input type="text" id="idNum" value="<?php echo "$idnum" ?>" /></td>
 	            </tr>
-<!-- 	            <tr> -->
-<!-- 		            <td></td> -->
-<!-- 		            <td></td> -->
-<!-- 	            </tr> -->
             </table>
+            
             <input type="hidden" id="oriName" value="<?php echo "$name" ?>" />
             <input type="hidden" id="oriIdNum" value="<?php echo "$idnum" ?>" />
         </div>
-	        
-		<input type="button" value="保存" onclick="onSubmit()" />
-		<input type="button" value="取消" onclick="javascript:history.back(-1);"/>
+        
+        <div>
+    		<input type="button" value="保存" onclick="onSubmit()" />
+			<input type="button" value="取消" onclick="javascript:history.back(-1);"/>
+        </div>
+            
+        <div id="block_add" style="display: <?php if ($noAddress) echo "block"; else echo "none"; ?>;">
+	        <hr>
+	        <h4>您还没有任何地址信息，可以同时添加:</h4>
+            <table width="100%" align="center">
+	            <tr>
+		            <td width="30%" style="text-align: right;">收件人</td>
+		            <td width="70%" style="text-align: left;"><input type="text" id="receiver" value="" placeholder="请填入收件人姓名！" /></td>
+	            </tr>
+	            <tr>
+		            <td style="text-align: right;">收件人电话</td>
+		            <td width="70%" style="text-align: left;"><input type="text" id="receiver_phone" value="" placeholder="请填入收件人电话！" onkeypress="return onlyNumber(event)" /></td>
+	            </tr>
+	            <tr>
+		            <td style="text-align: right;">收件人地址</td>
+		            <td width="70%" style="text-align: left;"><input type="text" id="receiver_add" value="" placeholder="请填入收件人地址！" /></td>
+	            </tr>
+            </table>
+        </div>
     </body>
     <div style="text-align:center;">
     </div>

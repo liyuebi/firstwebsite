@@ -213,11 +213,12 @@ function purchaseProduct()
 			$gross = $row["OrderGross"] + $totalPrice;
 			$orderNum = $row["OrderNum"] + 1;
 			$refer = $row["RRTotal"] + $referBonus;
-			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer' where Ye='$year' and Mon='$month' and Day='$day'");
+			$spnum = $row["SPNum"] + $count;
+			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal)
-					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal, SPNum)
+					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus', '$count')");
 		}
 	}
 	

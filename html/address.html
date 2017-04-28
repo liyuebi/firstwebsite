@@ -112,7 +112,7 @@
 			function addNewAddress()
 			{
 				setCookie("editAddress", '0', 0.5)
-				location.href = "addAddress.html";
+				location.href = "addAddress.php";
 			}
 			
 			function editAddress(e)
@@ -124,12 +124,11 @@
 				setCookie("rece_phone", document.getElementById("receiver_phone" + key).innerHTML, 0.5);
 				setCookie("rece_add", document.getElementById("receiver_add" + key).innerHTML, 0.5);
 // 				setCookie("rece_zip", document.getElementById("receiver_zipcode" + key).innerHTML, 0.5);
-				location.href = "addAddress.html";
+				location.href = "addAddress.php";
 			}
 			
 			function deleteAddress(e)
 			{
-				alert(e.target.var);
 			}
 			
 			function changeDefaultAddress(e)
