@@ -169,15 +169,15 @@ else
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$newUserCount = $row["NewUserCount"] + 1;
+			$newUserCount = $row["NSCount"] + 1;
 			$fee = $row["RecommendFee"] + $refererConsumePoint;
 			$orderNum = $row["OrderNum"] + $newOrderCount;
 			$orderGross = $row["OrderGross"] + $newOrder;
-			mysql_query("update Statistics set NewUserCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum', SPNum='1' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NewUserCount, RecommendFee, OrderGross, OrderNum)
-					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee, OrderGross, OrderNum, SPNum)
+					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount', '1')");
 		}
 	}
 

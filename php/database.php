@@ -240,6 +240,18 @@ function createCreditRecordTable()
 
 function createStatisticsTable()
 {
+	/*
+	 * Ye 	
+	 * Mon
+	 * Day 
+	 * NSCount  - New User Count 新用户总数
+	 * RRTotal  - Recommend Reward Total 返利总计，卖出的产品给上游用户的返利总计
+	 * OrderNum - 成交的订单数量
+	 * SPNum	- sell product num 卖出的产品数量，是每笔订单的产品数的总和
+	 * TfTimes  - Transfer Times 转账次数
+	 * TfFee	- Transfer Fee 转账手续费
+	 * TfTotal	- Transfer Total 总的转账额度
+	*/
 	$sql = "create table if not exists Statistics
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
@@ -249,15 +261,17 @@ function createStatisticsTable()
 		Day int NOT NULL,
 		RechargeTotal int DEFAULT 0,
 		WithdrawTotal int DEFAULT 0,
-		NewUserCount int DEFAULT 0,
-		RecommendRewardTotal int DEFAULT 0,
+		NSCount int DEFAULT 0,
+		RRTotal int DEFAULT 0,
 		BonusTotal int DEFAULT 0,
 		RecommendFee int DEFAULT 0,
 		WithdrawFee int DEFAULT 0,
-		TransferFee int DEFAULT 0,
 		OrderGross int DEFAULT 0,
 		OrderNum int DEFAULT 0,
-		TransferTimes int DEFAULT 0
+		SPNum int DEFAULT 0,
+		TfTimes int DEFAULT 0,
+		TfFee int DEFAULT 0,
+		TfTotal int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

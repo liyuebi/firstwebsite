@@ -40,39 +40,35 @@ else if ("editprofile" == $_POST['func']) {
 }
 
 function login()
-{
-	if (!isset($_POST['submit'])) {
-		exit('非法访问！');
-	}
-	
+{	
 	$phonenum = trim(htmlspecialchars($_POST['phonenum']));
 	$password = trim(htmlspecialchars($_POST['password']));
 		
 	$con = connectToDB();
 	if (!$con)
 	{
-		die("Could not connect: " . mysql_error());
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'连接失败，请稍后重试！'));
+		return;
 	}
 	else 
 	{		
-		echo("success<br>'");
-		
 		mysql_select_db("my_db", $con);
 		$result = createUserTable();		
 		if (!$result) {
-			echo "Create user table failed <br>";
+			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'暂时不能登录，请稍后重试！'));	
+			return;
 		}
 		else {
 			$result = mysql_query("select * from User where PhoneNum='$phonenum' and Password='$password'");
 			if (!$result) {
-				echo "Query User failed";
+				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败，请稍后重试！'));	
+				return;
 			}
 			else if (0 == mysql_num_rows($result)) {
-				echo "User not exists!<br>";
+				echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'电话号码或验证码出错，请重新输入！'));	
+				return;
 			}
 			else {
-				echo "User exists! <br>";
-				
 				$row = mysql_fetch_assoc($result);
 				
 				session_start();
@@ -84,18 +80,18 @@ function login()
 				$_SESSION["idnum"] = $row['IDNum'];
 				$_SESSION['isLogin'] = true;
 				
-				setcookie("User", $row['Name'], time() + 3600 * 24, '/');
-				setcookie("isLogin", "true", time() + 3600 *24, '/');
+				setcookie("User", $row['Name'], time() + 60 * 30, '/');
+				setcookie("isLogin", "true", time() + 60 * 30, '/');
 				
 				// jump back to home page
-				$home_url = '../html/home.php';
-				header('Location: ' . $home_url);
+// 				$home_url = '../html/home.php';
+// 				header('Location: ' . $home_url);
 			}
 		}
-		mysql_close($con);
 	}
 	
-	exit;
+	echo json_encode(array('error'=>'false'));
+	mysql_close($con);
 }
 
 function logout()

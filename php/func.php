@@ -1,11 +1,12 @@
 <?php
 
 //  给上游玩家分享注册资金
-function distributeReferBonus($con, $userid)
+function distributeReferBonus($con, $userid, $count)
 {
+	$ret = 0;
 	// 没有有效的数据库连接，返回
 	if (!$con) {
-		return;
+		return $ret;
 	}
 	
 	{
@@ -42,22 +43,24 @@ function distributeReferBonus($con, $userid)
 					$val2 = $row2["DayObtained"];
 					$val3 = $row2["LastObtainedTime"];
 					
-					$add = 2;
-					if ($recommendCount >= 9) { // 推荐人数大于8，可以吃到13层的回馈
-						if ($idx > 13) {
-							$add = 0;
+					$add = 0;
+					if ($idx >= 1 && $idx <= 3) {	// 1 到 3 层
+						// 推荐了人即可拿到
+						$add = 4;
+					}
+					else if ($idx >= 5 && $idx <= 8) { // 5 到 8 层
+						// 推荐人数大于5即可拿到
+						if ($recommendCount > 5) {
+							$add = 3;
 						}
 					}
-					else if ($recommendCount >= 5) { // 推荐人数为5到8，可以吃到8层的回馈
-						if ($idx > 8) {
-							$add = 0;
-						} 
-					}
-					else { // 推荐人数为1-4，可以吃到3层的回馈
-						if ($idx > 3) {
-							$add = 0;
+					else if ($idx >= 9 && $idx <= 13) { // 9 到 13 层
+						// 推荐人数大于9即可拿到
+						if ($recommendCount > 9) {
+							$add = 2;
 						}
 					}
+					$add *= $count;	// 分成是根据盒数确定
 					
 					if ($add > 0) {
 						// must be a dynamic user
@@ -86,8 +89,7 @@ function distributeReferBonus($con, $userid)
 							include "constant.php";
 							mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, WithUserId)
 											VALUES('$id2', '$add', '$val1', '$time', '0', '$codeBonus', '$time', '$refeeId')");
-											
-		echo mysql_error();
+							$ret += $add;											
 						}
 					}
 				}
@@ -103,6 +105,7 @@ function distributeReferBonus($con, $userid)
 			}
 		}
 	}
+	return $ret;
 }
 	
 ?>

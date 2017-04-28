@@ -64,7 +64,7 @@ if ($con) {
 				    	else if ($row["Type"] == $codeBonus) {
 					    	echo "用户" . $row["WithUserId"] . "购物，您收获了" . $row["Amount"] . "蜜券。"; 
 				    	}
-				    	else if ($row["Type"] == $codeConsumption) {
+				    	else if ($row["Type"] == $codeConsume) {
 					    	echo "您购物使用了" . $row["Amount"] . "蜜券。";
 				    	}
 				    	else if ($row["Type"] == $codeCancelPurchase) {

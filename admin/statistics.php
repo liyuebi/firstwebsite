@@ -76,7 +76,7 @@ $result = getStatistics();
 							<th><?php echo $row["Day"]; ?></th>
 							<th><?php echo $row["RechargeTotal"]; ?></th>
 							<th><?php echo $row["WithdrawTotal"] ?></th>
-							<th><?php echo $row["NewUserCount"] ?></th>
+							<th><?php echo $row["NSCount"] ?></th>
 <!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
 <!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
 						</tr>

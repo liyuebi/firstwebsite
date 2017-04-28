@@ -155,7 +155,7 @@ $isPayPwdSet = $_SESSION["buypwd"] != "";
 							
 					if (data.error == "false") {
 						alert("购买成功！");	
-// 						location.href = "pwd.php";
+						location.href = "home.php";
 					}
 					else {
 						alert("设置失败: " + data.error_msg);

@@ -68,7 +68,7 @@ if (isset($_GET['new'])) {
 						if (data.error == "false") {
 							if (<?php echo $new; ?> != 0) {
 								alert("设置成功，现在请设置购物密码！");	
-								location.href = "changeBuyPwd.html?new=1";								
+								location.href = "setBuyPwd.html?new=1";								
 							}
 							else {
 								alert("设置成功！");	

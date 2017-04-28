@@ -46,6 +46,11 @@ function purchaseProduct()
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
 		return;
 	}
+	
+	if ($_SESSION['buypwd'] != $paypwd) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
+		return;
+	}
 
 	$con = connectToDB();
 	if (!$con)
@@ -185,9 +190,36 @@ function purchaseProduct()
 		return;						
 	}
 
+	// 纪录积分记录
+	$now = time();
+	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
+
 	// 给上游用户分成	
 	include 'func.php';
-	distributeReferBonus($con, $userid);
+	$referBonus = distributeReferBonus($con, $userid, $count);
+	
+	// 更新统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$gross = $row["OrderGross"] + $totalPrice;
+			$orderNum = $row["OrderNum"] + 1;
+			$refer = $row["RRTotal"] + $referBonus;
+			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal)
+					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus')");
+		}
+	}
 	
 	echo json_encode(array("error"=>"false"));
 	return;
