@@ -120,7 +120,7 @@ function isValidAddress($receiver, $phone, $address, &$error_str)
 		return false;
 	}
 	
-	include "regtest.php";
+	include_once "regtest.php";
 	if (!isValidCellPhoneNum($phone)) {
 		$error_str = '输入的电话号码有误，请重新输入！';
 		return false;

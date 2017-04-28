@@ -88,7 +88,7 @@ if ($con) {
 			
 			function goSetPayPwd()
 			{
-				location.href = "setBuyPwd.html";
+				location.href = "setBuyPwd.php";
 			}
 			
 			function goCharge()

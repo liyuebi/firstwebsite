@@ -6,6 +6,36 @@ if (!$_SESSION["isLogin"]) {
 	exit();
 }
 $isPayPwdSet = $_SESSION["buypwd"] != "";
+$orderid = '';
+if (isset($_GET['orderId'])) {
+	$orderid = $_GET['orderId'];
+}
+
+$userid = $_SESSION['userId'];
+$productId = '';
+$count = 0;
+if ($orderid != '') {
+	include "../php/database.php";
+	$con = connectToDB();
+	if ($con)
+	{
+		$db_selected = mysql_select_db("my_db", $con);
+		if ($db_selected) {
+			$result = mysql_query("select * from Transcation where UserId='$userid' and OrderId='$orderid'");
+			if ($result) {
+				if (mysql_num_rows($result) > 0) {
+					$row = mysql_fetch_assoc($result);
+					$productId = $row['ProductId'];
+					$count = $row['Count'];
+				}
+				else {
+				}
+			}
+		}
+	}
+}
+
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -24,8 +54,18 @@ $isPayPwdSet = $_SESSION["buypwd"] != "";
 		<script type="text/javascript">
 			$(document).ready(function(){
 
-				var productId = getCookie("willbuy");
-				var productCount = getCookie("willbuyCount");
+				var productId = '';
+				var productCount = '0';
+				if (<?php if ($orderid != '') echo 1; else echo 0; ?>) {
+					productId = <?php echo $productId; ?>;
+					productCount = <?php echo $count; ?>;
+					
+					document.getElementById('pay_title').innerHTML = "确认订单";
+				}
+				else {
+					productId = getCookie("willbuy");
+					productCount = getCookie("willbuyCount");	
+				}
 				
 				var data1 = 'func=getProductInfo&productid=' + productId;
 				$.getJSON("../php/product.php", data1, function(json){
@@ -147,6 +187,24 @@ $isPayPwdSet = $_SESSION["buypwd"] != "";
 			
 			function pay()
 			{
+				// 如果是确认订单
+				if (<?php if ($orderid != '') echo 1; else echo 0; ?>) {
+					var orderId = <?php echo $orderid; ?>;
+					var addressId = document.getElementById("addId").value;
+					var paypwd = document.getElementById("paypwd").value;
+					$.post("../php/trade.php", {"func":"confirmOrder","orderId":orderId,"addressId":addressId,"paypwd":paypwd}, function(data){			
+						if (data.error == "false") {
+								alert("订单已确认！");	
+								location.href = "home.php";
+							}
+							else {
+								alert("确认失败: " + data.error_msg);
+							}
+						}, "json");
+
+					return;
+				}
+				
 				var productId = getCookie("willbuy");
 				var count = getCookie("willbuyCount");
 				var addressId = document.getElementById("addId").value;
@@ -158,7 +216,7 @@ $isPayPwdSet = $_SESSION["buypwd"] != "";
 						location.href = "home.php";
 					}
 					else {
-						alert("设置失败: " + data.error_msg);
+						alert("购买失败: " + data.error_msg);
 					}
 				}, "json");
 			}
@@ -215,7 +273,7 @@ $isPayPwdSet = $_SESSION["buypwd"] != "";
         
 		<div>
 			<div id="blockPay" style="display: <?php if ($isPayPwdSet) echo "inline"; else echo "none"; ?> ;">
-				<h3>确认付款</h3>
+				<h3 id="pay_title">确认付款</h3>
 				请输入支付密码：
 				<br>
 				<input id="paypwd" type="password" onkeypress="return onlyCharAndNum(event)" />

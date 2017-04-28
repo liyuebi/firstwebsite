@@ -108,7 +108,7 @@ if ($new) {
 								}
 								
 								alert("设置成功，现在请设置购物密码！");	
-								location.href = "setBuyPwd.html?new=1";								
+								location.href = "setBuyPwd.php?new=1";								
 							}
 							else {
 								alert("设置成功！");	

@@ -5,7 +5,6 @@ if (isset($_GET['new'])) {
 	$new = $_GET['new'];
 }
 
-
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -118,7 +117,7 @@ if (isset($_GET['new'])) {
 					if (data.error == "false") {
 						if (<?php echo $new; ?> != 0) {							
 							alert("地址添加成功，现在请设置购物密码！");	
-							location.href = "setBuyPwd.html?new=1";								
+							location.href = "setBuyPwd.php?new=1";								
 						}
 						else {
 							alert("设置成功！");	

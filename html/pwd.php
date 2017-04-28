@@ -36,7 +36,7 @@ if ($paypwd != "") {
 					location.href = "changeBuyPwd.html";
 				}	
 				else {
-					location.href = "setBuyPwd.html";
+					location.href = "setBuyPwd.php";
 				}
 			}
 		</script>

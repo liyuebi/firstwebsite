@@ -12,6 +12,8 @@ if (!$_SESSION['isLogin']) {
 $userid = $_SESSION["userId"];
 $new = 0;
 
+$con = connectToDB();
+
 // 如果是新用户，推他去修改个人信息
 if ($_SESSION["password"] == '000000'
 	&& $_SESSION["name"] == '') {
@@ -19,9 +21,8 @@ if ($_SESSION["password"] == '000000'
 	$new = 1;
 }
 
-$row = false;
-$con = connectToDB();
 $feng = 0;
+$row = false;
 if ($con) {
 	
 	mysql_select_db("my_db", $con);

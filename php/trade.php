@@ -15,6 +15,9 @@ else if ("delivery" == $_POST['func']) {
 else if ("accept" == $_POST['func']) {
 	acceptProduct();
 }
+else if ("confirmOrder" == $_POST['func']) {
+	confirmOrder();
+}
 /*
 else if ("logout" == $_POST['func']) {
 	logout();	
@@ -224,6 +227,69 @@ function purchaseProduct()
 	
 	echo json_encode(array("error"=>"false"));
 	return;
+}
+
+function confirmOrder()
+{
+	include_once 'constant.php';
+	
+	$orderId = trim(htmlspecialchars($_POST['orderId']));
+	$paypwd = trim(htmlspecialchars($_POST['paypwd']));
+	$addressId = trim(htmlspecialchars($_POST['addressId']));
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	if ($_SESSION['buypwd'] != $paypwd) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	mysql_select_db("my_db", $con);
+	$userid = $_SESSION["userId"];
+	
+	$result = mysql_query("select * from Transcation where OrderId='$orderId' and Userid='$userid'");
+	if (!$result || mysql_num_rows($result) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的订单！'));
+		return;
+	}	
+	$row = mysql_fetch_assoc($result);
+	$count = $row['Count'];
+	
+	$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'选择无效的地址！'));	
+		return;								
+	}
+	$row = mysql_fetch_assoc($result);
+	$address = $row["Address"];
+// 	$zipcode = $row["ZipCode"];
+	$receiver = $row["Receiver"];
+	$phonenum = $row["PhoneNum"];
+
+	$time = time();
+	$result = mysql_query("update Transcation set Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新订单状态出错，请稍后重试！'));	
+		return;								
+	}
+
+	// 给上游用户分成	
+	include 'func.php';
+	$referBonus = distributeReferBonus($con, $userid, $count);
+	
+	echo json_encode(array('error'=>'false'));
+
 }
 
 function deliveryProduct()

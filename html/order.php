@@ -60,7 +60,7 @@ $result = getTranscation();
 			function confirmAddress(btn)
 			{
 				document.getElementById(btn.id).disabled = true;
-				alert("确认地址" + btn.id);
+				location.href = "deal.php?orderId=" + btn.id;
 			}
 			
 			function onDeny(btn)
@@ -103,7 +103,7 @@ $result = getTranscation();
 								else if ($OrderStatusDefault == $row["Status"]) {
 // 									echo "请确认地址"; 
 									?>
-									<input type="button" value="确认地址" id=<?php echo $row["OrderId"]; ?> onclick="confirmAddress(this)" />
+									<input type="button" value="确认订单" id=<?php echo $row["OrderId"]; ?> onclick="confirmAddress(this)" />
 									<?php
 								}
 								else if ($OrderStatusDelivery == $row["Status"]) {
