@@ -174,6 +174,24 @@ function createProductTable()
 	return $result;
 }
 
+function createProductDayBoughtTable()
+{
+	$sql = "create table if not exists ProductDayBought
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		ProductId int NOT NULL,
+		LastBoughtTime int DEFAULT 0,
+		Count int DEFAULT 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create ProductDayBought table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
 function createRechgeTable()
 {
 	$sql = "create table if not exists RechargeApplication
@@ -479,6 +497,51 @@ function updateDayObtained($userid, $obtained, $time)
 function calcHandleFee($amount, $rate) {
 	$fee = floor($amount * $rate);
 	return $fee;
+}
+
+function getDayBoughtCount($userid, $productid)
+{
+	$count = 0;
+	$result = mysql_query("select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
+	if ($result && mysql_num_rows($result) > 0) {
+		
+		$row = mysql_fetch_assoc($result);
+		$lTime = $row["LastBoughtTime"];
+		$now = time();
+		if (isInTheSameDay($lTime, $now)) {
+			$count = $row["Count"];
+		}
+	}
+	
+	return $count;
+}
+
+function updateDayBoughtCount($userid, $productid, $count) 
+{
+	$result = createProductDayBoughtTable();
+	if (!$result) {
+		return;
+	}
+	
+	$result = mysql_query("select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
+	if ($result) {
+		
+		$now = time();
+		if (mysql_num_rows($result) > 0) {
+		
+			$row = mysql_fetch_assoc($result);
+			$lTime = $row["LastBoughtTime"];
+			if (isInTheSameDay($lTime, $now)) {
+				$count += $row["Count"];
+			}
+			
+			mysql_query("update ProductDayBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and ProductId='$productid'");
+		}
+		else {
+			mysql_query("insert into ProductDayBought (UserId, ProductId, Count, LastBoughtTime)
+							VALUES('$userid', '$productid', '$count', '$now')");
+		}
+	}
 }
 
 ?>

@@ -54,6 +54,11 @@ function purchaseProduct()
 		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
 		return;
 	}
+	
+	if ($count <= 0) {
+		echo json_encode(array("error"=>"true","error_code"=>'4',"error_msg"=>"选择的数量无效！"));			
+		return;
+	}
 
 	$con = connectToDB();
 	if (!$con)
@@ -65,6 +70,7 @@ function purchaseProduct()
 	mysql_select_db("my_db", $con);
 	$userid = $_SESSION["userId"];
 	
+	$boughtLimit = 0;
 	$result = mysql_query("select * from Product where ProductId='$productId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'选择的产品无效！'));	
@@ -78,19 +84,24 @@ function purchaseProduct()
 		else {
 			$product = mysql_fetch_assoc($result);
 			$price = $product["Price"];
+			$boughtLimit = $product["LimitOneDay"];
 		}
 	}
+	
+	// 检查是否超过一日购买上限
+	if ($boughtLimit > 0) {
+	 	$boughtCount = getDayBoughtCount($userid, $productId);
+	 	if ($count > $boughtLimit - $boughtCount) {
+ 			echo json_encode(array('error'=>'true','error_code'=>'14','error_msg'=>'购买个数超过今天剩余的上限，请重新选择！'));
+			return;				
+	 	}
+ 	}
 	
 	if ($price <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'产品的价格信息出错，请稍后再试'));
 		return;
 	}
-	
-	if ($count <= 0) {
-		echo json_encode(array("error"=>"true","error_code"=>4,"error_msg"=>"选择的数量无效！"));			
-		return;
-	}
-	
+		
 	// 更新小金库
 	$res1 = mysql_query("select * from User where UserId='$userid'");
 	if (!$res1) {
@@ -148,18 +159,18 @@ function purchaseProduct()
 	$time = time();	
 	$left = $credit - $totalPrice;
 	// 更新用户数据
-	$LastConsumptionTime = $row["LastConsumptionTime"];
+	$lastModified = $creditInfo["LastConsumptionTime"];
 	$dayConsume = 0;
 	$monConsume = 0;
-	$totalConsume = $row["TotalConsumption"] + $totalPrice;
+	$totalConsume = $creditInfo["TotalConsumption"] + $totalPrice;
 	if (isInTheSameDay($time, $lastModified)) {
-		$dayConsume = $row["DayConsumption"] + $totalPrice;
+		$dayConsume = $creditInfo["DayConsumption"] + $totalPrice;
 	}
 	else  {
 		$dayConsume = $totalPrice;
 	}
 	if (isInTheSameMonth($time, $lastModified)) {
-		$monConsume = $row["MonthConsumption"] + $totalPrice;
+		$monConsume = $creditInfo["MonthConsumption"] + $totalPrice;
 	}
 	else {
 		$monConsume = $totalPrice;
@@ -193,6 +204,9 @@ function purchaseProduct()
 		return;						
 	}
 
+	// 修改今天购买个数
+	updateDayBoughtCount($userid, $productId, $count);
+	
 	// 纪录积分记录
 	$now = time();
 	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)

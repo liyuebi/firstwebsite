@@ -17,6 +17,13 @@ else {
 }
 
 $mycredit = 0;
+$dayWithdraw = 0;
+$applyCount = 0;
+
+include "../php/constant.php";
+$leastCredit = $withdrawFloorAmount;
+$mostCredit = $withdrawCeilAmoutOneDay;
+$handlefee = $withdrawHandleRate;
 
 include "../php/database.php";
 $con = connectToDB();
@@ -27,14 +34,28 @@ if ($con) {
 		$result = mysql_query("select * from Credit where UserId='$userid'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$mycredit = $row["Credits"];
+			$mycredit = $row["Credts"];
+			
+			$dayWd = $row["DayWithdraw"];
+			$lastWd = $row["LastWithdrawTime"];
+			$now = time();
+			if (isInTheSameDay($now, $dayWd)) {
+				$dayWithdraw = $dayWd;
+			}
+			
+			$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
+			if ($res1) {
+				while ($row1 = mysql_fetch_array($res1)) {
+					if (isInTheSameDay($now, $row1["ApplyTime"])) {
+						$applyCount += $row1["ApplyAmount"];
+					}
+				}
+			}
+			
 		}
 	}
 }
-
-include "../php/constant.php";
-$leastCredit = $withdrawFloorAmount;
-$handlefee = $withdrawHandleRate;
+$mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 
 ?>
 
@@ -70,6 +91,15 @@ $handlefee = $withdrawHandleRate;
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
 					alert("每次提取至少" + least + "蜜券,请重新输入！");
+					document.getElementById("autual_count").innerHTML = "0";
+					document.getElementById("amount").value = "";
+					document.getElementById("amount").focus();
+					return;
+				}
+				
+				var most = <?php echo $mostCredit; ?>;
+				if (amount > most) {
+					alert("今天剩余的提现申请额度为" + most + "蜜券，请重新输入！");
 					document.getElementById("autual_count").innerHTML = "0";
 					document.getElementById("amount").value = "";
 					document.getElementById("amount").focus();
@@ -127,7 +157,7 @@ $handlefee = $withdrawHandleRate;
         
         <div name="display">
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券</p>
+	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券,您今日还可以提取<?php echo $mostCredit; ?>蜜券。</p>
 	        <input id="amount" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
 			<p>您实际将提取出的蜜券数量是：<span id="autual_count">0</span></p>
 	        <input id="pwd" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />

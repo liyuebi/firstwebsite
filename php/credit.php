@@ -200,7 +200,7 @@ function applyWithdraw()
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'输入的金额小于最低取现额度，请重新输入！'));
 		return;				
 	}
-	
+		
 	if ($paypwd != $_SESSION["buypwd"]) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码输入错误，请重新填写！'));
 		return;		
@@ -229,6 +229,28 @@ function applyWithdraw()
 		if ($credit < $amount) {
 			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'输入的金额大于您的余额，请重新输入！'));	
 			return;			
+		}
+		
+		$dayWithdraw = 0;
+		$dayWd = $row["DayWithdraw"];
+		$lastWd = $row["LastWithdrawTime"];
+		if (isInTheSameDay($time, $dayWd)) {
+			$dayWithdraw = $dayWd;
+		}
+		$applyCount = 0;
+		$mostCredit = $withdrawCeilAmoutOneDay;
+		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
+		if ($res1) {
+			while ($row1 = mysql_fetch_array($res1)) {
+				if (isInTheSameDay($time, $row1["ApplyTime"])) {
+					$applyCount += $row1["ApplyAmount"];
+				}
+			}
+		}
+		$mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
+		if ($credit > $mostCredit) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'输入的金额大于今天剩余可提取的额度，请重新输入！'));	
+			return;		
 		}
 		
 		$result = createWithdrawTable();

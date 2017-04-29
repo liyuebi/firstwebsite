@@ -1,5 +1,10 @@
 <?php
 
+function isValidNum($str)
+{
+	return preg_match("/^\d+$/", $str);
+}
+
 function isValidCellPhoneNum($str)
 {
 	return preg_match("/^1\d{10}$/", $str);

@@ -192,6 +192,12 @@ function isPayPwdValid(str)
 	return payPwdReg.test(str);	
 }
 
+function isValidNum(str)
+{
+	var numReg = /^\d+$/;
+	return numReg.test(str);
+}
+
 
 
 

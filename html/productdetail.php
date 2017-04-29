@@ -10,18 +10,34 @@ if (!$_SESSION["isLogin"]) {
 	header('Location: ' . $home_url);
 	exit();
 }
+$userid = $_SESSION["userId"];
 
 $row = false;
 $productId = $_GET["product_id"];
+$productName = ' ';
+$productPrice = ' ';
+$productDesc = ' ';
 $con = connectToDB();
+$countlimit = 0;
 if (!$con) {
 	return;
 }
 
+$leftCount = 0;
+
 mysql_select_db("my_db", $con);
 $result = mysql_query("select * from Product where ProductId='$productId'");
-$row = mysql_fetch_assoc($result);
-	
+if ($result && mysql_num_rows($result)>0) {
+	$row = mysql_fetch_assoc($result);
+	$productName = $row["ProductName"];
+	$productPrice = $row["Price"];
+	$productDesc = $row["ProductDesc"];
+	$countlimit = $row["LimitOneDay"];
+}
+
+$dayBought = getDayBoughtCount($userid, $productId);
+$leftCount = max(0, $countlimit - $dayBought);
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -68,7 +84,18 @@ $row = mysql_fetch_assoc($result);
 			function buyItem(e) {
 				
 				var productId = document.getElementById("product_id").value;
-				var count = document.getElementById("count").value;
+				var countStr = document.getElementById("count").value;
+				var count = parseInt(countStr);
+				
+				if (!isValidNum(count) || count <= 0) {
+					alert("选择的数量输入，请重新选择！");
+					return;
+				}
+				if (<?php echo $countlimit; ?> > 0 && count > <?php echo $leftCount; ?>) {
+					alert("选择的数量超过今天剩余可以卖的数量，请重新选择！");
+					return;
+				}
+				
 				setCookie("willbuy", productId, 0.5);
 				setCookie("willbuyCount", count, 0.5);
 				location.href = "deal.php";
@@ -85,9 +112,15 @@ $row = mysql_fetch_assoc($result);
 		
         <div id="product_info" style="border-bottom: 1px solid black;">
 	        <img src="../img/product_display/3.jpg" width="100%" />
-	        <h3 style="margin-left: 5px;"><?php echo $row["ProductName"]; ?></h3>
-	        <h4 style="margin-left: 5px;"><?php echo $row["Price"]; ?></h4>
-	        
+	        <h3 style="margin-left: 5px;"><?php echo $productName; ?></h3>
+	        <h4 style="margin-left: 5px;"><?php echo $productPrice; ?></h4>
+	        <?php 
+		    if ($countlimit > 0) {
+			?>
+			<h5 style="margin-left: 5px;">每天可购买<?php echo $countlimit;?>件，您今天还可以购买<?php echo $leftCount; ?>件。</h5>
+			<?php
+		    }
+	        ?>
 	        <input id="product_id" type="hidden" value="<?php echo $productId; ?>" />
 	        <input type="button" value="-" onclick="reduce()" />
 	        <input id="count" type="text" value="1" />
@@ -97,7 +130,7 @@ $row = mysql_fetch_assoc($result);
         </div>
         <div id="detail_info">
 	        <h3>商品详情</h3>
-	        <p><?php echo $row["ProductDesc"]; ?></p>
+	        <p><?php echo $productDesc; ?></p>
 	        <img src="../img/product_info/5.jpg" width="100%" />
 	        <img src="../img/product_info/6.jpg" width="100%" />
 	        <img src="../img/product_info/7.jpg" width="100%" />
