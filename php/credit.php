@@ -248,7 +248,7 @@ function applyWithdraw()
 			}
 		}
 		$mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
-		if ($credit > $mostCredit) {
+		if ($amount > $mostCredit) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'输入的金额大于今天剩余可提取的额度，请重新输入！'));	
 			return;		
 		}

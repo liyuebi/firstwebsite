@@ -34,7 +34,7 @@ if ($con) {
 		$result = mysql_query("select * from Credit where UserId='$userid'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$mycredit = $row["Credts"];
+			$mycredit = $row["Credits"];
 			
 			$dayWd = $row["DayWithdraw"];
 			$lastWd = $row["LastWithdrawTime"];
