@@ -283,10 +283,6 @@ function confirmOrder()
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新订单状态出错，请稍后重试！'));	
 		return;								
 	}
-
-	// 给上游用户分成	
-	include 'func.php';
-	$referBonus = distributeReferBonus($con, $userid, $count);
 	
 	echo json_encode(array('error'=>'false'));
 

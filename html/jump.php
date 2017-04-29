@@ -11,13 +11,13 @@ if ($_GET["source"] == '1') {
 }
 else if ($_GET["source"] == '2') { 
 	$reason = "请先将默认登录密码修改后再进行相关操作";
-	$pagename = "密码管理界面";
-	$page = "pwd.php";
+	$pagename = "登录密码修改页面";
+	$page = "changeLoginPwd.html";
 }
 else if ($_GET["source"] == '3') { 
 	$reason = "设置了支付密码之后才能申请取现";
-	$pagename = "密码管理界面";
-	$page = "pwd.php";
+	$pagename = "支付密码设置页面";
+	$page = "setBuyPwd.php";
 }
 
 ?>

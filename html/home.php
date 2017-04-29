@@ -92,8 +92,8 @@ $feng = ceil($feng / $fengzhiValue);
 			
 			function countDown()
 			{
-				alert("请先去完善您的个人资料，以便我们为您发货！");
-				location.href = 'editme.php?new=1';
+				alert("请先去完善您的个人资料，修改登录密码，及设置初始密码！");
+				location.href = 'me.php';
 			}
 		</script>
 	</head>
@@ -128,10 +128,10 @@ $feng = ceil($feng / $fengzhiValue);
 -->
 
 		<div>
-			<table class="t1" frame="border" border="1" align="center" style="margin-bottom: 0;">
+			<table class="t1" frame="border" border="1" align="center" style="margin-bottom: 0;"> <!-- rules="none" -->
 				<tr>
-					<td>总蜜券</td>
-					<td>当日蜜券</td>
+					<td width="50%">总蜜券</td>
+					<td width="50%">当日蜜券</td>
 				</tr>
 				<tr>
 					<td id="totalexpense"><?php if ($row) echo $row["TotalConsumption"]; else echo '0'; ?></td>
@@ -140,9 +140,9 @@ $feng = ceil($feng / $fengzhiValue);
 			</table>
 			<table class="t1" border="1" align="center" style="margin-top: 0;">
 				<tr>
-					<td>蜜券</td>
-					<td>当月蜜券</td>
-					<td>蜂值</td>
+					<td width="33.3%">蜜券</td>
+					<td width="33.3%">当月蜜券</td>
+					<td width="33.3%">蜂值</td>
 				</tr>
 				<tr>
 					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>

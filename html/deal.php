@@ -223,7 +223,7 @@ if ($orderid != '') {
 			
 			function onGotoPayPwd()
 			{
-				location.href = "pwd.php";
+				location.href = "setBuyPwd.php";
 			}
 		</script>
 	</head>

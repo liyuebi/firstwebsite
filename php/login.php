@@ -334,17 +334,20 @@ function editProfile()
 		$rece_phone = trim(htmlspecialchars($_POST['rece_phone']));
 		$rece_add = trim(htmlspecialchars($_POST['rece_add'])); 
 		
-		include "func.php";
-		$str = '';
+		if ($rece != '' || $rece_phone != '' || $rece_add != '') {
 		
-		if (!isValidAddress($rece, $rece_phone, $rece_add, $str)) {
-			echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'1',"1"=>$rece_phone,"2"=>$rece));
-			return;
-		}
-
-		$ret = addOneAddress($con, $userid, $rece, $rece_phone, $rece_add, true, $str);
-		if (!$ret) {
-			echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'2'));
+			include "func.php";
+			$str = '';
+			
+			if (!isValidAddress($rece, $rece_phone, $rece_add, $str)) {
+				echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'1',"1"=>$rece_phone,"2"=>$rece));
+				return;
+			}
+	
+			$ret = addOneAddress($con, $userid, $rece, $rece_phone, $rece_add, true, $str);
+			if (!$ret) {
+				echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'2'));
+			}
 		}
 	}
 	

@@ -152,6 +152,10 @@ else
 		mysql_query("update User set RecommendingCount='$count' where UserId='$userid'");
 	}
 
+	// 给上游用户分成	
+	include 'func.php';
+	$referBonus = distributeReferBonus($con, $newuserid, 1);
+	
 	// 更新统计数据
 	$result = createStatisticsTable();
 	if ($result) {
@@ -173,11 +177,13 @@ else
 			$fee = $row["RecommendFee"] + $refererConsumePoint;
 			$orderNum = $row["OrderNum"] + $newOrderCount;
 			$orderGross = $row["OrderGross"] + $newOrder;
-			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum', SPNum='1' where Ye='$year' and Mon='$month' and Day='$day'");
+			$spNum = $row["SPNum"] + 1;
+			$referTotal = $row["RRTotal"] + $referBonus;
+			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum', SPNum='$spNum', RRTotal='$referTotal' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee, OrderGross, OrderNum, SPNum)
-					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount', '1')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee, OrderGross, OrderNum, SPNum, RRTotal)
+					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount', '1', '$referBonus')");
 		}
 	}
 

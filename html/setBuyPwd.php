@@ -78,7 +78,7 @@ if ($new) {
 									return;
 								}
 								alert("设置成功！");	
-								location.href = "pwd.php";
+								location.href = "home.php";
 							}
 							else {
 								alert("设置失败: " + data.error_msg);
