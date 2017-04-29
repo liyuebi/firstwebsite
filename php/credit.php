@@ -18,6 +18,9 @@ else if ("withdraw" == $_POST['func']) {
 else if ("allowWithdraw" == $_POST['func']) {
 	allowWithdraw();
 }
+else if ("transfer" == $_POST['func']) {
+	transfer();
+}
 
 function applyRecharge()
 {	
@@ -238,7 +241,7 @@ function applyWithdraw()
 			$dayWithdraw = $dayWd;
 		}
 		$applyCount = 0;
-		$mostCredit = $withdrawCeilAmoutOneDay;
+		$mostCredit = $withdrawCeilAmountOneDay;
 		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
 		if ($res1) {
 			while ($row1 = mysql_fetch_array($res1)) {
@@ -392,6 +395,126 @@ function allowWithdraw()
 	
 	echo json_encode(array('error'=>'false','index'=>$index));
 	return;
+}
+
+function transfer()
+{	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$receiver = trim(htmlspecialchars($_POST["toUser"]));
+	$amount = trim(htmlspecialchars($_POST["amount"]));
+	$paypwd = trim(htmlspecialchars($_POST["pwd"]));
+	
+	if ($paypwd != $_SESSION["buypwd"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'支付密码输入错误，请重新输入！'));
+		return;
+	}
+
+	include 'regtest.php';
+	if (!isValidMoneyAmount($amount)) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'输入的金额无效，请重新输入！'));
+		return;		
+	}
+
+	$userid = $_SESSION["userId"];
+	if ($userid == $receiver) {
+		echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'不能给自己转账！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	mysql_select_db("my_db", $con);
+	
+	// 检查收款方账号
+	$res1 = mysql_query("select * from User where UserId='$receiver'");
+	if (!$res1 || mysql_num_rows($res1) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'选择的收款账号无效，请重新选择！'));
+		return;		
+	}
+	$res1 = mysql_query("select * from Credit where UserId='$receiver'");
+	if (!$res1 || mysql_num_rows($res1) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'选择的收款账号无效，请重新选择！'));
+		return;		
+	}
+	$row1 = mysql_fetch_assoc($res1);
+	
+	// 确定付款方余额
+	$res2 = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res2 || mysql_num_rows($res2) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'暂时无法查询您的账户，请稍后重试！'));
+		return;		
+	}
+	$row2 = mysql_fetch_assoc($res2);
+	
+	// 检查余额
+	$credit = $row2["Credits"];
+	if ($credit < $amount) {
+		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的余额已不足！'));
+		return;		
+	}
+	
+	include "constant.php";
+	// 扣款
+	$left = $credit - $amount;
+	$fee = calcHandleFee($amount, $transferHandleRate);
+	$actualamount = $amount - $fee;
+	$totalFee = $row2["TotalFee"] + $fee;
+	$res3 = mysql_query("update Credit set Credits='$left', TotalFee='$totalFee' where UserId='$userid'");
+	if (!$res3) {
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的账户扣蜜券失败，请重试！'));
+		return;
+	}
+	
+	$now = time();
+	// add credit record, ignored if failed
+	$res3 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, WithUserId, Type)
+							VALUES('$userid', '$amount', '$left', '$fee', '$now', '$now', '$receiver', '$codeTransferTo')");
+							
+	// 收款人加款
+	$post = $row1["Credits"] + $actualamount;
+	$res3 = mysql_query("update Credit set Credits='$post' where UserId='$receiver'");
+	if (!$res3) {
+		echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'收款人增加蜜券失败！'));
+		return;		
+	}
+	
+	// add credit record, ignored if failed
+	$res3 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, WithUserId, Type)
+							VALUES('$receiver', '$amount', '$post', '$fee', '$now', '$now', '$userid', '$codeTransferFrom')");
+
+
+	echo json_encode(array('error'=>'false'));
+	
+	// 增加统计数据，如出错忽略
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$tfTotal = $row["TfTotal"] + $amount;
+			$feeTotal = $row["TfFee"] + $fee;
+			$times = $row["TfTimes"] + 1;
+			mysql_query("update Statistics set TfTotal='$tfTotal', TfFee='$feeTotal', TfTimes='$times' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, TfTotal, TfFee, TfTimes)
+					VALUES('$year', '$month', '$day', '$amount', '$fee', '1')");
+		}
+	}
 }
 	
 ?>

@@ -73,6 +73,13 @@ if ($con) {
 				    	else if ($row["Type"] == $codeRecommend) {
 					    	echo "您推荐新用户" . $row["WithUserId"] . "，使用了" . $row["Amount"] . "蜜券。";
 				    	}
+				    	else if ($row["Type"] == $codeTransferTo) {
+					    	echo "您向用户" . $row["WithUserId"] . "转账了" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
+				    	}
+				    	else if ($row["Type"] == $codeTransferFrom) {
+					    	$actual = $row["Amount"] - $row["HandleFee"];
+					    	echo "您收到用户" . $row["WithUserId"] . "的转账" . $row["Amount"] . "蜜券，扣除手续费实际获得" . $actual . "蜜券。";
+				    	}
 					    ?>
 					</p>
 			</div>

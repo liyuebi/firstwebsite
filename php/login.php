@@ -38,6 +38,9 @@ else if ("changeLoginPwd" == $_POST['func']) {
 else if ("editprofile" == $_POST['func']) {
 	editProfile();
 }
+else if ("getProfile" == $_POST['func']) {
+	getProfile();
+}
 
 function login()
 {	
@@ -281,6 +284,11 @@ function changeLoginPwd()
 function editProfile()
 {
 	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
 	$userid = $_SESSION["userId"];
 	$oriName = $_SESSION["name"];
 	$oriIdNum = $_SESSION["idnum"];
@@ -353,6 +361,62 @@ function editProfile()
 	
 	echo json_encode(array('error'=>'false'));
 	return;		
+}
+
+function getProfile()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$ident = trim(htmlspecialchars($_POST["iden"]));
+// 	$found = false;
+	
+	include "regtest.php";
+	if (!isValidNum($ident)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的账号或手机号无效！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		mysql_select_db("my_db", $con);
+		
+		if (isValidCellPhoneNum($ident)) {
+			$res = mysql_query("select * from User where PhoneNum='$ident'");
+			if ($res && mysql_num_rows($res) > 0) {
+				$row = mysql_fetch_assoc($res);
+				
+				$uid = $row["UserId"];
+				$num = $row["PhoneNum"];
+				$name = $row["Name"];
+				echo json_encode(array('error'=>'false','found'=>'true','user'=>array('id'=>$uid,'num'=>$num,'name'=>$name)));
+				return;
+			}
+		}
+		
+		$res = mysql_query("select * from User where UserId='$ident'");
+		if ($res && mysql_num_rows($res) > 0) {
+			$row = mysql_fetch_assoc($res);
+			
+			$uid = $row["UserId"];
+			$num = $row["PhoneNum"];
+			$name = $row["Name"];
+			echo json_encode(array('error'=>'false','found'=>'true','user'=>array('id'=>$uid,'num'=>$num,'name'=>$name)));
+			return;
+		}
+	}
+	
+	echo json_encode(array('error'=>'false','found'=>'false'));
+	return;
 }
 
 function check_table_is_exist($sql, $find_table)
