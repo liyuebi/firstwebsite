@@ -139,8 +139,7 @@ if ($con) {
         <div>
 	        <h4 style="margin-bottom: 0;">注意事项：</h5>
 		    <p style="margin: 0;">1. 用户默认登录密码被设置为000000，请用户登录后及时修改成新密码</p>
-		    <p style="margin: 0;">2. 请用户登录后完善信息</p>
-		    <p style="margin: 0;">3. 用户登录后获得礼品，请用户去订单完善寄送信息</p>
+		    <p style="margin: 0;">2. 请用户登录后完善信息，并确认订单</p>
         </div>
     </body>
     <div style="text-align:center;">

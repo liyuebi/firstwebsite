@@ -37,21 +37,34 @@
 		</script>
 	</head>
 	<body>
-        <div>
-	        <h3>用户管理</h3>
-        </div>
-        <input type="button" value="添加新用户" onclick="addUser()" />
-        <input type="button" value="查询用户" onclick="queryUser()" />
-        <div>
-	        <form id="addform" style="display: none" method="post" action="../php/usrMgr.php" onsubmit="return submitCheck()">
-		        <input type="hidden" name='func' value="addNew" />
-		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
-		        <br>
-		        姓名: <input type="text" name="name" id="name" placeholder="请填写用户姓名" />
-				<br>
-				<input type="submit" name="submit" value="添加" />
-		    </form>
-        </div>
+		<div style="padding: 10px 10px 0 5px; height: 100%; display:inline; float: left; border-right: 1px solid black;">
+			<ul style="list-style: none; padding: 0">
+<!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
+				<li><a href="productmgr.html">产品管理</a></li>
+				<li><a href="usermgr.html">用户管理</a></li>
+				<li><a href="ordermgr.php">订单管理</a></li>
+				<li><a href="rechargemgr.php">充值管理</a></li>
+				<li><a href="withdrawmgr.php">取现管理</a></li>
+				<li><a href="statistics.php">统计数据</a></li>
+			</ul>
+		</div>
+		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+	        <div>
+		        <h3>用户管理</h3>
+	        </div>
+	        <input type="button" value="添加新用户" onclick="addUser()" />
+	        <input type="button" value="查询用户" onclick="queryUser()" />
+	        <div>
+		        <form id="addform" style="display: none" method="post" action="../php/usrMgr.php" onsubmit="return submitCheck()">
+			        <input type="hidden" name='func' value="addNew" />
+			        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
+			        <br>
+			        姓名: <input type="text" name="name" id="name" placeholder="请填写用户姓名" />
+					<br>
+					<input type="submit" name="submit" value="添加" />
+			    </form>
+	        </div>
+		</div>
     </body>
     <div style="text-align:center;">
     </div>

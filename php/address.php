@@ -14,6 +14,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 	else if ("editaddress" == $_POST['func']) {
 		editAddress();
 	}
+	else if ("deleteaddress" == $_POST['func']) {
+		deleteAddress();
+	}
 }
 else if ($_SERVER['REQUEST_METHOD']=="GET") {
 	if ("getAddresses" == $_GET['func'] ) {
@@ -130,11 +133,6 @@ function editAddress()
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
 		return;
 	}
-	
-	if ($_POST["addressid"] == -1) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的地址数据！'));
-		return;
-	}
 
 	$userId = $_SESSION['userId'];
 	$addId = trim(htmlspecialchars($_POST["addressid"]));
@@ -143,6 +141,11 @@ function editAddress()
 	$address = trim(htmlspecialchars($_POST["address"]));
 // 	$zipcode = $_POST["zipcode"];
 	$isdefault = trim(htmlspecialchars($_POST["default"]));
+	
+	if ($addId == -1) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的地址数据！'));
+		return;
+	}
 	
 	$con = connectToDB();
 	if (!$con)
@@ -166,6 +169,35 @@ function editAddress()
 		}
 		echo json_encode(array('error'=>'false'));
 	}
+}
+
+function deleteAddress()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$userId = $_SESSION['userId'];
+	$addId = trim(htmlspecialchars($_POST["addId"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	mysql_select_db("my_db", $con);
+
+	$result = mysql_query("delete from Address where UserId='$userId' and AddressId='$addId'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'删除失败，请稍后重试！'));
+		return;
+	}
+	
+	echo json_encode(array('error'=>'false', 'id'=>$addId));
+	return;
 }
 
 function changeDefaultAddress()

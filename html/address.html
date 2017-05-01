@@ -30,6 +30,7 @@
 						
 		 				var h = document.createElement("ul");
 		 				h.className = "add_block";
+		 				h.id = "add" + key;
 		 				
 		 				var k = document.createElement("li");
 		 				k.className = "receiver";
@@ -129,6 +130,18 @@
 			
 			function deleteAddress(e)
 			{
+				var key = e.target.var;
+				$.post("../php/address.php", {"func":"deleteaddress","addId":key}, function(data){
+						
+					if (data.error == "false") {
+						var container = document.getElementById("add_list");
+						var child = document.getElementById("add" + data.id);
+						container.removeChild(child);
+					}
+					else {
+						alert("删除失败: " + data.error_msg);
+					}
+				}, "json");
 			}
 			
 			function changeDefaultAddress(e)

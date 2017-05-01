@@ -223,15 +223,15 @@ if ($con) {
 			        <td width="60%"><input id="rec" type="text" value="" /><input type="button" value="确认" onclick="getUserInfo()" /></td>
 		        </tr>
 		        <tr>
-			        <td>账号</td>
+			        <td width="30%" style="text-align: right;">账号</td>
 			        <td><span id="account"></span></td>
 		        </tr>
 		        <tr>
-			        <td>姓名</td>
+			        <td width="30%" style="text-align: right;">姓名</td>
 			        <td><span id="name"></span></td>
 		        </tr>
 		        <tr>
-			        <td>手机号</td>
+			        <td width="30%" style="text-align: right;">手机号</td>
 			        <td><span id="phone"></span></td>
 		        </tr>
 
@@ -239,10 +239,10 @@ if ($con) {
 	        	    
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
 	        <p>转账每笔最少为<?php echo $leastCredit; ?>蜜券。</p>    
-	        <input id="amount" value="" placeholder="请输入您要转的金额" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
+	        <input class="form-control" id="amount" value="" placeholder="请输入您要转的金额" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
 			<p>您实际将提转出的蜜券数量是：<span id="autual_count">0</span></p>
 			
-	        <input id="pwd" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
+	        <input class="form-control"  id="pwd" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
 	        <input type="button" value="确认" onclick="tryTransfer()" />
 	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />

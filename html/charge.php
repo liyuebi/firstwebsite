@@ -109,7 +109,8 @@ if ($con) {
         </div>
         <div name="display">
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <input id="amount" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
+	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
+<!--
 	        <br>
 		        <input type="radio" name="method" value="1" checked="true"/> 微信
 	        <div id="wechat_block" style="border: 1px black solid; padding: 5px;">
@@ -130,6 +131,7 @@ if ($con) {
 				<p>请输入所属银行</p>
 				<input id="bank_name" type="text" placeholder="请输入卡号所属的银行，如：中国银行" />
 			</div>
+-->
 	        
 	        <input type="button" value="提交申请" onclick="onConfirm()" />
 	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />

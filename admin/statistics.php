@@ -56,35 +56,58 @@ $result = getStatistics();
 		</script>
 	</head>
 	<body>
-        <div>
-			<table border="1">
-				<tr>
-					<th>年</th>
-					<th>月</th>
-					<th>日</th>
-					<th>总充值额</th>
-					<th>总提现额</th>
-					<th>新用户数</th>
-<!-- 					<th>拒绝</th> -->
-				</tr>
-				<?php
-					while($row = mysql_fetch_array($result)) {
-				?>
-						<tr>
-							<th><?php echo $row["Ye"]; ?></th>
-							<th><?php echo $row["Mon"]; ?></th>
-							<th><?php echo $row["Day"]; ?></th>
-							<th><?php echo $row["RechargeTotal"]; ?></th>
-							<th><?php echo $row["WithdrawTotal"] ?></th>
-							<th><?php echo $row["NSCount"] ?></th>
-<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
-<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
-						</tr>
-				<?php
-					}
-				?>
-			</table>
-        </div>
+		<div style="padding: 10px 10px 0 5px; height: 100%; display:inline; float: left; border-right: 1px solid black;">
+			<ul style="list-style: none; padding: 0">
+<!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
+				<li><a href="productmgr.html">产品管理</a></li>
+				<li><a href="usermgr.html">用户管理</a></li>
+				<li><a href="ordermgr.php">订单管理</a></li>
+				<li><a href="rechargemgr.php">充值管理</a></li>
+				<li><a href="withdrawmgr.php">取现管理</a></li>
+				<li><a href="statistics.php">统计数据</a></li>
+			</ul>
+		</div>
+		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+	        <div>
+				<table border="1">
+					<tr>
+						<th>年</th>
+						<th>月</th>
+						<th>日</th>
+						<th>新用户数</th>
+						<th>总充值额</th>
+						<th>总提现额</th>
+						<th>提现手续费</th>
+						<th>总转账额</th>
+						<th>转账手续费</th>
+						<th>订单总收入</th>
+						<th>订单件数</th>
+	<!-- 					<th>拒绝</th> -->
+					</tr>
+					<?php
+						while($row = mysql_fetch_array($result)) {
+					?>
+							<tr>
+								<th><?php echo $row["Ye"]; ?></th>
+								<th><?php echo $row["Mon"]; ?></th>
+								<th><?php echo $row["Day"]; ?></th>
+								<th><?php echo $row["NSCount"] ?></th>
+								<th><?php echo $row["RechargeTotal"]; ?></th>
+								<th><?php echo $row["WithdrawTotal"]; ?></th>
+								<th><?php echo $row["WithdrawFee"]; ?></th>
+								<th><?php echo $row["TfTotal"]; ?></th>
+								<th><?php echo $row["TfFee"]; ?></th>
+								<th><?php echo $row["OrderGross"]; ?></th>
+								<th><?php echo $row["SPNum"]; ?></th>
+	<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
+	<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
+							</tr>
+					<?php
+						}
+					?>
+				</table>
+	        </div>
+		</div>
     </body>
     <div style="text-align:center;">
     </div>

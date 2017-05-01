@@ -54,35 +54,48 @@ $result = getTranscation();
 		</script>
 	</head>
 	<body>
-        <div>
-			<table border="1">
-				<tr>
-					<th>用户id</th>
-					<th>用户手机号</th>
-					<th>用户名</th>
-					<th>单价</th>
-					<th>数量</th>
-					<th>状态</th>
-					<th>确认发货</th>
-				</tr>
-				<?php
-					include "constant.php";
-					while($row = mysql_fetch_array($result)) {
-				?>
-						<tr>
-							<th><?php echo $row["UserId"]; ?></th>
-							<th></th>
-							<th></th>
-							<th><?php echo $row["Price"]; ?></th>
-							<th><?php echo $row["Count"] ?></th>
-							<th><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></th>
-							<th><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></th>
-						</tr>
-				<?php
-					}
-				?>
-			</table>
-        </div>
+		<div style="padding: 10px 10px 0 5px; height: 100%; display:inline; float: left; border-right: 1px solid black;">
+			<ul style="list-style: none; padding: 0">
+<!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
+				<li><a href="productmgr.html">产品管理</a></li>
+				<li><a href="usermgr.html">用户管理</a></li>
+				<li><a href="ordermgr.php">订单管理</a></li>
+				<li><a href="rechargemgr.php">充值管理</a></li>
+				<li><a href="withdrawmgr.php">取现管理</a></li>
+				<li><a href="statistics.php">统计数据</a></li>
+			</ul>
+		</div>
+		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+	        <div>
+				<table border="1">
+					<tr>
+						<th>用户id</th>
+						<th>用户手机号</th>
+						<th>用户名</th>
+						<th>单价</th>
+						<th>数量</th>
+						<th>状态</th>
+						<th>确认发货</th>
+					</tr>
+					<?php
+						include "constant.php";
+						while($row = mysql_fetch_array($result)) {
+					?>
+							<tr>
+								<th><?php echo $row["UserId"]; ?></th>
+								<th></th>
+								<th></th>
+								<th><?php echo $row["Price"]; ?></th>
+								<th><?php echo $row["Count"] ?></th>
+								<th><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></th>
+								<th><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></th>
+							</tr>
+					<?php
+						}
+					?>
+				</table>
+	        </div>
+		</div>
     </body>
     <div style="text-align:center;">
     </div>
