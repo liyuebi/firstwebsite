@@ -20,7 +20,7 @@
 	// credit code
 	$codeRecharge = 1;	// 充值积分变化
 	$codeWithdraw = 2;	// 取现积分变化
-	$codeDivident = 3;	// 分红积分变化，根据充值额取一部分返还给用户
+	$codeDivident = 3;	// 分红积分变化，根据购物额取一部分返还给用户
 	$codeBonus    = 4;	// 奖励积分，推荐的用户每购物一笔，有一部分奖励
 	$codeConsume = 5;	// 消费消耗积分
 	$codeCancelPurchase = 6; // 取消购物，积分返还
