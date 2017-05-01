@@ -48,8 +48,15 @@ function applyRecharge()
 	{
 		mysql_select_db("my_db", $con);
 		$userid = $_SESSION['userId'];
-		$time = time();
 		
+		include "func.php";
+		$left = getCreditsPoolLeft($con);
+		if ($amount > $left) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'暂时无空闲蜜券发放，请稍后重试！'));	
+			return;
+		}
+		
+		$time = time();
 		$result = createRechgeTable();
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
@@ -61,7 +68,6 @@ function applyRecharge()
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'申请充值失败，请稍后重试！'));
 			return;
 		}
-	
 		echo json_encode(array('error'=>'false'));
 	}
 	return;
@@ -92,6 +98,13 @@ function allowRecharge()
 		$amount = $row["Amount"];
 		$applyTime = $row["ApplyTime"];
 		
+		include "func.php";
+		$left = getCreditsPoolLeft($con);
+		if ($amount > $left) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'暂时无空闲蜜券发放，通过充值失败！','index'=>$index));	
+			return;
+		}
+
 		// 添加积分纪录
 		$result = createCreditRecordTable();
 		if (!$result) {
@@ -155,25 +168,7 @@ function allowRecharge()
 			
 			mysql_query("delete from RechargeApplication where IndexId='$index'");
 			
-			// 更新统计数据
-			$result = createStatisticsTable();
-			if ($result) {
-				date_default_timezone_set('PRC');
-				$year = date("Y", $now);
-				$month = date("m", $now);
-				$day = date("d", $now);
-				
-				$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-				if ($result && mysql_num_rows($result) > 0) {
-					$row = mysql_fetch_assoc($result);
-					$rechargeTotal = $row["RechargeTotal"] + $amount;
-					mysql_query("update Statistics set RechargeTotal='$rechargeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
-				}
-				else {
-					mysql_query("insert into Statistics (Ye, Mon, Day, RechargeTotal)
-							VALUES('$year', '$month', '$day', '$amount')");
-				}
-			}
+			insertRechargeStatistics($amount);
 		}
 	}
 	
@@ -371,25 +366,8 @@ function allowWithdraw()
 			mysql_query("delete from WithdrawApplication where IndexId='$index'");
 			
 			// 更新统计数据
-			$result = createStatisticsTable();
-			if ($result) {
-				date_default_timezone_set('PRC');
-				$year = date("Y", $now);
-				$month = date("m", $now);
-				$day = date("d", $now);
-				
-				$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-				if ($result && mysql_num_rows($result) > 0) {
-					$row = mysql_fetch_assoc($result);
-					$withdrawTotal = $row["WithdrawTotal"] + $amount;
-					$feeTotal = $row["HandleFee"] + $fee;
-					mysql_query("update Statistics set WithdrawTotal='$withdrawTotal', WithdrawFee='$feeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
-				}
-				else {
-					mysql_query("insert into Statistics (Ye, Mon, Day, WithdrawTotal, WithdrawFee)
-							VALUES('$year', '$month', '$day', '$amount', '$feeTotal')");
-				}
-			}
+			include "func.php";
+			insertWithdrawStatistics($amount, $fee);
 		}
 	}
 	
@@ -495,26 +473,8 @@ function transfer()
 	echo json_encode(array('error'=>'false'));
 	
 	// 增加统计数据，如出错忽略
-	$result = createStatisticsTable();
-	if ($result) {
-		date_default_timezone_set('PRC');
-		$year = date("Y", $now);
-		$month = date("m", $now);
-		$day = date("d", $now);
-		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$tfTotal = $row["TfTotal"] + $amount;
-			$feeTotal = $row["TfFee"] + $fee;
-			$times = $row["TfTimes"] + 1;
-			mysql_query("update Statistics set TfTotal='$tfTotal', TfFee='$feeTotal', TfTimes='$times' where Ye='$year' and Mon='$month' and Day='$day'");
-		}
-		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, TfTotal, TfFee, TfTimes)
-					VALUES('$year', '$month', '$day', '$amount', '$fee', '1')");
-		}
-	}
+	include "func.php";
+	insertTransferStatistics($amount, $fee);
 }
 	
 ?>

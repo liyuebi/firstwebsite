@@ -217,27 +217,7 @@ function purchaseProduct()
 	$referBonus = distributeReferBonus($con, $userid, $count);
 	
 	// 更新统计数据
-	$result = createStatisticsTable();
-	if ($result) {
-		date_default_timezone_set('PRC');
-		$year = date("Y", $now);
-		$month = date("m", $now);
-		$day = date("d", $now);
-		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$gross = $row["OrderGross"] + $totalPrice;
-			$orderNum = $row["OrderNum"] + 1;
-			$refer = $row["RRTotal"] + $referBonus;
-			$spnum = $row["SPNum"] + $count;
-			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
-		}
-		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal, SPNum)
-					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus', '$count')");
-		}
-	}
+	insertOrderStatistics($totalPrice, $count, $referBonus);
 	
 	echo json_encode(array("error"=>"false"));
 	return;

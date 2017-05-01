@@ -298,6 +298,68 @@ function createStatisticsTable()
 	return $result;
 }
 
+function createTotalStatisTable()
+{
+	$sql = "create table if not exists TotalStatis
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		CreditsPool	int DEFAULT 50000000,
+		UserCount int DEFAULT 0,
+		StaUserCount int DEFAULT 0,
+		DyaUserCount int DEFAULT 0,
+		BannedUserCount int DEFAULT 0,
+		RechargeTotal int DEFAULT 0,
+		WithdrawTotal int DEFAULT 0,
+		TransferTotal int DEFAULT 0,
+		WithdrawFee int DEFAULT 0,
+		TransferFee int DEFAULT 0,
+		RechargeTimes int DEFAULT 0,
+		WithdrawTimes int DEFAULT 0,
+		TransferTimes int DEFAULT 0,
+		RecommendTotal int DEFAULT 0,
+		RRTotal int DEFAULt 0,
+		BonusTotal int DEFAULT 0,
+		OrderGross int DEFAULT 0,
+		OrderNum int DEFAULT 0,
+		SPNum int DEFAULT 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create TotalStatis table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createShortStatisTable()
+{
+	$sql = "create table if not exists ShortStatis
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		Recharge int DEFAULT 0,
+		Withdraw int DEFAULT 0,
+		Transfer int DEFAULT 0,
+		OrderGross int DEFAULT 0,
+		WithdrawFee int DEFAULT 0,
+		TransferFee int DEFAULT 0,
+		BonusTotal int DEFAULT 0,
+		BonusLeft int DEFAULT 0,
+		StaUserCount int DEFAULT 0,
+		DynUserCount int DEFAULT 0,
+		BonusPerSta int DEFAULT 0,
+		BonusPerDya int DEFAULT 0,
+		StaUserObtained int DEFAULT 0,
+		DyaUserObtained int DEFAULT 0,
+		LastCalcTime int DEFAULT 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create ShortStatis table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
 function isInTheSameDay($time1, $time2)
 {
 	date_default_timezone_set('PRC');		// get local time
@@ -543,5 +605,50 @@ function updateDayBoughtCount($userid, $productid, $count)
 		}
 	}
 }
+
+function initGeneralStatisTable()
+{
+	$result = createTotalStatisTable();
+	if ($result) {
+		
+		$res = mysql_query("select * from TotalStatis");
+		if (!res) {
+			echo "init general statis error: " . mysql_error() . "<br>";
+		}
+		else {
+			if (mysql_num_rows($res) > 0) {
+				// inited
+			}
+			else {
+				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('50000000')");
+				if (!res1) {
+					echo "insert into general statis error: " . mysql_error() . "<br>";
+				}
+			}
+		}
+	}
+	
+	$result = createShortStatisTable();
+	if ($result) {
+				$res = mysql_query("select * from ShortStatis");
+		if (!res) {
+			echo "init short statis error: " . mysql_error() . "<br>";
+		}
+		else {
+			if (mysql_num_rows($res) > 0) {
+				// inited
+			}
+			else {
+				$res1 = mysql_query("insert into ShortStatis (LastCalcTime) VALUES('0')");
+				if (!res1) {
+					echo "insert into short statis error: " . mysql_error() . "<br>";
+				}
+			}
+		}
+	}
+}
+
+
+
 
 ?>

@@ -39,10 +39,14 @@ $result = getRechargeApplication();
 					
 					if (data.error == "false") {
 						alert("通过申请！" + data.index);	
+						var str = "col_status_"+data.index;
+						document.getElementById(str).innerHTML = "通过";
 // 						location.href = "pwd.php";
 					}
 					else {
 						alert("申请未通过: " + data.error_msg + " " + data.index);
+						document.getElementById("col_record_" + data.index).innerHTML = data.error_msg;
+						document.getElementById(data.index).disabled = false;
 					}
 				}, "json");
 			}
@@ -69,25 +73,31 @@ $result = getRechargeApplication();
 	        <div>
 				<table border="1">
 					<tr>
+						<th>申请编号</th>
+						<th>申请时间</th>
 						<th>用户id</th>
 						<th>用户手机号</th>
 						<th>用户姓名</th>
 						<th>充值金额</th>
-						<th>申请时间</th>
-						<th>确认</th>
-						<th>拒绝</th>
+						<th>申请状态</th>
+						<th>执行操作</th>
+						<th>操作记录</th>
 					</tr>
 					<?php
+						date_default_timezone_set('PRC');
 						while($row = mysql_fetch_array($result)) {
 					?>
 							<tr>
+								<th><?php echo $row["IndexId"]; ?></th>
+								<th><?php echo date("Y.m.d H:i:s" ,$row["ApplyTime"]); ?></th>
 								<th><?php echo $row["UserId"]; ?></th>
 								<th></th>
 								<th></th>
 								<th><?php echo $row["Amount"]; ?></th>
-								<th><?php echo $row["ApplyTime"] ?></th>
+								<th id="col_status_<?php echo $row["IndexId"]; ?>">未通过</th>
 								<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
-								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
+<!-- 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
+								<th id= "col_record_<?php echo $row["IndexId"]; ?>"></th>
 							</tr>
 					<?php
 						}

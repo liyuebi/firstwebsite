@@ -111,25 +111,8 @@ else
 	echo json_encode(array('error'=>'false'));
 	
 	// 更新统计数据
-	$result = createStatisticsTable();
-	if ($result) {
-		date_default_timezone_set('PRC');
-		$year = date("Y", $now);
-		$month = date("m", $now);
-		$day = date("d", $now);
-		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$newUserCount = $row["NewUserCount"] + 1;
-			mysql_query("update Statistics set NewUserCount='$newUserCount' where Ye='$year' and Mon='$month' and Day='$day'");
-		}
-		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NewUserCount)
-					VALUES('$year', '$month', '$day', '1')");
-		}
-	}
-
+	include "../php/func.php";
+	insertRecommendStatistics(0, false);
 	
 	mysql_close($con);
 /*

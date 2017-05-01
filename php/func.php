@@ -1,5 +1,21 @@
 <?php
 
+function setUserCookie($name, $userid) 
+{
+	$time = time() + 60 * 30;
+	setcookie("userN", $name, $time, '/');
+	setcookie("useI", $userid, $time, '/');
+	setcookie("isLogin", "true", $time, '/');
+}
+
+function deleteUserCookie()
+{
+	$time = time() - 1000;
+	setcookie("userN", $name, $time, '/');
+	setcookie("useI", $userid, $time, '/');
+	setcookie("isLogin", "true", $time, '/');
+}
+
 //  给上游玩家分享注册资金
 function distributeReferBonus($con, $userid, $count)
 {
@@ -153,5 +169,283 @@ function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &
 	}
 	return true;
 }
+
+function getCreditsPoolLeft($con)
+{
+	$ret = 0;
+	// 没有有效的数据库连接，返回
+	if (!$con) {
+		return $ret;
+	}	
 	
+	$result = mysql_query("select * from TotalStatis where IndexId=1");
+	if (!$result) {
+		return $ret;
+	}
+	
+	if (mysql_num_rows($result) > 0) {
+		$row = mysql_fetch_assoc($result);
+		$ret = $row["CreditsPool"];
+	}
+	
+	return $ret;
+}
+
+function insertRechargeStatistics($amount)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$rechargeTotal = $row["RechargeTotal"] + $amount;
+			mysql_query("update Statistics set RechargeTotal='$rechargeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, RechargeTotal)
+					VALUES('$year', '$month', '$day', '$amount')");
+		}
+	}
+	
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$credits = $row1["CreditsPool"];
+		$rechargeTotal = $row1["RechargeTotal"];
+		$rechargeTimes = $row1["RechargeTimes"];
+		
+		$credits -= $amount;
+		$rechargeTotal += $amount;
+		$rechargeTimes += 1;
+		
+		mysql_query("update TotalStatis set CreditsPool='$credits', RechargeTotal='$rechargeTotal', RechargeTimes='$rechargeTimes' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		$row2 = mysql_fetch_assoc($res2);
+		$recharge = $row2["Recharge"] + $amount;
+		mysql_query("update ShortStatis set Recharge='$recharge' where IndexId=1");
+	}
+}
+
+function insertWithdrawStatistics($amount, $fee)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$withdrawTotal = $row["WithdrawTotal"] + $amount;
+			$feeTotal = $row["WithdrawFee"] + $fee;
+			mysql_query("update Statistics set WithdrawTotal='$withdrawTotal', WithdrawFee='$feeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, WithdrawTotal, WithdrawFee)
+					VALUES('$year', '$month', '$day', '$amount', '$fee')");
+		}
+	}
+	
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		
+		$credits = $row1["CreditsPool"];
+		$withdrawTotal = $row1["WithdrawTotal"];
+		$withdrawTimes = $row1["WithdrawTimes"];
+		$withdrawFee = $row1["WithdrawFee"];
+		
+		$credits += $fee;			// 取现手续费收入积分池
+		$withdrawTotal += $amount;
+		$withdrawTimes += 1;
+		$withdrawFee += $fee;
+		mysql_query("update TotalStatis set CreditsPool='$credits', WithdrawTotal='$withdrawTotal', WithdrawTimes='$withdrawTimes', WithdrawFee='$withdrawFee' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		$row2 = mysql_fetch_assoc($res2);
+		
+		$withdrawTotal = $row2["Withdraw"] + $amount;
+		$withdrawFee = $row2["WithdrawFee"] + $fee;
+		mysql_query("update ShortStatis set Withdraw='$withdrawTotal', WithdrawFee='$withdrawFee' where IndexId=1");
+	}
+}
+
+function insertTransferStatistics($amount, $fee)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$tfTotal = $row["TfTotal"] + $amount;
+			$feeTotal = $row["TfFee"] + $fee;
+			$times = $row["TfTimes"] + 1;
+			mysql_query("update Statistics set TfTotal='$tfTotal', TfFee='$feeTotal', TfTimes='$times' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, TfTotal, TfFee, TfTimes)
+					VALUES('$year', '$month', '$day', '$amount', '$fee', '1')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$credits = $row1["CreditsPool"];
+		$transferTotal = $row1["TransferTotal"];
+		$transferTimes = $row1["TransferTimes"];
+		$transferFee = $row1["TransferFee"];
+		
+		$credits += $fee;			// 转账手续费收入积分池
+		$transferTotal += $amount;
+		$transferTimes += 1;
+		$transferFee += $fee;
+		
+		mysql_query("update TotalStatis set CreditsPool='$credits', TransferTotal='$transferTotal', TransferTimes='$transferTimes', TransferFee='$transferFee' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		$row2 = mysql_fetch_assoc($res2);
+		$transfer = $row2["Transfer"] + $amount;
+		$transFee = $row2["TransferFee"] + $fee;
+		mysql_query("update ShortStatis set Transfer='$transfer', TransferFee='$transFee' where IndexId=1");
+	}
+}
+	
+function insertOrderStatistics($totalPrice, $count, $referBonus)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$gross = $row["OrderGross"] + $totalPrice;
+			$orderNum = $row["OrderNum"] + 1;
+			$refer = $row["RRTotal"] + $referBonus;
+			$spnum = $row["SPNum"] + $count;
+			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal, SPNum)
+					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus', '$count')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$credits = $row1["CreditsPool"];
+		$gross = $row1["OrderGross"] + $totalPrice;
+		$orderNum = $row1["OrderNum"] + 1;
+		$spnum = $row1["SPNum"] + $count;
+		$refer = $row1["RRTotal"] + $referBonus;
+		
+		$credits = $credits + $totalPrice - $referBonus;	// 购买使用的积分归入积分池，再取出奖励积分分给上游用户
+		mysql_query("update TotalStatis set CreditsPool='$credits', OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		
+		$row2 = mysql_fetch_assoc($res2);
+		$gross = $row2["OrderGross"] + $totalPrice;
+		mysql_query("update ShortStatis set OrderGross='$gross' where IndexId='1'");
+	}
+}
+
+function insertRecommendStatistics($referFee, $bStaticBefore)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$newUserCount = $row["NSCount"] + 1;
+			$fee = $row["RecommendFee"] + $referFee;
+
+			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee)
+					VALUES('$year', '$month', '$day', '1', '$referFee')");
+		}
+	}
+	
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$userCnt = $row1["UserCount"] + 1;
+		$staUserCnt = $row1["StaUserCount"];
+		$dynUserCnt = $row1["DyaUserCount"];
+		if ($bStaticBefore) {
+			$dynUserCnt += 1;
+		}
+		else {
+			$staUserCnt += 1;
+		}
+		$recomTotal = $row1["RecommendTotal"] + $referFee;
+		mysql_query("update TotalStatis set UserCount='$userCnt', StaUserCount='$staUserCnt', DyaUserCount='$dynUserCnt', RecommendTotal='$recomTotal' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	// 无短期统计数据需要更新
+}
+
 ?>

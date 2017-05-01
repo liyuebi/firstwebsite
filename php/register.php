@@ -142,12 +142,14 @@ else
 	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
 	// 更新推荐人的推荐人数，若失败不影响返回结果
+	$bStaticBefore = false;
 	$result = mysql_query("select * from User where UserId='$userid'");
 	if (!$result) {
 	}
 	else {
 		$row = mysql_fetch_assoc($result);
 		$count = $row["RecommendingCount"];
+		$bStaticBefore = $count == 0;
 		$count += 1;
 		mysql_query("update User set RecommendingCount='$count' where UserId='$userid'");
 	}
@@ -156,44 +158,11 @@ else
 	include 'func.php';
 	$referBonus = distributeReferBonus($con, $newuserid, 1);
 	
-	// 更新统计数据
-	$result = createStatisticsTable();
-	if ($result) {
-		date_default_timezone_set('PRC');
-		$year = date("Y", $now);
-		$month = date("m", $now);
-		$day = date("d", $now);
-		$newOrderCount = 1;
-		$newOrder = $refererConsumePoint;
-		if (!$bInsertOrder) {
-			$newOrderCount = 0;
-			$newOrder = 0;
-		}
-		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$newUserCount = $row["NSCount"] + 1;
-			$fee = $row["RecommendFee"] + $refererConsumePoint;
-			$orderNum = $row["OrderNum"] + $newOrderCount;
-			$orderGross = $row["OrderGross"] + $newOrder;
-			$spNum = $row["SPNum"] + 1;
-			$referTotal = $row["RRTotal"] + $referBonus;
-			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee', OrderGross='$orderGross', OrderNum='$orderNum', SPNum='$spNum', RRTotal='$referTotal' where Ye='$year' and Mon='$month' and Day='$day'");
-		}
-		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee, OrderGross, OrderNum, SPNum, RRTotal)
-					VALUES('$year', '$month', '$day', '1', $refererConsumePoint, '$newOrder', '$newOrderCount', '1', '$referBonus')");
-		}
-	}
+	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
+	insertOrderStatistics($refererConsumePoint, 1, $referBonus);
+	insertRecommendStatistics($refererConsumePoint, $bStaticBefore);
 
-	
 	mysql_close($con);
-/*
-	$home_url = '../html/home.php';
-	header('Location: ' . $home_url);
-*/
-
 	return;
 }
 

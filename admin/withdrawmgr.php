@@ -69,25 +69,28 @@ $result = getWithdrawApplication();
 	        <div>
 				<table border="1">
 					<tr>
+						<th>申请编号</th>
+						<th>申请时间</th>
 						<th>用户id</th>
 						<th>用户手机号</th>
 						<th>用户姓名</th>
 						<th>申请金额</th>
 						<th>手续费</th>
-						<th>申请时间</th>
 						<th>确认</th>
 						<th>拒绝</th>
 					</tr>
 					<?php
+						date_default_timezone_set('PRC');
 						while($row = mysql_fetch_array($result)) {
 					?>
 							<tr>
+								<th><?php echo $row["IndexId"]; ?></th>
+								<th><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></th>
 								<th><?php echo $row["UserId"]; ?></th>
 								<th></th>
 								<th></th>
 								<th><?php echo $row["ApplyAmount"]; ?></th>
 								<th><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></th>
-								<th><?php echo $row["ApplyTime"] ?></th>
 								<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
 							</tr>

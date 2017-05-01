@@ -9,6 +9,9 @@ if (!$_SESSION['isLogin']) {
 	header('Location: ' . $home_url);
 	exit();
 }
+include "../php/func.php";
+setUserCookie($_SESSION['name'], $_SESSION["userId"], 'true');
+
 $userid = $_SESSION["userId"];
 $new = 0;
 

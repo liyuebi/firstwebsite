@@ -83,8 +83,8 @@ function login()
 				$_SESSION["idnum"] = $row['IDNum'];
 				$_SESSION['isLogin'] = true;
 				
-				setcookie("User", $row['Name'], time() + 60 * 30, '/');
-				setcookie("isLogin", "true", time() + 60 * 30, '/');
+				include "func.php";
+				setUserCookie($row['Name'], $row['UserId']);
 				
 				// jump back to home page
 // 				$home_url = '../html/home.php';
@@ -102,11 +102,8 @@ function logout()
 	session_start();
 	$_SESSION['isLogin'] = false;
 	
-	setcookie("User", "v", time() - 1000, '/');
-	setcookie("isLogin", "false", time() - 1000, '/');
-	
-// 	$home_url = 'index.html';
-// 	header('Location: ' . $home_url);
+	include "func.php";
+	deleteUserCookie();
 }
 
 function loginAdmin()
