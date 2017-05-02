@@ -3,12 +3,13 @@
 include "../php/database.php";
 include "../php/constant.php";
 
-session_start();
-if (!$_SESSION['isLogin']) {	
-	$home_url = '../index.html';
+if (!$_COOKIE['isLogin']) {	
+	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
+
+session_start();
 include "../php/func.php";
 setUserCookie($_SESSION['name'], $_SESSION["userId"], 'true');
 
@@ -131,7 +132,7 @@ $feng = ceil($feng / $fengzhiValue);
 -->
 
 		<div>
-			<table class="t1" frame="border" border="1" align="center" style="margin-bottom: 0;"> <!-- rules="none" -->
+			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none"> <!-- rules="none" -->
 				<tr>
 					<td width="50%">总蜜券</td>
 					<td width="50%">当日蜜券</td>
@@ -171,14 +172,14 @@ $feng = ceil($feng / $fengzhiValue);
 			<ul>
 				<li><a class="icon_btn1" href="recommend.php">推荐蜜粉</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
-				<li><a class="icon_btn1" href="productdetail.php?product_id=1">蜂值倍增</a></li>
+				<li><a class="icon_btn3" href="productdetail.php?product_id=1">蜂值倍增</a></li>
 				<li><a class="icon_btn2" href="recommended.html">蜜粉好友</a></li>
 				<li><a class="icon_btn6" href="charge.php">购买蜜券</a></li>
 				<li><a class="icon_btn5" href="withdraw.php">蜜券提现</a></li>
-				<li><a class="icon_btn3" href="transfer.php">蜜券互转</a></li>
+				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li>
 				<li><a class="icon_btn7" href="order.php">订单查询</a></li>
 				<li><a class="icon_btn4" href="record.php">蜜券记录</a></li>
-				<li><a class="icon_btn3" href="contactus.html">客服信息</a></li>
+				<li><a class="icon_btn12" href="contactus.html">客服信息</a></li>
 <!-- 				<li><a href="#"></a></li> -->
 			</ul>
 		</div>

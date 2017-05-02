@@ -3,7 +3,7 @@ session_start();
 
 // if not login, jump to index page
 if (!$_SESSION["isLogin"]) {
-	$home_url = '../index.html';
+	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }

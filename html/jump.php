@@ -7,7 +7,7 @@ $page = "#";
 if ($_GET["source"] == '1') {
 	$reason = "对不起，您还没有登录哦";
 	$pagename = "登录页面";
-	$page = "../index.html";
+	$page = "../index.php";
 }
 else if ($_GET["source"] == '2') { 
 	$reason = "请先将默认登录密码修改后再进行相关操作";

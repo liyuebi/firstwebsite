@@ -36,7 +36,7 @@ jQuery(document).ready(function() {
 function logout()
 {
 	$.post("../php/login.php", {"func":"logout"}, function(data){
-		location.href="../index.html";
+		location.href="../index.php";
 	});
 }
 

@@ -1,8 +1,8 @@
 <?php
 
 session_start();
-if (!$_SESSION['isLogin']) {	
-	$home_url = '../index.html';
+if (!$_COOKIE['isLogin']) {	
+	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
