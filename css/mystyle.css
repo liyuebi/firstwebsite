@@ -18,7 +18,7 @@
 
 .big_frame {
 	margin: 0, 3%, auto, 3%;
-	background: #f3f2f2;
+	background: rgba(245, 242, 242, 0.67);
 }
 
 @media (max-width: 480px) {
@@ -128,6 +128,19 @@ table.t1  a:hover{                                      /* 鼠标经过时 */
     color:#B50000;  
     text-decoration:underline;  
 }  
+
+table.t2 {
+	width: 100%;
+	height: 30px;
+	background: white;
+	border: none;
+	font: 16px "宋体";
+	text-align: center;
+}
+
+table.t2 td {
+	padding: 4px 2px;
+}
 
 .form-control { 
 	display: block; 
@@ -259,7 +272,7 @@ table.t1  a:hover{                                      /* 鼠标经过时 */
 
 .add_block {
 	margin: 2px;
-	background-color: #e6e3e3;
+	background-color: white;
 	padding: 5px;
 	list-style: none;
 /* 	display: inline; */
@@ -296,6 +309,25 @@ table.t1  a:hover{                                      /* 鼠标经过时 */
 /* 	position: relative; */
 /* 	left: 0px; */
 /* 	top: 100px; */
+}
+
+.order_block {
+	margin: 2px;
+	background-color: white;
+	padding: 5px;
+	list-style: none;
+}
+
+.order_block li {
+	display: inline;
+}
+
+.order_block li.right_ele {
+	float: right;
+}
+
+.order_block li.left_ele {
+	float: left;
 }
 
 #product_list {

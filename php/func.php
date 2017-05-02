@@ -448,4 +448,56 @@ function insertRecommendStatistics($referFee, $bStaticBefore)
 	// 无短期统计数据需要更新
 }
 
+function insertBonusStatistics($bonus)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			
+			$total = $row["BonusTotal"] + $bonus;
+			mysql_query("update Statistics set BonusTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, BonusTotal)
+					VALUES('$year', '$month', '$day', '$total')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$total = $row1["BonusTotal"] + $bonus;
+		
+		mysql_query("update TotalStatis set BonusTotal='$total' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		
+		$row2 = mysql_fetch_assoc($res2);
+		$left = $row2["BonusLeft"];
+		if ($left < $bonus) {
+			// record error
+		}
+		
+		$left -= $bonus;
+		$obtained = $row2["StaUserObtained"] + 1;
+		mysql_query("update ShortStatis set BonusLeft='$left', StaUserObtained='$obtained' where IndexId=1");
+	}
+
+}
+
 ?>

@@ -74,6 +74,122 @@ function calcBonus()
 		echo 2;
 		echo mysql_error();
 	}
+	
+	$res5 = mysql_query("select * from User");
+	if (!$res5) {
+		
+	}
+	else {
+		while($row5 = mysql_fetch_array($res5)) {
+			
+			$userid = $row5["UserId"];
+			$isDynamic = $row5["RecommendingCount"] > 0;
+			$res6 = mysql_query("select * from Credit where UserId='$userid'");
+			if (!$res6 || mysql_num_rows($res6) < 1) {
+			}
+			else {
+				$amount = $staticBonusPer;
+				if ($isDynamic) {
+					$amount = $dynamicBonusPer;
+				}
+				$res7 = mysql_query("update Credit set CurrBonus='$amount' where UserId='$userid'");
+				if (!$res7) {
+					// error
+				}
+			}
+		}
+	}
+}
+
+function acceptBonus($userId)
+{	
+	$con = connectToDB();
+	if (!$con) {
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	mysql_select_db("my_db", $con);
+	
+	$res1 = mysql_query("select * from Credit where UserId='$userId'");
+	if (!$res1 || mysql_num_rows($res1) < 1) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
+		return;
+	}
+	else {
+		$row1 = mysql_fetch_assoc($res1);
+		
+		$bonusTotal = $row1["TotalBonus"];
+		$currBonus = $row1["CurrBonus"];
+		$feng = $row1["Vault"];
+		$dynFeng = $row1["DynamicVault"];
+		$dayObtained = $row1["DayObtained"];
+		$lastObtainedtime = $row1["LastObtainedTime"];
+		
+		if ($currBonus <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'今天没有分红或您已经领取！'));
+			return;
+		}
+		
+		// 如果分不够，检查是否是动态用户，且是否还有动态分
+		if ($currBonus > $feng) {
+			
+			if ($dynFeng > 0) {
+				$res2 = mysql_query("select * from User where UserId='$userId'");
+				if ($res2 && mysql_num_rows($res2) > 0) {
+					$row2 = mysql_fetch_assoc($res2);
+					if ($row2["RecommendingCount"] > 0) {
+						$feng += $dynFeng;
+						$dynFeng = 0;
+					}
+				}
+			}
+		}
+		
+		if ($feng <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'您已经没有蜂值了，暂时不能领取！'));
+			return;
+		}
+		
+		$bNotEnoughFeng = false;
+		// 仍然大于分红值，按剩余蜂值给用户分红
+		if ($currBonus > $feng) {
+			$currBonus = $feng;
+			$bNotEnoughFeng = true;
+		}
+					
+		$now = time();
+		$bonusTotal += $currBonus;
+		if (isInTheSameDay($now, $lastObtainedtime)) {
+			$dayObtained += $currBonus;
+		}
+		else {
+			$dayObtained = $currBonus;
+		}
+		
+		$credit = $row1["Credits"];
+		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', DynamicVault='$dynFeng' where UserId='$userId'");
+		if (!$res2) {
+ 			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'您已经没有蜂值了，暂时不能领取！'));
+			return;
+		}
+		
+		if ($bNotEnoughFeng) {
+			$msg = "您的蜂值余额不足，实际获得" . $currBonus . "蜜券！";
+			echo json_encode(array('error'=>'false','not_enough'=>'true','error_msg'=>$msg));
+		}
+		else {
+			echo json_encode(array('error'=>'false','not_enough'=>'false'));
+		}
+		
+		// 添加积分记录
+		include "constant.php";
+		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+						VALUES('$userId', '$currBonus', '$credit', '$now', '$now', '$codeDivident')");
+		
+		// 统计分红信息
+		include_once "func.php";
+		insertBonusStatistics($currBonus);
+	}
 }
 
 ?>

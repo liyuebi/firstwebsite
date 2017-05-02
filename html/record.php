@@ -15,7 +15,7 @@ $con = connectToDB();
 if ($con) {
 	$db_selected = mysql_select_db("my_db", $con);
 	if ($db_selected) {
-		$result = mysql_query("select * from CreditRecord where UserId='$userid'");
+		$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc");
 	}
 }
 	
@@ -47,18 +47,20 @@ if ($con) {
         <div>
 	    	<?php
 		    	include "../php/constant.php";
+		    	date_default_timezone_set('PRC');
 		        while ($row = mysql_fetch_array($result)) {
 			?>  	
 			<div>
 				    <p><?php 
+					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
+					    echo "<br>";
 					    if ($row["Type"] == $codeRecharge) {
 							echo "您购买了" . $row["Amount"] . "蜜券。"; 				    
 				    	}
 				    	else if ($row["Type"] == $codeWithdraw) {
 					    	echo "您赎回了" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
 				    	}
-				    	else if ($row["Type"] == $codeDivident) {
-					    	
+				    	else if ($row["Type"] == $codeDivident) {					    	
 					    	echo "您分红得到" . $row["Amount"] . "蜜券。";
 				    	}
 				    	else if ($row["Type"] == $codeBonus) {
@@ -80,6 +82,9 @@ if ($con) {
 					    	$actual = $row["Amount"] - $row["HandleFee"];
 					    	echo "您收到用户" . $row["WithUserId"] . "的转账" . $row["Amount"] . "蜜券，扣除手续费实际获得" . $actual . "蜜券。";
 				    	}
+				    	
+					    echo "<br>";
+					    echo "余额是" . $row["CurrAmount"] . "蜜券。";
 					    ?>
 					</p>
 			</div>

@@ -25,8 +25,11 @@ if ($_SESSION["password"] == '000000'
 	$new = 1;
 }
 
+$vault = 0;
 $feng = 0;
 $row = false;
+$bonus = 0;
+
 if ($con) {
 	
 	mysql_select_db("my_db", $con);
@@ -48,6 +51,7 @@ if ($con) {
 		
 		$staticFeng = $row["Vault"];
 		$dynamicFeng = $row["DynamicVault"];
+		$bonus = $row["CurrBonus"];
 		
 		if ($dynamicFeng > 0) {
 			
@@ -57,13 +61,13 @@ if ($con) {
 				mysql_query("update Credit set Vault='$staticFeng', DynamicVault='$dynamicFeng' where UserId='$userid'");
 			}
 		}
-		$feng = $staticFeng;
+		$vault = $staticFeng;
 	}
 }
 
 $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
-$feng = ceil($feng / $fengzhiValue);
+$feng = ceil($vault / $fengzhiValue);
 
 ?>
 
@@ -99,6 +103,40 @@ $feng = ceil($feng / $fengzhiValue);
 				alert("请先去完善您的个人资料，修改登录密码，及设置初始密码！");
 				location.href = 'me.php';
 			}
+			
+			function acceptBonus()
+			{
+				var bonus = <?php echo $bonus; ?>;
+				if (bonus <= 0) {
+					alert("出错了！");
+					location.href = 'home.php';
+				}
+				
+				var feng = <?php echo $vault; ?>;
+				if (bonus > feng) {
+					if (!confirm("您现在蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
+						return;
+					}
+					bonus = feng;
+				}
+				
+				$.post("../php/credit.php", {"func":"acceptBonus"}, function(data){
+					
+					if (data.error == "false") {
+						
+						if (data.not_enough == "true") {
+							alert(data.error_msg);
+						}
+						else {
+						}
+						document.getElementById("accept_btn").style.display = "none";
+						document.getElementById("accept_logo").style.display = "block";
+					}
+					else {
+						alert("转账失败：" + data.error_msg);
+					}
+				}, "json");
+			}
 		</script>
 	</head>
 	
@@ -109,28 +147,6 @@ $feng = ceil($feng / $fengzhiValue);
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
 		
-<!--
-		<div id="pic" class="example2" width="100%">
-			<ul>
-	            <li><img src="../img/wuyuan2.jpg" alt="1"/></li>
-	            <li><img src="../img/wuyuan3.jpg" alt="2"/></li>
-	            <li><img src="../img/wuyuan7.jpg" alt="3"/></li>
-	            <li><img src="../img/wuyuan8.jpg" alt="4"/></li>
-			</ul>
-			<ol>
-				<li></li>
-				<li></li>
-				<li></li>
-				<li></li>
-			</ol>
-		</div>
-		<script>
-			$(function(){
-				$(".example2").luara({width:"500",height:"334",interval:4500,selected:"selected",deriction:"left"});
-			});
-		</script>
--->
-
 		<div>
 			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none"> <!-- rules="none" -->
 				<tr>
@@ -156,17 +172,11 @@ $feng = ceil($feng / $fengzhiValue);
 			</table>
 		</div>
 
-<!--
-		<div id="menu">
-			<p class="navhref"><a href="products.html">购物</a></p>
-			<p class="navhref"><a href="register.html">推荐用户</a></p>
-			<p class="navhref"><a href="charge.php">充值申请</a></p>
-			<p class="navhref"><a href="withdraw.php">提现申请</a></p>
-			<p class="navhref"><a href="order.php">订单查询</a></p>
-			<p class="navhref"><a href="">资金记录</a></p>
-			<p class="navhref"><a href="contactus.html">客服信息</a></p>
+		<div style="display: <?php if ($bonus > 0) echo "block"; else echo "none"; ?>;">
+			<p>您今天获得分红 <b><?php echo $bonus; ?></b> 蜜券，请点击领取！</p>
+			<input id="accept_btn" type="button" value="领取" onclick="acceptBonus()" />
+			<p id="accept_logo" style="color: red; display: none;">已领取</p>
 		</div>
--->
 		
 		<div class="btn_box" width="auto">
 			<ul>

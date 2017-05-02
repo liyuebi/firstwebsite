@@ -107,7 +107,7 @@ function isLogined()
 function isNotLoginAndJump()
 {
 	if (!isLogined()) {
-		location.href = "../index.html";
+		location.href = "../index.php";
 		return true;
 	}
 	return false;

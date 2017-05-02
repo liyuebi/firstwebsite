@@ -3,13 +3,13 @@
 include "../php/constant.php";
 include "../php/database.php";
 
-session_start();
-if (!$_SESSION["isLogin"]) {	
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {	
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
 
+session_start();
 $mycredit = 0;
 $neededcredit = $refererConsumePoint;
 $userid = $_SESSION["userId"];

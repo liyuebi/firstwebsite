@@ -38,6 +38,11 @@ function createUserTable()
 
 function createCreditTable()
 {
+	/*
+	 * TotalRRwd: 总订单分成
+	 * TotalBonus: 总分红
+	 * LastCBTime: last collect bonus time 上次收获分红的时间
+	 */
 	$sql = "create table if not exists Credit
 	(
 		UserId int NOT NULL,
@@ -49,6 +54,8 @@ function createCreditTable()
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption int DEFAULT 0,
 		TotalFee int DEFAULT 0,
+		TotalRRwd int DEFAULT 0,
+		TotalBonus int DEFAULT 0,
 		MonthRecharge int DEFAULT 0,
 		MonthWithdraw int DEFAULT 0,
 		MonthConsumption int DEFAULT 0,
@@ -59,7 +66,9 @@ function createCreditTable()
 		LastWithdrawTime int DEFAULT 0,
 		LastConsumptionTime int DEFAULT 0,
 		DayObtained int DEFAULT 0,
-		LastObtainedTime int DEFAULT 0
+		LastObtainedTime int DEFAULT 0,
+		CurrBonus int DEFAULT 0,
+		LastCBTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

@@ -21,6 +21,17 @@ else if ("allowWithdraw" == $_POST['func']) {
 else if ("transfer" == $_POST['func']) {
 	transfer();
 }
+else if ("acceptBonus" == $_POST['func']) {
+	include "bonus.php";
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	$userid = $_SESSION['userId'];
+	acceptBonus($userid);
+}
 
 function applyRecharge()
 {	

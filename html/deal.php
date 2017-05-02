@@ -1,10 +1,11 @@
 <?php
-session_start();
-if (!$_SESSION["isLogin"]) {	
+
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {	
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
+session_start();
 $isPayPwdSet = $_SESSION["buypwd"] != "";
 $orderid = 0;
 if (isset($_GET['orderId'])) {
@@ -48,6 +49,7 @@ if ($orderid != '') {
 		<meta name="author" content="">
 
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/buttons.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js"></script>		
 		<script src="../js/scripts.js" ></script>
@@ -255,15 +257,16 @@ if ($orderid != '') {
 	        <h3>请选择地址</h3>
 	        <div id="selectedAddBlock" style="display: none">
 		        <p id="selectedAddress" style="font-weight: bold; margin: 0 0 5px 5px"></p>
-		        <input type="button" value="更换地址" onclick="changeAddress()" />
+		        <input type="button" class="button-rounded" style="width: 30%;" value="更换地址" onclick="changeAddress()" />
 	        </div>
 			<div  id="selectAddBlock" style="display: inline">
 				<div id="selectAdd">
 				</div>
+				<br>
 				<input type="hidden" id="selectAddId" value="0" />
-				<input type="button" value="使用选中地址" onclick="useAddress()" />
-				<input type="button" value="更改地址" onclick="useNewAddress()" />
-				<input type="button" value="使用新地址" onclick="useNewAddress()" />
+				<input type="button" class="button-rounded" style="width: 30%;" value="使用选中地址" onclick="useAddress()" />
+				<input type="button" class="button-rounded" style="width: 30%;" value="更改地址" onclick="useNewAddress()" />
+				<input type="button" class="button-rounded" style="width: 30%;" value="使用新地址" onclick="useNewAddress()" />
 			</div>
 			<div id="noAddBlock" style="display: none">
 				<p>您还没有任何地址信息，请先添加地址！</p>
@@ -274,15 +277,13 @@ if ($orderid != '') {
 		<div>
 			<div id="blockPay" style="display: <?php if ($isPayPwdSet) echo "inline"; else echo "none"; ?> ;">
 				<h3 id="pay_title">确认付款</h3>
-				请输入支付密码：
+				<input id="paypwd" type="password" class="form-control" style="width: 50%;" placeholder="请输入您的支付密码" onkeypress="return onlyCharAndNum(event)" />
 				<br>
-				<input id="paypwd" type="password" onkeypress="return onlyCharAndNum(event)" />
-				<br>
-				<input type="button" value="付款" onclick="pay()" />
+				<input type="button" class="button-rounded" style="width: 50%;" value="付款" onclick="pay()" />
 			</div>
 			<div id="blockSetPayPwd" style="display: <?php if (!$isPayPwdSet) echo "inline"; else echo "none"; ?> ;">
 				<p>您还没有设置支付密码，请先设置</p>
-				<input type="button" value="去设置" onclick="onGotoPayPwd()" />
+				<input type="button" class="button-rounded" value="去设置" onclick="onGotoPayPwd()" />
 			</div>
 		</div>
     </body>

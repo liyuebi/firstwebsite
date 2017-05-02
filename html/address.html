@@ -170,35 +170,21 @@
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
-		</div>
-		
-        <div>
-            <h3>地址管理</h3>
-        </div>
-        
-        <div id="add_list" style="margin-bottom: 5%;">
-<!--
-	        <b display="inline">Peter</b>
-	        <b display="inline">15801434852</b>
-	        <p>北京市海淀区科学院南路2号融科资讯中心</p>
--->
+		<div class="big_frame">
+			<div id="banner_bar" class="banner_info">			
+				<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
+	 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
+	 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+			</div>
+			
+	        <div>
+	            <h3>地址管理</h3>
+	        </div>
 	        
-<!--
-	        <ul class="one_address">
-		        <li class="receiver">葫芦娃</li>
-		        <li class="receiver_phone">13398765432</li>
-		        <br>
-		        <li class="receiver_add">芝麻胡同世界包括好坏区分</li>
-		        <br>
-		        <li class="receiver_zipcode">100001</li>
-	        </ul>
--->
+	        <div id="add_list" style="margin-bottom: 5%;">
+	        </div>
+	        <input id="btnAdd" type="button" class="button-border button-rounded button-primary" value="添加新地址" style="width: 100%;" onclick="addNewAddress()" />
         </div>
-        <input id="btnAdd" type="button" class="button-border button-rounded button-primary" value="添加新地址" style="width: 100%;" onclick="addNewAddress()" />
     </body>
     <div style="text-align:center;">
     </div>

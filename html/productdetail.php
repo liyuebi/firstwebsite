@@ -1,15 +1,15 @@
 <?php
 
 include "../php/database.php";
-	
-session_start();
 
-if (!$_SESSION["isLogin"]) {
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
 	
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
+
+session_start();
 $userid = $_SESSION["userId"];
 
 $row = false;

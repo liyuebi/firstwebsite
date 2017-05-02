@@ -1,6 +1,6 @@
 <?php
 
-if ($_COOKIE['isLogin']) {	
+if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {	
 	$home_url = 'html/home.php';
 	header('Location: ' . $home_url);
 	exit();
