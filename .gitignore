@@ -1,0 +1,4 @@
+# ignore files in log folder
+log/
+*/.DS_Store
+.DS_Store
