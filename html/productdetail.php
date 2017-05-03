@@ -135,9 +135,6 @@ $leftCount = max(0, $countlimit - $dayBought);
 	        <img src="../img/product_info/6.jpg" width="100%" />
 	        <img src="../img/product_info/7.jpg" width="100%" />
 	        <img src="../img/product_info/8.jpg" width="100%" />
-	        <img src="../img/product_info/9.jpg" width="100%" />
-	        <img src="../img/product_info/10.jpg" width="100%" />
-	        <img src="../img/product_info/11.jpg" width="100%" />
         </div>
         <div class="product_frame" width="100px" height="100px"></div>
     </body>

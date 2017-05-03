@@ -1,20 +1,18 @@
 <?php
 
-session_start();
-
 // if not login, jump to index page
-if (!$_SESSION["isLogin"]) {
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
-else {
-	if ($_SESSION['password'] == '000000') {
-		
-		$url = 'jump.php?source=2';
-		header('Location: ' . $url);
-		exit;
-	}
+
+session_start();
+if ($_SESSION['password'] == '000000') {
+	
+	$url = 'jump.php?source=2';
+	header('Location: ' . $url);
+	exit;
 }
 
 $mycredit = 0;

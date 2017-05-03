@@ -2,7 +2,14 @@
 
 include_once "database.php";
 
-function calcBonus()
+function writeLog($file, $msg) 
+{
+	if ($file) {
+		fwrite($file, $msg);
+	}
+}
+
+function calcBonus($file)
 {
 	$con = connectToDB();
 	if (!$con) {
@@ -12,6 +19,7 @@ function calcBonus()
 	mysql_select_db("my_db", $con);
 	$res = mysql_query("select * from TotalStatis where IndexId=1");
 	if (!$res || mysql_num_rows($res) < 1) {
+		writeLog($file, "！！！ 查找TotalStatis记录出错!\n");
 		return false;
 	}
 	$row = mysql_fetch_assoc($res);
@@ -22,6 +30,7 @@ function calcBonus()
 	
 	$res1 = mysql_query("select * from ShortStatis where IndexId=1");
 	if (!$res1 || mysql_num_rows($res1) < 1) {
+		writeLog($file, "\n！！！ 查找Short记录出错!\n\n");
 		return false;
 	}
 	
@@ -30,9 +39,13 @@ function calcBonus()
 	
  	$lastBonusTotal = $row1["BonusTotal"];
 	$lastBonusLeft = $row1["BonusLeft"];
+	
+	writeLog($file, "积分池余额：" . $pool . "\n");
+	writeLog($file, "前期的分红总额：" . $lastBonusTotal . "\n");
+	writeLog($file, "前期的分余额：" . $lastBonusLeft . "\n");
 	// 剩余分红额小于0，说明超领了
 	if ($lastBonusLeft < 0) {
-		
+		writeLog($file, "\n！！！ 积分剩余小于0，出错！\n\n");
 	}
 	
 	include "constant.php";
@@ -48,11 +61,15 @@ function calcBonus()
 		$dynamicBonusPer = floor($dynamicBonusTotal / $dynamicUserCnt);
 	}
 	
+	writeLog($file, "本期的订单总额：" . $gross . "\n");
+	writeLog($file, "本期的订单比例：" . $rewardRate . "\n");
+	writeLog($file, "本期的分红额：" . $bonusTotal . "\n");
+	
 	$pool += $lastBonusLeft;	// 未领取的分红返回基金池 
 // 	$bonusTotalEver += ($lastBonusTotal - $lastBonusLeft); // 记录总分红值
 	// 如果积分池小于分红额度，有问题，记log
 	if ($pool < $bonusTotal) {
-		
+		writeLog($file, "\n!!! 积分池不够，分红池高于积分池！\n");
 	}
 	
 	$pool -= $bonusTotal;		// 从积分池中播出此次分红额度
@@ -75,17 +92,21 @@ function calcBonus()
 		echo mysql_error();
 	}
 	
+	$cnt = 0;
+	writeLog($file, "\n------------------------------------------------------------------\n");
 	$res5 = mysql_query("select * from User");
 	if (!$res5) {
-		
+		writeLog($file, "\n!!! 查询用户表失败！\n");
 	}
 	else {
 		while($row5 = mysql_fetch_array($res5)) {
 			
+			$cnt += 1;
 			$userid = $row5["UserId"];
 			$isDynamic = $row5["RecommendingCount"] > 0;
 			$res6 = mysql_query("select * from Credit where UserId='$userid'");
 			if (!$res6 || mysql_num_rows($res6) < 1) {
+				writeLog($file, "\n### 查询用户" . $userid . "的积分表失败！\n");
 			}
 			else {
 				$amount = $staticBonusPer;
@@ -94,11 +115,16 @@ function calcBonus()
 				}
 				$res7 = mysql_query("update Credit set CurrBonus='$amount' where UserId='$userid'");
 				if (!$res7) {
-					// error
+					writeLog($file, "\n!!! " . $userid . "分红失败！\n");
+				}
+				else {
+					writeLog($file, $userid . "分红得" . $amount . ".\n");
 				}
 			}
 		}
 	}
+	writeLog($file, "\n------------------------------------------------------------------\n");
+	writeLog($file, "--- 共分红给了 " . $cnt . " 用户！\n");
 }
 
 function acceptBonus($userId)
