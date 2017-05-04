@@ -35,9 +35,7 @@ if (!$con)
 	return;
 }
 else 
-{
-	mysql_select_db("my_db", $con);
-		  
+{		  
 	$result = createUserTable();
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'用户表创建失败，请稍后重试！','sql_error'=>mysql_error())); 

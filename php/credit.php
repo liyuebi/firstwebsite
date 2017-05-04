@@ -57,7 +57,6 @@ function applyRecharge()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$userid = $_SESSION['userId'];
 		
 		include "func.php";
@@ -98,7 +97,6 @@ function allowRecharge()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$result = mysql_query("select * from RechargeApplication where IndexId='$index'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的充值申请，操作中断！','index'=>$index));	
@@ -223,7 +221,6 @@ function applyWithdraw()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$userid = $_SESSION['userId'];
 		$time = time();
 		
@@ -297,7 +294,6 @@ function allowWithdraw()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$result = mysql_query("select * from WithdrawApplication where IndexId='$index'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
@@ -421,7 +417,6 @@ function transfer()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
 		return;
 	}
-	mysql_select_db("my_db", $con);
 	
 	// 检查收款方账号
 	$res1 = mysql_query("select * from User where UserId='$receiver'");

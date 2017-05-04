@@ -20,17 +20,14 @@ if ($orderid != '') {
 	$con = connectToDB();
 	if ($con)
 	{
-		$db_selected = mysql_select_db("my_db", $con);
-		if ($db_selected) {
-			$result = mysql_query("select * from Transcation where UserId='$userid' and OrderId='$orderid'");
-			if ($result) {
-				if (mysql_num_rows($result) > 0) {
-					$row = mysql_fetch_assoc($result);
-					$productId = $row['ProductId'];
-					$count = $row['Count'];
-				}
-				else {
-				}
+		$result = mysql_query("select * from Transcation where UserId='$userid' and OrderId='$orderid'");
+		if ($result) {
+			if (mysql_num_rows($result) > 0) {
+				$row = mysql_fetch_assoc($result);
+				$productId = $row['ProductId'];
+				$count = $row['Count'];
+			}
+			else {
 			}
 		}
 	}

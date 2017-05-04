@@ -25,7 +25,6 @@ if (!$con) {
 
 $leftCount = 0;
 
-mysql_select_db("my_db", $con);
 $result = mysql_query("select * from Product where ProductId='$productId'");
 if ($result && mysql_num_rows($result)>0) {
 	$row = mysql_fetch_assoc($result);

@@ -19,16 +19,13 @@ if ($new) {
 	$con = connectToDB();
 	if ($con)
 	{
-		$db_selected = mysql_select_db("my_db", $con);
-		if ($db_selected) {
-			$result = mysql_query("select * from Transcation where UserId='$userid'");
-			if ($result) {
-				include "../php/constant.php";
-				while ($row = mysql_fetch_array($result)) {
-					if ($row["Status"] == $OrderStatusDefault) {
-						$bDefaultOrder = true;
-						break;
-					}
+		$result = mysql_query("select * from Transcation where UserId='$userid'");
+		if ($result) {
+			include "../php/constant.php";
+			while ($row = mysql_fetch_array($result)) {
+				if ($row["Status"] == $OrderStatusDefault) {
+					$bDefaultOrder = true;
+					break;
 				}
 			}
 		}

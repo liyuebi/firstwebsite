@@ -28,7 +28,6 @@ function addNewProduct()
 	$price = htmlspecialchars($_POST["productprice"]);
 	
 	$con = connectToDB();
-	mysql_select_db("my_db", $con);
 	createProductTable();
 	$time = time();
 	mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime) 
@@ -38,7 +37,6 @@ function addNewProduct()
 function getProducts()
 {
 	$con = connectToDB();
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from Product");
 	if (!$result) {
 		
@@ -74,7 +72,6 @@ function getProductInfo()
 		return;
 	}
 	
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from Product where ProductId='$productid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找指定产品失败！'));

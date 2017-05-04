@@ -18,7 +18,6 @@ if (!$con)
 
 include "./../php/constant.php";
 $userid = $_SESSION["userId"];
-mysql_select_db("my_db", $con);
 $result = mysql_query("select * from Transcation where UserId='$userid' and Status!='$OrderStatusAccept'");
 if (!$result) {
 	return;	

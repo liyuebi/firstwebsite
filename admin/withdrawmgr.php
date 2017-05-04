@@ -10,7 +10,6 @@ function getWithdrawApplication()
 		return false;
 	}
 	
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from WithdrawApplication");
 	return $result;
 }

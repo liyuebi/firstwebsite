@@ -41,7 +41,6 @@ function getRecommended()
 		return;
 	}
 
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from User where ReferreeId='$userId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找被推荐人时出错，请稍后重试！'));

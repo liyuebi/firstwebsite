@@ -13,10 +13,7 @@ $userid = $_SESSION["userId"];
 $result = false;
 $con = connectToDB();
 if ($con) {
-	$db_selected = mysql_select_db("my_db", $con);
-	if ($db_selected) {
-		$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc");
-	}
+	$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc");
 }
 	
 ?>

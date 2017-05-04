@@ -55,7 +55,6 @@ function login()
 	}
 	else 
 	{		
-		mysql_select_db("my_db", $con);
 		$result = createUserTable();		
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'暂时不能登录，请稍后重试！'));	
@@ -120,7 +119,6 @@ function loginAdmin()
 	{		
 // 		echo("success<br>'");
 		
-		mysql_select_db("my_db", $con);
 		$result = mysql_query("select * from Admin where Name='$name' and Password='$password'");
 		if (!$result) {
 			echo "Query Admin User failed<br>";
@@ -169,7 +167,6 @@ function setPayPwd()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$userid = $_SESSION["userId"];
 		$result = mysql_query("update User set PayPwd='$paypwd' where UserId='$userid'");
 		if (!$result) {
@@ -214,7 +211,6 @@ function changePayPwd()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$userid = $_SESSION["userId"];
 		$result = mysql_query("update User set PayPwd='$newpwd' where UserId='$userid'");
 		if (!$result) {
@@ -264,7 +260,6 @@ function changeLoginPwd()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$userid = $_SESSION["userId"];
 		$result = mysql_query("update User set Password='$newpwd' where UserId='$userid'");
 		if (!$result) {
@@ -322,7 +317,6 @@ function editProfile()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
 		$result = mysql_query("update User set Name='$name', IDNum='$idNum' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
@@ -385,8 +379,6 @@ function getProfile()
 	}
 	else 
 	{
-		mysql_select_db("my_db", $con);
-		
 		if (isValidCellPhoneNum($ident)) {
 			$res = mysql_query("select * from User where PhoneNum='$ident'");
 			if ($res && mysql_num_rows($res) > 0) {

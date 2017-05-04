@@ -10,7 +10,6 @@ function getTranscation()
 		return false;
 	}
 	
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from Transcation");
 	return $result;
 }

@@ -5,8 +5,12 @@ function connectToDB()
 	$con = mysql_connect("127.0.0.1:3306", "root", "123456789");
 	if (!$con)
 	{
-// 		die("Could not connect: " . mysql_error());
 		echo "Could not connect: " . mysql_error();
+	}
+	$db_selected = mysql_select_db("my_db1", $con);
+	if (!$db_selected) {
+		echo "Cannot use my_db1 : " . mysql_error();
+		$con = false;
 	}
 	return $con;
 }

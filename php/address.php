@@ -41,7 +41,6 @@ function getAddresses()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
-	mysql_select_db("my_db", $con);
 	
 	$userId = $_SESSION["userId"];
 	
@@ -105,8 +104,6 @@ function addAddress()
 		return;
 	}
 	
-	mysql_select_db("my_db", $con);
-	
 	include "func.php";
 	$msg = '';
 	
@@ -153,7 +150,6 @@ function editAddress()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
-	mysql_select_db("my_db", $con);
 	
 	$result = mysql_query("select * from Address where UserId='$userId' and AddressId='$addId'");
 	if (!$result) {
@@ -188,7 +184,6 @@ function deleteAddress()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
-	mysql_select_db("my_db", $con);
 
 	$result = mysql_query("delete from Address where UserId='$userId' and AddressId='$addId'");
 	if (!$result) {
@@ -216,7 +211,6 @@ function changeDefaultAddress()
 		return;
 	}
 
-	mysql_select_db("my_db", $con);
 	session_start();
 	$userId = $_SESSION['userId'];
 	$result = mysql_query("select * from Address where UserId='$userId' and AddressId='$defaultAdd'");

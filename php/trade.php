@@ -67,7 +67,6 @@ function purchaseProduct()
 		return;
 	}
 
-	mysql_select_db("my_db", $con);
 	$userid = $_SESSION["userId"];
 	
 	$boughtLimit = 0;
@@ -249,7 +248,6 @@ function confirmOrder()
 		return;
 	}
 
-	mysql_select_db("my_db", $con);
 	$userid = $_SESSION["userId"];
 	
 	$result = mysql_query("select * from Transcation where OrderId='$orderId' and Userid='$userid'");
@@ -297,7 +295,6 @@ function deliveryProduct()
 		return;
 	}
 
-	mysql_select_db("my_db", $con);
 	$result = mysql_query("select * from Transcation where OrderId='$transcationId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
@@ -343,7 +340,6 @@ function acceptProduct()
 		return;
 	}	
 	
-	mysql_select_db("my_db", $con);
 	$userid = $_SESSION["userId"];
 	$result = mysql_query("select * from Transcation where OrderId='$transcationId'"); 
 	if (!$result) {

@@ -16,7 +16,6 @@ function calcBonus($file)
 		return false;
 	}
 	
-	mysql_select_db("my_db", $con);
 	$res = mysql_query("select * from TotalStatis where IndexId=1");
 	if (!$res || mysql_num_rows($res) < 1) {
 		writeLog($file, "！！！ 查找TotalStatis记录出错!\n");
@@ -134,7 +133,6 @@ function acceptBonus($userId)
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
-	mysql_select_db("my_db", $con);
 	
 	$res1 = mysql_query("select * from Credit where UserId='$userId'");
 	if (!$res1 || mysql_num_rows($res1) < 1) {

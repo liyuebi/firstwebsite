@@ -17,13 +17,10 @@ $paypwd = $_SESSION["buypwd"];
 
 $con = connectToDB();
 if ($con) {
-	$db_selected = mysql_select_db("my_db", $con);
-	if ($db_selected) {
-		$result = mysql_query("select * from Credit where UserId='$userid'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$mycredit = $row["Credits"];
-		}
+	$result = mysql_query("select * from Credit where UserId='$userid'");
+	if ($result && mysql_num_rows($result) > 0) {
+		$row = mysql_fetch_assoc($result);
+		$mycredit = $row["Credits"];
 	}
 }
 

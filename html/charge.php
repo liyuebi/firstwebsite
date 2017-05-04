@@ -20,14 +20,12 @@ $mycredit = 0;
 include "../php/database.php";
 $con = connectToDB();
 if ($con) {
-	$db_selected = mysql_select_db("my_db", $con);
-	if ($db_selected) {
-		$userid = $_SESSION["userId"];
-		$result = mysql_query("select * from Credit where UserId='$userid'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$mycredit = $row["Credits"];
-		}
+	
+	$userid = $_SESSION["userId"];
+	$result = mysql_query("select * from Credit where UserId='$userid'");
+	if ($result && mysql_num_rows($result) > 0) {
+		$row = mysql_fetch_assoc($result);
+		$mycredit = $row["Credits"];
 	}
 }
 

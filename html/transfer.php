@@ -28,33 +28,30 @@ $handlefee = $transferHandleRate;
 include "../php/database.php";
 $con = connectToDB();
 if ($con) {
-	$db_selected = mysql_select_db("my_db", $con);
-	if ($db_selected) {
-		$userid = $_SESSION["userId"];
-		$result = mysql_query("select * from Credit where UserId='$userid'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
-			$mycredit = $row["Credits"];
-			
+	$userid = $_SESSION["userId"];
+	$result = mysql_query("select * from Credit where UserId='$userid'");
+	if ($result && mysql_num_rows($result) > 0) {
+		$row = mysql_fetch_assoc($result);
+		$mycredit = $row["Credits"];
+		
 /*		
-			$dayWd = $row["DayWithdraw"];
-			$lastWd = $row["LastWithdrawTime"];
-			$now = time();
-			if (isInTheSameDay($now, $dayWd)) {
-				$dayWithdraw = $dayWd;
-			}
-			
-			$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
-			if ($res1) {
-				while ($row1 = mysql_fetch_array($res1)) {
-					if (isInTheSameDay($now, $row1["ApplyTime"])) {
-						$applyCount += $row1["ApplyAmount"];
-					}
+		$dayWd = $row["DayWithdraw"];
+		$lastWd = $row["LastWithdrawTime"];
+		$now = time();
+		if (isInTheSameDay($now, $dayWd)) {
+			$dayWithdraw = $dayWd;
+		}
+		
+		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
+		if ($res1) {
+			while ($row1 = mysql_fetch_array($res1)) {
+				if (isInTheSameDay($now, $row1["ApplyTime"])) {
+					$applyCount += $row1["ApplyAmount"];
 				}
 			}
-*/
-			
 		}
+*/
+		
 	}
 }
 // $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);

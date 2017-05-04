@@ -17,15 +17,12 @@ if ($new) {
 	$con = connectToDB();
 	if ($con)
 	{
-		$db_selected = mysql_select_db("my_db", $con);
-		if ($db_selected) {
-			$result = mysql_query("select * from Address where UserId='$userid'");
-			if ($result) {
-				if (mysql_num_rows($result) > 0) {
-				}
-				else {
-					$noAddress = true;
-				}
+		$result = mysql_query("select * from Address where UserId='$userid'");
+		if ($result) {
+			if (mysql_num_rows($result) > 0) {
+			}
+			else {
+				$noAddress = true;
 			}
 		}
 	}

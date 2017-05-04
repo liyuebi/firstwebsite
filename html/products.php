@@ -17,7 +17,6 @@ if (!$con) {
 	exit();
 }
 
-mysql_select_db("my_db", $con);
 $result = mysql_query("select * from Product where Status=1");
 $error = mysql_error();
 	
