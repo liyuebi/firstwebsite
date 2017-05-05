@@ -70,9 +70,9 @@ if (!$_COOKIE['isLogin']) {
         
         <div name="display">
 	        <p>请使用6-12位字母和数字作为密码</p>
-	        <input id="pwd1" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)"/>
+	        <input id="pwd1" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
-	        <input id="pwd2" type="password" placeholder="请再次输入支付密码！" onkeypress="return onlyCharAndNum(event)"/>
+	        <input id="pwd2" type="password" placeholder="请再次输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
 	        <input type="button" value="确认" onclick="onConfirm()" />
 	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />

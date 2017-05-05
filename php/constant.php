@@ -1,5 +1,5 @@
 <?php 
-	$group3StartLvl = 10;		// 第三组开始的等级
+	$group3StartLvl = 9;		// 第三组开始的等级
 	
 	$retRate = 1;				// 用户使用积分后相应增加返还额度的比例
 	$dyNewUserVault = 1000;		// 给新用户的动态返还蜜券总额
@@ -36,5 +36,17 @@
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
 	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
+	
+	// team 1 people count needed according to level
+	$team1Cnt = array(0, 6, 20, 40, 75, 150, 250, 375, 350, 700, 1400, 2100, 2800);
+	
+	// team 2 people count needed according to level
+	$team2Cnt = array(0, 6, 20, 40, 75, 150, 250, 375, 350, 700, 1400, 2100, 2800);
+	
+	// team 3 people count needed according to level
+	$team3Cnt = array(0, 0,  0,  0,   0,  0,   0,   0, 300, 600, 1200, 1800, 2400);
+	
+	// 每一层给的分红奖励
+	$levelBonus = array(1080, 4080, 6060, 10560, 19590, 30150, 39180, 60240, 99300, 150450, 201600, 405900, 606000);
 	
 ?> 

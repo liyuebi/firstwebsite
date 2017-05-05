@@ -84,134 +84,6 @@ else
 				echo json_encode(array('error'=>'true','error_code'=>$error_code,'error_msg'=>$error_msg,'sql_error'=>$sql_error));
 				return;
 			}
-
-/*
-			$listChild = array($userid);
-			$parentId = 0;
-			$slot = 0;
-			while (count($listChild)) {
-				$currUid = array_shift($listChild);
-				$res3 = mysql_query("select * from User where UserId='$currUid'");
-				if (!$res3 || mysql_num_rows($res3) <= 0) {
-					// !!! log
-					continue;
-				}
-				else {
-					$child1 = $res3["Group1Child"];
-					$child2 = $res3["Group2Child"];
-					$child3 = $res3["Group3Child"];
-					$lvl = $res3["Lvl"];
-					
-					if ($child1 == 0) {
-						$parentId = $currUid;	
-						$slot = 1;
-					}
-					else if ($child1 > 0) {
-						array_push($listChild, $child1);
-					}
-					
-					if ($child2 == 0) {
-						$parentId = $currUid;
-						$slot = 2;
-					}
-					else if ($child2 > 0) {
-						array_push($listChild, $child2);
-					}
-					
-					if ($lvl >= $group3StartLvl) {
-						if ($child3 == 0) {
-							$parentId = $currUid;
-							$slot = 3;
-						}
-						else {
-							array_push($listChild, $child3);
-						}
-					}
-				}
-			}
-			
-			if ($parentId == 0 || $slot == 0) {
-				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查找可插入的父节点失败，请稍后重试','sql_error'=>mysql_error()));
-				return;
-			}
-			
-			$res4 = mysql_query("insert into User (PhoneNum, Password, ReferreeId, ParentId, RegisterTime)
-									values('$phonenum', '000000', '$userid', '$parentId', '$now')");
-			if (!$res4) {
-				echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'插入用户失败，请稍后重试','sql_error'=>mysql_error()));
-				return;
-			}
-			$newuserid = mysql_insert_id();
-			
-			$groupName = "";
-			$gounpCntName = "";
-			if ($slot == 1) {
-				$groupName = "Group1Child";
-				$gounpCntName = "Group1Cnt";
-			}
-			else if ($slot == 2) {
-				$groupName = "Group2Child";
-				$gounpCntName = "Group2Cnt";
-			}
-			else if ($slot == 3) {
-				$groupName = "Group3Child";
-				$gounpCntName = "Group3Cnt";
-			}
-			
-			$res5 = mysql_query("update User set $groupName='$newuserid', $gounpCntName=1 where UserId='$parentId'");
-			if (!$res5) {
-				// !!! log
-				echo 'log error:' . mysql_error();
-			}
-			else {
-				$res6 = mysql_query("select * from User where UserId='$parentId'");
-				if (!$res6 || mysql_num_rows($res6) <= 0) {
-					// !!! log	
-				}
-				else {			
-					$row6 = mysql_fetch_assoc($res6);
-					$currUid = $parentId;
-					$parentId = $row6["ParentId"];
-					while (true) {
-						
-						if ($parentId <= 0) {
-							break;	
-						}
-						
-						$res7 = mysql_query("select * from User where UserId='$parentId'");
-						if (!$res7 || mysql_num_rows($res7) <= 0) {
-							// !!! log
-							// can't find parent node, jump out
-							break;
-						}
-						
-						$row7 = mysql_fetch_assoc($res7);					
-						$gounpCntName = "";
-						$currCnt = 0;
-						if ($currUid == $row7["Group1Child"]) {
-							$gounpCntName = "Group1Cnt";
-							$currCnt = $row7["Group1Cnt"];
-						}
-						else if ($currUid == $row7["Group2Child"]) {
-							$gounpCntName = "Group2Cnt";
-							$currCnt = $row7["Group2Cnt"];
-						}
-						else if ($currUid == $row7["Group3Child"]) {
-							$gounpCntName = "Group3Cnt";
-							$currCnt = $row7["Group3Cnt"];
-						}
-						$currCnt += 1;
-						$res8 = mysql_query("update User set $gounpCntName='$currCnt' where UserId='$parentId'");
-						if (!$res8) {
-							// !!! log
-						}
-						
-						$currUid = $parentId;
-						$parentId = $row7["ParentId"];
-					}
-				}
-			}
-			*/
 		}
 		else {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'账号已经注册过了！','sql_error'=>mysql_error()));
@@ -229,10 +101,10 @@ else
 		else {
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
-				$vault = 0;
+				$vault1 = 0;
 				$dynVault = $dyNewUserVault;
 				$result = mysql_query("insert into Credit (UserId, Vault, DVault)
-					VALUES('$newuserid', '$vault', '$dynVault')");
+					VALUES('$newuserid', '$vault1', '$dynVault')");
 				if (!$result) {
 					// !!! log
 // 					echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'新用户积分表插入失败，请稍后重试！','sql_error'=>mysql_error()));
@@ -255,12 +127,6 @@ else
 					VALUES('$newuserid', '1', '$refererConsumePoint', '3', '$now', '$OrderStatusDefault') ");
 	$bInsertOrder = $res2 != false;
 	
-	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
-	$leftCredit = $credit - $refererConsumePoint;
-	mysql_query("update Credit set Credits='$leftCredit' where UserId='$userid'");
-	// 修改用户的积分纪录，若失败不影响返回结果
-	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from User where UserId='$userid'");
 	if (!$result) {
@@ -273,17 +139,31 @@ else
 		if ($lvl <= 1) {
 			if ($count >= 3) {
 				$lvl = 2;
+				$vault += $levelBonus[0];
 			}
 		}
 		mysql_query("update User set RecoCnt='$count', Lvl='$lvl' where UserId='$userid'");
 	}
-
-	// 给上游用户分成	
-	$referBonus = distributeReferBonus($con, $newuserid, 1);
+	
+	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
+	$res3 = mysql_query("select * from Credit where UserId='$userid'");
+	$vault = 0;
+	if (!$res3) {
+	}
+	else {
+		$row3 = mysql_fetch_assoc($res3);
+		$credit = $row3["Credits"];
+		$vault = $row3["Vault"];
+	}
+	$leftCredit = $credit - $refererConsumePoint;
+	mysql_query("update Credit set Credits='$leftCredit', Vault='$vault' where UserId='$userid'");
+	// 修改用户的积分纪录，若失败不影响返回结果
+	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 	$bStaticBefore = false;
-	insertOrderStatistics($refererConsumePoint, 1, $referBonus);
+	insertOrderStatistics($refererConsumePoint, 1, 0);
 	insertRecommendStatistics($refererConsumePoint, $bStaticBefore);
 
 	mysql_close($con);

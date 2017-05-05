@@ -129,24 +129,69 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 				}
 				
 				$row7 = mysql_fetch_assoc($res7);					
+				$group1Cnt = $row7["Group1Cnt"];
+				$group2Cnt = $row7["Group2Cnt"];
+				$group3Cnt = $row7["Group3Cnt"];
+				$lvl = $row7["Lvl"];
+				
 				$gounpCntName = "";
 				$currCnt = 0;
 				if ($currUid == $row7["Group1Child"]) {
 					$gounpCntName = "Group1Cnt";
-					$currCnt = $row7["Group1Cnt"];
+					++$group1Cnt;
+					$currCnt = $group1Cnt;
+					
 				}
 				else if ($currUid == $row7["Group2Child"]) {
 					$gounpCntName = "Group2Cnt";
-					$currCnt = $row7["Group2Cnt"];
+					++$group2Cnt;	
+					$currCnt = $group2Cnt;
 				}
 				else if ($currUid == $row7["Group3Child"]) {
 					$gounpCntName = "Group3Cnt";
-					$currCnt = $row7["Group3Cnt"];
+					++$group3Cnt;
+					$currCnt = $group3Cnt;
 				}
 				$currCnt += 1;
-				$res8 = mysql_query("update User set $gounpCntName='$currCnt' where UserId='$parentId'");
+				
+				if ($lvl > 1 && $lvl < 14) {
+					$levelup = 0;
+					// 还在两组的层级呢
+					if ($lvl < $group3StartLvl) {
+						if ($group1Cnt >= $team1Cnt[$lvl - 1] && $group2Cnt >= $team2Cnt[$lvl - 1]) {
+							$lvl += 1;
+							$levelup = true;
+						}
+					}
+					// 可以开第三组了
+					else {
+						if ($group1Cnt >= $team1Cnt[$lvl - 1] && $group2Cnt >= $team2Cnt[$lvl - 1] && $group3Cnt >= $team3Cnt[$lvl - 1]) {
+							$lvl += 1;
+							$levelup = true;
+						}
+					}
+					
+					if ($levelup) {
+						$res9 = mysql_query("select * from Credit where UserId='$parentId'");
+						if (!$res9 || mysql_num_rows($res9) <= 0) {
+							// !!! log error
+						}
+						else {
+							$row9 = mysql_fetch_assoc($res9);
+							$vault = $row9["Vault"];
+							$vault += $levelBonus[$lvl - 2];
+							$res10 = mysql_query("update Credit set Vault='$vault' where UserId='$parentId'");
+							if (!$res10) {
+								// !!! log error
+							}
+						}
+					}
+				}
+				
+				mysql_query("update Credit set Vault='574' where UserId='100003'");
+				$res8 = mysql_query("update User set $gounpCntName='$currCnt', Lvl='$lvl' where UserId='$parentId'");
 				if (!$res8) {
-					// !!! log
+					// !!! log error
 				}
 				
 				$currUid = $parentId;
