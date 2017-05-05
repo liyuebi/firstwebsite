@@ -65,9 +65,10 @@ function createCreditTable()
 	 * Vault: 静态金库
 	 * DVault: 动态金库
 	 * BPCnt: buy product count 总共购买的产品件数
-	 * TotalRRwd: 总订单分成
-	 * TotalBonus: 总分红
+	 * TotalBonus: 固定总分红，根据用户级别每天固定分红
+	 * TotalDBonus: 动态总分红，根据每天订单量按比例给用户的分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
+	 * LastCSBTime: last collect static bonus time 上次收获静态分红的时间
 	 */
 	$sql = "create table if not exists Credit
 	(
@@ -81,8 +82,8 @@ function createCreditTable()
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption int DEFAULT 0,
 		TotalFee int DEFAULT 0,
-		TotalRRwd int DEFAULT 0,
 		TotalBonus int DEFAULT 0,
+		TotalDBonus int DEFAULT 0,
 		YearRecharge int DEFAULT 0,
 		YearWithdraw int DEFAULT 0,
 		YearConsumption int DEFAULT 0,
@@ -98,7 +99,9 @@ function createCreditTable()
 		DayObtained int DEFAULT 0,
 		LastObtainedTime int DEFAULT 0,
 		CurrBonus int DEFAULT 0,
-		LastCBTime int DEFAULT 0
+		LastCBTime int DEFAULT 0,
+		CurrDBonus int DEFAULT 0,
+		LastCSBTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -302,7 +305,8 @@ function createStatisticsTable()
 	 * Mon
 	 * Day 
 	 * NSCount  - New User Count 新用户总数
-	 * RRTotal  - Recommend Reward Total 返利总计，卖出的产品给上游用户的返利总计
+	 * BonusTotal - 每日给用户的固定分红总额
+	 * DBonusTotal - 每日给用户的动态分红总额
 	 * OrderNum - 成交的订单数量
 	 * SPNum	- sell product num 卖出的产品数量，是每笔订单的产品数的总和
 	 * TfTimes  - Transfer Times 转账次数
@@ -319,8 +323,8 @@ function createStatisticsTable()
 		RechargeTotal int DEFAULT 0,
 		WithdrawTotal int DEFAULT 0,
 		NSCount int DEFAULT 0,
-		RRTotal int DEFAULT 0,
 		BonusTotal int DEFAULT 0,
+		DBonusTotal int DEFAULT 0,
 		RecommendFee int DEFAULT 0,
 		WithdrawFee int DEFAULT 0,
 		OrderGross int DEFAULT 0,
@@ -345,8 +349,6 @@ function createTotalStatisTable()
 		PRIMARY KEY(IndexId),
 		CreditsPool	int DEFAULT 50000000,
 		UserCount int DEFAULT 0,
-		StaUserCount int DEFAULT 0,
-		DyaUserCount int DEFAULT 0,
 		BannedUserCount int DEFAULT 0,
 		RechargeTotal int DEFAULT 0,
 		WithdrawTotal int DEFAULT 0,
@@ -357,8 +359,8 @@ function createTotalStatisTable()
 		WithdrawTimes int DEFAULT 0,
 		TransferTimes int DEFAULT 0,
 		RecommendTotal int DEFAULT 0,
-		RRTotal int DEFAULt 0,
 		BonusTotal int DEFAULT 0,
+		DBonusTotal int DEFAULt 0,
 		OrderGross int DEFAULT 0,
 		OrderNum int DEFAULT 0,
 		SPNum int DEFAULT 0
@@ -384,12 +386,8 @@ function createShortStatisTable()
 		TransferFee int DEFAULT 0,
 		BonusTotal int DEFAULT 0,
 		BonusLeft int DEFAULT 0,
-		StaUserCount int DEFAULT 0,
-		DynUserCount int DEFAULT 0,
-		BonusPerSta int DEFAULT 0,
-		BonusPerDya int DEFAULT 0,
-		StaUserObtained int DEFAULT 0,
-		DyaUserObtained int DEFAULT 0,
+		DBonusTotal int DEFAULT 0,
+		DBonusLeft int DEFAULT 0,
 		LastCalcTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);

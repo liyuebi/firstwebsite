@@ -239,6 +239,9 @@ function purchaseProduct()
 				}
 			}
 		}
+		
+		// 统计新用户总数增加
+		insertRecommendStatistics(0);
 	}
 
 	// 修改今天购买个数
@@ -250,7 +253,7 @@ function purchaseProduct()
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $count, 0);
+	insertOrderStatistics($totalPrice, $count);
 	
 	echo json_encode(array("error"=>"false"));
 	return;

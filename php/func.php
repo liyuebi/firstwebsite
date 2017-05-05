@@ -508,7 +508,7 @@ function insertWithdrawStatistics($amount, $fee)
 		$withdrawTimes = $row1["WithdrawTimes"];
 		$withdrawFee = $row1["WithdrawFee"];
 		
-		$credits += $fee;			// 取现手续费收入积分池
+		$credits += $amount;			// 取现积分数收入积分池，积分数包含手续费
 		$withdrawTotal += $amount;
 		$withdrawTimes += 1;
 		$withdrawFee += $fee;
@@ -580,7 +580,7 @@ function insertTransferStatistics($amount, $fee)
 	}
 }
 	
-function insertOrderStatistics($totalPrice, $count, $referBonus)
+function insertOrderStatistics($totalPrice, $count)
 {
 	$now = time();
 	
@@ -597,13 +597,12 @@ function insertOrderStatistics($totalPrice, $count, $referBonus)
 			$row = mysql_fetch_assoc($result);
 			$gross = $row["OrderGross"] + $totalPrice;
 			$orderNum = $row["OrderNum"] + 1;
-			$refer = $row["RRTotal"] + $referBonus;
 			$spnum = $row["SPNum"] + $count;
-			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, RRTotal, SPNum)
-					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$referBonus', '$count')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, SPNum)
+					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$count')");
 		}
 	}
 
@@ -616,10 +615,9 @@ function insertOrderStatistics($totalPrice, $count, $referBonus)
 		$gross = $row1["OrderGross"] + $totalPrice;
 		$orderNum = $row1["OrderNum"] + 1;
 		$spnum = $row1["SPNum"] + $count;
-		$refer = $row1["RRTotal"] + $referBonus;
 		
-		$credits = $credits + $totalPrice - $referBonus;	// 购买使用的积分归入积分池，再取出奖励积分分给上游用户
-		mysql_query("update TotalStatis set CreditsPool='$credits', OrderGross='$gross', OrderNum='$orderNum', RRTotal='$refer', SPNum='$spnum' where IndexId=1");
+		$credits = $credits + $totalPrice;	// 购买使用的积分归入积分池，再取出奖励积分分给上游用户
+		mysql_query("update TotalStatis set CreditsPool='$credits', OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
@@ -632,7 +630,7 @@ function insertOrderStatistics($totalPrice, $count, $referBonus)
 	}
 }
 
-function insertRecommendStatistics($referFee, $bStaticBefore)
+function insertRecommendStatistics($referFee)
 {
 	$now = time();
 	
@@ -664,16 +662,8 @@ function insertRecommendStatistics($referFee, $bStaticBefore)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$userCnt = $row1["UserCount"] + 1;
-		$staUserCnt = $row1["StaUserCount"];
-		$dynUserCnt = $row1["DyaUserCount"];
-		if ($bStaticBefore) {
-			$dynUserCnt += 1;
-		}
-		else {
-			$staUserCnt += 1;
-		}
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
-		mysql_query("update TotalStatis set UserCount='$userCnt', StaUserCount='$staUserCnt', DyaUserCount='$dynUserCnt', RecommendTotal='$recomTotal' where IndexId=1");
+		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
@@ -726,8 +716,7 @@ function insertBonusStatistics($bonus)
 		}
 		
 		$left -= $bonus;
-		$obtained = $row2["StaUserObtained"] + 1;
-		mysql_query("update ShortStatis set BonusLeft='$left', StaUserObtained='$obtained' where IndexId=1");
+		mysql_query("update ShortStatis set BonusLeft='$left' where IndexId=1");
 	}
 
 }

@@ -23,9 +23,6 @@ function calcBonus($file)
 	}
 	$row = mysql_fetch_assoc($res);
 	$pool = $row["CreditsPool"];
-	$staticUserCnt = $row["StaUserCount"];
-	$dynamicUserCnt = $row["DyaUserCount"];
-// 	$bonusTotalEver = $row["BonusTotal"];
 	
 	$res1 = mysql_query("select * from ShortStatis where IndexId=1");
 	if (!$res1 || mysql_num_rows($res1) < 1) {
@@ -49,16 +46,6 @@ function calcBonus($file)
 	
 	include "constant.php";
 	$bonusTotal = floor($gross * $rewardRate);
-	$staticBonusTotal = floor($bonusTotal * $rewardStaticRate);
-	$dynamicBonusTotal = floor($bonusTotal * $rewardDynamicRate);
-	$staticBonusPer = 0;
-	$dynamicBonusPer = 0;
-	if ($staticUserCnt > 0) {
-		$staticBonusPer = floor($staticBonusTotal / $staticUserCnt);
-	}
-	if ($dynamicUserCnt > 0) {
-		$dynamicBonusPer = floor($dynamicBonusTotal / $dynamicUserCnt);
-	}
 	
 	writeLog($file, "本期的订单总额：" . $gross . "\n");
 	writeLog($file, "本期的订单比例：" . $rewardRate . "\n");
@@ -83,9 +70,7 @@ function calcBonus($file)
 	
 	// 更新短期统计表	
 	$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0,
-							TransferFee=0, BonusTotal='$bonusTotal', BonusLeft='$bonusTotal', StaUserCount='$staticUserCnt', 
-							DynUserCount='$dynamicUserCnt', BonusPerSta='$staticBonusPer', BonusPerDya='$dynamicBonusPer', 
-							StaUserObtained=0, DyaUserObtained=0, LastCalcTime='$now' where IndexId=1");
+							TransferFee=0, BonusTotal='$bonusTotal', BonusLeft='$bonusTotal', LastCalcTime='$now' where IndexId=1");
 	if (!$res4) {
 		echo 2;
 		echo mysql_error();
@@ -108,10 +93,7 @@ function calcBonus($file)
 				writeLog($file, "\n### 查询用户" . $userid . "的积分表失败！\n");
 			}
 			else {
-				$amount = $staticBonusPer;
-				if ($isDynamic) {
-					$amount = $dynamicBonusPer;
-				}
+				$amount = 0;
 				$res7 = mysql_query("update Credit set CurrBonus='$amount' where UserId='$userid'");
 				if (!$res7) {
 					writeLog($file, "\n!!! " . $userid . "分红失败！\n");

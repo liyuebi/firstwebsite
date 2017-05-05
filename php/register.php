@@ -162,9 +162,8 @@ else
 								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
-	$bStaticBefore = false;
-	insertOrderStatistics($refererConsumePoint, 1, 0);
-	insertRecommendStatistics($refererConsumePoint, $bStaticBefore);
+	insertOrderStatistics($refererConsumePoint, 3);
+	insertRecommendStatistics($refererConsumePoint);
 
 	mysql_close($con);
 	return;

@@ -99,7 +99,7 @@ else
 	
 	// 更新统计数据
 	include "../php/func.php";
-	insertRecommendStatistics(0, false);
+	insertRecommendStatistics(0);
 	
 	mysql_close($con);
 /*
