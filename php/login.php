@@ -294,29 +294,36 @@ function editProfile()
 	}
 
 	$userid = $_SESSION["userId"];
+	$oriNickName = $_SESSION["nickname"];
 	$oriName = $_SESSION["name"];
 	$oriIdNum = $_SESSION["idnum"];
 	
 	$name = trim(htmlspecialchars($_POST['name']));
 	$idNum = trim(htmlspecialchars($_POST['idnum']));
+	$nickname = trim(htmlspecialchars($_POST['nickname']));
+	
+	include 'regtest.php';
+	if (!isValidUserName($nickname)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的用户名格式，请重新填写！'));
+		return;		
+	}
 	
 	if ($name == "") {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'姓名不能为空，请重新填写！'));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'姓名不能为空，请重新填写！'));
 		return;
 	}
 	
-	include 'regtest.php';
 	if ($idNum != "" && !isValidIdNum($idNum)) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'输入的身份证号无效，请重新填写！'));
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'输入的身份证号无效，请重新填写！'));
 		return;		
 	}
 	else if ($oriIdNum != "" && $idNum == "") {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'输入的身份证号不能为空！'));
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'输入的身份证号不能为空！'));
 		return;				
 	}
 	
 	// 如果未做修改，认为正确，直接返回
-	if ($name == $oriName && $idNum == $oriIdNum) {
+	if ($name == $oriName && $idNum == $oriIdNum && $nickname == $oriNickName) {
 		echo json_encode(array('error'=>'false'));
 		return;						
 	}
@@ -329,7 +336,17 @@ function editProfile()
 	}
 	else 
 	{
-		$result = mysql_query("update User set Name='$name', IDNum='$idNum' where UserId='$userid'");
+		$result = mysql_query("select * from User where NickName='$nickname' && UserId!='$userid'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
+			return;
+		}
+		else if (mysql_num_rows($result) > 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你的用户名已被人使用，请重新输入！',"sql_error"=>mysql_error()));	
+			return;			
+		}
+				
+		$result = mysql_query("update User set NickName='$nickname', Name='$name', IDNum='$idNum' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
 			return;

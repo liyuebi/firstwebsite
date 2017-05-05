@@ -66,6 +66,18 @@ $idnum = $_SESSION["idnum"];
         <div>
             <table width="100%" align="center">
 	            <tr>
+		            <td>用户ID</td>
+		            <td><?php echo $_SESSION['userId']; ?></td>
+	            </tr>
+	            <tr>
+		            <td>用户等级</td>
+		            <td><?php echo $_SESSION['lvl']; ?></td>
+	            </tr>	     
+	            <tr>
+		            <td>用户名</td>
+		            <td><?php echo $_SESSION['nickname']; ?></td>
+	            </tr>       
+	            <tr>
 		            <td>手机号</td>
 		            <td><?php echo "$phone" ?></td>
 	            </tr>

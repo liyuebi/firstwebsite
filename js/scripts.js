@@ -166,6 +166,12 @@ function noNumbers(e)
 	return !numcheck.test(keychar);
 }
 
+function isValidUserName(str)
+{
+	var usernameReg = /[a-zA-Z0-9]{4,16}/;
+	return usernameReg.test(str);	
+}
+
 function isPhoneNumValid(str)
 {
 	var phoneNumReg = /^1\d{10}$/;

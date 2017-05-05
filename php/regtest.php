@@ -34,5 +34,10 @@ function isValidMoneyAmount($str)
 {
 	return preg_match("/^[1-9]\d*$/", $str);
 }
+
+function isValidUserName($str)
+{
+	return preg_match("/^[a-zA-Z0-9]{4,12}$/", $str);
+}
 	
 ?>
