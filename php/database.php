@@ -7,9 +7,9 @@ function connectToDB()
 	{
 		echo "Could not connect: " . mysql_error();
 	}
-	$db_selected = mysql_select_db("my_db1", $con);
+	$db_selected = mysql_select_db("my_db2", $con);
 	if (!$db_selected) {
-		echo "Cannot use my_db1 : " . mysql_error();
+		echo "Cannot use my_db2 : " . mysql_error();
 		$con = false;
 	}
 	return $con;
