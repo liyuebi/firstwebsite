@@ -41,6 +41,9 @@ else if ("editprofile" == $_POST['func']) {
 else if ("getProfile" == $_POST['func']) {
 	getProfile();
 }
+else if ("switchAccount" == $_POST['func']) {
+	switchAccount();
+}
 
 function login()
 {	
@@ -87,19 +90,8 @@ function login()
 				}
 				
 				session_start();
-				$_SESSION["userId"] = $row['UserId'];
-				$_SESSION['phonenum'] = $row['PhoneNum'];
-				$_SESSION['nickname'] = $row['NickName'];
-				$_SESSION['name'] = $row['Name'];
-				$_SESSION['lvl'] = $row['Lvl'];
-				$_SESSION['password'] = $password;
-				$_SESSION['buypwd'] = $row["PayPwd"];
-				$_SESSION["idnum"] = $row['IDNum'];
-				$_SESSION["groupId"] = $row['GroupId'];
-				$_SESSION['isLogin'] = true;
-				
 				include "func.php";
-				setUserCookie($row['Name'], $row['UserId']);
+				setSession($row);
 			}
 		}
 	}
@@ -304,7 +296,7 @@ function editProfile()
 	
 	include 'regtest.php';
 	if (!isValidUserName($nickname)) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的用户名格式，请重新填写！'));
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的昵称格式，请重新填写！'));
 		return;		
 	}
 	
@@ -342,7 +334,7 @@ function editProfile()
 			return;
 		}
 		else if (mysql_num_rows($result) > 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你的用户名已被人使用，请重新输入！',"sql_error"=>mysql_error()));	
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysql_error()));	
 			return;			
 		}
 				
@@ -352,6 +344,7 @@ function editProfile()
 			return;
 		}
 		
+		$_SESSION['nickname'] = $nickname;
 		$_SESSION["name"] = $name;
 		$_SESSION["idnum"] = $idNum;
 	}
@@ -434,6 +427,43 @@ function getProfile()
 	}
 	
 	echo json_encode(array('error'=>'false','found'=>'false'));
+	return;
+}
+
+function switchAccount()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$userid = $_SESSION["userId"];
+	$toUserId = trim(htmlspecialchars($_POST["to"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$res = mysql_query("select * from User where UserId='$toUserId'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'要切换的账户异常，请稍后重试！'));
+		return;
+	}
+	$row = mysql_fetch_assoc($res);
+	$groupId = $row["GroupId"];
+	if ($groupId != $_SESSION["groupId"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'非法操作！'));
+		return;
+	}
+	
+	include "func.php";
+	setSession($row);
+	
+	echo json_encode(array('error'=>'false'));
 	return;
 }
 

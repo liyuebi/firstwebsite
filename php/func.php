@@ -16,6 +16,22 @@ function deleteUserCookie()
 	setcookie("isLogin", 'false', $time, '/');
 }
 
+function setSession($row)
+{
+	$_SESSION["userId"] = $row['UserId'];
+	$_SESSION['phonenum'] = $row['PhoneNum'];
+	$_SESSION['nickname'] = $row['NickName'];
+	$_SESSION['name'] = $row['Name'];
+	$_SESSION['lvl'] = $row['Lvl'];
+	$_SESSION['password'] = $row['Password'];
+	$_SESSION['buypwd'] = $row["PayPwd"];
+	$_SESSION["idnum"] = $row['IDNum'];
+	$_SESSION["groupId"] = $row['GroupId'];
+	$_SESSION['isLogin'] = true;
+	
+	setUserCookie($row['Name'], $row['UserId']);
+}
+
 // 插入一个新用户账号
 function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUserId, &$error_code, &$error_msg, &$sql_error)
 {

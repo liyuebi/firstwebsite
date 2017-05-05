@@ -32,14 +32,7 @@ $bonus = 0;
 
 $con = connectToDB();
 if ($con) {
-	
-/*
-	$res1 = mysql_query("select * from User where UserId='$userid'");
-	if ($res1 && mysql_num_rows($res1) > 0) {
-		$row1 = mysql_fetch_assoc($res1);
-	}
-*/
-	
+		
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if (!$result || mysql_num_rows($result) <= 0) {
 		
@@ -47,7 +40,7 @@ if ($con) {
 	else {
 		$row = mysql_fetch_assoc($result);
 		
-		$feng = $row["Vault"];
+		$vault = $row["Vault"];
 		$dvault = $row["DVault"];
 		$bonus = $row["CurrBonus"];
 	}

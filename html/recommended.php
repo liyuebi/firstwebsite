@@ -7,6 +7,7 @@ $lvl = 0;
 $group1 = 0;
 $group2 = 0;
 $group3 = 0;
+$groupId = 0;
 
 $con = connectToDB();
 if (!$con) {
@@ -22,7 +23,15 @@ if ($result) {
 	$group1 = $row["Group1Cnt"];
 	$group2 = $row["Group2Cnt"];
 	$group3 = $row["Group3Cnt"];
+	$groupId = $row["GroupId"];
 }
+
+$res1 = false;
+if ($groupId > 0) {
+	$res1 = mysql_query("select * from User where GroupId='$groupId' and UserId!='$userid'");
+}
+
+$res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!='$groupId' and GroupId!=0");
 
 ?>
 
@@ -120,6 +129,21 @@ if ($result) {
 				document.getElementById("blk_asso").style.display = "none";
 				document.getElementById("blk_fans").style.display = "inline";
 			}
+			
+			function switchUser(btn)
+			{
+				var toUserId = btn.id;
+				$.post("../php/login.php", {"func":"switchAccount","to":toUserId}, function(data){
+						
+					if (data.error == "false") {			
+						alert("切换账号成功！");
+						location.href = "home.php";
+					}
+					else {
+						alert("切换失败: " + data.error_msg);
+					}
+				}, "json");
+			}
 		</script>
 	</head>
 	<body>
@@ -143,14 +167,40 @@ if ($result) {
 		</table>
         
         <div id="blk_asso">
+	        <?php
+	        if ($res1) {
+		        if (mysql_num_rows($res1) > 0) {        
+	        ?>
+        	        <table style="width: 100%; text-align: center;">
+				        <tr>
+					        <th style="width: 33%;">用户id</th>
+					        <th style="width: 33%;">昵称</th>
+					        <th style="width: 33%;">切换账号</th>
+				        </tr>
+			<?php
+			        while ($row1 = mysql_fetch_array($res1)) {   
+	        ?>
+	        			<tr>
+					        <td ><?php echo $row1["UserId"]; ?></td>
+					        <td ><?php echo $row1["NickName"]; ?></td>
+					        <td ><input type="button" value="切换" id=<?php echo $row1["UserId"]; ?>  onclick="switchUser(this)" /></td>
+	        			</tr>
+	        <?php
+		        	}
+		    ?>
+		        	</table>
+ 		    <?php
+		        }
+	        }
+	        ?>
         </div>
-        <div id="blk_fans">
+        <div id="blk_fans" style="display: none;">
 	        <p>您已经推荐了<span id="count">0</span>名蜜粉</p>
 	        <table id="list" style="width: 100%; text-align: center;">
 		        <tr>
-			        <th style="width: 33%;">用户id</td>
-			        <th style="width: 33%;">用户名</td>
-			        <th style="width: 33%;">手机号</td>
+			        <th style="width: 33%;">用户id</th>
+			        <th style="width: 33%;">昵称</th>
+			        <th style="width: 33%;">手机号</th>
 <!-- 			        <td>推荐时间</td> -->
 		        </tr>
 	        </table>

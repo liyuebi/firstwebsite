@@ -74,7 +74,7 @@ $idnum = $_SESSION["idnum"];
 		            <td><?php echo $_SESSION['lvl']; ?></td>
 	            </tr>	     
 	            <tr>
-		            <td>用户名</td>
+		            <td>昵称</td>
 		            <td><?php echo $_SESSION['nickname']; ?></td>
 	            </tr>       
 	            <tr>

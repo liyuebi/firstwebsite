@@ -64,6 +64,7 @@ function createCreditTable()
 	/*
 	 * Vault: 静态金库
 	 * DVault: 动态金库
+	 * BPCnt: buy product count 总共购买的产品件数
 	 * TotalRRwd: 总订单分成
 	 * TotalBonus: 总分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
@@ -75,6 +76,7 @@ function createCreditTable()
 		Credits int DEFAULT 0,
 		Vault int DEFAULT 0,
 		DVault int DEFAULT 0,
+		BPCnt int DEFAULT 0,
 		TotalRecharge int DEFAULT 0,
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption int DEFAULT 0,

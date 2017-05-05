@@ -248,12 +248,9 @@ function purchaseProduct()
 	$now = time();
 	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
-
-	// 给上游用户分成	
-	$referBonus = distributeReferBonus($con, $userid, $count);
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $count, $referBonus);
+	insertOrderStatistics($totalPrice, $count, 0);
 	
 	echo json_encode(array("error"=>"false"));
 	return;

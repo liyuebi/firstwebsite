@@ -60,7 +60,7 @@ if ($new) {
 				var idNum = document.getElementById("idNum").value;
 				
 				if (!isValidUserName(nickname)) {
-					alert("无效的用户名，请使用至少4位字母或数字！");
+					alert("无效的昵称，请使用至少4位字母或数字！");
 					document.getElementById("nickname").focus();
 					return;					
 				} 				
@@ -148,7 +148,7 @@ if ($new) {
 		            <td width="70%" style="text-align: left;"><?php echo "$phone" ?></td>
 	            </tr>
 	            <tr>
-		            <td style="text-align: right;">用户名</td>
+		            <td style="text-align: right;">昵称</td>
 		            <td width="70%" style="text-align: left;"><input type="text" id="nickname" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" /></td>
 	            </tr>	            
 	            <tr>
