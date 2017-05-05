@@ -26,12 +26,26 @@ if ($result) {
 	$groupId = $row["GroupId"];
 }
 
+$numAssoAccount = 0;
+$numRefAccount = 0;
+
 $res1 = false;
+$res2 = false;
 if ($groupId > 0) {
 	$res1 = mysql_query("select * from User where GroupId='$groupId' and UserId!='$userid'");
+	if ($res1) {
+		$numAssoAccount = mysql_num_rows($res1);
+	}
+	$res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!='$groupId'");
+}
+else {
+	$res2 = mysql_query("select * from User where ReferreeId='$userid'");
 }
 
-$res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!='$groupId' and GroupId!=0");
+
+if ($res2) {
+	$numRefAccount = mysql_num_rows($res2);
+}
 
 ?>
 
@@ -59,49 +73,6 @@ $res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!=
 				document.getElementById("1").style.color = "red";
  				 				
 				var data = 'func=getRecommended';
-				$.getJSON("../php/recommend.php", data, function(json){
-
-					if (json.error == "true") {
-						
-					}	
-					else {
-						var list = json.list;
-						var container = document.getElementById("list");
-						var count = 0;
-						for (var key in list) {
-							
-/*
-							var time = list[key]["time"];
-							var uid = list[key]["id"];
-							var phone = list[key]["phone"];
-							
-							var i = parseInt(time);
-							var then = new Date(i * 1000);
-							var y = then.getFullYear();
-							var m = then.getMonth() + 1;
-							var d = then.getDate();
-							var h = then.getHours();
-							var min = then.getMinutes();
-							var str = y + "年" + m + "月" + d + "日" + h + ":" + min;
-							
-							var n = document.createElement("p");
-							n.innerHTML = "推荐用户" + uid + ",手机号为" + phone + ",时间是" + str;
-							container.appendChild(n);
-							
-							++count;
-*/
-							++count;
-							var row = container.insertRow(count);
-							var cell1 = row.insertCell(0);
-							var cell2 = row.insertCell(1);
-							var cell3 = row.insertCell(2);
-							cell1.innerHTML = list[key]["id"];
-							cell2.innerHTML = list[key]["name"];
-							cell3.innerHTML = list[key]["phone"];
-						}
-						document.getElementById("count").innerHTML = count;
-					}				
-				});
 				
 				$('table#tag_table td').click(function(){
 					$(this).css('color','red');//点击的设置字色为红色
@@ -158,6 +129,8 @@ $res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!=
 		<?php if ($lvl > $group3StartLvl) { ?>
 			<p>团队三：<?php echo $group3; ?>人</p>
 		<?php } ?>
+		<p>关联账号： <?php echo $numAssoAccount; ?>人</p>
+		<p>直推蜜粉： <?php echo $numRefAccount; ?>人</p>
 		
 		<table id="tag_table" class="t2">
 			<tr>
@@ -192,18 +165,41 @@ $res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!=
  		    <?php
 		        }
 	        }
+	        else {
+		        // display no info
+	        }
 	        ?>
         </div>
         <div id="blk_fans" style="display: none;">
-	        <p>您已经推荐了<span id="count">0</span>名蜜粉</p>
-	        <table id="list" style="width: 100%; text-align: center;">
-		        <tr>
-			        <th style="width: 33%;">用户id</th>
-			        <th style="width: 33%;">昵称</th>
-			        <th style="width: 33%;">手机号</th>
-<!-- 			        <td>推荐时间</td> -->
-		        </tr>
-	        </table>
+	        <?php
+			if ($res2) {
+				if (mysql_num_rows($res2) > 0) {
+	        ?>
+		        <table id="list" style="width: 100%; text-align: center;">
+			        <tr>
+				        <th style="width: 33%;">用户id</th>
+				        <th style="width: 33%;">昵称</th>
+				        <th style="width: 33%;">手机号</th>
+			        </tr>
+			<?php
+				while ($row2 = mysql_fetch_array($res2)) {
+			?>
+					<tr>
+						<td><?php echo $row2["UserId"]; ?></td>
+						<td><?php echo $row2["NickName"]; ?></td>
+						<td><?php echo $row2["PhoneNum"]; ?></td>
+					</tr>
+			<?php
+				}
+			?>
+		        </table>
+	        <?php
+		        }
+	        }
+	        else {
+		        
+	        }
+	        ?>
         </div>
     </body>
     <div style="text-align:center;">

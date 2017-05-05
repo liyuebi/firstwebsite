@@ -181,7 +181,7 @@ function purchaseProduct()
 	}
 	$bpCntPre = $creditInfo["BPCnt"];
 	$bpCntPost = $bpCntPre + $count;
-	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearRecharge='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost' where UserId='$userid'");
+	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;

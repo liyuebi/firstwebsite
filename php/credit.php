@@ -162,6 +162,7 @@ function allowRecharge()
 			$lastModified = $row["LastRechargeTime"];
 			$dayRecharge = 0;
 			$monRecharge = 0;
+			$yearRecharge = 0;
 			$totalRecharge = $row["TotalRecharge"] + $amount;
 			if (isInTheSameDay($now, $lastModified)) {
 				$dayRecharge = $row["DayRecharge"] + $amount;
@@ -176,13 +177,13 @@ function allowRecharge()
 				$monRecharge = $amount;
 			}
 			if (isInTheSameYear($now, $lastModified)) {
-// 				$yearRecharge = $row[] + $amount;
+				$yearRecharge = $row["YearRecharge"] + $amount;
 			}
 			else {
-// 				$yearRecharge = $amount;
+				$yearRecharge = $amount;
 			}
 
-			$result = mysql_query("update Credit set Credits='$total', LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
+			$result = mysql_query("update Credit set Credits='$total', LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', YearRecharge='$yearRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
 				return; 				
@@ -359,6 +360,7 @@ function allowWithdraw()
 			$postWithdraw = $preWithdraw + $amount;
 			$dayWithdraw = 0;
 			$monWithdraw = 0;
+			$yearWithdraw = 0;
 			if (isInTheSameDay($now, $lastModified)) {
 				$dayWithdraw = $row["DayWithdraw"] + $amount;
 			}
@@ -372,12 +374,12 @@ function allowWithdraw()
 				$monWithdraw = $amount;
 			}
 			if (isInTheSameYear($now, $lastModified)) {
-// 				$yearRecharge = $row[] + $amount;
+				$yearWithdraw = $row["YearWithdraw"] + $amount;
 			}
 			else {
-// 				$yearRecharge = $amount;
+				$yearWithdraw = $amount;
 			}
-			$result = mysql_query("update Credit set Credits='$total', TotalFee='$postFee', TotalWithdraw='$postWithdraw', DayWithdraw='$dayWithdraw', MonthWithdraw='$monWithdraw', LastWithdrawTime='$now' where UserId='$userid'");
+			$result = mysql_query("update Credit set Credits='$total', TotalFee='$postFee', TotalWithdraw='$postWithdraw', DayWithdraw='$dayWithdraw', MonthWithdraw='$monWithdraw', YearWithdraw='$yearWithdraw', LastWithdrawTime='$now' where UserId='$userid'");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
 				return; 				
