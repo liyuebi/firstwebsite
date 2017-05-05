@@ -102,7 +102,7 @@ function calcBonus($file)
 			
 			$cnt += 1;
 			$userid = $row5["UserId"];
-			$isDynamic = $row5["RecommendingCount"] > 0;
+			$isDynamic = $row5["RecoCnt"] > 0;
 			$res6 = mysql_query("select * from Credit where UserId='$userid'");
 			if (!$res6 || mysql_num_rows($res6) < 1) {
 				writeLog($file, "\n### 查询用户" . $userid . "的积分表失败！\n");
@@ -145,7 +145,7 @@ function acceptBonus($userId)
 		$bonusTotal = $row1["TotalBonus"];
 		$currBonus = $row1["CurrBonus"];
 		$feng = $row1["Vault"];
-		$dynFeng = $row1["DynamicVault"];
+		$dynFeng = $row1["DVault"];
 		$dayObtained = $row1["DayObtained"];
 		$lastObtainedtime = $row1["LastObtainedTime"];
 		
@@ -161,7 +161,7 @@ function acceptBonus($userId)
 				$res2 = mysql_query("select * from User where UserId='$userId'");
 				if ($res2 && mysql_num_rows($res2) > 0) {
 					$row2 = mysql_fetch_assoc($res2);
-					if ($row2["RecommendingCount"] > 0) {
+					if ($row2["RecoCnt"] > 0) {
 						$feng += $dynFeng;
 						$dynFeng = 0;
 					}
@@ -191,7 +191,7 @@ function acceptBonus($userId)
 		}
 		
 		$credit = $row1["Credits"];
-		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', DynamicVault='$dynFeng' where UserId='$userId'");
+		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', DVault='$dynFeng' where UserId='$userId'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'您已经没有蜂值了，暂时不能领取！'));
 			return;

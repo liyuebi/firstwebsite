@@ -11,9 +11,151 @@ function setUserCookie($name, $userid)
 function deleteUserCookie()
 {
 	$time = time() - 1000;
-	setcookie("userN", $name, $time, '/');
-	setcookie("useI", $userid, $time, '/');
-	setcookie("isLogin", "true", $time, '/');
+	setcookie("userN", '', $time, '/');
+	setcookie("useI", '', $time, '/');
+	setcookie("isLogin", 'false', $time, '/');
+}
+
+// 插入一个新用户账号
+function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUserId, &$error_code, &$error_msg, &$sql_error)
+{
+	include "constant.php";
+	
+	$listChild = array($userid);
+	$parentId = 0;
+	$slot = 0;
+	while (count($listChild)) {
+		$currUid = array_shift($listChild);
+		$res3 = mysql_query("select * from User where UserId='$currUid'");
+		if (!$res3 || mysql_num_rows($res3) <= 0) {
+			// !!! log
+			continue;
+		}
+		else {
+			$row3 = mysql_fetch_assoc($res3);
+			$child1 = $row3["Group1Child"];
+			$child2 = $row3["Group2Child"];
+			$child3 = $row3["Group3Child"];
+			$lvl = $res3["Lvl"];
+			
+			if ($child1 == 0) {
+				$parentId = $currUid;	
+				$slot = 1;
+				break;
+			}
+			else if ($child1 > 0) {
+				array_push($listChild, $child1);
+			}
+			
+			if ($child2 == 0) {
+				$parentId = $currUid;
+				$slot = 2;
+				break;
+			}
+			else if ($child2 > 0) {
+				array_push($listChild, $child2);
+			}
+			
+			if ($lvl >= $group3StartLvl) {
+				if ($child3 == 0) {
+					$parentId = $currUid;
+					$slot = 3;
+					break;
+				}
+				else {
+					array_push($listChild, $child3);
+				}
+			}
+		}
+	}
+	
+	if ($parentId == 0 || $slot == 0) {
+		$error_code = '51';
+		$error_msg = '查找可插入的父节点失败，请稍后重试';
+		$sql_error = mysql_error();
+		return false;
+	}
+	
+	$now = time();
+	$res4 = mysql_query("insert into User (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, GroupId, RegisterTime)
+							values('$phonenum', '$name', '$idNum', '000000', '$userid', '$parentId', '$groupId', '$now')");
+	if (!$res4) {
+		$error_code = '52';
+		$error_msg = '插入用户失败，请稍后重试';
+		$sql_error = mysql_error();
+		return false;
+	}
+	$newUserId = mysql_insert_id();
+	
+	$groupName = "";
+	$gounpCntName = "";
+	if ($slot == 1) {
+		$groupName = "Group1Child";
+		$gounpCntName = "Group1Cnt";
+	}
+	else if ($slot == 2) {
+		$groupName = "Group2Child";
+		$gounpCntName = "Group2Cnt";
+	}
+	else if ($slot == 3) {
+		$groupName = "Group3Child";
+		$gounpCntName = "Group3Cnt";
+	}
+	
+	$res5 = mysql_query("update User set $groupName='$newUserId', $gounpCntName=1 where UserId='$parentId'");
+	if (!$res5) {
+		// !!! log
+	}
+	else {
+		$res6 = mysql_query("select * from User where UserId='$parentId'");
+		if (!$res6 || mysql_num_rows($res6) <= 0) {
+			// !!! log	
+		}
+		else {			
+			$row6 = mysql_fetch_assoc($res6);
+			$currUid = $parentId;
+			$parentId = $row6["ParentId"];
+			while (true) {
+				
+				if ($parentId <= 0) {
+					break;	
+				}
+				
+				$res7 = mysql_query("select * from User where UserId='$parentId'");
+				if (!$res7 || mysql_num_rows($res7) <= 0) {
+					// !!! log
+					// can't find parent node, jump out
+					break;
+				}
+				
+				$row7 = mysql_fetch_assoc($res7);					
+				$gounpCntName = "";
+				$currCnt = 0;
+				if ($currUid == $row7["Group1Child"]) {
+					$gounpCntName = "Group1Cnt";
+					$currCnt = $row7["Group1Cnt"];
+				}
+				else if ($currUid == $row7["Group2Child"]) {
+					$gounpCntName = "Group2Cnt";
+					$currCnt = $row7["Group2Cnt"];
+				}
+				else if ($currUid == $row7["Group3Child"]) {
+					$gounpCntName = "Group3Cnt";
+					$currCnt = $row7["Group3Cnt"];
+				}
+				$currCnt += 1;
+				$res8 = mysql_query("update User set $gounpCntName='$currCnt' where UserId='$parentId'");
+				if (!$res8) {
+					// !!! log
+				}
+				
+				$currUid = $parentId;
+				$parentId = $row7["ParentId"];
+			}
+		}
+	}
+	
+	return true;
 }
 
 //  给上游玩家分享注册资金
@@ -49,7 +191,7 @@ function distributeReferBonus($con, $userid, $count)
 					$row3 = mysql_fetch_assoc($res3);
 					
 					$id3 = $row3["ReferreeId"];
-					$recommendCount = $row3["RecommendingCount"];
+					$recommendCount = $row3["RecoCnt"];
 				}
 				
 				$res2 = mysql_query("select * from Credit where UserId='$id2'");
@@ -80,7 +222,7 @@ function distributeReferBonus($con, $userid, $count)
 					
 					if ($add > 0) {
 						// must be a dynamic user
-						$val4 = $row2["Vault"] + $row2["DynamicVault"];
+						$val4 = $row2["Vault"] + $row2["DVault"];
 					
 						if ($val4 < $add) {
 							$add = $val4;
@@ -100,7 +242,7 @@ function distributeReferBonus($con, $userid, $count)
 							}
 							$val1 += $add;
 		
-							mysql_query("update Credit set Credits='$val1', Vault='$val4', DynamicVault='0', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
+							mysql_query("update Credit set Credits='$val1', Vault='$val4', DVault='0', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
 
 							include "constant.php";
 							mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, WithUserId)
@@ -191,6 +333,36 @@ function getCreditsPoolLeft($con)
 	return $ret;
 }
 
+function findCurrTreeLvl($idx)
+{
+	if ($idx < 0)
+		return 0;
+	if ($idx == 0)
+		return 1;
+
+	$cnt = 1;
+	$lvl = 1;
+	$val = $idx + 1;
+	while ($cnt < $val) {
+		
+		$cnt += pow(3, $lvl); 
+		++$lvl;
+	}  
+	return $lvl;
+}
+
+function findNextAvailablePos($con, $idx)
+{
+	$ret = 0;
+	$nextIdx = 0;
+	if ($idx < 0) {
+		$nextIdx = 0;
+	}
+	
+// 	$result = mysql_query("select * from User where ")
+}
+
+/////////////////////////// insert statistics function begin ///////////////////////////
 function insertRechargeStatistics($amount)
 {
 	$now = time();
@@ -499,5 +671,6 @@ function insertBonusStatistics($bonus)
 	}
 
 }
+/////////////////////////// insert statistics function begin ///////////////////////////
 
 ?>

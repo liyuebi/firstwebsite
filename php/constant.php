@@ -1,13 +1,17 @@
 <?php 
-	$retRate = 5;				// 用户使用积分后相应增加返还额度的比例
-	$fengzhiValue = 1500;		// 1蜂值等于多少蜜券值
+	$group3StartLvl = 10;		// 第三组开始的等级
+	
+	$retRate = 1;				// 用户使用积分后相应增加返还额度的比例
+	$dyNewUserVault = 1000;		// 给新用户的动态返还蜜券总额
+	$dyNewAccountVault = 2000;	// 给新用户的静态返还蜜券总额
+	$fengzhiValue = 1000;		// 1蜂值等于多少蜜券值
 	
 	$rewardRate = 11/30;		// 从每日的充值额中取出多少来返还给用户
 	$rewardStaticRate = 0.55;	// 在每日返还用户的总积分中给静态用户的比例
 	$rewardDynamicRate = 0.45;	// 在每日返还用户的总积分中给动态用户的比例
 	
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
-	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
+	$refererConsumePoint = 900;	// 推荐新用户时需从推荐人账户中减去300积分 
 	
 	$withdrawFloorAmount = 300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay = 3000;	// 用户一天可以提现的上限数额

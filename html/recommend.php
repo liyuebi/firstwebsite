@@ -55,27 +55,19 @@ if ($con) {
 					alert("无效的支付密码！");
 					return;
 				}
-/*
-				if (!isPayPwdValid(pwd1)) {
-					alert("无效的密码，请使用6-12位密码，且只包含字母和数字！");
-					document.getElementById("pwd1").value = "";
-					document.getElementById("pwd2").value = "";
-				}
-				else {
-*/
-					$.post("../php/register.php", {"phonenum":phonenum, "paypwd":paypwd}, function(data){
-						
-						if (data.error == "false") {
-							alert("注册成功！");	
-							document.getElementById("phonenum").value = "";
-							document.getElementById("Captcha").value = "";
-							document.getElementById("paypwd").value = "";
-						}
-						else {
-							alert("注册失败: " + data.error_msg);
-						}
-					}, "json");
-// 				}
+
+				$.post("../php/register.php", {"phonenum":phonenum, "paypwd":paypwd}, function(data){
+					
+					if (data.error == "false") {
+						alert("注册成功！\n新用户的ids是" + data.new_user_id);	
+						document.getElementById("phonenum").value = "";
+						document.getElementById("Captcha").value = "";
+						document.getElementById("paypwd").value = "";
+					}
+					else {
+						alert("注册失败: " + data.error_msg);
+					}
+				}, "json");
 			}
 			
 			function getTestKey()

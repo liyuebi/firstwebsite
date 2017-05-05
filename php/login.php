@@ -61,33 +61,45 @@ function login()
 			return;
 		}
 		else {
-			$result = mysql_query("select * from User where PhoneNum='$phonenum' and Password='$password'");
-			if (!$result) {
-				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败，请稍后重试！'));	
-				return;
+			$bUseNickName = false;
+			$result = mysql_query("select * from User where UserId='$phonenum'");
+			if (!$result || 0 == mysql_num_rows($result)) {
+				$result = mysql_query("select * from User where NickName='$phonenum'");				
+				$bUseNickName = true;
 			}
-			else if (0 == mysql_num_rows($result)) {
-				echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'电话号码或验证码出错，请重新输入！'));	
-				return;
+			
+			if (!$result || 0 == mysql_num_rows($result)) {
+				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号或密码出错，请重新输入！'));	
+				return;		
 			}
 			else {
+				if ($bUseNickName) {
+					if (mysql_num_rows($result) > 1) {
+						echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您使用的昵称别人也使用了，请使用用户ID登录！'));	
+						return;								
+					}
+				}
+				
 				$row = mysql_fetch_assoc($result);
+				if ($password != $row["Password"]) {
+					echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'账号或密码出错，请重新输入！'));	
+					return;		
+				}
 				
 				session_start();
 				$_SESSION["userId"] = $row['UserId'];
-				$_SESSION['phonenum'] = $phonenum;
+				$_SESSION['phonenum'] = $row['PhoneNum'];
+				$_SESSION['nickname'] = $row['NickName'];
 				$_SESSION['name'] = $row['Name'];
+				$_SESSION['lvl'] = $row['Lvl'];
 				$_SESSION['password'] = $password;
 				$_SESSION['buypwd'] = $row["PayPwd"];
 				$_SESSION["idnum"] = $row['IDNum'];
+				$_SESSION["groupId"] = $row['GroupId'];
 				$_SESSION['isLogin'] = true;
 				
 				include "func.php";
 				setUserCookie($row['Name'], $row['UserId']);
-				
-				// jump back to home page
-// 				$home_url = '../html/home.php';
-// 				header('Location: ' . $home_url);
 			}
 		}
 	}

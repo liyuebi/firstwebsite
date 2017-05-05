@@ -50,12 +50,13 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 				// check phone num
 				var num = document.getElementById("phonenum").value;
 				num = $.trim(num);
-				var val = isPhoneNumValid(num);
-				if (!val) {
+// 				var val = isPhoneNumValid(num);
+// 				if (!val) {
+				if (0 == num.length) {
 					document.getElementById("phonenum").focus();
-					alert("无效的手机号码！");
+					alert("无效的用户ID／昵称！");
 					return false;
-				}
+ 				}
 				
 				// check secret code
 				var pwd = document.getElementById("password").value;
@@ -92,7 +93,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 	        <div> <!-- style="margin-top: 6%;" -->
 	            <form method="post" action="php/login.php" onsubmit="return submitCheck();">
 		            <input type="hidden" name="func" value="login" />
-		            <input id="phonenum" class="form-control" type="tel" name="phonenum" class="phonenum" placeholder="请输入您的手机号码！" onkeypress="return onlyNumber(event)">
+		            <input id="phonenum" class="form-control" type="tel" name="phonenum" class="phonenum" placeholder="请输入您的用户ID／昵称！" />
 		            <br>
 	                <input id="password" class="form-control" type="password" name="password" class="password" placeholder="请输入您的用户密码！">
 	                <br>

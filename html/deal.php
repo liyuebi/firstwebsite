@@ -20,7 +20,7 @@ if ($orderid != '') {
 	$con = connectToDB();
 	if ($con)
 	{
-		$result = mysql_query("select * from Transcation where UserId='$userid' and OrderId='$orderid'");
+		$result = mysql_query("select * from Transaction where UserId='$userid' and OrderId='$orderid'");
 		if ($result) {
 			if (mysql_num_rows($result) > 0) {
 				$row = mysql_fetch_assoc($result);

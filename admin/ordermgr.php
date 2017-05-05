@@ -2,7 +2,7 @@
 
 include "../php/database.php";
 
-function getTranscation()
+function getTransaction()
 {
 	$con = connectToDB();
 	if (!$con)
@@ -10,11 +10,11 @@ function getTranscation()
 		return false;
 	}
 	
-	$result = mysql_query("select * from Transcation");
+	$result = mysql_query("select * from Transaction");
 	return $result;
 }
 
-$result = getTranscation();		
+$result = getTransaction();		
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

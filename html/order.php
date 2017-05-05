@@ -18,12 +18,12 @@ if (!$con)
 
 include "./../php/constant.php";
 $userid = $_SESSION["userId"];
-$result = mysql_query("select * from Transcation where UserId='$userid' and Status!='$OrderStatusAccept'");
+$result = mysql_query("select * from Transaction where UserId='$userid' and Status!='$OrderStatusAccept'");
 if (!$result) {
 	return;	
 }
 
-$res1 = mysql_query("select * from Transcation where UserId='$userid' and Status='$OrderStatusAccept' order by OrderTime desc");
+$res1 = mysql_query("select * from Transaction where UserId='$userid' and Status='$OrderStatusAccept' order by OrderTime desc");
 
 ?>
 

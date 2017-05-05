@@ -67,7 +67,7 @@ function applyRecharge()
 		}
 		
 		$time = time();
-		$result = createRechgeTable();
+		$result = createRechargeTable();
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
 			return;
@@ -79,6 +79,19 @@ function applyRecharge()
 			return;
 		}
 		echo json_encode(array('error'=>'false'));
+		
+		// check user credit info exists, if not insert
+		$res1 = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res1) {
+			// !!! log error
+		}
+		else {
+			if (mysql_num_rows($res1) <= 0) {
+				if (!mysql_query("insert into Credit (UserId) values('$userid')")) {
+					// !!! log error
+				}
+			}
+		}
 	}
 	return;
 }

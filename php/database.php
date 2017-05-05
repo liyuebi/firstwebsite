@@ -17,20 +17,39 @@ function connectToDB()
 	
 function createUserTable()
 {
+	/*
+	 * UserId: Id of user 用户编号 
+	 * ParentId: 父节点的UserId
+	 * Group*Child: 第几组的子节点
+	 * Group*Cnt: 第几组的总人数
+	 * RecoCnt: Recommending count 推荐人数
+	 * Lvl: level 用户等级
+	 * LastPPwdModiTime: last pay password modify time 上次用户支付密码修改时间
+	 */
 	$sql = "create table if not exists User
 	(
 		UserId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(UserId),
+		GroupId int DEFAULT 0,
 		PhoneNum varchar(15) NOT NULL,
-		Name varchar(15) DEFAULT '',
+		Lvl	int DEFAULT 1,
+		Name varchar(16) DEFAULT '',
+		NickName varchar(16) DEFAULT '',
 		IDNum varchar(18) DEFAULT '',
 		Password varchar(12) NOT NULL,
 		PayPwd varchar(12) DEFAULT '',
 		ReferreeId int DEFAULT 0,
-		RecommendingCount int DEFAULT 0,
+		ParentId int DEFAULT 0,
+		Group1Child int DEFAULT 0,
+		Group1Cnt int DEFAULT 0,
+		Group2Child int DEFAULT 0,
+		Group2Cnt int DEFAULT 0,
+		Group3Child int DEFAULT 0,
+		Group3Cnt int DEFAULT 0,
+		RecoCnt int DEFAULT 0,
 		RegisterTime int NOT NULL,
 		LastLoginTime int DEFAULT 0,
-		LastPayPwdModifyTime int DEFAULT 0,
+		LastPPwdModiTime int DEFAULT 0,
 		DefaultAddressId int DEFAULT 0
 	) ENGINE=MEMORY AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	$result = mysql_query($sql);
@@ -43,6 +62,8 @@ function createUserTable()
 function createCreditTable()
 {
 	/*
+	 * Vault: 静态金库
+	 * DVault: 动态金库
 	 * TotalRRwd: 总订单分成
 	 * TotalBonus: 总分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
@@ -53,13 +74,16 @@ function createCreditTable()
 		PRIMARY KEY(UserId),
 		Credits int DEFAULT 0,
 		Vault int DEFAULT 0,
-		DynamicVault int DEFAULT 0,
+		DVault int DEFAULT 0,
 		TotalRecharge int DEFAULT 0,
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption int DEFAULT 0,
 		TotalFee int DEFAULT 0,
 		TotalRRwd int DEFAULT 0,
 		TotalBonus int DEFAULT 0,
+		YearRecharge int DEFAULT 0,
+		YearWithdraw int DEFAULT 0,
+		YearConsumption int DEFAULT 0,
 		MonthRecharge int DEFAULT 0,
 		MonthWithdraw int DEFAULT 0,
 		MonthConsumption int DEFAULT 0,
@@ -76,7 +100,7 @@ function createCreditTable()
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
-		echo "create User table error: " . mysql_error() . "<br>";
+		echo "create Credit table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }
@@ -117,9 +141,9 @@ function createAddressTable()
 	return $result;
 }
 
-function createTranscationTable()
+function createTransactionTable()
 {
-	$sql = "create table if not exists Transcation
+	$sql = "create table if not exists Transaction
 	(
 		OrderId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(OrderId),
@@ -139,7 +163,7 @@ function createTranscationTable()
 
 	$result = mysql_query($sql);
 	if (!$result) {
-		echo "create Transcation table error: " . mysql_error() . "<br>";
+		echo "create Transaction table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }
@@ -205,7 +229,7 @@ function createProductDayBoughtTable()
 	return $result;
 }
 
-function createRechgeTable()
+function createRechargeTable()
 {
 	$sql = "create table if not exists RechargeApplication
 	(
@@ -625,7 +649,7 @@ function initGeneralStatisTable()
 	if ($result) {
 		
 		$res = mysql_query("select * from TotalStatis");
-		if (!res) {
+		if (!$res) {
 			echo "init general statis error: " . mysql_error() . "<br>";
 		}
 		else {
@@ -634,7 +658,7 @@ function initGeneralStatisTable()
 			}
 			else {
 				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('50000000')");
-				if (!res1) {
+				if (!$res1) {
 					echo "insert into general statis error: " . mysql_error() . "<br>";
 				}
 			}
@@ -643,8 +667,8 @@ function initGeneralStatisTable()
 	
 	$result = createShortStatisTable();
 	if ($result) {
-				$res = mysql_query("select * from ShortStatis");
-		if (!res) {
+		$res = mysql_query("select * from ShortStatis");
+		if (!$res) {
 			echo "init short statis error: " . mysql_error() . "<br>";
 		}
 		else {
@@ -653,7 +677,7 @@ function initGeneralStatisTable()
 			}
 			else {
 				$res1 = mysql_query("insert into ShortStatis (LastCalcTime) VALUES('0')");
-				if (!res1) {
+				if (!$res1) {
 					echo "insert into short statis error: " . mysql_error() . "<br>";
 				}
 			}

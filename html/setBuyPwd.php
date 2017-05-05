@@ -7,31 +7,7 @@ if (!$_COOKIE['isLogin']) {
 	exit();
 }
 
-$userid = $_SESSION["userId"];
-$new = 0;
-if (isset($_GET['new'])) {
-	$new = $_GET['new'];
-}
-
-$bDefaultOrder = false;
-if ($new) {
-	include "../php/database.php";
-	$con = connectToDB();
-	if ($con)
-	{
-		$result = mysql_query("select * from Transcation where UserId='$userid'");
-		if ($result) {
-			include "../php/constant.php";
-			while ($row = mysql_fetch_array($result)) {
-				if ($row["Status"] == $OrderStatusDefault) {
-					$bDefaultOrder = true;
-					break;
-				}
-			}
-		}
-	}
-}
-
+// $userid = $_SESSION["userId"];
 	
 ?>
 
@@ -69,11 +45,6 @@ if ($new) {
 						$.post("../php/login.php", {"func":"setPayPwd","pwd":pwd1}, function(data){
 							
 							if (data.error == "false") {
-								if (<?php if ($bDefaultOrder) echo 1; else echo 0; ?>) {
-									alert("支付密码设置成功，请处理未完成订单！");
-									location.href = "order.php";
-									return;
-								}
 								alert("设置成功！");	
 								location.href = "home.php";
 							}

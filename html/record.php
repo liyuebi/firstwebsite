@@ -81,7 +81,7 @@ if ($con) {
 				    	}
 				    	
 					    echo "<br>";
-					    echo "余额是" . $row["CurrAmount"] . "蜜券。";
+					    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";
 					    ?>
 					</p>
 			</div>

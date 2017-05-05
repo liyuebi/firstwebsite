@@ -107,9 +107,7 @@ function purchaseProduct()
 		echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'增加小金库数值时出错1！'));
 		return;				
 	}
-	$row1 = mysql_fetch_assoc($result);
-	$isDynamic = $row1["RecommendingCount"] > 0;
-	
+	$row1 = mysql_fetch_assoc($res1);
 	
 	// check if count surpass the buy limit error_code 5，选择的数量超过购买上限
 	
@@ -139,7 +137,7 @@ function purchaseProduct()
 	}
 	
 	$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-	if (!$result) {
+	if (!$result || mysql_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
 		return;								
 	}
@@ -149,7 +147,7 @@ function purchaseProduct()
 	$receiver = $row["Receiver"];
 	$phonenum = $row["PhoneNum"];
 	
-	$result = createTranscationTable();
+	$result = createTransactionTable();
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'交易创建失败，请稍后重试！'));	
 		return;						
@@ -161,6 +159,7 @@ function purchaseProduct()
 	$lastModified = $creditInfo["LastConsumptionTime"];
 	$dayConsume = 0;
 	$monConsume = 0;
+	$yearConsume = 0;
 	$totalConsume = $creditInfo["TotalConsumption"] + $totalPrice;
 	if (isInTheSameDay($time, $lastModified)) {
 		$dayConsume = $creditInfo["DayConsumption"] + $totalPrice;
@@ -175,32 +174,71 @@ function purchaseProduct()
 		$monConsume = $totalPrice;
 	}
 	if (isInTheSameYear($time, $lastModified)) {
-// 				$yearRecharge = $row[] + $totalPrice;
+		$yearConsume = $creditInfo["YearConsumption"] + $totalPrice;
 	}
 	else {
-// 				$yearRecharge = $totalPrice;
+		$yearConsume = $totalPrice;
 	}
-	$vault = $creditInfo["Vault"];
-	$dynVault = $creditInfo["DynamicVault"];
-	if ($isDynamic) {
-		$vault += $totalPrice * $retRate + $dynVault;
-		$dynVault = 0;	
-	}
-	else {
-		$vault += $totalPrice;
-		$dynVault += $totalPrice * ($retRate - 1);		// rate must be larger than 1
-	}
-	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', TotalConsumption='$totalConsume', Vault='$vault', DynamicVault='$dynVault' where UserId='$userid'");
+	$bpCntPre = $creditInfo["BPCnt"];
+	$bpCntPost = $bpCntPre + $count;
+	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearRecharge='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
 	}
 
-	$result = mysql_query("insert into Transcation (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
-					VALUES('$userid', '$productId', '$price', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
+	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
+					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
 		return;						
+	}
+	
+	include 'func.php';
+	
+	// 添加新节点，并添加credit信息
+	$bpCntPre = floor($bpCntPre / 3);
+	$bpCntPost = floor($bpCntPost / 3);
+	if ($bpCntPost > $bpCntPre) {
+		
+		$phone = $row1["PhoneNum"]; 
+		$name = $row1["Name"];
+		$idNum = $row1["IDNum"];
+		$groupId = $row1["GroupId"];
+		$newUserId = 0;
+		$error_code = '';
+		$error_msg = '';
+		$sql_error = '';
+		
+		// 更新groupId
+		if ($groupId == 0) {
+			$groupId = $userid;
+			mysql_query("update User set GroupId='$groupId' where UserId='$userid'");
+		}
+		
+		insertNewUserNode($userid, $phone, $name, $idNum, $groupId, $newUserId, $error_code, $error_msg, $sql_error);	
+	
+		if (0 != $newUserId) {
+			$result = mysql_query("select * from Credit where UserId='$newUserId'");
+			if (!$result) {
+				// !!! log error
+			}
+			else {
+				$num = mysql_num_rows($result);
+				if ($num == 0) {
+					$vault = 0;
+					$dynVault = $dyNewAccountVault;
+					$result = mysql_query("insert into Credit (UserId, Vault, DVault)
+						VALUES('$newUserId', '$vault', '$dynVault')");
+					if (!$result) {
+						// !!! log
+					}
+				}					
+				else {
+					// !!! log
+				}
+			}
+		}
 	}
 
 	// 修改今天购买个数
@@ -212,7 +250,6 @@ function purchaseProduct()
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 
 	// 给上游用户分成	
-	include 'func.php';
 	$referBonus = distributeReferBonus($con, $userid, $count);
 	
 	// 更新统计数据
@@ -250,7 +287,7 @@ function confirmOrder()
 
 	$userid = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from Transcation where OrderId='$orderId' and Userid='$userid'");
+	$result = mysql_query("select * from Transaction where OrderId='$orderId' and Userid='$userid'");
 	if (!$result || mysql_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的订单！'));
 		return;
@@ -270,7 +307,7 @@ function confirmOrder()
 	$phonenum = $row["PhoneNum"];
 
 	$time = time();
-	$result = mysql_query("update Transcation set Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
+	$result = mysql_query("update Transaction set Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新订单状态出错，请稍后重试！'));	
 		return;								
@@ -286,7 +323,7 @@ function deliveryProduct()
 	
 	include 'constant.php';
 	
-	$transcationId = trim(htmlspecialchars($_POST["index"]));
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
 	
 	$con = connectToDB();
 	if (!$con)
@@ -295,7 +332,7 @@ function deliveryProduct()
 		return;
 	}
 
-	$result = mysql_query("select * from Transcation where OrderId='$transcationId'");
+	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
@@ -310,7 +347,7 @@ function deliveryProduct()
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transcation set Status='$OrderStatusDelivery', DeliveryTime='$time' where OrderId='$transcationId'");
+	$result = mysql_query("update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
@@ -328,7 +365,7 @@ function acceptProduct()
 		return;
 	}
 	
-	$transcationId = trim(htmlspecialchars($_POST["index"]));
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
 	
 	$userid = $_SESSION["userId"];
 	include 'constant.php';
@@ -341,7 +378,7 @@ function acceptProduct()
 	}	
 	
 	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Transcation where OrderId='$transcationId'"); 
+	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'"); 
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
@@ -357,7 +394,7 @@ function acceptProduct()
 
 	$time = time();
 
-	$result = mysql_query("update Transcation set Status='$OrderStatusAccept', CompleteTime='$time' where OrderId='$transcationId'");
+	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', CompleteTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'更新成交易完成状态时出错，请稍后重试！'));
 		return;		

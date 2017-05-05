@@ -3,7 +3,7 @@
 include "../php/database.php";
 include "../php/constant.php";
 
-if (!$_COOKIE['isLogin']) {	
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {	
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
@@ -24,20 +24,21 @@ if ($_SESSION["password"] == '000000'
 }
 
 $vault = 0;
+$dvault = 0;
 $feng = 0;
+$dfeng = 0;
 $row = false;
 $bonus = 0;
 
 $con = connectToDB();
 if ($con) {
 	
-	$isDynamic = false;
-	
+/*
 	$res1 = mysql_query("select * from User where UserId='$userid'");
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		$row1 = mysql_fetch_assoc($res1);
-		$isDynamic = $row1["RecommendingCount"] > 0;
 	}
+*/
 	
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if (!$result || mysql_num_rows($result) <= 0) {
@@ -46,25 +47,16 @@ if ($con) {
 	else {
 		$row = mysql_fetch_assoc($result);
 		
-		$staticFeng = $row["Vault"];
-		$dynamicFeng = $row["DynamicVault"];
+		$feng = $row["Vault"];
+		$dvault = $row["DVault"];
 		$bonus = $row["CurrBonus"];
-		
-		if ($dynamicFeng > 0) {
-			
-			if ($isDynamic) {
-				$staticFeng += $dynamicFeng;
-				$dynamicFeng = 0;
-				mysql_query("update Credit set Vault='$staticFeng', DynamicVault='$dynamicFeng' where UserId='$userid'");
-			}
-		}
-		$vault = $staticFeng;
 	}
 }
 
 $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
 $feng = ceil($vault / $fengzhiValue);
+$dfeng = ceil($dvault / $fengzhiValue);
 
 ?>
 
@@ -157,14 +149,16 @@ $feng = ceil($vault / $fengzhiValue);
 			</table>
 			<table class="t1" border="1" align="center" style="margin-top: 0;">
 				<tr>
-					<td width="33.3%">蜜券</td>
-					<td width="33.3%">当月蜜券</td>
-					<td width="33.3%">蜂值</td>
+					<td width="25%">蜜券</td>
+					<td width="25%">当月蜜券</td>
+					<td width="25%">蜂值</td>
+					<td width="25%">动态蜂值</td>
 				</tr>
 				<tr>
 					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id="todayexpense"><?php if ($row) echo $monConsumption; else echo '0'; ?></td>
 					<td id="bonuspool"><?php echo $feng; ?></td>
+					<td id="dbonuspool"><?php echo $dfeng; ?></td>
 				</tr>
 			</table>
 		</div>

@@ -47,7 +47,6 @@ else
 	$sql = "select * from User where PhoneNum='$phonenum'";
 	$result = mysql_query($sql, $con);
 	$newuserid = 0;
-	$userNotRegistered = true;
 	$now = time();
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号查询出错，请稍后重试！','sql_error'=>mysql_error()));
@@ -67,19 +66,15 @@ else
 			}
 		}
 		else {
-			$userNotRegistered = false;
-			$row = mysql_fetch_assoc($result);
-			if ($row) {
-				$newuserid = $row["UserId"];
-			}	
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'该手机号已经注册过！','sql_error'=>mysql_error()));
+			return;			
 		}
 	}
 		
-	$creditNotRegistered = true;
 	if (0 != $newuserid) {
 		$result = mysql_query("select * from Credit where UserId='$newuserid'");
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'积分查询出错，请稍后重试！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'积分查询出错，请稍后重试！','sql_error'=>mysql_error()));
 			return;
 		}
 		else {
@@ -88,22 +83,16 @@ else
 				$result = mysql_query("insert into Credit (UserId)
 					VALUES('$newuserid')");
 				if (!$result) {
-					echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'创建积分失败，请稍后重试！','sql_error'=>mysql_error()));
-					return;
+// 					echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'创建积分失败，请稍后重试！','sql_error'=>mysql_error()));
+// 					return;
 				}
 				else {
 // 					echo "Register success<br />";
 				}
 			}					
 			else {
-				$creditNotRegistered = false;
 			}
 		}
-	}
-	
-	if (!$userNotRegistered && !$creditNotRegistered) {
-		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'该手机号已注册，请不要反复注册！'));
-		return;		
 	}
 	
 	echo json_encode(array('error'=>'false'));
