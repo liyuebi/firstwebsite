@@ -152,7 +152,6 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 					++$group3Cnt;
 					$currCnt = $group3Cnt;
 				}
-				$currCnt += 1;
 				
 				if ($lvl > 1 && $lvl < 14) {
 					$levelup = 0;
