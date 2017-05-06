@@ -68,7 +68,7 @@ function createCreditTable()
 	 * TotalBonus: 固定总分红，根据用户级别每天固定分红
 	 * TotalDBonus: 动态总分红，根据每天订单量按比例给用户的分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
-	 * LastCSBTime: last collect static bonus time 上次收获静态分红的时间
+	 * LastCDBTime: last collect static bonus time 上次收获静态分红的时间
 	 */
 	$sql = "create table if not exists Credit
 	(
@@ -101,7 +101,7 @@ function createCreditTable()
 		CurrBonus int DEFAULT 0,
 		LastCBTime int DEFAULT 0,
 		CurrDBonus int DEFAULT 0,
-		LastCSBTime int DEFAULT 0
+		LastCDBTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -350,6 +350,8 @@ function createTotalStatisTable()
 		CreditsPool	int DEFAULT 50000000,
 		UserCount int DEFAULT 0,
 		BannedUserCount int DEFAULT 0,
+		FengTotal int DEFAULT 0,
+		DFengTotal int DEFAULT 0,
 		RechargeTotal int DEFAULT 0,
 		WithdrawTotal int DEFAULT 0,
 		TransferTotal int DEFAULT 0,
@@ -374,6 +376,11 @@ function createTotalStatisTable()
 
 function createShortStatisTable()
 {
+	/*
+	 * LastCalcTime: 上次计算分红的时间
+	 * LastDCalcTime: 上次计算动态分红的时间
+	 * !!! 动态分红和静态分红默认一起计算，但也可能出问题而分开，静态分红一天最多一次，动态分红可一日多次 
+	 */
 	$sql = "create table if not exists ShortStatis
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
@@ -388,7 +395,8 @@ function createShortStatisTable()
 		BonusLeft int DEFAULT 0,
 		DBonusTotal int DEFAULT 0,
 		DBonusLeft int DEFAULT 0,
-		LastCalcTime int DEFAULT 0
+		LastCalcTime int DEFAULT 0,
+		LastDCalcTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

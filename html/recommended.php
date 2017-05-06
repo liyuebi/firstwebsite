@@ -46,7 +46,7 @@ else {
 if ($res2) {
 	$numRefAccount = mysql_num_rows($res2);
 }
-
+$numAssoAccount = 0;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -142,7 +142,7 @@ if ($res2) {
         <div id="blk_asso">
 	        <?php
 	        if ($res1) {
-		        if (mysql_num_rows($res1) > 0) {        
+		        if ($numAssoAccount > 0) {        
 	        ?>
         	        <table style="width: 100%; text-align: center;">
 				        <tr>
@@ -164,16 +164,18 @@ if ($res2) {
 		        	</table>
  		    <?php
 		        }
-	        }
-	        else {
-		        // display no info
+		        else {
+		    ?>
+		    	<p>您现在还没有关联账户。</p>
+		    <?php
+		        }   
 	        }
 	        ?>
         </div>
         <div id="blk_fans" style="display: none;">
 	        <?php
 			if ($res2) {
-				if (mysql_num_rows($res2) > 0) {
+				if ($numRefAccount > 0) {
 	        ?>
 		        <table id="list" style="width: 100%; text-align: center;">
 			        <tr>
@@ -195,9 +197,11 @@ if ($res2) {
 		        </table>
 	        <?php
 		        }
-	        }
-	        else {
-		        
+		        else {
+		    ?>
+			    	<p>您现在还没有蜜粉。</p>
+		    <?php   
+		        }
 	        }
 	        ?>
         </div>

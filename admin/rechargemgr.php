@@ -84,21 +84,23 @@ $result = getRechargeApplication();
 					</tr>
 					<?php
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($result)) {
+						if ($result > 0) {
+							while($row = mysql_fetch_array($result)) {
 					?>
-							<tr>
-								<th><?php echo $row["IndexId"]; ?></th>
-								<th><?php echo date("Y.m.d H:i:s" ,$row["ApplyTime"]); ?></th>
-								<th><?php echo $row["UserId"]; ?></th>
-								<th></th>
-								<th></th>
-								<th><?php echo $row["Amount"]; ?></th>
-								<th id="col_status_<?php echo $row["IndexId"]; ?>">未通过</th>
-								<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
-<!-- 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
-								<th id= "col_record_<?php echo $row["IndexId"]; ?>"></th>
-							</tr>
+								<tr>
+									<th><?php echo $row["IndexId"]; ?></th>
+									<th><?php echo date("Y.m.d H:i:s" ,$row["ApplyTime"]); ?></th>
+									<th><?php echo $row["UserId"]; ?></th>
+									<th></th>
+									<th></th>
+									<th><?php echo $row["Amount"]; ?></th>
+									<th id="col_status_<?php echo $row["IndexId"]; ?>">未通过</th>
+									<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
+	<!-- 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
+									<th id= "col_record_<?php echo $row["IndexId"]; ?>"></th>
+								</tr>
 					<?php
+							}
 						}
 					?>
 				</table>

@@ -196,6 +196,8 @@ function purchaseProduct()
 	
 	include 'func.php';
 	
+	$hasNewUser = "false";
+	$newUserId = 0;
 	// 添加新节点，并添加credit信息
 	$bpCntPre = floor($bpCntPre / 3);
 	$bpCntPost = floor($bpCntPost / 3);
@@ -205,7 +207,6 @@ function purchaseProduct()
 		$name = $row1["Name"];
 		$idNum = $row1["IDNum"];
 		$groupId = $row1["GroupId"];
-		$newUserId = 0;
 		$error_code = '';
 		$error_msg = '';
 		$sql_error = '';
@@ -238,6 +239,8 @@ function purchaseProduct()
 					// !!! log
 				}
 			}
+			
+			$hasNewUser = "true";
 		}
 		
 		// 统计新用户总数增加
@@ -255,7 +258,7 @@ function purchaseProduct()
 	// 更新统计数据
 	insertOrderStatistics($totalPrice, $count);
 	
-	echo json_encode(array("error"=>"false"));
+	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserId));
 	return;
 }
 

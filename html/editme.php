@@ -161,7 +161,7 @@ if ($new) {
 	            </tr>
             </table>
             
-            <input type="hidden" id="oriNickName" value="<?php echo $_SESSION["Nickname"]; ?> ">
+            <input type="hidden" id="oriNickName" value="<?php echo $_SESSION["nickname"]; ?> ">
             <input type="hidden" id="oriName" value="<?php echo "$name" ?>" />
             <input type="hidden" id="oriIdNum" value="<?php echo "$idnum" ?>" />
         </div>

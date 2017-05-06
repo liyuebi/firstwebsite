@@ -92,6 +92,10 @@ function login()
 				session_start();
 				include "func.php";
 				setSession($row);
+				
+				$userid = $row["UserId"];
+				$now = time();
+				mysql_query("update User set LastLoginTime='$now' where UserId='$userid'");
 			}
 		}
 	}

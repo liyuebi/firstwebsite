@@ -127,6 +127,17 @@ else
 					VALUES('$newuserid', '1', '$refererConsumePoint', '3', '$now', '$OrderStatusDefault') ");
 	$bInsertOrder = $res2 != false;
 	
+	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
+	$res3 = mysql_query("select * from Credit where UserId='$userid'");
+	$vault = 0;
+	if (!$res3) {
+	}
+	else {
+		$row3 = mysql_fetch_assoc($res3);
+		$credit = $row3["Credits"];
+		$vault = $row3["Vault"];
+	}
+	
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from User where UserId='$userid'");
 	if (!$result) {
@@ -146,17 +157,9 @@ else
 	}
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
-	$res3 = mysql_query("select * from Credit where UserId='$userid'");
-	$vault = 0;
-	if (!$res3) {
-	}
-	else {
-		$row3 = mysql_fetch_assoc($res3);
-		$credit = $row3["Credits"];
-		$vault = $row3["Vault"];
-	}
 	$leftCredit = $credit - $refererConsumePoint;
 	mysql_query("update Credit set Credits='$leftCredit', Vault='$vault' where UserId='$userid'");
+	
 	// 修改用户的积分纪录，若失败不影响返回结果
 	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");

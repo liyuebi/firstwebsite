@@ -11,6 +11,8 @@ function writeLog($file, $msg)
 
 function calcBonus($file)
 {
+	include "constant.php";
+	
 	$con = connectToDB();
 	if (!$con) {
 		return false;
@@ -33,50 +35,61 @@ function calcBonus($file)
 	$row1 = mysql_fetch_assoc($res1);
 	$gross = $row1["OrderGross"];
 	
+	$now = time();
+	
+	$lastCalcTime = $row1["LastCalcTime"];
+	$lastDCalcTime = $row1["LastDCalcTime"];
  	$lastBonusTotal = $row1["BonusTotal"];
 	$lastBonusLeft = $row1["BonusLeft"];
+	$lastDBonusTotal = $row1["DBonusTotal"];
+	$lastDBonusLeft = $row1["DBonusLeft"];
+	
+	$bCalcBonus = true;
+	if (isInTheSameDay($now, $lastCalcTime)) {
+		$bCalcBonus = false;
+	}
 	
 	writeLog($file, "积分池余额：" . $pool . "\n");
-	writeLog($file, "前期的分红总额：" . $lastBonusTotal . "\n");
-	writeLog($file, "前期的分余额：" . $lastBonusLeft . "\n");
+	writeLog($file, "前期的固定分红总额：" . $lastBonusTotal . "\n");
+	writeLog($file, "前期的固定分红余额：" . $lastBonusLeft . "\n");
+	writeLog($file, "前期的动态分红总额：" . $lastBonusTotal . "\n");
+	writeLog($file, "前期的动态分红余额：" . $lastBonusLeft . "\n");
+	if ($bCalcBonus) {
+		writeLog($file, "\n### 本次需重新计算固定分红\n\n");
+	}
+	else {
+		writeLog($file, "\n### 本次不重新计算固定分红\n\n");
+	}
+	
+	// 计算所有层级
+	$allLevel = count($levelBonus) + 1;
+	writeLog($file, "\n### 目前共有 " . $allLevel . " 个层级\n\n");
+	
 	// 剩余分红额小于0，说明超领了
 	if ($lastBonusLeft < 0) {
-		writeLog($file, "\n！！！ 积分剩余小于0，出错！\n\n");
+		writeLog($file, "\n！！！ 固定分红剩余小于0，出错！\n\n");
+	}
+	if ($lastDBonusLeft < 0) {
+		writeLog($file, "\n！！！ 动态分红剩余小于0，出错！\n\n");
 	}
 	
-	include "constant.php";
-	$bonusTotal = floor($gross * $rewardRate);
+	$dBonusTotal = floor($gross * $rewardRate);
 	
 	writeLog($file, "本期的订单总额：" . $gross . "\n");
-	writeLog($file, "本期的订单比例：" . $rewardRate . "\n");
-	writeLog($file, "本期的分红额：" . $bonusTotal . "\n");
+	writeLog($file, "本期的订单分红比例：" . $rewardRate . "\n");
+	writeLog($file, "本期的动态分红额：" . $dBonusTotal . "\n");
 	
-	$pool += $lastBonusLeft;	// 未领取的分红返回基金池 
-// 	$bonusTotalEver += ($lastBonusTotal - $lastBonusLeft); // 记录总分红值
-	// 如果积分池小于分红额度，有问题，记log
-	if ($pool < $bonusTotal) {
-		writeLog($file, "\n!!! 积分池不够，分红池高于积分池！\n");
+	// 未领取的分红返回基金池 
+	$pool += $lastDBonusLeft;	
+	if ($bCalcBonus) {
+		$pool += $lastBonusLeft;
 	}
-	
-	$pool -= $bonusTotal;		// 从积分池中播出此次分红额度
-	
-	$now = time();
-	// 更新总统计表
-	$res3 = mysql_query("update TotalStatis set CreditsPool='$pool' where IndexId=1");
-	if (!$res3) {
-		echo 1;
-		echo mysql_error();
-	}
-	
-	// 更新短期统计表	
-	$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0,
-							TransferFee=0, BonusTotal='$bonusTotal', BonusLeft='$bonusTotal', LastCalcTime='$now' where IndexId=1");
-	if (!$res4) {
-		echo 2;
-		echo mysql_error();
-	}
-	
+		
+	// 计算并分发固定分红
 	$cnt = 0;
+	$dCnt = 0;
+	$totalDFeng = 0;
+	$totalBonus = 0;
 	writeLog($file, "\n------------------------------------------------------------------\n");
 	$res5 = mysql_query("select * from User");
 	if (!$res5) {
@@ -85,27 +98,143 @@ function calcBonus($file)
 	else {
 		while($row5 = mysql_fetch_array($res5)) {
 			
-			$cnt += 1;
 			$userid = $row5["UserId"];
-			$isDynamic = $row5["RecoCnt"] > 0;
+			$lvl = $row5["Lvl"];
 			$res6 = mysql_query("select * from Credit where UserId='$userid'");
 			if (!$res6 || mysql_num_rows($res6) < 1) {
-				writeLog($file, "\n### 查询用户" . $userid . "的积分表失败！\n");
+				writeLog($file, "\n!!! 查询用户" . $userid . "的积分表失败！\n");
 			}
 			else {
-				$amount = 0;
-				$res7 = mysql_query("update Credit set CurrBonus='$amount' where UserId='$userid'");
+				$row6 = mysql_fetch_assoc($res6);
+				
+				// 累计计算动态峰值总数
+				$dVault = $row6["DVault"];
+				$dfeng = ceil($dVault / $fengzhiValue);
+				$totalDFeng += $dfeng;
+				
+				if (!$bCalcBonus) {
+					continue;
+				}
+				
+				$vault = $row6["Vault"];
+				$bonus = 0;
+
+				if ($lvl > 1) {
+					$bonus = $levelDayBonus[$lvl - 2];
+					// 如果已经是最高级且没有固定蜂值剩余，则不予以拨分红，以节省分红
+					// 否则即使用户没有峰值，也先播出固态分红，如果用户升级即可继续领取
+					if ($lvl == $allLevel && $vault <= 0) {
+						$bonus = 0;
+					}
+					$totalBonus += $bonus;
+				}
+				
+				if ($bonus > 0) {
+					++$dCnt;
+				}
+				$res7 = mysql_query("update Credit set CurrBonus='$bonus' where UserId='$userid'");
 				if (!$res7) {
-					writeLog($file, "\n!!! " . $userid . "分红失败！\n");
+					writeLog($file, "\n!!! 更新用户 " . $userid . " 的固定分红失败: " . mysql_error() . "\n");
 				}
 				else {
-					writeLog($file, $userid . "分红得" . $amount . ".\n");
+					writeLog($file, $userid . " : " $bonus . "\n");
 				}
 			}
 		}
 	}
 	writeLog($file, "\n------------------------------------------------------------------\n");
-	writeLog($file, "--- 共分红给了 " . $cnt . " 用户！\n");
+	if ($bCalcBonus) {
+		writeLog($file, "--- 共分红给了 " . $dCnt . " 用户，固定分红总值是 " . $totalBonus . "\n");
+	}
+	else {
+		writeLog($file, "--- 不进行固定分红！\n");
+	}
+		
+	// 计算每个动态峰值分多少积分 
+	$dBonusPerF = 0;
+	if ($totalDFeng > 0) {
+		$dBonusPerF = floor($dBonusTotal / $totalDFeng);	
+	}
+	
+	if ($dBonusPerF > 0) {
+				
+		$cnt = 0;
+		writeLog($file, "\n------------------------------------------------------------------\n");
+		$res8 = mysql_query("select * from User");
+		if (!$res8) {
+			writeLog($file, "\n!!! 查询用户表失败！\n");
+		}
+		else {
+			while($row8 = mysql_fetch_array($res8)) {
+				
+				$userid = $row8["UserId"];
+				$res6 = mysql_query("select * from Credit where UserId='$userid'");
+				if (!$res6 || mysql_num_rows($res6) < 1) {
+					writeLog($file, "\n!!! 查询用户" . $userid . "的积分表失败！\n");
+				}
+				else {
+					$row6 = mysql_fetch_assoc($res6);
+					
+					// 累计计算动态峰值总数
+					$dVault = $row6["DVault"];
+					if ($dVault > 0) {
+						$dfeng = ceil($dVault / $fengzhiValue);
+						$dBonus = $dfeng * $dBonusPerF;
+					
+						$res7 = mysql_query("update Credit set CurrDBonus='$dBonus' where UserId='$userid'");
+						if (!$res7) {
+							writeLog($file, "\n!!! 更新用户" . $userid . "的动态分红失败: " . mysql_error() . "\n");
+						}
+						else {
+							writeLog($file, $userid . " : " $dBonus . "\n");	
+						}
+						
+						++$cnt;
+					}
+				}
+			}
+		}
+		writeLog($file, "\n------------------------------------------------------------------\n");
+		writeLog($file, "--- 共分红给了 " . $cnt . " 用户\n");
+		writeLog($file, "--- 动态分红总值是 " . $dBonusTotal . "\n");
+		writeLog($file, "--- 动态分红每蜂值分得 " . $dBonusPerF . "\n");
+	}
+	else {
+		writeLog($file, "--- 动态分红每蜂值为0，不进行动态分红！\n");
+	}
+
+	// 如果积分池小于分红额度，有问题，记log
+	if ($pool < $totalBonus + $dBonusTotal) {
+		writeLog($file, "\n!!! 积分池不够，分红池高于积分池！\n");
+	}
+	
+	$pool -= $dBonusTotal;		// 从积分池中播出此次分红额度
+	if ($bCalcBonus) {
+		$pool -= $totalBonus;
+	}
+	
+	writeLog($file, "\n分红后积分池余额：" . $pool . "\n");
+	
+	// 更新总统计表
+	$res3 = mysql_query("update TotalStatis set CreditsPool='$pool', DFengTotal='$totalDFeng' where IndexId=1");
+	if (!$res3) {
+		echo "\n!!! 更新总统计表失败： " . mysql_error() . "\n";
+	}
+	
+	// 更新短期统计表	
+	$res4 = false;
+	if ($bCalcBonus) {
+		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+								BonusTotal='$totalBonus', BonusLeft='$totalBonus', LastCalcTime='$now',
+								DBonusTotal='$dBonusTotal', DBonusLeft='$dBonusTotal', LastDCalcTime='$now' where IndexId=1");
+	}
+	else {
+		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+								DBonusTotal='$bonusTotal', DBonusLeft='$bonusTotal', LastDCalcTime='$now' where IndexId=1");		
+	}
+	if (!$res4) {
+		echo "\n!!! 更新短期统计表失败： " . mysql_error() . "\n";
+	}
 }
 
 function acceptBonus($userId)

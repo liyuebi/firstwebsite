@@ -80,20 +80,22 @@ $result = getWithdrawApplication();
 					</tr>
 					<?php
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($result)) {
+						if ($result) {
+							while($row = mysql_fetch_array($result)) {
 					?>
-							<tr>
-								<th><?php echo $row["IndexId"]; ?></th>
-								<th><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></th>
-								<th><?php echo $row["UserId"]; ?></th>
-								<th></th>
-								<th></th>
-								<th><?php echo $row["ApplyAmount"]; ?></th>
-								<th><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></th>
-								<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
-								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
-							</tr>
+								<tr>
+									<th><?php echo $row["IndexId"]; ?></th>
+									<th><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></th>
+									<th><?php echo $row["UserId"]; ?></th>
+									<th></th>
+									<th></th>
+									<th><?php echo $row["ApplyAmount"]; ?></th>
+									<th><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></th>
+									<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
+									<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
+								</tr>
 					<?php
+							}
 						}
 					?>
 				</table>
