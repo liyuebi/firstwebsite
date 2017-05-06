@@ -154,7 +154,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
         <div name="display">
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
 	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券,您今日还可以提取<?php echo $mostCredit; ?>蜜券。</p>
-	        <input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
+	        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
 			<p>您实际将提取出的蜜券数量是：<span id="autual_count">0</span></p>
 	        <input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>

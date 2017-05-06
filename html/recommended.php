@@ -46,7 +46,6 @@ else {
 if ($res2) {
 	$numRefAccount = mysql_num_rows($res2);
 }
-$numAssoAccount = 0;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -124,10 +123,10 @@ $numAssoAccount = 0;
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
 		
-		<p>团队一：<?php echo $group1; ?>人</p>
-		<p>团队二：<?php echo $group2; ?>人</p>
+		<p>蜂队一：<?php echo $group1; ?>人</p>
+		<p>蜂队二：<?php echo $group2; ?>人</p>
 		<?php if ($lvl > $group3StartLvl) { ?>
-			<p>团队三：<?php echo $group3; ?>人</p>
+			<p>蜂队三：<?php echo $group3; ?>人</p>
 		<?php } ?>
 		<p>关联账号： <?php echo $numAssoAccount; ?>人</p>
 		<p>直推蜜粉： <?php echo $numRefAccount; ?>人</p>

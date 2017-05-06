@@ -10,7 +10,7 @@
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 	$refererConsumePoint = 900;	// 推荐新用户时需从推荐人账户中减去300积分 
 	
-	$withdrawFloorAmount = 300;	// 提现最少的积分额度
+	$withdrawFloorAmount = 100;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay = 3000;	// 用户一天可以提现的上限数额
 	
 	$transferFloorAmount = 300;// 转账最低的积分额度

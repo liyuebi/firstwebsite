@@ -29,6 +29,8 @@ $feng = 0;
 $dfeng = 0;
 $row = false;
 $bonus = 0;
+$dBonus = 0;
+$lastCBTime = 0;
 
 $con = connectToDB();
 if ($con) {
@@ -43,6 +45,14 @@ if ($con) {
 		$vault = $row["Vault"];
 		$dvault = $row["DVault"];
 		$bonus = $row["CurrBonus"];
+		$dBonus = $row["CurrDBonus"];
+		$lastCBTime = $row["LastCBTime"];
+		
+		$now = time();
+		// 每日固定分红只能收获一次
+		if (isInTheSameDay($lastCBTime, $now)) {
+			$bonus = 0;	
+		}
 	}
 }
 
@@ -50,6 +60,8 @@ $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
 $feng = ceil($vault / $fengzhiValue);
 $dfeng = ceil($dvault / $fengzhiValue);
+
+$hasBonus = ($bonus + $dBonus) > 0;
 
 ?>
 
@@ -144,7 +156,7 @@ $dfeng = ceil($dvault / $fengzhiValue);
 				<tr>
 					<td width="25%">蜜券</td>
 					<td width="25%">当月蜜券</td>
-					<td width="25%">蜂值</td>
+					<td width="25%">固定蜂值</td>
 					<td width="25%">动态蜂值</td>
 				</tr>
 				<tr>
@@ -156,8 +168,13 @@ $dfeng = ceil($dvault / $fengzhiValue);
 			</table>
 		</div>
 
-		<div style="display: <?php if ($bonus > 0) echo "block"; else echo "none"; ?>;">
-			<p>您今天获得分红 <b><?php echo $bonus; ?></b> 蜜券，请点击领取！</p>
+		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>;">
+			<?php if ($bonus > 0) { ?>
+			<p>您今天获得固定分红 <b><?php echo $bonus; ?></b> 蜜券，请点击领取！</p>
+			<?php } ?>
+			<?php if ($dBonus > 0) { ?>
+			<p>您今天获得动态分红 <b><?php echo $dBonus; ?></b> 蜜券，请点击领取！</p>
+			<?php } ?>
 			<input id="accept_btn" type="button" value="领取" onclick="acceptBonus()" />
 			<p id="accept_logo" style="color: red; display: none;">已领取</p>
 		</div>
