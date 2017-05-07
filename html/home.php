@@ -108,7 +108,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 				
 				var feng = <?php echo $vault; ?>;
 				if (bonus > feng) {
-					if (!confirm("您现在蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
+					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
 						return;
 					}
 					bonus = feng;
@@ -125,9 +125,49 @@ $hasBonus = ($bonus + $dBonus) > 0;
 						}
 						document.getElementById("accept_btn").style.display = "none";
 						document.getElementById("accept_logo").style.display = "block";
+						document.getElementById("todayobtain").innerHTML = data.DayObtained;
+						document.getElementById("bonuspool").innerHTML = data.vault;
+						document.getElementById("point").innerHTML = data.credit;
 					}
 					else {
-						alert("转账失败：" + data.error_msg);
+						alert("领取失败：" + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function acceptDBonus()
+			{
+				var dBonus = <?php echo $dBonus; ?>;
+				if (dBonus <= 0) {
+					alert("出错了！");
+					location.href = 'home.php';
+				}
+				
+				var dvault = <?php echo $dvault; ?>;
+				if (dBonus > dvault) {
+					if (!confirm("动态蜂值余额不足了，如果继续，只能领取" + dvault + "蜜券，是否继续？")) {
+						return;
+					}
+					dBonus = dvault;
+				}
+				
+				$.post("../php/credit.php", {"func":"acceptDBonus"}, function(data){
+					
+					if (data.error == "false") {
+						
+						if (data.not_enough == "true") {
+							alert(data.error_msg);
+						}
+						else {
+						}
+						document.getElementById("accept_btn1").style.display = "none";
+						document.getElementById("accept_logo1").style.display = "block";
+						document.getElementById("todayobtain").innerHTML = data.DayObtained;
+						document.getElementById("dbonuspool").innerHTML = data.dVault;
+						document.getElementById("point").innerHTML = data.credit;
+					}
+					else {
+						alert("领取失败：" + data.error_msg);
 					}
 				}, "json");
 			}
@@ -162,21 +202,30 @@ $hasBonus = ($bonus + $dBonus) > 0;
 				<tr>
 					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id="todayexpense"><?php if ($row) echo $monConsumption; else echo '0'; ?></td>
-					<td id="bonuspool"><?php echo $feng; ?></td>
+					<td id="bonuspool"><?php echo $vault; ?></td>
 					<td id="dbonuspool"><?php echo $dfeng; ?></td>
 				</tr>
 			</table>
 		</div>
 
 		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>;">
-			<?php if ($bonus > 0) { ?>
-			<p>您今天获得固定分红 <b><?php echo $bonus; ?></b> 蜜券，请点击领取！</p>
-			<?php } ?>
-			<?php if ($dBonus > 0) { ?>
-			<p>您今天获得动态分红 <b><?php echo $dBonus; ?></b> 蜜券，请点击领取！</p>
-			<?php } ?>
-			<input id="accept_btn" type="button" value="领取" onclick="acceptBonus()" />
-			<p id="accept_logo" style="color: red; display: none;">已领取</p>
+			<table width="100%">
+				<?php if ($bonus > 0) { ?>
+				<tr>
+					<td style="width: 60%;"><p>固定分红 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<td style="width: 36%;">
+						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
+						<p id="accept_logo" style="color: red; display: none;">已领取</p>
+					</td>		
+				</tr>
+				<?php } ?>
+				<?php if ($dBonus > 0) { ?>
+					<td style="width: 60%;"><p>动态分红 <b><?php echo $dBonus; ?></b> 蜜券！</p></td>
+					<td style="width: 36%;">
+						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
+						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
+				<?php } ?>
+			</table>
 		</div>
 		
 		<div class="btn_box" width="auto">

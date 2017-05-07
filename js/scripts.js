@@ -194,7 +194,7 @@ function isIDNumValid(str)
 
 function isPayPwdValid(str)
 {
-	var payPwdReg = /[a-zA-Z0-9]{6,12}/;
+	var payPwdReg = /[a-zA-Z0-9]{6,18}/;
 	return payPwdReg.test(str);	
 }
 

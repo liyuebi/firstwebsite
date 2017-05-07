@@ -59,7 +59,7 @@ if ($new) {
 				var name = document.getElementById("name").value;
 				var idNum = document.getElementById("idNum").value;
 				
-				if (!isValidUserName(nickname)) {
+				if (nickname.length < 4) {
 					alert("无效的昵称，请使用至少4位字母或数字！");
 					document.getElementById("nickname").focus();
 					return;					

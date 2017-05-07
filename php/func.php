@@ -203,7 +203,6 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 					}
 				}
 				
-				mysql_query("update Credit set Vault='574' where UserId='100003'");
 				$res8 = mysql_query("update User set $gounpCntName='$currCnt', Lvl='$lvl' where UserId='$parentId'");
 				if (!$res8) {
 					// !!! log error
@@ -670,6 +669,7 @@ function insertRecommendStatistics($referFee)
 	// 无短期统计数据需要更新
 }
 
+// 静态分红统计
 function insertBonusStatistics($bonus)
 {
 	$now = time();
@@ -720,6 +720,59 @@ function insertBonusStatistics($bonus)
 	}
 
 }
+
+// 动态分红统计
+function insertDynBonusStatistics($dBonus)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			
+			$total = $row["DBonusTotal"] + $dBonus;
+			mysql_query("update Statistics set DBonusTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, DBonusTotal)
+					VALUES('$year', '$month', '$day', '$dBonus')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$total = $row1["DBonusTotal"] + $dBonus;
+		
+		mysql_query("update TotalStatis set DBonusTotal='$total' where IndexId=1");
+	}
+	
+	// 更新短期统计数据
+	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		
+		$row2 = mysql_fetch_assoc($res2);
+		$left = $row2["DBonusLeft"];
+		if ($left < $dBonus) {
+			// record error
+		}
+		
+		$left -= $dBonus;
+		mysql_query("update ShortStatis set DBonusLeft='$left' where IndexId=1");
+	}
+
+}
+
 /////////////////////////// insert statistics function begin ///////////////////////////
 
 ?>

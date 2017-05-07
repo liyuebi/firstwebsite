@@ -6,6 +6,8 @@ $phone = $_SESSION["phonenum"];
 $name = $_SESSION["name"];
 $idnum = $_SESSION["idnum"]; 
 
+include "../php/constant.php";
+$lvlName = $levelName[$_SESSION['lvl']];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -71,7 +73,7 @@ $idnum = $_SESSION["idnum"];
 	            </tr>
 	            <tr>
 		            <td>用户等级</td>
-		            <td><?php echo $_SESSION['lvl']; ?></td>
+		            <td><?php echo $lvlName; ?></td>
 	            </tr>	     
 	            <tr>
 		            <td>昵称</td>

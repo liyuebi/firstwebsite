@@ -180,7 +180,8 @@ function purchaseProduct()
 		$yearConsume = $totalPrice;
 	}
 	$bpCntPre = $creditInfo["BPCnt"];
-	$bpCntPost = $bpCntPre + $count;
+	$pCnt = $count * 3;
+	$bpCntPost = $bpCntPre + $pCnt;
 	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
@@ -188,7 +189,7 @@ function purchaseProduct()
 	}
 
 	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
-					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
+					VALUES('$userid', '$productId', '$totalPrice', '$pCnt', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
 		return;						
@@ -197,11 +198,12 @@ function purchaseProduct()
 	include 'func.php';
 	
 	$hasNewUser = "false";
-	$newUserId = 0;
-	// 添加新节点，并添加credit信息
-	$bpCntPre = floor($bpCntPre / 3);
-	$bpCntPost = floor($bpCntPost / 3);
-	if ($bpCntPost > $bpCntPre) {
+	$newUserIds = '';
+	// 添加新节点，并添加credit信息，没买一盒需要做一次这种操作
+	$cnt = $count;
+	while ($cnt > 0) {
+		
+		--$cnt;
 		
 		$phone = $row1["PhoneNum"]; 
 		$name = $row1["Name"];
@@ -241,6 +243,10 @@ function purchaseProduct()
 			}
 			
 			$hasNewUser = "true";
+			if (strlen($newUserIds) > 0) {
+				$newUserIds += ' ';
+			}
+			$newUserIds += strval($newUserId);
 		}
 		
 		// 统计新用户总数增加
@@ -256,9 +262,9 @@ function purchaseProduct()
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $count);
+	insertOrderStatistics($totalPrice, $pCnt);
 	
-	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserId));
+	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserIds));
 	return;
 }
 
