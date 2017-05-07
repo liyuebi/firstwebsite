@@ -151,6 +151,24 @@ else
 			if ($count >= 3) {
 				$lvl = 2;
 				$vault += $levelBonus[0];
+				
+				$group1Cnt = $row['Group1Cnt'];
+				$group2Cnt = $row['Group2Cnt'];
+				$group3Cnt = $row['Group3Cnt'];
+				$idx = 1;
+				$length = count($team1Cnt);
+				while ($idx < $length) {
+					
+					if ($group1Cnt >= $team1Cnt[$idx] && $group2Cnt >= $team2Cnt[$idx] && $group3Cnt >= $team3Cnt[$idx]) {
+						++$lvl;
+						$vault += $levelBonus[$idx];
+					}
+					else {
+						break;
+					}
+					
+					++$idx;
+				}
 			}
 		}
 		mysql_query("update User set RecoCnt='$count', Lvl='$lvl' where UserId='$userid'");
