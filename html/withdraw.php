@@ -68,6 +68,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function onConfirm()
@@ -102,6 +103,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 					return;
 				}
 				
+				paypwd = md5(paypwd);
 				$.post("../php/credit.php", {"func":"withdraw","amount":amount,"paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {

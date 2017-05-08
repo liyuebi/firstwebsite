@@ -55,8 +55,10 @@ else
 	else {
 		$num = mysql_num_rows($result);
 		if ($num == 0) {
+			$pwd = md5('000000');
+			$pwd = password_hash($pwd, PASSWORD_DEFAULT);
 			$result = mysql_query("insert into User (PhoneNum, Name, Password, RegisterTime, ReferreeId)
-				VALUES('$phonenum', '$username', '000000', '$now', '$userid')");
+				VALUES('$phonenum', '$username', '$pwd', '$now', '$userid')");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'创建账号失败，请稍后重试！','sql_error'=>mysql_error()));
 				return;

@@ -11,6 +11,7 @@
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 
 			function onConfirm()
@@ -29,12 +30,21 @@
 					document.getElementById("pwd3").value = "";
 				}
 				else {
+					if (pwd2 == "000000") {
+						alert("请不要使用默认密码作为您新的登录密码！");
+						document.getElementById("pwd2").value = "";
+						document.getElementById("pwd3").value = "";
+						return;
+					}
+					
 					if (!isPayPwdValid(pwd2)) {
 						alert("无效的密码，请使用6-12位密码，且只包含字母和数字！");
 						document.getElementById("pwd2").value = "";
 						document.getElementById("pwd3").value = "";
 					}
 					else {
+						pwd1 = md5(pwd1);
+						pwd2 = md5(pwd2);
 						$.post("../php/login.php", {"func":"changeLoginPwd","ori":pwd1,"new":pwd2}, function(data){
 							
 							if (data.error == "false") {

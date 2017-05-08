@@ -17,7 +17,7 @@ $userid = $_SESSION["userId"];
 $new = 0;
 
 // 如果是新用户，推他去修改个人信息
-if ($_SESSION["password"] == '000000'
+if ($_SESSION['pwdModiT'] == 0
 	&& $_SESSION["name"] == '') {
 		
 	$new = 1;

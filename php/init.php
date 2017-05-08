@@ -9,7 +9,7 @@ if (!$con)
 	return; 
 }
 
-if (mysql_query("create database my_db2", $con)) {
+if (mysql_query("create database my_db3", $con)) {
 	echo "Database created";
 	echo "<br>";
 }
@@ -18,7 +18,7 @@ else {
 	echo "<br>";
 }
 
-$db_selected = mysql_select_db("my_db2", $con);
+$db_selected = mysql_select_db("my_db3", $con);
 if (!$db_selected) {
 	echo "select db failed: " , mysql_error();
 	return;

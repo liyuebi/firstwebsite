@@ -24,7 +24,7 @@ if (!$_SESSION["isLogin"]) {
 	return;
 }
 
-if ($paypwd != $_SESSION["buypwd"]) {
+if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 	echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码出错，请重试！'));
 	return;
 }

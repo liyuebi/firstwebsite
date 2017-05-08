@@ -24,6 +24,7 @@ if (!$_COOKIE['isLogin']) {
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function onConfirm()
@@ -37,11 +38,12 @@ if (!$_COOKIE['isLogin']) {
 				}
 				else {
 					if (!isPayPwdValid(pwd1)) {
-						alert("无效的密码，请使用6-12位密码，且只包含字母和数字！");
+						alert("无效的密码，请使用6-18位密码，且只包含字母和数字！");
 						document.getElementById("pwd1").value = "";
 						document.getElementById("pwd2").value = "";
 					}
 					else {
+						pwd1 = md5(pwd1);
 						$.post("../php/login.php", {"func":"setPayPwd","pwd":pwd1}, function(data){
 							
 							if (data.error == "false") {

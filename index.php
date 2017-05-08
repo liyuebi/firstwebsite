@@ -22,6 +22,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 		
         <script src="js/jquery-1.8.3.min.js" ></script>
         <script src="js/scripts.js" ></script>
+        <script src="js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function submitCheck()
@@ -66,7 +67,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 					alert("请输入密码!");
 					return false;
 				}
-				
+				pwd = md5(pwd);
 				$.post("php/login.php", {"func":"login", "phonenum":num, "password":pwd}, function(data){
 					
 					if (data.error == "false") {

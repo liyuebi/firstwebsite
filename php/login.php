@@ -84,7 +84,7 @@ function login()
 				}
 				
 				$row = mysql_fetch_assoc($result);
-				if ($password != $row["Password"]) {
+				if (!password_verify($password, $row["Password"])) {
 					echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'账号或密码出错，请重新输入！'));	
 					return;		
 				}
@@ -160,12 +160,6 @@ function setPayPwd()
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'支付密码已经设置过了！'));
 		return;
 	}
-
-	include 'regtest.php';
-	if (!isValidPayPwd($paypwd)) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'格式错误！'));
-		return;
-	}
 	
 	$con = connectToDB();
 	if (!$con)
@@ -176,6 +170,7 @@ function setPayPwd()
 	else 
 	{
 		$userid = $_SESSION["userId"];
+		$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
 		$result = mysql_query("update User set PayPwd='$paypwd' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
@@ -200,17 +195,11 @@ function changePayPwd()
 		return;
 	}
 	
-	if ($oripwd != $_SESSION["buypwd"]) {
+	if (!password_verify($oripwd, $_SESSION["buypwd"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的原支付密码有误！'));
 		return;
 	}
 	
-	include 'regtest.php';
-	if (!isValidPayPwd($newpwd)) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'新密码格式有误！'));
-		return;
-	}
-
 	$con = connectToDB();
 	if (!$con)
 	{
@@ -220,13 +209,16 @@ function changePayPwd()
 	else 
 	{
 		$userid = $_SESSION["userId"];
-		$result = mysql_query("update User set PayPwd='$newpwd' where UserId='$userid'");
+		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
+		$now = time();
+		$result = mysql_query("update User set PayPwd='$newpwd', LastPPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
 		}
 		
 		$_SESSION["buypwd"] = $newpwd;
+		$_SESSION['ppwdModiT'] = $now;
 		echo json_encode(array('error'=>'false'));
 	}
 
@@ -244,19 +236,8 @@ function changeLoginPwd()
 		return;
 	}
 
-	if ($oripwd != $_SESSION["password"]) {
+	if (!password_verify($oripwd, $_SESSION["password"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的原登录密码有误！'));
-		return;
-	}
-	
-	include 'regtest.php';
-	if (!isValidLoginPwd($newpwd)) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'新密码格式有误！'));
-		return;
-	}
-	
-	if ($newpwd == '000000') {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不能使用初始默认密码作为新的密码，请重新输入！'));
 		return;
 	}
 	
@@ -269,13 +250,16 @@ function changeLoginPwd()
 	else 
 	{
 		$userid = $_SESSION["userId"];
-		$result = mysql_query("update User set Password='$newpwd' where UserId='$userid'");
+		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
+		$now = time();
+		$result = mysql_query("update User set Password='$newpwd', LastPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
 		}
 		
 		$_SESSION["password"] = $newpwd;
+		$_SESSION['pwdModiT'] = $now;
 		echo json_encode(array('error'=>'false'));
 	}
 	return;

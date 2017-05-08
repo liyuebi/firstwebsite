@@ -50,6 +50,7 @@ if ($orderid != '') {
 		
 		<script src="../js/jquery-1.8.3.min.js"></script>		
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
 
@@ -208,6 +209,7 @@ if ($orderid != '') {
 				var count = getCookie("willbuyCount");
 				var addressId = document.getElementById("addId").value;
 				var paypwd = document.getElementById("paypwd").value;
+				paypwd = md5(paypwd);
 				$.post("../php/trade.php", {"func":"purchase","productId":productId,"count":count,"addressId":addressId,"paypwd":paypwd}, function(data){
 							
 					if (data.error == "false") {

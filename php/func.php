@@ -28,6 +28,8 @@ function setSession($row)
 	$_SESSION["idnum"] = $row['IDNum'];
 	$_SESSION["groupId"] = $row['GroupId'];
 	$_SESSION['isLogin'] = true;
+	$_SESSION['pwdModiT'] = $row["LastPwdModiTime"];
+	$_SESSION['ppwdModiT'] = $row["LastPPwdModiTime"];
 	
 	setUserCookie($row['Name'], $row['UserId']);
 }
@@ -93,8 +95,10 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 	}
 	
 	$now = time();
+	$pwd = md5('000000');
+	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
 	$res4 = mysql_query("insert into User (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, GroupId, RegisterTime)
-							values('$phonenum', '$name', '$idNum', '000000', '$userid', '$parentId', '$groupId', '$now')");
+							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$groupId', '$now')");
 	if (!$res4) {
 		$error_code = '52';
 		$error_msg = '插入用户失败，请稍后重试';

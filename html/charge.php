@@ -8,7 +8,7 @@ if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
 }
 
 session_start();
-if ($_SESSION['password'] == '000000') {
+if ($_SESSION['pwdModiT'] == 0) {
 	
 	$url = 'jump.php?source=2';
 	header('Location: ' . $url);

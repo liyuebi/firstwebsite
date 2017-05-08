@@ -71,6 +71,7 @@ if ($con) {
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function getUserInfo() 
@@ -176,6 +177,7 @@ if ($con) {
 				var str = "您确定向用户" + toName + "（ID " + toUser + ")，手机号" + toPhone + "转账" + amount + "，手续费为" + fee + "，对方实际收到" + actualCount;
 				var go = confirm(str);
 				if (go) {
+					payPwd = md5(payPwd);
 					$.post("../php/credit.php", {"func":"transfer","toUser":toUser,"amount":amount,"pwd":payPwd}, function(data){
 							
 						if (data.error == "false") {

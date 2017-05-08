@@ -7,9 +7,9 @@ function connectToDB()
 	{
 		echo "Could not connect: " . mysql_error();
 	}
-	$db_selected = mysql_select_db("my_db2", $con);
+	$db_selected = mysql_select_db("my_db3", $con);
 	if (!$db_selected) {
-		echo "Cannot use my_db2 : " . mysql_error();
+		echo "Cannot use my_db3 : " . mysql_error();
 		$con = false;
 	}
 	return $con;
@@ -24,6 +24,7 @@ function createUserTable()
 	 * Group*Cnt: 第几组的总人数
 	 * RecoCnt: Recommending count 推荐人数
 	 * Lvl: level 用户等级
+	 * LastPwdModiTime: last password modify time 上次登录密码修改时间
 	 * LastPPwdModiTime: last pay password modify time 上次用户支付密码修改时间
 	 */
 	$sql = "create table if not exists User
@@ -36,8 +37,8 @@ function createUserTable()
 		Name varchar(16) DEFAULT '',
 		NickName varchar(16) DEFAULT '',
 		IDNum varchar(18) DEFAULT '',
-		Password varchar(12) NOT NULL,
-		PayPwd varchar(12) DEFAULT '',
+		Password varchar(256) NOT NULL,
+		PayPwd varchar(256) DEFAULT '',
 		ReferreeId int DEFAULT 0,
 		ParentId int DEFAULT 0,
 		Group1Child int DEFAULT 0,
@@ -49,6 +50,7 @@ function createUserTable()
 		RecoCnt int DEFAULT 0,
 		RegisterTime int NOT NULL,
 		LastLoginTime int DEFAULT 0,
+		LastPwdModiTime int DEFAULT 0,
 		LastPPwdModiTime int DEFAULT 0,
 		DefaultAddressId int DEFAULT 0
 	) ENGINE=MEMORY AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";

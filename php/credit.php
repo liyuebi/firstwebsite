@@ -233,7 +233,7 @@ function applyWithdraw()
 		return;				
 	}
 		
-	if ($paypwd != $_SESSION["buypwd"]) {
+	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码输入错误，请重新填写！'));
 		return;		
 	}
@@ -420,7 +420,7 @@ function transfer()
 	$amount = trim(htmlspecialchars($_POST["amount"]));
 	$paypwd = trim(htmlspecialchars($_POST["pwd"]));
 	
-	if ($paypwd != $_SESSION["buypwd"]) {
+	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'支付密码输入错误，请重新输入！'));
 		return;
 	}

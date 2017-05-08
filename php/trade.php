@@ -50,7 +50,7 @@ function purchaseProduct()
 		return;
 	}
 	
-	if ($_SESSION['buypwd'] != $paypwd) {
+	if (!password_verify($paypwd, $_SESSION['buypwd'])) {
 		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
 		return;
 	}
@@ -217,6 +217,7 @@ function purchaseProduct()
 		if ($groupId == 0) {
 			$groupId = $userid;
 			mysql_query("update User set GroupId='$groupId' where UserId='$userid'");
+			$_SESSION["groupId"] = $groupId;
 		}
 		
 		insertNewUserNode($userid, $phone, $name, $idNum, $groupId, $newUserId, $error_code, $error_msg, $sql_error);	
@@ -244,9 +245,9 @@ function purchaseProduct()
 			
 			$hasNewUser = "true";
 			if (strlen($newUserIds) > 0) {
-				$newUserIds += ' ';
+				$newUserIds .= ' ';
 			}
-			$newUserIds += strval($newUserId);
+			$newUserIds .= strval($newUserId);
 		}
 		
 		// 统计新用户总数增加

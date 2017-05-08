@@ -41,6 +41,7 @@ if ($con) {
 	
 		<script src="../js/jquery-1.8.3.min.js"></script>
         <script src="../js/scripts.js" ></script>	
+        <script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function onRegister()
@@ -56,6 +57,7 @@ if ($con) {
 					return;
 				}
 
+				paypwd = md5(paypwd);
 				$.post("../php/register.php", {"phonenum":phonenum, "paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {
