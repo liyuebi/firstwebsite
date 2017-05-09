@@ -67,6 +67,7 @@ function createCreditTable()
 	 * Vault: 静态金库
 	 * DVault: 动态金库
 	 * BPCnt: buy product count 总共购买的产品件数
+	 * LastRwdBPCnt: last reward buy product count 上次发放奖励时购买的产品盒数
 	 * TotalBonus: 固定总分红，根据用户级别每天固定分红
 	 * TotalDBonus: 动态总分红，根据每天订单量按比例给用户的分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
@@ -80,6 +81,7 @@ function createCreditTable()
 		Vault decimal(10,2) DEFAULT 0,
 		DVault decimal(10,2) DEFAULT 0,
 		BPCnt int DEFAULT 0,
+		LastRwdBPCnt int DEFAULT 0,
 		TotalRecharge int DEFAULT 0,
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption decimal(10,2) DEFAULT 0,

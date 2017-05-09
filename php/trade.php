@@ -180,16 +180,22 @@ function purchaseProduct()
 		$yearConsume = $totalPrice;
 	}
 	$bpCntPre = $creditInfo["BPCnt"];
-	$pCnt = $count * 3;
-	$bpCntPost = $bpCntPre + $pCnt;
-	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost' where UserId='$userid'");
+	$bpCntPost = $bpCntPre + $count; 
+	$lastRwdBPCnt = $creditInfo["LastRwdBPCnt"];
+	if ($lastRwdBPCnt == 0) {
+		$lastRwdBPCnt = $bpCntPre;
+	}
+	$cnt = floor(($bpCntPost - $lastRwdBPCnt) / $rewardBPCnt);
+	$lastRwdBPCntPost = $lastRwdBPCnt + $cnt * $rewardBPCnt;
+	
+	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
 	}
 
 	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
-					VALUES('$userid', '$productId', '$totalPrice', '$pCnt', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
+					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
 		return;						
@@ -200,7 +206,6 @@ function purchaseProduct()
 	$hasNewUser = "false";
 	$newUserIds = '';
 	// 添加新节点，并添加credit信息，没买一盒需要做一次这种操作
-	$cnt = $count;
 	while ($cnt > 0) {
 		
 		--$cnt;
@@ -263,7 +268,7 @@ function purchaseProduct()
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $pCnt);
+	insertOrderStatistics($totalPrice, $count);
 	
 	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserIds));
 	return;

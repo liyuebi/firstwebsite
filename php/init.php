@@ -35,7 +35,7 @@ initGeneralStatisTable();
 $ret = createProductTable();
 if ($ret) {
 	$res = mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime, FirstImg)
-							values('900', '茗菊春皇菊3盒', '源自天然，传播健康', '$now', '2.jpg')");
+							values('300', '茗菊春皇菊', '源自天然，传播健康', '$now', '2.jpg')");
 	if (!$res) {
 		echo "insert default product failed: " . mysql_error();
 		echo "<br>";

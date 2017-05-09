@@ -103,8 +103,8 @@ else
 			if ($num == 0) {
 				$vault1 = 0;
 				$dynVault = $dyNewUserVault;
-				$result = mysql_query("insert into Credit (UserId, Vault, DVault)
-					VALUES('$newuserid', '$vault1', '$dynVault')");
+				$result = mysql_query("insert into Credit (UserId, Vault, DVault, BPCnt, LastRwdBPCnt)
+					VALUES('$newuserid', '$vault1', '$dynVault', '1', '1')");
 				if (!$result) {
 					// !!! log
 // 					echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'新用户积分表插入失败，请稍后重试！','sql_error'=>mysql_error()));
@@ -124,7 +124,7 @@ else
 	
 	// 添加初始订单
 	$res2 = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, OrderTime, Status)
-					VALUES('$newuserid', '1', '$refererConsumePoint', '3', '$now', '$OrderStatusDefault') ");
+					VALUES('$newuserid', '1', '$refererConsumePoint', '1', '$now', '$OrderStatusDefault') ");
 	$bInsertOrder = $res2 != false;
 	
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
@@ -183,7 +183,7 @@ else
 								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
-	insertOrderStatistics($refererConsumePoint, 3);
+	insertOrderStatistics($refererConsumePoint, 1);
 	insertRecommendStatistics($refererConsumePoint);
 
 	mysql_close($con);
