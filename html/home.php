@@ -184,10 +184,12 @@ $hasBonus = ($bonus + $dBonus) > 0;
 		<div>
 			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none"> <!-- rules="none" -->
 				<tr>
-					<td width="50%">总蜜券</td>
-					<td width="50%">当日蜜券</td>
+					<td width="49" align="left"><?php echo $_SESSION['nickname'] . "(" . $_SESSION["userId"] . ")"; ?></td>
+					<td width="25%">总蜜券</td>
+					<td width="25%">当日蜜券</td>
 				</tr>
 				<tr>
+					<td align="left"><?php echo $levelName[$_SESSION['lvl']]; ?></td>
 					<td id="totalexpense"><?php if ($row) echo $row["TotalConsumption"]; else echo '0'; ?></td>
 					<td id="todayobtain"><?php if ($row) echo $dayObtained; else echo '0'; ?></td>
 				</tr>
