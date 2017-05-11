@@ -189,7 +189,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 					<td width="25%">当日蜜券</td>
 				</tr>
 				<tr>
-					<td align="left"><?php echo $levelName[$_SESSION['lvl']]; ?></td>
+					<td align="left"><?php echo $levelName[$_SESSION['lvl'] - 1]; ?></td>
 					<td id="totalexpense"><?php if ($row) echo $row["TotalConsumption"]; else echo '0'; ?></td>
 					<td id="todayobtain"><?php if ($row) echo $dayObtained; else echo '0'; ?></td>
 				</tr>
