@@ -44,7 +44,7 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 	$slot = 0;
 	while (count($listChild)) {
 		$currUid = array_shift($listChild);
-		$res3 = mysql_query("select * from User where UserId='$currUid'");
+		$res3 = mysql_query("select * from ClientTable where UserId='$currUid'");
 		if (!$res3 || mysql_num_rows($res3) <= 0) {
 			// !!! log
 			continue;
@@ -97,7 +97,7 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 	$now = time();
 	$pwd = md5('000000');
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res4 = mysql_query("insert into User (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, GroupId, RegisterTime)
+	$res4 = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, GroupId, RegisterTime)
 							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$groupId', '$now')");
 	if (!$res4) {
 		$error_code = '52';
@@ -122,12 +122,12 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 		$gounpCntName = "Group3Cnt";
 	}
 	
-	$res5 = mysql_query("update User set $groupName='$newUserId', $gounpCntName=1 where UserId='$parentId'");
+	$res5 = mysql_query("update ClientTable set $groupName='$newUserId', $gounpCntName=1 where UserId='$parentId'");
 	if (!$res5) {
 		// !!! log
 	}
 	else {
-		$res6 = mysql_query("select * from User where UserId='$parentId'");
+		$res6 = mysql_query("select * from ClientTable where UserId='$parentId'");
 		if (!$res6 || mysql_num_rows($res6) <= 0) {
 			// !!! log	
 		}
@@ -141,7 +141,7 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 					break;	
 				}
 				
-				$res7 = mysql_query("select * from User where UserId='$parentId'");
+				$res7 = mysql_query("select * from ClientTable where UserId='$parentId'");
 				if (!$res7 || mysql_num_rows($res7) <= 0) {
 					// !!! log
 					// can't find parent node, jump out
@@ -207,7 +207,7 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 					}
 				}
 				
-				$res8 = mysql_query("update User set $gounpCntName='$currCnt', Lvl='$lvl' where UserId='$parentId'");
+				$res8 = mysql_query("update ClientTable set $gounpCntName='$currCnt', Lvl='$lvl' where UserId='$parentId'");
 				if (!$res8) {
 					// !!! log error
 				}
@@ -231,7 +231,7 @@ function distributeReferBonus($con, $userid, $count)
 	}
 	
 	{
-		$res1 = mysql_query("select * from User where UserId='$userid'");
+		$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
 		if ($res1 && mysql_num_rows($res1) > 0) {
 			$row1 = mysql_fetch_assoc($res1);
 			$referId = $row1["ReferreeId"];	// 推荐人
@@ -249,7 +249,7 @@ function distributeReferBonus($con, $userid, $count)
 				$recommendCount = 1;
 				$id3 = 0;
 				// 得到推荐人的推荐人数以及他的推荐人
-				$res3 = mysql_query("select * from User where UserId='$id2'");
+				$res3 = mysql_query("select * from ClientTable where UserId='$id2'");
 				if ($res3 && mysql_num_rows($res3) > 0) {
 					$row3 = mysql_fetch_assoc($res3);
 					
@@ -368,7 +368,7 @@ function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &
 			// 更新默认地址,出错了不做处理
 			if ($isDefault) {
 				$addId = mysql_insert_id();
-				mysql_query("update User set DefaultAddressId='$addId' where UserId='$userid'");
+				mysql_query("update ClientTable set DefaultAddressId='$addId' where UserId='$userid'");
 			}
 		}
 	}

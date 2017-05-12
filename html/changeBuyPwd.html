@@ -13,6 +13,13 @@
 		<script src="../js/scripts.js" ></script>
 		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
+			
+			$(document).ready(function(){
+				if (isNotLoginAndJump()) {
+					return;
+				}
+			}
+			
 			function onConfirm()
 			{
 				var pwd1 = document.getElementById("pwd1").value;

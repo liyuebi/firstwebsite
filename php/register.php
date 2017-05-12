@@ -37,7 +37,7 @@ if (!$con)
 }
 else 
 {		  
-	$result = createUserTable();
+	$result = createClientTable();
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'用户表创建失败，请稍后重试！','sql_error'=>mysql_error())); 
 		return;
@@ -64,7 +64,7 @@ else
 	}
 	
 	$now = time();
-	$sql = "select * from User where PhoneNum='$phonenum'";
+	$sql = "select * from ClientTable where PhoneNum='$phonenum'";
 	$result = mysql_query($sql, $con);
 	$newuserid = 0;
 	if (!$result) {
@@ -139,7 +139,7 @@ else
 	}
 	
 	// 更新推荐人的推荐人数，若失败不影响返回结果
-	$result = mysql_query("select * from User where UserId='$userid'");
+	$result = mysql_query("select * from ClientTable where UserId='$userid'");
 	if (!$result) {
 	}
 	else {
@@ -171,7 +171,7 @@ else
 				}
 			}
 		}
-		mysql_query("update User set RecoCnt='$count', Lvl='$lvl' where UserId='$userid'");
+		mysql_query("update ClientTable set RecoCnt='$count', Lvl='$lvl' where UserId='$userid'");
 	}
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果

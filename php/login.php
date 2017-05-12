@@ -58,16 +58,16 @@ function login()
 	}
 	else 
 	{		
-		$result = createUserTable();		
+		$result = createClientTable();		
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'暂时不能登录，请稍后重试！'));	
 			return;
 		}
 		else {
 			$bUseNickName = false;
-			$result = mysql_query("select * from User where UserId='$phonenum'");
+			$result = mysql_query("select * from ClientTable where UserId='$phonenum'");
 			if (!$result || 0 == mysql_num_rows($result)) {
-				$result = mysql_query("select * from User where NickName='$phonenum'");				
+				$result = mysql_query("select * from ClientTable where NickName='$phonenum'");				
 				$bUseNickName = true;
 			}
 			
@@ -95,7 +95,7 @@ function login()
 				
 				$userid = $row["UserId"];
 				$now = time();
-				mysql_query("update User set LastLoginTime='$now' where UserId='$userid'");
+				mysql_query("update ClientTable set LastLoginTime='$now' where UserId='$userid'");
 			}
 		}
 	}
@@ -171,7 +171,7 @@ function setPayPwd()
 	{
 		$userid = $_SESSION["userId"];
 		$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
-		$result = mysql_query("update User set PayPwd='$paypwd' where UserId='$userid'");
+		$result = mysql_query("update ClientTable set PayPwd='$paypwd' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -211,7 +211,7 @@ function changePayPwd()
 		$userid = $_SESSION["userId"];
 		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
 		$now = time();
-		$result = mysql_query("update User set PayPwd='$newpwd', LastPPwdModiTime='$now' where UserId='$userid'");
+		$result = mysql_query("update ClientTable set PayPwd='$newpwd', LastPPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -252,7 +252,7 @@ function changeLoginPwd()
 		$userid = $_SESSION["userId"];
 		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
 		$now = time();
-		$result = mysql_query("update User set Password='$newpwd', LastPwdModiTime='$now' where UserId='$userid'");
+		$result = mysql_query("update ClientTable set Password='$newpwd', LastPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -316,7 +316,7 @@ function editProfile()
 	}
 	else 
 	{
-		$result = mysql_query("select * from User where NickName='$nickname' && UserId!='$userid'");
+		$result = mysql_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
 			return;
@@ -326,7 +326,7 @@ function editProfile()
 			return;			
 		}
 				
-		$result = mysql_query("update User set NickName='$nickname', Name='$name', IDNum='$idNum' where UserId='$userid'");
+		$result = mysql_query("update ClientTable set NickName='$nickname', Name='$name', IDNum='$idNum' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
 			return;
@@ -390,7 +390,7 @@ function getProfile()
 	else 
 	{
 		if (isValidCellPhoneNum($ident)) {
-			$res = mysql_query("select * from User where PhoneNum='$ident'");
+			$res = mysql_query("select * from ClientTable where PhoneNum='$ident'");
 			if ($res && mysql_num_rows($res) > 0) {
 				$row = mysql_fetch_assoc($res);
 				
@@ -402,7 +402,7 @@ function getProfile()
 			}
 		}
 		
-		$res = mysql_query("select * from User where UserId='$ident'");
+		$res = mysql_query("select * from ClientTable where UserId='$ident'");
 		if ($res && mysql_num_rows($res) > 0) {
 			$row = mysql_fetch_assoc($res);
 			
@@ -436,7 +436,7 @@ function switchAccount()
 		return;
 	}
 	
-	$res = mysql_query("select * from User where UserId='$toUserId'");
+	$res = mysql_query("select * from ClientTable where UserId='$toUserId'");
 	if (!$res || mysql_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'要切换的账户异常，请稍后重试！'));
 		return;

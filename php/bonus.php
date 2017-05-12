@@ -91,7 +91,7 @@ function calcBonus($file)
 	$totalDFeng = 0;
 	$totalBonus = 0;
 	writeLog($file, "\n------------------------------------------------------------------\n");
-	$res5 = mysql_query("select * from User");
+	$res5 = mysql_query("select * from ClientTable");
 	if (!$res5) {
 		writeLog($file, "\n!!! 查询用户表失败！\n");
 	}
@@ -160,7 +160,7 @@ function calcBonus($file)
 				
 		$cnt = 0;
 		writeLog($file, "\n------------------------------------------------------------------\n");
-		$res8 = mysql_query("select * from User");
+		$res8 = mysql_query("select * from ClientTable");
 		if (!$res8) {
 			writeLog($file, "\n!!! 查询用户表失败！\n");
 		}

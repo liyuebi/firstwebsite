@@ -17,7 +17,7 @@ if (!$con) {
 session_start();
 $userid = $_SESSION["userId"];
 
-$result = mysql_query("select * from User where UserId='$userid'");
+$result = mysql_query("select * from ClientTable where UserId='$userid'");
 if ($result) {
 	$row = mysql_fetch_assoc($result);
 	$group1 = $row["Group1Cnt"];
@@ -32,14 +32,14 @@ $numRefAccount = 0;
 $res1 = false;
 $res2 = false;
 if ($groupId > 0) {
-	$res1 = mysql_query("select * from User where GroupId='$groupId' and UserId!='$userid'");
+	$res1 = mysql_query("select * from ClientTable where GroupId='$groupId' and UserId!='$userid'");
 	if ($res1) {
 		$numAssoAccount = mysql_num_rows($res1);
 	}
-	$res2 = mysql_query("select * from User where ReferreeId='$userid' and GroupId!='$groupId'");
+	$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid' and GroupId!='$groupId'");
 }
 else {
-	$res2 = mysql_query("select * from User where ReferreeId='$userid'");
+	$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid'");
 }
 
 

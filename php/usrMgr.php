@@ -31,7 +31,7 @@ if (!$con)
 }
 else 
 {		  
-	$result = createUserTable();
+	$result = createClientTable();
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'用户表创建失败，请稍后重试！','sql_error'=>mysql_error())); 
 		return;
@@ -44,7 +44,7 @@ else
 	
 	$userid = 0;
 	
-	$sql = "select * from User where PhoneNum='$phonenum'";
+	$sql = "select * from ClientTable where PhoneNum='$phonenum'";
 	$result = mysql_query($sql, $con);
 	$newuserid = 0;
 	$now = time();
@@ -57,7 +57,7 @@ else
 		if ($num == 0) {
 			$pwd = md5('000000');
 			$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-			$result = mysql_query("insert into User (PhoneNum, Name, Password, RegisterTime, ReferreeId)
+			$result = mysql_query("insert into ClientTable (PhoneNum, Name, Password, RegisterTime, ReferreeId)
 				VALUES('$phonenum', '$username', '$pwd', '$now', '$userid')");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'创建账号失败，请稍后重试！','sql_error'=>mysql_error()));

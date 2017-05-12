@@ -106,6 +106,11 @@ if ($con) {
         <div name="display">
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
 	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
+	        <hr>
+	        <p>您可以选择以下方式向我们打款</p>
+	        <p>微信：mifenggf</p>
+	        <p>支付宝：17379371413</p>
+	        <p>银行账号：收款人: 李青 收款账号: 621467 2080000039339 所属行: 中国建设银行 开户分行: 江西省上饶市婺源县天佑支行</p>
 <!--
 	        <br>
 		        <input type="radio" name="method" value="1" checked="true"/> 微信

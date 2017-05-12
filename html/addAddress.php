@@ -89,7 +89,7 @@ if (isset($_GET['new'])) {
 				// check address, assume length can't be less than 8 chars
 				var add = document.getElementById("address").value;
 				add = $.trim(add);
-				if (add.length < 8) {
+				if (add.length < 6) {
 					document.getElementById("address").focus();
 					alert("无效的地址，请重新输入!");
 					return;

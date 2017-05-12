@@ -1,7 +1,6 @@
 <?php
 
-session_start();
-if (!$_COOKIE['isLogin']) {	
+if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {	
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();

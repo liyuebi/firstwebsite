@@ -101,6 +101,7 @@ $lvlName = $levelName[$_SESSION['lvl'] - 1];
 	    <p class="navhref"><a href="editme.php">编辑资料</a></p>
         <p class="navhref"><a href="address.html">地址管理</a></p>
         <p class="navhref"><a href="pwd.php">密码管理</a></p>
+        <p class="navhref"><a href="payment.php">支付方式管理</a></p>
     </body>
     <div style="text-align:center;">
     </div>

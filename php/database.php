@@ -15,7 +15,7 @@ function connectToDB()
 	return $con;
 }
 	
-function createUserTable()
+function createClientTable()
 {
 	/*
 	 * UserId: Id of user 用户编号 
@@ -27,7 +27,7 @@ function createUserTable()
 	 * LastPwdModiTime: last password modify time 上次登录密码修改时间
 	 * LastPPwdModiTime: last pay password modify time 上次用户支付密码修改时间
 	 */
-	$sql = "create table if not exists User
+	$sql = "create table if not exists ClientTable
 	(
 		UserId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(UserId),
@@ -56,7 +56,7 @@ function createUserTable()
 	) ENGINE=MEMORY AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	$result = mysql_query($sql);
 	if (!$result) {
-		echo "create User table error: " . mysql_error() . "<br>";
+		echo "create ClientTable table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }
@@ -277,6 +277,57 @@ function createWithdrawTable()
 		echo "create WithdrawApplication table error: " . mysql_error() . "<br>";
 	}
 	return $result;
+}
+
+function createWechatTable()
+{
+	$sql = "create table if not exists WechatAccount
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		WechatAcc varchar(32) NOT NULL
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create WechatAccount table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createAlipayTable()
+{
+	$sql = "create table if not exists AlipayAccount
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		AlipayAcc varchar(32) NOT NULL
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create AlipayAccount table error: " . mysql_error() . "<br>";
+	}
+	return $result;	
+}
+
+function createBankAccountTable()
+{
+	$sql = "create table if not exists BankAccount
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		BankAcc varchar(32) NOT NULL,
+		AccName varchar(16) NOT NULL,
+		BankName varchar(16) NOT NULL,
+		BankBranch varchar(32) NOT NULL
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create BankAccount table error: " . mysql_error() . "<br>";
+	}
+	return $result;		
 }
 
 function createCreditRecordTable()

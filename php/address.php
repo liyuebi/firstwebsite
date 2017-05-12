@@ -62,7 +62,7 @@ function getAddresses()
 		}
 		
 		$defaultAdd = 0;
-		$res1 = mysql_query("select * from User where UserId='$userId'");
+		$res1 = mysql_query("select * from ClientTable where UserId='$userId'");
 		if ($res1) {
 			$row1 = mysql_fetch_assoc($res1);
 			$defaultAdd = $row1['DefaultAddressId'];
@@ -161,7 +161,7 @@ function editAddress()
 		
 		$bDefault = $isdefault != '0';
 		if ($bDefault) {
-			mysql_query("update User set DefaultAddressId='$addId' where UserId='$userId'");
+			mysql_query("update ClientTable set DefaultAddressId='$addId' where UserId='$userId'");
 		}
 		echo json_encode(array('error'=>'false'));
 	}
@@ -219,7 +219,7 @@ function changeDefaultAddress()
 		$error_msg = mysql_error();
 	}
 	else {	
-		$result = mysql_query("update User set DefaultAddressId='$defaultAdd' where UserId='$userId'");
+		$result = mysql_query("update ClientTable set DefaultAddressId='$defaultAdd' where UserId='$userId'");
 		if (!$result) {
 			$ret = false;
 			$error_msg = mysql_error();

@@ -102,7 +102,7 @@ function purchaseProduct()
 	}
 		
 	// 更新小金库
-	$res1 = mysql_query("select * from User where UserId='$userid'");
+	$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
 	if (!$res1) {
 		echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'增加小金库数值时出错1！'));
 		return;				
@@ -221,7 +221,7 @@ function purchaseProduct()
 		// 更新groupId
 		if ($groupId == 0) {
 			$groupId = $userid;
-			mysql_query("update User set GroupId='$groupId' where UserId='$userid'");
+			mysql_query("update ClientTable set GroupId='$groupId' where UserId='$userid'");
 			$_SESSION["groupId"] = $groupId;
 		}
 		

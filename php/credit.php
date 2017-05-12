@@ -445,7 +445,7 @@ function transfer()
 	}
 	
 	// 检查收款方账号
-	$res1 = mysql_query("select * from User where UserId='$receiver'");
+	$res1 = mysql_query("select * from ClientTable where UserId='$receiver'");
 	if (!$res1 || mysql_num_rows($res1) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'选择的收款账号无效，请重新选择！'));
 		return;		

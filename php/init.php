@@ -26,7 +26,7 @@ if (!$db_selected) {
 
 $now = time();
 
-createUserTable();
+createClientTable();
 createCreditTable();
 createStatisticsTable();
 initGeneralStatisTable();
