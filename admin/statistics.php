@@ -72,6 +72,7 @@ if ($res1) {
 				<li><a href="ordermgr.php">订单管理</a></li>
 				<li><a href="rechargemgr.php">充值管理</a></li>
 				<li><a href="withdrawmgr.php">取现管理</a></li>
+				<li><a href="configmgr.php">配置管理</a></li>
 				<li><a href="statistics.php">统计数据</a></li>
 			</ul>
 		</div>
