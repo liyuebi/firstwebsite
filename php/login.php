@@ -283,7 +283,7 @@ function editProfile()
 	$nickname = trim(htmlspecialchars($_POST['nickname']));
 	
 	include 'regtest.php';
-	if (strlen($nickname) < 4) {
+	if (strlen($nickname) < 2) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的昵称格式，请重新填写！'));
 		return;		
 	}
