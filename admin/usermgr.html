@@ -10,29 +10,92 @@
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
+			function showAddBlk()
+			{
+				document.getElementById("blk_add").style.display = "block"; 
+				document.getElementById("blk_chk").style.display = "none";
+			}
+			
+			function showQueryBlk()
+			{
+				document.getElementById("blk_chk").style.display = "block";
+				document.getElementById("blk_add").style.display = "none";
+			}
+			
 			function addUser()
-			{
-				document.getElementById("addform").style.display = "inline"; 
-			}
-			
-			function queryUser()
-			{
-				
-			}
-			
-			function submitCheck()
 			{
 				var phonenum = document.getElementById("phonenum").value;
 				var name = document.getElementById("name").value;
 				if (!isPhoneNumValid(phonenum)) {
 					alert("无效的电话号码！");
-					return false;
+					return;
 				}
 				if (name == "") {
 					alert("没有输入姓名！");
-					return false;
+					return;
 				}
-				return true;
+				
+				$.post("../php/usrMgr.php", {"func":"addUser","phone":phonenum,"name":name}, function(data){
+					
+					if (data.error == "false") {
+						alert("设置成功！");	
+						document.getElementById("phonenum").value = "";
+						document.getElementById("name").value = "";						
+					}
+					else {
+						alert("设置失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function queryUser()
+			{
+				var uid = document.getElementById("id_input").value;
+
+				if (uid.length <= 0) {
+					return;
+				}
+				
+				$.post("../php/usrMgr.php", {"func":"queryUser","uid":uid}, function(data){
+					
+					if (data.error == "false") {
+					
+						var container = document.getElementById("user_tbl");
+						var trow = document.createElement("tr");
+						container.appendChild(trow);
+						
+						var d1 = document.createElement("td");
+						d1.innerHTML = data.id;
+						trow.appendChild(d1);
+						var d2 = document.createElement("td");
+						d2.innerHTML = data.nickname;
+						trow.appendChild(d2);
+						var d3 = document.createElement("td");
+						d3.innerHTML = data.phone;
+						trow.appendChild(d3);
+						var d4 = document.createElement("td");
+						d4.innerHTML = data.name;
+						trow.appendChild(d4);
+						var d5 = document.createElement("td");
+						d5.innerHTML = data.IDNum;
+						trow.appendChild(d5);
+						var d6 = document.createElement("td");
+						d6.innerHTML = data.lvl;
+						trow.appendChild(d6);
+						var d7 = document.createElement("td");
+						d7.innerHTML = data.credit;
+						trow.appendChild(d7);
+						var d8 = document.createElement("td");
+						d8.innerHTML = data.vault;
+						trow.appendChild(d8);
+						var d9 = document.createElement("td");	
+						d9.innerHTML = data.dvault;
+						trow.appendChild(d9);
+					}
+					else {
+						alert("查询失败: " + data.error_msg);
+					}
+				}, "json");
 			}
 		</script>
 	</head>
@@ -52,18 +115,34 @@
 	        <div>
 		        <h3>用户管理</h3>
 	        </div>
-	        <input type="button" value="添加新用户" onclick="addUser()" />
-	        <input type="button" value="查询用户" onclick="queryUser()" />
-	        <div>
-		        <form id="addform" style="display: none" method="post" action="../php/usrMgr.php" onsubmit="return submitCheck()">
-			        <input type="hidden" name='func' value="addNew" />
-			        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
-			        <br>
-			        姓名: <input type="text" name="name" id="name" placeholder="请填写用户姓名" />
-					<br>
-					<input type="submit" name="submit" value="添加" />
-			    </form>
+	        <input type="button" value="添加新用户" onclick="showAddBlk()" />
+	        <input type="button" value="查询用户" onclick="showQueryBlk()" />
+	        <div id="blk_add" style="display: none">
+		        <input type="hidden" name='func' value="addNew" />
+		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
+		        <br>
+		        姓名: <input type="text" name="name" id="name" placeholder="请填写用户姓名" />
+				<br>
+				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
+			<div id="blk_chk" style="display: none">
+				<input id="id_input" type="text" placeholder="请输入用户id" />
+				<input type="button" value="查找" onclick="queryUser()" />
+				
+				<table id="user_tbl">
+					<tr>
+						<th>用户名</th>
+						<th>昵称</th>
+						<th>电话号码</th>
+						<th>姓名</th>
+						<th>身份证号</th>
+						<th>等级</th>
+						<th>蜜券</th>
+						<th>固定蜂值</th>
+						<th>动态蜂值</th>
+					</tr>
+				</table>
+			</div>
 		</div>
     </body>
     <div style="text-align:center;">
