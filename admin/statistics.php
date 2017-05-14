@@ -2,19 +2,28 @@
 
 include "../php/database.php";
 
-function getStatistics()
+$result = false;
+$row = false;
+$row1 = false;
+
+$con = connectToDB();
+if (!$con)
 {
-	$con = connectToDB();
-	if (!$con)
-	{
-		return false;
-	}
+	return false;
+}
 	
-	$result = mysql_query("select * from Statistics");
-	return $result;
+$result = mysql_query("select * from Statistics");
+
+$res = mysql_query("select * from TotalStatis");
+if ($res) {
+	$row = mysql_fetch_assoc($res);
 }
 
-$result = getStatistics();		
+$res1 = mysql_query("select * from ShortStatis");
+if ($res1) {
+	$row1 = mysql_fetch_assoc($res1);
+}
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -68,6 +77,35 @@ $result = getStatistics();
 		</div>
 		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
 	        <div>
+		        <p>总统计</p>
+		        <table border="1">
+			        <tr>
+				        <th>积分池</th><th>总人数</th><th>总盒数</th><th>总充值</th><th>总提现</th>
+			        </tr>
+			        <tr>
+				        <td><?php echo $row["CreditsPool"]; ?></td>
+				        <td><?php echo $row["UserCount"]; ?></td>
+				        <td><?php echo $row["SPNum"]; ?></td>
+				        <td><?php echo $row["RechargeTotal"]; ?></td>
+				        <td><?php echo $row["WithdrawTotal"]; ?></td>
+			        </tr>
+		        </table>
+	        </div>
+	        <div>
+		        <p>即时统计</p>
+		        <table border="1">
+			        <tr>
+				        <th>订单额</th><th>充值</th><th>提现</th>
+			        </tr>
+			        <tr>
+				        <td><?php echo $row1["OrderGross"]; ?></td>
+				        <td><?php echo $row1["Recharge"]; ?></td>
+				        <td><?php echo $row1["Withdraw"]; ?></td>
+			        </tr>
+		        </table>
+	        </div>
+	        <div>
+		        <p>按日统计</p>
 				<table border="1">
 					<tr>
 						<th>年</th>
