@@ -46,6 +46,9 @@ else if ("acceptDBonus" == $_POST['func']) {
 
 function applyRecharge()
 {	
+	include 'regtest.php';
+	include 'constant.php';
+	
 	session_start();
 	if (!$_SESSION["isLogin"]) {
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
@@ -53,10 +56,16 @@ function applyRecharge()
 	}
 	
 	$amount = trim(htmlspecialchars($_POST["amount"]));
+	$method = trim(htmlspecialchars($_POST["method"]));
 	
-	include 'regtest.php';
 	if (!isValidMoneyAmount($amount)) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的金额无效，请重新输入！'));
+		return;		
+	}
+	
+	$method = intval($method);
+	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'请选择支付方式！'));
 		return;		
 	}
 	
@@ -73,18 +82,55 @@ function applyRecharge()
 		include "func.php";
 		$left = getCreditsPoolLeft($con);
 		if ($amount > $left) {
-			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'暂时无空闲蜜券发放，请稍后重试！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'暂时无空闲蜜券发放，请稍后重试！'));	
 			return;
 		}
 		
+		$account = '';
+		$bankUser = '';
+		$bankName = '';
+		$bankBranch = '';
+		if ($method == 1) {
+			$res = mysql_query("select * from WechatAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'找不到您的微信账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);	
+			$account = $row["WechatAcc"];
+		}
+		else if ($method == 2) {
+			$res = mysql_query("select * from AlipayAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'找不到您的支付宝账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$account = $row["AlipayAcc"];
+		}
+		else if ($method == 3) {
+			$res = mysql_query("select * from BankAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'找不到您的银行账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$account = $row["BankAcc"];
+			$bankUser = $row["AccName"];
+			$bankName = $row["BankName"];
+			$bankBranch = $row["BankBranch"];
+		}
+				
 		$time = time();
 		$result = createRechargeTable();
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
 			return;
 		}
-		$result = mysql_query("insert into RechargeApplication (UserId, Amount, ApplyTime)
-						VALUES('$userid', '$amount', '$time')");
+		$nickname= $_SESSION['nickname'];
+		$phone = $_SESSION['phonenum'];
+		$result = mysql_query("insert into RechargeApplication (UserId, NickName, PhoneNum, Amount, ApplyTime, Method, Account, BankUser, BankName, BankBranch)
+						VALUES('$userid', '$nickname', '$phone', '$amount', '$time', '$method', '$account', '$bankUser', '$bankName', '$bankBranch')");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'申请充值失败，请稍后重试！'));
 			return;

@@ -16,6 +16,12 @@ if ($_SESSION['pwdModiT'] == 0) {
 }
 
 $mycredit = 0;
+$weAcc = '';
+$isWechatSet = false;
+$aliAcc = '';
+$isAlipaySet = false;
+$bankAcc = '';
+$isBankSet = false;
 
 include "../php/database.php";
 $con = connectToDB();
@@ -26,6 +32,31 @@ if ($con) {
 	if ($result && mysql_num_rows($result) > 0) {
 		$row = mysql_fetch_assoc($result);
 		$mycredit = $row["Credits"];
+	}
+	
+	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
+	if ($res1) {
+		if (mysql_num_rows($res1) > 0) {
+			$row1 = mysql_fetch_assoc($res1);
+			$weAcc = $row1["WechatAcc"];
+			$isWechatSet = true;
+		}
+	}
+	$res2 = mysql_query("select * from AlipayAccount where UserId='$userid'");
+	if ($res2) {
+		if (mysql_num_rows($res2) > 0) {
+			$row2 = mysql_fetch_assoc($res2);
+			$aliAcc = $row2["AlipayAcc"];
+			$isAlipaySet = true;
+		}
+	}
+	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
+	if ($res3) {
+		if (mysql_num_rows($res3) > 0) {
+			$row3 = mysql_fetch_assoc($res3);
+			$bankAcc = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
+			$isBankSet = true;
+		}
 	}
 }
 
@@ -59,7 +90,13 @@ if ($con) {
 					return;
 				}
 				
-				$.post("../php/credit.php", {"func":"recharge","amount":amount}, function(data){
+				var method = $("input[name='method']:checked").val();
+				if (method != "1" && method != "2" && method != "3") {
+					alert("还没有选择支付方式！");
+					return;
+				}
+				
+				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
 					
 					if (data.error == "false") {
 						alert("申请成功！");	
@@ -72,23 +109,28 @@ if ($con) {
 				}, "json");
 			}
 			
+			function goToPayment()
+			{
+				location.href = "payment.php";
+			}
+			
 			$(function() {
 				$(":radio").click(function(){
 					var val = $(this).val();
 					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "inline";
+						document.getElementById("wechat_block").style.display = "block";
 						document.getElementById("alipay_block").style.display = "none";
 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "2") {
 						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "inline";
+						document.getElementById("alipay_block").style.display = "block";
 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "3") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "none";
-						document.getElementById("bank_block").style.display = "inline";
+						document.getElementById("bank_block").style.display = "block";
 					}
 				});
 			});
@@ -104,35 +146,68 @@ if ($con) {
             <h3>购买蜜券</h3>
         </div>
         <div name="display">
-	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
-	        <hr>
 	        <p>您可以选择以下方式向我们打款</p>
 	        <p>微信：mifenggf</p>
 	        <p>支付宝：17379371413</p>
-	        <p>银行账号：收款人: 李青 收款账号: 621467 2080000039339 所属行: 中国建设银行 开户分行: 江西省上饶市婺源县天佑支行</p>
-<!--
-	        <br>
-		        <input type="radio" name="method" value="1" checked="true"/> 微信
-	        <div id="wechat_block" style="border: 1px black solid; padding: 5px;">
-		        <p>请输入您的微信账号:</p>
-		        <input id="wechat_account" type="text" placeholder="请输入微信账号" />
+	        <p>银行账号：</p>
+	        <ol> 
+		        <li>收款人: 李青 
+		        <li>收款账号: 621467 2080000039339 
+		        <li>所属行: 中国建设银行 
+		        <li>开户分行: 江西省上饶市婺源县天佑支行
+		    </ol>
+	        <hr>
+	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
+	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
+	        <div>
+		        <input type="radio" name="method" value="1" /> 微信
+		        <input type="radio" name="method" value="2" /> 支付宝
+		        <input type="radio" name="method" value="3" /> 银行转账
+	        </div>
+	        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
+		        <?php 
+			        if ($isWechatSet) {
+				?>
+				<p>您的微信账号： <b><?php echo $weAcc; ?></b></p>
+				<?php
+					}
+					else {
+				?>
+				<input type="button" value="设置微信账号" onclick="goToPayment()" />
+				<?php
+			        }
+		        ?>
 	        </div>
 	        
-	        <input type="radio" name="method" value="2" /> 支付宝
-	        <div id="alipay_block" style="border: 1px black solid; padding: 5px;">
-		        <p>请输入您的支付宝账号：</p>
-		        <input id="alipay_account" type="text" placeholder="请输入支付宝账号" />
-	        </div>
-	        
-	        <input type="radio" name="method" value="3" /> 银行转账
-			<div id="bank_block" style="border: 1px black solid; padding: 5px;">
-				<p>请输入您的银行账户：</p>
-				<input id="bank_account" type="text" placeholder="请输入银行账号" />
-				<p>请输入所属银行</p>
-				<input id="bank_name" type="text" placeholder="请输入卡号所属的银行，如：中国银行" />
+	        <div id="alipay_block" style="border: 1px black solid; padding: 5px; display: none;">
+		        <?php 
+			        if ($isAlipaySet) {
+				?>
+				<p>您的微信账号： <b><?php echo $aliAcc; ?></b></p>
+				<?php
+					}
+					else {
+				?>
+				<input type="button" value="设置支付宝账号" onclick="goToPayment()" />
+				<?php
+			        }
+		        ?>
 			</div>
--->
+	        
+			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
+		        <?php 
+			        if ($isBankSet) {
+				?>
+				<p>您的微信账号： <b><?php echo $bankAcc; ?></b></p>
+				<?php
+					}
+					else {
+				?>
+				<input type="button" value="设置银行账号" onclick="goToPayment()" />
+				<?php
+			        }
+		        ?>
+			</div>
 	        
 	        <input type="button" value="提交申请" onclick="onConfirm()" />
 	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />

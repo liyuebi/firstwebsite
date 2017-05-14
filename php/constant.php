@@ -36,6 +36,10 @@
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
 	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
 	
+	$paymentWechat = 1;
+	$paymentAlipay = 2;
+	$paymentBank = 3;
+	
 	// team 1 people count needed according to level
 	$team1Cnt = array(0, 6, 20, 40, 75, 150, 250, 375, 350, 700, 1400, 2100, 2800);
 	

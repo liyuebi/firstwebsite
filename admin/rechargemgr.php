@@ -75,9 +75,12 @@ $result = getRechargeApplication();
 						<th>申请编号</th>
 						<th>申请时间</th>
 						<th>用户id</th>
+						<th>昵称</th>
 						<th>用户手机号</th>
-						<th>用户姓名</th>
 						<th>充值金额</th>
+						<th>支付方式</th>
+						<th>账号</th>
+						<th>账号其他信息</th>
 						<th>申请状态</th>
 						<th>执行操作</th>
 						<th>操作记录</th>
@@ -88,16 +91,22 @@ $result = getRechargeApplication();
 							while($row = mysql_fetch_array($result)) {
 					?>
 								<tr>
-									<th><?php echo $row["IndexId"]; ?></th>
-									<th><?php echo date("Y.m.d H:i:s" ,$row["ApplyTime"]); ?></th>
-									<th><?php echo $row["UserId"]; ?></th>
-									<th></th>
-									<th></th>
-									<th><?php echo $row["Amount"]; ?></th>
-									<th id="col_status_<?php echo $row["IndexId"]; ?>">未通过</th>
-									<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
+									<td><?php echo $row["IndexId"]; ?></td>
+									<td><?php echo date("Y.m.d H:i:s" ,$row["ApplyTime"]); ?></td>
+									<td><?php echo $row["UserId"]; ?></td>
+									<td><?php echo $row["NickName"]; ?></td>
+									<td><?php echo $row["PhoneNum"]; ?></td>
+									<td><?php echo $row["Amount"]; ?></td>
+									<td><?php if ($row["Method"] == 1) echo "微信"; 
+											  else if ($row["Method"] == 2) echo "支付宝"; 
+											  else if ($row["Method"] == 2) echo "银行"; ?>
+									</td>
+									<td><?php echo $row["Account"]; ?></td>
+									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
+									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>
+									<td><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></td>
 	<!-- 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
-									<th id= "col_record_<?php echo $row["IndexId"]; ?>"></th>
+									<td id= "col_record_<?php echo $row["IndexId"]; ?>"></td>
 								</tr>
 					<?php
 							}
