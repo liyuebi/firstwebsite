@@ -266,6 +266,7 @@ function applyWithdraw()
 	
 	$amount = trim(htmlspecialchars($_POST["amount"]));
 	$paypwd = trim(htmlspecialchars($_POST["paypwd"]));
+	$method = trim(htmlspecialchars($_POST["method"]));
 	
 	include 'regtest.php';
 	if (!isValidMoneyAmount($amount)) {
@@ -281,6 +282,12 @@ function applyWithdraw()
 		
 	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码输入错误，请重新填写！'));
+		return;		
+	}
+	
+	$method = intval($method);
+	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'请选择支付方式！'));
 		return;		
 	}
 	
@@ -330,6 +337,41 @@ function applyWithdraw()
 			return;		
 		}
 		
+		$account = '';
+		$bankUser = '';
+		$bankName = '';
+		$bankBranch = '';
+		if ($method == 1) {
+			$res = mysql_query("select * from WechatAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'找不到您的微信账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);	
+			$account = $row["WechatAcc"];
+		}
+		else if ($method == 2) {
+			$res = mysql_query("select * from AlipayAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'找不到您的支付宝账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$account = $row["AlipayAcc"];
+		}
+		else if ($method == 3) {
+			$res = mysql_query("select * from BankAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'找不到您的银行账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$account = $row["BankAcc"];
+			$bankUser = $row["AccName"];
+			$bankName = $row["BankName"];
+			$bankBranch = $row["BankBranch"];
+		}
+		
 		$result = createWithdrawTable();
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
@@ -339,8 +381,10 @@ function applyWithdraw()
 		$fee = calcHandleFee($amount, $withdrawHandleRate);
 		$actual = $amount - $fee;
 		
-		$result = mysql_query("insert into WithdrawApplication (UserId, ApplyAmount, ActualAmount, ApplyTime)
-						VALUES('$userid', '$amount', '$actual', '$time')");
+		$nickname= $_SESSION['nickname'];
+		$phone = $_SESSION['phonenum'];
+		$result = mysql_query("insert into WithdrawApplication (UserId, NickName, PhoneNum, ApplyAmount, ActualAmount, ApplyTime, Method, Account, BankUser, BankName, BankBranch)
+						VALUES('$userid', '$nickname', '$phone', '$amount', '$actual', '$time', '$method', '$account', '$bankUser', '$bankName', '$bankBranch')");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'提现申请失败，请稍后重试！'));
 			return;

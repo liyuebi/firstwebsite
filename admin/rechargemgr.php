@@ -99,7 +99,7 @@ $result = getRechargeApplication();
 									<td><?php echo $row["Amount"]; ?></td>
 									<td><?php if ($row["Method"] == 1) echo "微信"; 
 											  else if ($row["Method"] == 2) echo "支付宝"; 
-											  else if ($row["Method"] == 2) echo "银行"; ?>
+											  else if ($row["Method"] == 3) echo "银行"; ?>
 									</td>
 									<td><?php echo $row["Account"]; ?></td>
 									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>

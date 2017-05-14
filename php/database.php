@@ -276,6 +276,13 @@ function createWithdrawTable()
 		ActualAmount int NOT NULL,
 		ApplyTime int NOT NULL,
 		AcceptTime int DEFAULT 0,
+		NickName varchar(16) DEFAULT '',
+		PhoneNum varchar(15) NOT NULL,
+		Method int NOT NULL,
+		Account varchar(32) NOT NULL,
+		BankUser varchar(16) default '',
+		BankName varchar(16) default '',
+		BankBranch varchar(32) default '',
 		DeclineTime int DEFAULT 0,
 		AdminId int DEFAULT 0
 	)";	

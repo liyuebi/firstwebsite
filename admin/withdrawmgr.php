@@ -71,12 +71,16 @@ $result = getWithdrawApplication();
 						<th>申请编号</th>
 						<th>申请时间</th>
 						<th>用户id</th>
+						<th>昵称</th>
 						<th>用户手机号</th>
-						<th>用户姓名</th>
 						<th>申请金额</th>
 						<th>手续费</th>
+						<th>收款方式</th>
+						<th>账号</th>
+						<th>账号其他信息</th>
+						<th>状态</th>
 						<th>确认</th>
-						<th>拒绝</th>
+<!-- 						<th>拒绝</th> -->
 					</tr>
 					<?php
 						date_default_timezone_set('PRC');
@@ -84,15 +88,22 @@ $result = getWithdrawApplication();
 							while($row = mysql_fetch_array($result)) {
 					?>
 								<tr>
-									<th><?php echo $row["IndexId"]; ?></th>
+									<td><?php echo $row["IndexId"]; ?></td>
 									<th><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></th>
 									<th><?php echo $row["UserId"]; ?></th>
-									<th></th>
-									<th></th>
+									<td><?php echo $row["NickName"]; ?></td>
+									<td><?php echo $row["PhoneNum"]; ?></td>
 									<th><?php echo $row["ApplyAmount"]; ?></th>
 									<th><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></th>
+									<td><?php if ($row["Method"] == 1) echo "微信"; 
+											  else if ($row["Method"] == 2) echo "支付宝"; 
+											  else if ($row["Method"] == 3) echo "银行"; ?>
+									</td>
+									<td><?php echo $row["Account"]; ?></td>
+									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
+									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>
 									<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th>
-									<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
+<!-- // 									<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
 								</tr>
 					<?php
 							}
