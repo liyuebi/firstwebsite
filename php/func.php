@@ -633,7 +633,7 @@ function insertOrderStatistics($totalPrice, $count)
 	}
 }
 
-function insertRecommendStatistics($referFee)
+function insertRecommendStatistics($referFee, $isNewUser)
 {
 	$now = time();
 	
@@ -648,7 +648,10 @@ function insertRecommendStatistics($referFee)
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$newUserCount = $row["NSCount"] + 1;
+			$newUserCount = $row["NSCount"];
+			if ($isNewUser) {
+				$newUserCount += 1;
+			}
 			$fee = $row["RecommendFee"] + $referFee;
 
 			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
@@ -664,9 +667,13 @@ function insertRecommendStatistics($referFee)
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
 		$row1 = mysql_fetch_assoc($res1);
-		$userCnt = $row1["UserCount"] + 1;
+		$userCnt = $row1["UserCount"];
+		if ($isNewUser) {
+			$userCnt += 1;
+		}
+		$accCnt = $row1["AccountCount"] + 1;
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
-		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal' where IndexId=1");
+		mysql_query("update TotalStatis set UserCount='$userCnt', AccountCount='$accCnt', RecommendTotal='$recomTotal' where IndexId=1");
 	}
 	
 	// 更新短期统计数据

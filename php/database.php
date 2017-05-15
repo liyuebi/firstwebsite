@@ -419,6 +419,7 @@ function createTotalStatisTable()
 		CreditsPool	decimal(10,2) DEFAULT 50000000,
 		UserCount int DEFAULT 0,
 		BannedUserCount int DEFAULT 0,
+		AccountCount int DEFAULT 0,
 		FengTotal int DEFAULT 0,
 		DFengTotal int DEFAULT 0,
 		RechargeTotal int DEFAULT 0,

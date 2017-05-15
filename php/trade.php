@@ -256,7 +256,7 @@ function purchaseProduct()
 		}
 		
 		// 统计新用户总数增加
-		insertRecommendStatistics(0);
+		insertRecommendStatistics(0, false);
 	}
 
 	// 修改今天购买个数

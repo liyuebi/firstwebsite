@@ -115,7 +115,7 @@ function addUser()
 		
 		// 更新统计数据
 		include "../php/func.php";
-		insertRecommendStatistics(0);
+		insertRecommendStatistics(0, true);
 		
 		mysql_close($con);
 	/*

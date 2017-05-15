@@ -81,11 +81,12 @@ if ($res1) {
 		        <p>总统计</p>
 		        <table border="1">
 			        <tr>
-				        <th>积分池</th><th>总人数</th><th>总盒数</th><th>总充值</th><th>总提现</th>
+				        <th>积分池</th><th>用户数</th><th>账户数</th><th>总盒数</th><th>总充值</th><th>总提现</th>
 			        </tr>
 			        <tr>
 				        <td><?php echo $row["CreditsPool"]; ?></td>
 				        <td><?php echo $row["UserCount"]; ?></td>
+				        <td><?php echo $row["AccountCount"]; ?></td>
 				        <td><?php echo $row["SPNum"]; ?></td>
 				        <td><?php echo $row["RechargeTotal"]; ?></td>
 				        <td><?php echo $row["WithdrawTotal"]; ?></td>
