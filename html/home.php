@@ -214,7 +214,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<table width="100%">
 				<?php if ($bonus > 0) { ?>
 				<tr>
-					<td style="width: 60%;"><p>固定分红 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<td style="width: 60%;"><p>固定分润 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
 						<p id="accept_logo" style="color: red; display: none;">已领取</p>
@@ -222,7 +222,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 				</tr>
 				<?php } ?>
 				<?php if ($dBonus > 0) { ?>
-					<td style="width: 60%;"><p>动态分红 <b><?php echo $dBonus; ?></b> 蜜券！</p></td>
+					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 蜜券！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
 						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
