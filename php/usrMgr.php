@@ -28,7 +28,7 @@ if (!$_SESSION["isLogin"]) {
 
 function addUser()
 {
-	$phonenum = trim(htmlspecialchars($_POST['phonenum']));
+	$phonenum = trim(htmlspecialchars($_POST['phone']));
 	$username = trim(htmlspecialchars($_POST['name']));
 	
 	// 验证电话号码
