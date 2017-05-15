@@ -104,7 +104,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 		            <a name="forget" style="margin-right: 5%;" href="html/findPwd.php?type=login">忘记密码</a>
 	            </div>
 	            <div style="text-align: center;">
-		        	<p>客服微信：xsq180196</p>    
+		        	<p>客服微信：mifenggf</p>    
 	            </div>
 	        </div>
 		</div>
