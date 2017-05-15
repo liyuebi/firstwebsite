@@ -230,7 +230,7 @@ function calcBonus($file)
 	}
 	else {
 		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
-								DBonusTotal='$bonusTotal', DBonusLeft='$bonusTotal', LastDCalcTime='$now' where IndexId=1");		
+								DBonusTotal='$dBonusTotal', DBonusLeft='$dBonusTotal', LastDCalcTime='$now' where IndexId=1");		
 	}
 	if (!$res4) {
 		echo "\n!!! 更新短期统计表失败： " . mysql_error() . "\n";

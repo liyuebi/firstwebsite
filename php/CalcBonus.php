@@ -25,7 +25,7 @@ list($startM, $startTime) = explode(" ", microtime());
 $startTimeStr = date("Y-m-d H:i:s", $startTime) . " " . round($startM * 1000);
 // echo $startTimeStr;
 
-$fileNameStr = "../log/bonus_" . date("YmdHis", $startTime);
+$fileNameStr = dirname(__FILE__) . "/../log/bonus_" . date("YmdHis", $startTime);
 if (file_exists($fileNameStr)) {
 	$bCreateFile = false;
 }
