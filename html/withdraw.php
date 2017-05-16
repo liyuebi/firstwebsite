@@ -73,6 +73,7 @@ if ($con) {
 			$isAlipaySet = true;
 		}
 	}
+/*
 	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
 	if ($res3) {
 		if (mysql_num_rows($res3) > 0) {
@@ -81,6 +82,7 @@ if ($con) {
 			$isBankSet = true;
 		}
 	}
+*/
 }
 $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 
@@ -189,17 +191,17 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 					if (val == "1") {
 						document.getElementById("wechat_block").style.display = "block";
 						document.getElementById("alipay_block").style.display = "none";
-						document.getElementById("bank_block").style.display = "none";
+// 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "2") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "block";
-						document.getElementById("bank_block").style.display = "none";
+// 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "3") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "none";
-						document.getElementById("bank_block").style.display = "block";
+// 						document.getElementById("bank_block").style.display = "block";
 					}
 				});
 			});
@@ -219,7 +221,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 			<div>
 		        <input type="radio" name="method" value="1" /> 微信
 		        <input type="radio" name="method" value="2" /> 支付宝
-		        <input type="radio" name="method" value="3" /> 银行转账
+<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
 			</div>
 			
 	        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
@@ -252,6 +254,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 		        ?>
 			</div>
 	        
+<!--
 			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
 		        <?php 
 			        if ($isBankSet) {
@@ -266,6 +269,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 			        }
 		        ?>
 			</div>
+-->
         </div>
         
         <hr>

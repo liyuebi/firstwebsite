@@ -50,6 +50,7 @@ if ($con) {
 			$isAlipaySet = true;
 		}
 	}
+/*
 	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
 	if ($res3) {
 		if (mysql_num_rows($res3) > 0) {
@@ -58,6 +59,7 @@ if ($con) {
 			$isBankSet = true;
 		}
 	}
+*/
 }
 
 ?>
@@ -120,17 +122,17 @@ if ($con) {
 					if (val == "1") {
 						document.getElementById("wechat_block").style.display = "block";
 						document.getElementById("alipay_block").style.display = "none";
-						document.getElementById("bank_block").style.display = "none";
+// 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "2") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "block";
-						document.getElementById("bank_block").style.display = "none";
+// 						document.getElementById("bank_block").style.display = "none";
 					}
 					else if (val == "3") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "none";
-						document.getElementById("bank_block").style.display = "block";
+// 						document.getElementById("bank_block").style.display = "block";
 					}
 				});
 			});
@@ -149,6 +151,7 @@ if ($con) {
 	        <p>您可以选择以下方式支付，充值蜜券1:1</p>
 	        <p>微信：mifenggf</p>
 	        <p>支付宝：17379371413</p>
+<!--
 	        <p>银行账号：</p>
 	        <ol> 
 		        <li>收款人: 李青 
@@ -156,13 +159,14 @@ if ($con) {
 		        <li>所属行: 中国建设银行 
 		        <li>开户分行: 江西省上饶市婺源县天佑支行
 		    </ol>
+-->
 	        <hr>
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
 	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
 	        <div>
 		        <input type="radio" name="method" value="1" /> 微信
 		        <input type="radio" name="method" value="2" /> 支付宝
-		        <input type="radio" name="method" value="3" /> 银行转账
+<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
 	        </div>
 	        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
 		        <?php 
@@ -194,6 +198,7 @@ if ($con) {
 		        ?>
 			</div>
 	        
+<!--
 			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
 		        <?php 
 			        if ($isBankSet) {
@@ -208,6 +213,7 @@ if ($con) {
 			        }
 		        ?>
 			</div>
+-->
 	        
 	        <input type="button" value="提交申请" onclick="onConfirm()" />
 	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />
