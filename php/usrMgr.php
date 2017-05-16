@@ -15,6 +15,9 @@ if ("addUser" == $_POST['func']) {
 else if ("queryUser" == $_POST['func']) {
 	queryUser();	
 }
+else if ("getDFeng" == $_POST['func']) {
+	getAllDFeng();
+}
 
 // admin login
 // 判断是否登录
@@ -165,6 +168,32 @@ function queryUser()
 	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"], 		
 				'id'=>$row["UserId"],'phone'=>$row["PhoneNum"],'name'=>$row["Name"],
 				'IDNum'=>$row["IDNum"],'lvl'=>$row["Lvl"],'credit'=>$credit,'vault'=>$vault,'dvault'=>$dvault));
+}
+
+function getAllDFeng()
+{
+	include "constant.php";
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("select * from Credit");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找积分库失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$feng = 0;
+	while($row = mysql_fetch_array($res)) {
+		$dVault = $row["DVault"];
+		$dfeng = ceil($dVault / $fengzhiValue);
+		$feng += $dfeng;
+	}
+	echo json_encode(array('error'=>'false','dfeng'=>$feng));
+	
 }
 
 ?>

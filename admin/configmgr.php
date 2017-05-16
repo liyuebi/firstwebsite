@@ -19,8 +19,8 @@ include "../php/constant.php";
 			
 			function changeFloor()
 			{
-				$val = document.getElementById("floor").value;
-				$.post("../php/changeConfig.php", {"func":"changeFloor","val":$val}, function(data){
+				var val = document.getElementById("floor").value;
+				$.post("../php/changeConfig.php", {"func":"changeFloor","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -33,8 +33,8 @@ include "../php/constant.php";
 			
 			function changeCeil()
 			{
-				$val = document.getElementById("ceil").value;
-				$.post("../php/changeConfig.php", {"func":"changeCeil","val":$val}, function(data){
+				var val = document.getElementById("ceil").value;
+				$.post("../php/changeConfig.php", {"func":"changeCeil","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -47,8 +47,8 @@ include "../php/constant.php";
 			
 			function changeTransferFloor()
 			{
-				$val = document.getElementById("transferFloor").value;
-				$.post("../php/changeConfig.php", {"func":"changeTransferFloor","val":$val}, function(data){
+				var val = document.getElementById("transferFloor").value;
+				$.post("../php/changeConfig.php", {"func":"changeTransferFloor","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -61,8 +61,8 @@ include "../php/constant.php";
 			
 			function changeRewardRate()
 			{
-				$val = document.getElementById("rwdRate").value;
-				$.post("../php/changeConfig.php", {"func":"changeRwdRate","val":$val}, function(data){
+				var val = document.getElementById("rwdRate").value;
+				$.post("../php/changeConfig.php", {"func":"changeRwdRate","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -85,6 +85,7 @@ include "../php/constant.php";
 				<li><a href="withdrawmgr.php">取现管理</a></li>
 				<li><a href="configmgr.php">配置管理</a></li>
 				<li><a href="statistics.php">统计数据</a></li>
+				<li><a href="configRwdRate.php">配置动态拨比</a></li>
 			</ul>
 		</div>
 		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
