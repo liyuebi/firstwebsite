@@ -98,12 +98,14 @@ if ($res1) {
 		        <p>即时统计</p>
 		        <table border="1">
 			        <tr>
-				        <th>订单额</th><th>充值</th><th>提现</th>
+				        <th>订单额</th><th>充值</th><th>提现</th><th>当日预计固定分润总额</th><th>当日预计动态分润总额</th>
 			        </tr>
 			        <tr>
 				        <td><?php echo $row1["OrderGross"]; ?></td>
 				        <td><?php echo $row1["Recharge"]; ?></td>
 				        <td><?php echo $row1["Withdraw"]; ?></td>
+				        <td><?php echo $row1["BonusTotal"]; ?></td>
+				        <td><?php echo $row1["DBonusTotal"]; ?></td>
 			        </tr>
 		        </table>
 	        </div>
