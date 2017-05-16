@@ -8,6 +8,7 @@
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -82,14 +83,14 @@
         
         <div name="display">
 	        <p>请使用6-12位字母和数字作为密码</p>
-	        <input type="password" id="pwd1" name="" placeholder="请输入旧的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
+	        <input type="password" id="pwd1" name="" class="form-control" style="width: 70%;" placeholder="请输入旧的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
 	        <br>
-	        <input type="password" id="pwd2" name="" placeholder="请输入新的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
+	        <input type="password" id="pwd2" name="" class="form-control" style="width: 70%;" placeholder="请输入新的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
 	        <br>
-	        <input type="password" id="pwd3" name="" placeholder="请再次输入新的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
+	        <input type="password" id="pwd3" name="" class="form-control" style="width: 70%;" placeholder="请再次输入新的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
 	        <br>
-	        <input type="button" value="设置" onclick="onConfirm()" />
-	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />
+	        <input type="button" value="设置" class="button-rounded" style="width: 56%; height: 30px;" onclick="onConfirm()" />
+	        <input type="button" value="取消" class="button-rounded" style="width: 56%; height: 30px; margin-top: 10px;" onclick="javascript:history.back(-1);" />
 	        <br>
 	        <a type="button" name="forget" href="html/findPwd.php?type=login">忘记密码</a>
         </div>

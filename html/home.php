@@ -246,8 +246,10 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			</ul>
 		</div>
 		
+<!--
 		<div id="post">
 			<h3>公告：</h3>
 		</div>
+-->
 	</body>
 </html>
