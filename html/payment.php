@@ -216,6 +216,7 @@ if ($res3) {
 	        </div>
 	    </div>
         
+<!--
         <div name="bank">
 	        <hr>
 	        <h4>银行账户</h4>
@@ -235,6 +236,7 @@ if ($res3) {
 		        <p id='bank_acc'><?php echo $bankAcc; ?></p>
 	        </div>
         </div>
+-->
     </body>
     <div style="text-align:center;">
     </div>
