@@ -63,7 +63,7 @@ if ($con) {
 					if (data.error == "false") {
 						alert("注册成功！\n新用户的ids是" + data.new_user_id);	
 						document.getElementById("phonenum").value = "";
-						document.getElementById("Captcha").value = "";
+// 						document.getElementById("Captcha").value = "";
 						document.getElementById("paypwd").value = "";
 					}
 					else {
@@ -101,9 +101,9 @@ if ($con) {
         <div>    
             <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
             <br>
-            <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/>
-            <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／>
-			<br>
+<!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
+<!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
+<!-- 			<br> -->
 			<p style="margin-bottom: 0;">注册用户需要使用<?php echo $neededcredit;?>蜜券,您现在拥有蜜券数量为<strong><?php echo $mycredit; ?></strong></p>
 			<?php
 				if ($paypwd == "") {		
