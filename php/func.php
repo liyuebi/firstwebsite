@@ -702,7 +702,7 @@ function insertBonusStatistics($bonus)
 		}
 		else {
 			mysql_query("insert into Statistics (Ye, Mon, Day, BonusTotal)
-					VALUES('$year', '$month', '$day', '$total')");
+					VALUES('$year', '$month', '$day', '$bonus')");
 		}
 	}
 
