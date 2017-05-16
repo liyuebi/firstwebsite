@@ -56,7 +56,7 @@ function changeFloorValue()
 	
 	$err_msg = '';
 	if (!changeConfig("withdrawFloorAmount", $val, $err_msg)) {
-		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
@@ -69,7 +69,7 @@ function changeCeilValue()
 	
 	$err_msg = '';
 	if (!changeConfig("withdrawCeilAmountOneDay", $val, $err_msg)) {
-		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
@@ -82,7 +82,7 @@ function changeRwdRateValue()
 	
 	$err_msg = '';
 	if (!changeConfig("rewardRate", $val, $err_msg)) {
-		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
@@ -95,7 +95,7 @@ function changeTransferFloorValue()
 	
 	$err_msg = '';
 	if (!changeConfig("transferFloorAmount", $val, $err_msg)) {
-		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
