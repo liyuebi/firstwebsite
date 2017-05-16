@@ -17,10 +17,15 @@ else if ("changeTransferFloor" == $_POST['func']) {
 	changeTransferFloorValue();
 }
 
-function changeConfig($name, $val)
+function changeConfig($name, $val, &$err)
 {
 	$str = '';
 	$fp = fopen("constant.php", 'r');
+	if (!$fp) {
+		$err = "只读代开文件失败！";
+		return false;
+	}
+	
 	while (!feof($fp)) {
 		$buf = fgets($fp);
 		if (strstr($buf, $name)) {
@@ -35,8 +40,13 @@ function changeConfig($name, $val)
 	fclose($fp);
 	
 	$fp2 = fopen("constant.php", 'w');
+	if (!$fp2) {
+		$err = "写文件打开文件失败！";
+		return false;
+	}
 	fwrite($fp2, $str);
 	fclose($fp2);
+	return true;
 }
 
 function changeFloorValue()
@@ -44,7 +54,11 @@ function changeFloorValue()
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = intval($val);
 	
-	changeConfig("withdrawFloorAmount", $val);
+	$err_msg = '';
+	if (!changeConfig("withdrawFloorAmount", $val, $err_msg)) {
+		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
 	echo json_encode(array('error'=>'false'));
 }
 
@@ -53,7 +67,11 @@ function changeCeilValue()
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = intval($val);
 	
-	changeConfig("withdrawCeilAmountOneDay", $val);
+	$err_msg = '';
+	if (!changeConfig("withdrawCeilAmountOneDay", $val, $err_msg)) {
+		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
 	echo json_encode(array('error'=>'false'));
 }
 
@@ -62,7 +80,11 @@ function changeRwdRateValue()
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = floatval($val);
 	
-	changeConfig("rewardRate", $val);
+	$err_msg = '';
+	if (!changeConfig("rewardRate", $val, $err_msg)) {
+		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
 	echo json_encode(array('error'=>'false'));
 }
 
@@ -71,7 +93,11 @@ function changeTransferFloorValue()
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = intval($val);
 	
-	changeConfig("transferFloorAmount", $val);
+	$err_msg = '';
+	if (!changeConfig("transferFloorAmount", $val, $err_msg)) {
+		echo json_encode(array('error'=>'false', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
 	echo json_encode(array('error'=>'false'));
 }
 
