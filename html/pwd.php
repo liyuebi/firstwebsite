@@ -25,6 +25,7 @@ if ($paypwd != "") {
 		<meta name="author" content="">
 
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -59,9 +60,9 @@ if ($paypwd != "") {
         </div>
         
         <div name="display">
-	        <input type="button" value="修改登录密码" onclick="onBtnLoginPwdClicked()" />
+	        <input type="button" value="修改登录密码" class="button-rounded" style="width: 50%; height: 30px;" onclick="onBtnLoginPwdClicked()" />
 	        <br>
-	        <input type="button" value="<?php echo $text;?>" id="btnPayPwd" onclick="onBtnPayPwdClicked()" />
+	        <input type="button" value="<?php echo $text;?>" id="btnPayPwd" class="button-rounded" style="width: 50%; height: 30px; margin-top: 10px;" onclick="onBtnPayPwdClicked()" />
         </div>
     </body>
     <div style="text-align:center;">

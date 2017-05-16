@@ -20,6 +20,7 @@ if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -71,12 +72,12 @@ if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
         
         <div name="display">
 	        <p>请使用6-18位字母和数字作为密码</p>
-	        <input id="pwd1" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
+	        <input id="pwd1" type="password" class="form-control" style="width: 70%;" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
-	        <input id="pwd2" type="password" placeholder="请再次输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
+	        <input id="pwd2" type="password" class="form-control" style="width: 70%;" placeholder="请再次输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
-	        <input type="button" value="确认" onclick="onConfirm()" />
-	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />
+	        <input type="button" value="确认" class="button-rounded" style="width: 48%; height: 30px; float: left;" onclick="onConfirm()" />
+	        <input type="button" value="取消" class="button-rounded" style="width: 48%; height: 30px; float: right;" onclick="javascript:history.back(-1);" />
         </div>
     </body>
     <div style="text-align:center;">

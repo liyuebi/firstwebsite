@@ -58,6 +58,7 @@ if ($res3) {
 		<meta name="author" content="">
 
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -195,8 +196,8 @@ if ($res3) {
 	        <h4>微信</h4>
 	        <div id='wechat_unset' style="display: <?php if ($isWechatSet) echo "none"; else echo "inline"; ?>" >
 		        <p>请输入您的微信账号</p>
-		        <input id='wechat_input' type="text" placeholder="请输入您的微信账号" />
-		        <input type="button" value="确认" onclick="setWechat()" />
+		        <input id='wechat_input' type="text" placeholder="请输入您的微信账号" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input type="button" value="确认" onclick="setWechat()" class="button-rounded" style="width: 28%; height: 30px;" />
 	        </div>
 	        <div id='wechat_set' style="display: <?php if (!$isWechatSet) echo "none"; else echo "inline"; ?>" >
 		        <p>您的微信账号： <b id='wechat_acc'><?php echo $weAcc; ?></b></p>
@@ -208,8 +209,8 @@ if ($res3) {
 	        <h4>支付宝</h4>
 	        <div id='alipay_unset' style="display: <?php if ($isAlipaySet) echo "none"; else echo "inline"; ?>" >
 		        <p>请输入您的支付宝账号</p>
-		        <input id='alipay_input' type="text" placeholder="请输入您的支付宝账号" />
-		        <input type="button" value="确认" onclick="setAlipay()" />
+		        <input id='alipay_input' type="text" placeholder="请输入您的支付宝账号" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input type="button" value="确认" onclick="setAlipay()" class="button-rounded" style="width: 28%; height: 30px;" />
 	        </div>
 	        <div id='alipay_set' style="display: <?php if (!$isAlipaySet) echo "none"; else echo "inline"; ?>" >
 		        <p>您的支付宝账号： <b id='alipay_acc'><?php echo $aliAcc; ?></b></p>

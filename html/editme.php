@@ -40,6 +40,7 @@ if ($new) {
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 		
         <script src="../js/jquery-1.8.3.min.js" ></script>
         <script src="../js/scripts.js" ></script>
@@ -149,15 +150,15 @@ if ($new) {
 	            </tr>
 	            <tr>
 		            <td style="text-align: right;">昵称</td>
-		            <td width="70%" style="text-align: left;"><input type="text" id="nickname" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" /></td>
+		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="nickname" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" /></td>
 	            </tr>	            
 	            <tr>
 		            <td style="text-align: right;">姓名</td>
-		            <td width="70%" style="text-align: left;"><input type="text" id="name" value="<?php echo "$name" ?>" /></td>
+		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="name" value="<?php echo "$name" ?>" /></td>
 	            </tr>
 	            <tr>
 		            <td style="text-align: right;">身份证号</td>
-		            <td width="70%" style="text-align: left;"><input type="text" id="idNum" value="<?php echo "$idnum" ?>" /></td>
+		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="idNum" value="<?php echo "$idnum" ?>" /></td>
 	            </tr>
             </table>
             
@@ -167,8 +168,8 @@ if ($new) {
         </div>
         
         <div>
-    		<input type="button" value="保存" onclick="onSubmit()" />
-			<input type="button" value="取消" onclick="javascript:history.back(-1);"/>
+    		<input type="button" value="保存" class="button-rounded" style="width: 48%; height: 30px; float: left;" onclick="onSubmit()" />
+			<input type="button" value="取消" class="button-rounded" style="width: 48%; height: 30px; float: right;" onclick="javascript:history.back(-1);"/>
         </div>
             
         <div id="block_add" style="display: <?php if ($noAddress) echo "block"; else echo "none"; ?>;">
