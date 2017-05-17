@@ -46,7 +46,7 @@ if ($res1) {
 				
 				var rate = document.getElementById("rwdRate").value;
 				rate = parseFloat(rate);
-				var bonus = Math.floor(<?php echo $gross; ?> * rate / feng);
+				var bonus = Math.floor(<?php echo $gross; ?> * rate / feng * 100) / 100;
 				document.getElementById("bonus").innerHTML = bonus;
 			}
 			
