@@ -30,10 +30,25 @@ $result = getRechargeApplication();
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
+			function enableAllBtn(id, enabled)
+			{
+				var btns = document.getElementsByName(id);
+				var cnt = btns.length;
+				for (var i = 0; i < cnt; ++i) 
+				{
+					btns[i].disabled = !enabled;					
+				}
+			}
+			
 			function onConfirm(btn)
 			{
 // 				alert(btn.id);	
-				document.getElementById(btn.id).disabled = true;
+// 				document.getElementById(btn.id).disabled = true;
+				enableAllBtn(btn.id, false);
+				if (!confirm("确认已收款么？")) {
+					enableAllBtn(btn.id, true);
+					return;
+				}
 				$.post("../php/credit.php", {"func":"allowRecharge","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
@@ -45,14 +60,34 @@ $result = getRechargeApplication();
 					else {
 						alert("申请未通过: " + data.error_msg + " " + data.index);
 						document.getElementById("col_record_" + data.index).innerHTML = data.error_msg;
-						document.getElementById(data.index).disabled = false;
+						enableAllBtn(btn.id, true);
 					}
 				}, "json");
 			}
 			
 			function onDeny(btn)
 			{
-				alert(btn.id);
+				enableAllBtn(btn.id, false);
+				if (!confirm("确定要拒绝此次充值申请，并删除该充值申请吗？")) {
+					enableAllBtn(btn.id, true);
+					return;
+				}
+				
+				$.post("../php/credit.php", {"func":"denyRecharge","index":btn.id}, function(data){
+					
+					if (data.error == "false") {
+						alert("删除申请成功！" + data.index);	
+						var str = "col_status_"+data.index;
+						document.getElementById(str).innerHTML = "已拒绝";
+						document.getElementById(str).style.color = "red";
+// 						location.href = "pwd.php";
+					}
+					else {
+						alert("删除申请失败: " + data.error_msg + " " + data.index);
+						document.getElementById("col_record_" + data.index).innerHTML = data.error_msg;
+						enableAllBtn(btn.id, true);
+					}
+				}, "json");
 			}
 		</script>
 	</head>
@@ -84,7 +119,8 @@ $result = getRechargeApplication();
 						<th>账号</th>
 						<th>账号其他信息</th>
 						<th>申请状态</th>
-						<th>执行操作</th>
+						<th>确认订单</th>
+						<th>取消订单</th>
 						<th>操作记录</th>
 					</tr>
 					<?php
@@ -106,9 +142,9 @@ $result = getRechargeApplication();
 									<td><?php echo $row["Account"]; ?></td>
 									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
 									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>
-									<td><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></td>
-	<!-- 								<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
-									<td id= "col_record_<?php echo $row["IndexId"]; ?>"></td>
+									<td><input type="button" value="确认充值" name="<?php echo $row["IndexId"]; ?>" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></td>
+									<th><input type="button" value="拒绝" name="<?php echo $row["IndexId"]; ?>" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th>
+									<td id= "col_record_<?php echo $row["IndexId"]; ?>" style="color: red;"></td>
 								</tr>
 					<?php
 							}
