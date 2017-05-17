@@ -73,7 +73,7 @@ function calcBonus($file)
 		writeLog($file, "\n！！！ 动态分红剩余小于0，出错！\n\n");
 	}
 	
-	$dBonusTotal = floor($gross * $rewardRate);
+	$dBonusTotal = floor($gross * $rewardRate * 100) / 100;
 	
 	writeLog($file, "本期的订单总额：" . $gross . "\n");
 	writeLog($file, "本期的订单分红比例：" . $rewardRate . "\n");
@@ -153,7 +153,7 @@ function calcBonus($file)
 	// 计算每个动态峰值分多少积分 
 	$dBonusPerF = 0;
 	if ($totalDFeng > 0) {
-		$dBonusPerF = floor($dBonusTotal / $totalDFeng);	
+		$dBonusPerF = floor($dBonusTotal / $totalDFeng * 100) / 100;	
 	}
 	
 	if ($dBonusPerF > 0) {
