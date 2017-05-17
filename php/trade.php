@@ -43,6 +43,9 @@ function purchaseProduct()
 	$addressId = trim(htmlspecialchars($_POST['addressId']));
 	
 	$price = 0;
+
+	echo json_encode(array('error'=>'true','error_code'=>'50','error_msg'=>'暂时不能复投，请稍后重试'));
+	return;
 	
 	session_start();
 	if (!$_SESSION["isLogin"]) {
