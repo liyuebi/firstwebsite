@@ -16,6 +16,12 @@ else if ("changeRwdRate" == $_POST['func']) {
 else if ("changeTransferFloor" == $_POST['func']) {
 	changeTransferFloorValue();
 }
+else if ("changeNUF" == $_POST['func']) {
+	changeNewUserVault();
+}
+else if ("changeNAF" == $_POST['func']) {
+	changeNewAccountVault();	
+}
 
 function changeConfig($name, $val, &$err)
 {
@@ -95,6 +101,32 @@ function changeTransferFloorValue()
 	
 	$err_msg = '';
 	if (!changeConfig("transferFloorAmount", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeNewUserVault()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("dyNewUserVault", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeNewAccountVault()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("dyNewAccountVault", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}

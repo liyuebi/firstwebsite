@@ -17,6 +17,34 @@ include "../php/constant.php";
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
+			function changeNUFeng()
+			{
+				var val = document.getElementById("newUserFeng").value;
+				$.post("../php/changeConfig.php", {"func":"changeNUF","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function changeNewAntFeng()
+			{
+				var val = document.getElementById("newAccntFeng").value;
+				$.post("../php/changeConfig.php", {"func":"changeNAF","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+			
 			function changeFloor()
 			{
 				var val = document.getElementById("floor").value;
@@ -98,10 +126,14 @@ include "../php/constant.php";
 						<td>一蜂值</td><td><?php echo $fengzhiValue; ?></td>
 					</tr>
 					<tr>
-						<td>新用户初始动态蜂值</td><td><?php echo $dyNewUserVault;  ?></td>
+						<td>新用户初始动态蜂值</td>
+						<td><input type="text" id="newUserFeng" value="<?php echo $dyNewUserVault;  ?>" /></td>
+						<td><input type="button" value="修改" onclick="changeNUFeng()" /></td>
 					</tr>
 					<tr>
-						<td>关联账号初始动态蜂值</td><td><?php echo $dyNewAccountVault;  ?></td>
+						<td>关联账号初始动态蜂值</td>
+						<td><input type="text" id="newAccntFeng" value="<?php echo $dyNewAccountVault;  ?>" /></td>
+						<td><input type="button" value="修改" onclick="changeNewAntFeng()" /></td>
 					</tr>
 					<tr>
 						<td>推荐用户消耗蜜券</td><td><?php echo $refererConsumePoint;?></td>
