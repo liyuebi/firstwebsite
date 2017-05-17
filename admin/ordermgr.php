@@ -72,9 +72,10 @@ $result = getTransaction();
 					<tr>
 						<th>下单时间</th>
 						<th>用户id</th>
-						<th>用户手机号</th>
-						<th>用户名</th>
 						<th>数量</th>
+						<th>收件人</th>
+						<th>收货人手机</th>
+						<th>收货地址</th>
 						<th>状态</th>
 						<th>确认发货</th>
 					</tr>
@@ -86,9 +87,10 @@ $result = getTransaction();
 							<tr>
 								<th><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></th>
 								<th><?php echo $row["UserId"]; ?></th>
-								<th></th>
-								<th></th>
-								<th><?php echo $row["Count"] ?></th>
+								<th><?php echo $row["Count"]; ?></th>
+								<th><?php echo $row["Receiver"]; ?></th>
+								<th><?php echo $row["PhoneNum"]; ?></th>
+								<th><?php echo $row["Address"]; ?></th>
 								<th><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></th>
 								<th><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></th>
 							</tr>
