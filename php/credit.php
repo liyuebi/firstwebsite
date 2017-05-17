@@ -312,6 +312,11 @@ function applyWithdraw()
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'输入的金额小于最低取现额度，请重新输入！'));
 		return;				
 	}
+	
+	if ($amount % 100 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'输入的金额不是一百的倍数，请重新输入！'));
+		return;
+	}
 		
 	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码输入错误，请重新填写！'));

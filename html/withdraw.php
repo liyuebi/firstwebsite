@@ -142,6 +142,14 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 					return;
 				}
 				
+				if (amount % 100 != 0) {
+					alert("提现额度须要是100的倍数！");
+					document.getElementById("autual_count").innerHTML = "0";
+					document.getElementById("amount").value = "";
+					document.getElementById("amount").focus();
+					return;
+				}
+				
 				paypwd = md5(paypwd);
 				$.post("../php/credit.php", {"func":"withdraw","amount":amount,"paypwd":paypwd,"method":method}, function(data){
 					
@@ -276,7 +284,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
         
         <div name="display">
 	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券,您今日还可以提取<?php echo $mostCredit; ?>蜜券。</p>
+	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券，提现数量须是整百的倍数，您今日还可以提取<?php echo $mostCredit; ?>蜜券。</p>
 	        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
 			<p>您实际将提取出的蜜券数量是：<span id="autual_count">0</span></p>
 	        <input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
