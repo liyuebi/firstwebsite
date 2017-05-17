@@ -12,6 +12,9 @@ if ("recharge" == $_POST['func']) {
 else if ("allowRecharge" == $_POST['func']) {
 	allowRecharge();
 }
+else if ("denyRecharge" == $_POST['func']) {
+	denyRecharge();
+}
 else if ("withdraw" == $_POST['func']) {
 	applyWithdraw();
 }
@@ -254,7 +257,37 @@ function allowRecharge()
 	
 	echo json_encode(array('error'=>'false','index'=>$index));
 	return;
-} 
+}
+
+function denyRecharge()
+{
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	else 
+	{
+		$result = mysql_query("select * from RechargeApplication where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的充值申请，操作中断！','index'=>$index));	
+			return;			
+		}
+
+		$result = mysql_query("delete from RechargeApplication where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'删除充值申请时出错，请稍后重试！','index'=>$index));	
+			return;			
+		}
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index));
+	return;
+}
 
 function applyWithdraw()
 {
