@@ -293,7 +293,7 @@ function confirmOrder()
 		return;
 	}
 	
-	if ($_SESSION['buypwd'] != $paypwd) {
+	if (!password_verify($paypwd, $_SESSION['buypwd'])) {
 		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
 		return;
 	}
