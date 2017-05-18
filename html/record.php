@@ -55,7 +55,7 @@ if ($con) {
 							echo "您购买了" . $row["Amount"] . "蜜券。"; 				    
 				    	}
 				    	else if ($row["Type"] == $codeWithdraw) {
-					    	echo "您赎回了" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
+					    	echo "您申请赎回" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
 				    	}
 				    	else if ($row["Type"] == $codeDivident) {					    	
 					    	echo "您固定分红得到" . $row["Amount"] . "蜜券。";

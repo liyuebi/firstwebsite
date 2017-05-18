@@ -356,11 +356,12 @@ function applyWithdraw()
 		$dayWithdraw = 0;
 		$dayWd = $row["DayWithdraw"];
 		$lastWd = $row["LastWithdrawTime"];
-		if (isInTheSameDay($time, $dayWd)) {
+		if (isInTheSameDay($time, $lastWd)) {
 			$dayWithdraw = $dayWd;
 		}
-		$applyCount = 0;
 		$mostCredit = $withdrawCeilAmountOneDay;
+		$applyCount = 0;
+/*
 		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
 		if ($res1) {
 			while ($row1 = mysql_fetch_array($res1)) {
@@ -369,10 +370,68 @@ function applyWithdraw()
 				}
 			}
 		}
-		$mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
+*/
+		$mostCredit = max(0, $mostCredit - $dayWithdraw /* - $applyCount */);
 		if ($amount > $mostCredit) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'输入的金额大于今天剩余可提取的额度，请重新输入！'));	
 			return;		
+		}
+		
+		$total = $credit - $amount;
+		$now = time();
+		$fee = calcHandleFee($amount, $withdrawHandleRate);
+		
+		// 添加交易记录
+		$result = createCreditRecordTable();
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
+			return;
+		}
+		$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, HandleFee)
+						VALUES('$userid', '$amount', '$total', '$now', '0', '$codeWithdraw', '$now', $fee)");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysql_error()));
+			return; 				
+		}
+		
+		// 修改credit表
+		$lastModified = $lastWd;
+		$preFee = $row["TotalFee"];
+		$postFee = $preFee + $fee;
+		$preWithdraw = $row["TotalWithdraw"];
+		$postWithdraw = $preWithdraw + $amount;
+		$dayWithdraw = 0;
+		$monWithdraw = 0;
+		$yearWithdraw = 0;
+		if (isInTheSameDay($now, $lastModified)) {
+			$dayWithdraw = $row["DayWithdraw"] + $amount;
+		}
+		else  {
+			$dayWithdraw = $amount;
+		}
+		if (isInTheSameMonth($now, $lastModified)) {
+			$monWithdraw = $row["MonthWithdraw"] + $amount;
+		}
+		else {
+			$monWithdraw = $amount;
+		}
+		if (isInTheSameYear($now, $lastModified)) {
+			$yearWithdraw = $row["YearWithdraw"] + $amount;
+		}
+		else {
+			$yearWithdraw = $amount;
+		}
+		$result = mysql_query("update Credit set Credits='$total', TotalFee='$postFee', TotalWithdraw='$postWithdraw', DayWithdraw='$dayWithdraw', MonthWithdraw='$monWithdraw', YearWithdraw='$yearWithdraw', LastWithdrawTime='$now' where UserId='$userid'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
+			return; 				
+		}
+			
+		// 添加交易申请
+		$result = createWithdrawTable();
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查表失败，请稍后重试！'));	
+			return;
 		}
 		
 		$account = '';
@@ -410,13 +469,6 @@ function applyWithdraw()
 			$bankBranch = $row["BankBranch"];
 		}
 		
-		$result = createWithdrawTable();
-		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
-			return;
-		}
-		
-		$fee = calcHandleFee($amount, $withdrawHandleRate);
 		$actual = $amount - $fee;
 		
 		$nickname= $_SESSION['nickname'];
@@ -456,80 +508,17 @@ function allowWithdraw()
 		$userid = $row["UserId"];
 		$amount = $row["ApplyAmount"];
 		$applyTime = $row["ApplyTime"];
+		$fee = $amount - $row["ActualAmount"];
 		
-		$result = createCreditRecordTable();
+		$result = mysql_query("delete from WithdrawApplication where IndexId='$index'");
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
-			return;
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'删除取现申请记录失败，请稍后重试！','index'=>$index));	
+			return;			
 		}
-		
-		$result = mysql_query("select * from CreditRecord where UserId='$userid' and Type='$codeWithdraw' and ApplyIndexId='$index'");
-		if ($result && mysql_num_rows($result) > 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'该请求已经通过','index'=>$index));	
-			mysql_query("delete from WithdrawApplication where IndexId='$index'");
-			return; 
-		}
-		else {
-			$result = mysql_query("select * from Credit where UserId='$userid'");
-			if (!$result) {
-				echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'找不到对应的用户数据！','index'=>$index));	
-				return;
-			}
-			$row = mysql_fetch_assoc($result);
-			$credit = $row["Credits"];
-			if ($credit < $amount) {
-				echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'剩余积分不够要提现的数额，请求失败！','index'=>$index));	
-				return; 				
-			}
-			$total = $credit - $amount;
-			$now = time();
-			$fee = calcHandleFee($amount, $withdrawHandleRate);
 			
-			$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, HandleFee)
-							VALUES('$userid', '$amount', '$total', '$applyTime', '$index', '$codeWithdraw', '$now', $fee)");
-			if (!$result) {
-				echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysql_error()));
-				return; 				
-			}
-			
-			$lastModified = $row["LastWithdrawTime"];
-			$preFee = $row["TotalFee"];
-			$postFee = $preFee + $fee;
-			$preWithdraw = $row["TotalWithdraw"];
-			$postWithdraw = $preWithdraw + $amount;
-			$dayWithdraw = 0;
-			$monWithdraw = 0;
-			$yearWithdraw = 0;
-			if (isInTheSameDay($now, $lastModified)) {
-				$dayWithdraw = $row["DayWithdraw"] + $amount;
-			}
-			else  {
-				$dayWithdraw = $amount;
-			}
-			if (isInTheSameMonth($now, $lastModified)) {
-				$monWithdraw = $row["MonthWithdraw"] + $amount;
-			}
-			else {
-				$monWithdraw = $amount;
-			}
-			if (isInTheSameYear($now, $lastModified)) {
-				$yearWithdraw = $row["YearWithdraw"] + $amount;
-			}
-			else {
-				$yearWithdraw = $amount;
-			}
-			$result = mysql_query("update Credit set Credits='$total', TotalFee='$postFee', TotalWithdraw='$postWithdraw', DayWithdraw='$dayWithdraw', MonthWithdraw='$monWithdraw', YearWithdraw='$yearWithdraw', LastWithdrawTime='$now' where UserId='$userid'");
-			if (!$result) {
-				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
-				return; 				
-			}
-			
-			mysql_query("delete from WithdrawApplication where IndexId='$index'");
-			
-			// 更新统计数据
-			include "func.php";
-			insertWithdrawStatistics($amount, $fee);
-		}
+		// 更新统计数据
+		include "func.php";
+		insertWithdrawStatistics($amount, $fee);
 	}
 	
 	echo json_encode(array('error'=>'false','index'=>$index));

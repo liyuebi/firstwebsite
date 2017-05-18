@@ -42,10 +42,11 @@ if ($con) {
 		$dayWd = $row["DayWithdraw"];
 		$lastWd = $row["LastWithdrawTime"];
 		$now = time();
-		if (isInTheSameDay($now, $dayWd)) {
+		if (isInTheSameDay($now, $lastWd)) {
 			$dayWithdraw = $dayWd;
 		}
 		
+/*
 		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
 		if ($res1) {
 			while ($row1 = mysql_fetch_array($res1)) {
@@ -54,6 +55,7 @@ if ($con) {
 				}
 			}
 		}
+*/
 		
 	}
 	
@@ -84,6 +86,7 @@ if ($con) {
 	}
 */
 }
+
 $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 
 ?>
