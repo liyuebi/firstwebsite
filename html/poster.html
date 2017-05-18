@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>通告</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
+		
+		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
+		<script type="text/javascript">
+
+			$(document).ready(function(){
+				if (isNotLoginAndJump()) {
+					return;
+				}
+			})
+		</script>
+	</head>
+	<body>
+		<div id="banner_bar" class="banner_info">			
+			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
+ 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
+ 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		</div>
+		
+        <div align="center">
+            <h3>蜜蜂工坊创富启航</h3>
+        </div>
+        
+        <div name="display">
+			<p>
+			各位蜂粉：
+			</p>
+			<p>
+				蜜蜂工坊创富平台于2017年5月16日正式启航，希望所有新老蜂粉们在这个平台上能攒到盆满钵满，平台是我家，维护靠大家，蜂粉们一同来维护好平台良好的氛围，平台也会听取大家的合理建议，只有简单，听话，照做，平台才会有生命力。目前平台属内排期，注册即赠送价值300元大礼包，6月16日前左右区各75人特别赠送5个蜂值（价值5000元），左右区各到150人特别赠送10个蜂值（价值10000元）。
+			</p>
+        </div>
+    </body>
+    <div style="text-align:center;">
+    </div>
+</html>
