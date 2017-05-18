@@ -75,7 +75,7 @@ if ($orderid != '') {
 					else {
 						var link = document.getElementById("product_link");
 						link.innerHTML = json.product["name"];
-						link.href = "productdetail.php?product_id=" + json.product["productid"];
+						link.href = "productdetail2.php?product_id=" + json.product["productid"];
 					}
 				});			
 				

@@ -234,7 +234,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<ul>
 				<li><a class="icon_btn1" href="recommend.php">推荐蜜粉</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
-				<li><a class="icon_btn3" href="productdetail.php?product_id=1">蜂值倍增</a></li>
+				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">蜂值倍增</a></li>
 				<li><a class="icon_btn2" href="recommended.php">蜜粉好友</a></li>
 				<li><a class="icon_btn6" href="charge.php">购买蜜券</a></li>
 				<li><a class="icon_btn5" href="withdraw.php">蜜券提现</a></li>

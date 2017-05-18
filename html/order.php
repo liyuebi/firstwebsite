@@ -25,6 +25,21 @@ if (!$result) {
 
 $res1 = mysql_query("select * from Transaction where UserId='$userid' and Status='$OrderStatusAccept' order by OrderTime desc");
 
+$prodcutName = '';
+$prodcutName1 = '';
+
+$res2 = mysql_query("select * from Product where ProductId=1");
+if ($res2) {
+	$row2 = mysql_fetch_assoc($res2);
+	$prodcutName = $row2["ProductName"];
+}
+
+$res3 = mysql_query("select * from Product where ProductId=2");
+if ($res3) {
+	$row3 = mysql_fetch_assoc($res3);
+	$prodcutName1 = $row3["ProductName"];
+}
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -163,7 +178,7 @@ $res1 = mysql_query("select * from Transaction where UserId='$userid' and Status
 			        while($row1 = mysql_fetch_array($res1)) {
 		        ?>
 		        		<ul class="order_block" style="background: white; margin-top: 3%;">
-			        		<li class="left_ele"><b>茗菊春皇菊</b></li>
+			        		<li class="left_ele"><b><?php if ($row1["ProductId"] == 1) echo $prodcutName; else echo $prodcutName1; ?></b></li>
 			        		<li class="right_ele">x <?php echo $row1["Count"]; ?></li>
 			        		<br>
 			        		<hr>

@@ -43,9 +43,6 @@ function purchaseProduct()
 	$addressId = trim(htmlspecialchars($_POST['addressId']));
 	
 	$price = 0;
-
-	echo json_encode(array('error'=>'true','error_code'=>'50','error_msg'=>'暂时不能复投，请稍后重试'));
-	return;
 	
 	session_start();
 	if (!$_SESSION["isLogin"]) {
@@ -197,8 +194,13 @@ function purchaseProduct()
 		return;
 	}
 
+	$status = $OrderStatusBuy;
+	// 虚拟产品，直接完成交易
+	if ($productId == 2) {
+		$status = $OrderStatusAccept;
+	}
 	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
-					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$OrderStatusBuy')");
+					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$status')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
 		return;						
