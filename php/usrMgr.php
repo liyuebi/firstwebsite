@@ -18,6 +18,12 @@ else if ("queryUser" == $_POST['func']) {
 else if ("getDFeng" == $_POST['func']) {
 	getAllDFeng();
 }
+else if ("rlp" == $_POST['func']) {
+	resetLoginPwd();
+}
+else if ("rpp" == $_POST['func']) {
+	resetPayPwd();
+}
 
 // admin login
 // 判断是否登录
@@ -194,6 +200,58 @@ function getAllDFeng()
 	}
 	echo json_encode(array('error'=>'false','dfeng'=>$feng));
 	
+}
+
+function resetLoginPwd()
+{
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$res = mysql_query("select * from ClientTable where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysql_error()));
+		return;		
+	}
+	
+	$pwd = md5('000000');
+	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
+	$res2 = mysql_query("update ClientTable set Password='$pwd' where UserId='$userid'");
+	if (!$res2) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function resetPayPwd()
+{
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$res = mysql_query("select * from ClientTable where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysql_error()));
+		return;		
+	}
+	
+	$res2 = mysql_query("update ClientTable set PayPwd='' where UserId='$userid'");
+	if (!$res2) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
 }
 
 ?>

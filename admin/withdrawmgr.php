@@ -38,7 +38,6 @@ $result = getWithdrawApplication();
 					
 					if (data.error == "false") {
 						alert("通过申请！" + data.index);	
-						location.href = "pwd.php";
 					}
 					else {
 						alert("申请未通过: " + data.error_msg + " " + data.index);

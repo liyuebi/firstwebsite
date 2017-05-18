@@ -91,9 +91,67 @@
 						var d9 = document.createElement("td");	
 						d9.innerHTML = data.dvault;
 						trow.appendChild(d9);
+						
+						var d10 = document.createElement("td");	
+						trow.appendChild(d10);
+						var input1 = document.createElement("input");
+						input1.type = "button";
+						input1.value = "重置登录密码";
+						input1.id = data.id;
+						if (input1.addEventListener) {
+							input1.addEventListener('click', resetLoginPwd, false);
+						}
+						else if (input1.attachEvent) {
+							input1.attachEvent('onclick', resetLoginPwd);
+						}
+						d10.appendChild(input1);
+						var input2 = document.createElement("input");
+						input2.type = "button";
+						input2.value = "清空支付密码";
+						input2.id = data.id;
+						if (input2.addEventListener) {
+							input2.addEventListener('click', resetPayPwd, false);
+						}
+						else if (input2.attachEvent) {
+							input2.attachEvent('onclick', resetPayPwd);
+						}
+						d10.appendChild(input2);
+// 						input3.type = "button";
+// 						input3.value = "清空支付密码";
+// 						d10.appendChild(input3);
 					}
 					else {
 						alert("查询失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function resetLoginPwd(e)
+			{
+				if (!confirm("你确定要重置用户" + e.target.id + "的登录密码吗？")) {
+					return;
+				}
+				$.post("../php/usrMgr.php", {"func":"rlp","uid":e.target.id}, function(data){
+					if (data.error == "false") {
+						alert("重置登录密码成功！");
+					}
+					else {
+						alert("重置登录密码失败：" + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function resetPayPwd(e)
+			{
+				if (!confirm("你确定要清空用户" + e.target.id + "的支付密码吗？")) {
+					return;
+				}
+				$.post("../php/usrMgr.php", {"func":"rpp","uid":e.target.id}, function(data){
+					if (data.error == "false") {
+						alert("清空支付密码成功！");
+					}
+					else {
+						alert("清空支付密码失败：" + data.error_msg);
 					}
 				}, "json");
 			}
@@ -131,7 +189,7 @@
 				<input id="id_input" type="text" placeholder="请输入用户id" />
 				<input type="button" value="查找" onclick="queryUser()" />
 				
-				<table id="user_tbl">
+				<table id="user_tbl" border="1">
 					<tr>
 						<th>用户名</th>
 						<th>昵称</th>
@@ -142,6 +200,7 @@
 						<th>蜜券</th>
 						<th>固定蜂值</th>
 						<th>动态蜂值</th>
+						<th>操作</th>
 					</tr>
 				</table>
 			</div>
