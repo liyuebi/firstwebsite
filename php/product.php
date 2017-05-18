@@ -6,6 +6,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 	if ("addNew" == $_POST["func"]) {
 		addNewProduct();
 	}
+	else if ("edit" == $_POST['func']) {
+		editProduct();
+	}
 }
 else if ($_SERVER['REQUEST_METHOD']=="GET") {
 	if ("getProducts" == $_GET["func"]) {
@@ -32,6 +35,37 @@ function addNewProduct()
 	$time = time();
 	mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime) 
 		VALUES('$price', '$name', '$desc', '$time')");
+}
+
+function editProduct()
+{
+	$idx = trim(htmlspecialchars($_POST["id"]));
+	$name = trim(htmlspecialchars($_POST["name"]));
+	$desc = trim(htmlspecialchars($_POST["desc"]));
+	$price = trim(htmlspecialchars($_POST["price"]));
+	$limit = trim(htmlspecialchars($_POST["limit"]));	
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$res = mysql_query("select * from Product where ProductId='$idx'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到对应产品！'));
+		return;
+	}
+	
+	$price = floatval($price);
+	$res = mysql_query("update Product set ProductName='$name', ProductDesc='$desc', Price='$price', LimitOneDay='$limit' where ProductId='$idx'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改产品信息失败！'));
+		return;
+	}
+	
+	echo json_encode(array('error'=>'false'));
 }
 
 function getProducts()
