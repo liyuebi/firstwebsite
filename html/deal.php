@@ -61,6 +61,7 @@ if ($orderid != '') {
 					productCount = <?php echo $count; ?>;
 					
 					document.getElementById('pay_title').innerHTML = "确认订单";
+					document.getElementById('pay_btn').innerHTML = "确认";
 				}
 				else {
 					productId = getCookie("willbuy");
@@ -192,6 +193,7 @@ if ($orderid != '') {
 					var orderId = <?php echo $orderid; ?>;
 					var addressId = document.getElementById("addId").value;
 					var paypwd = document.getElementById("paypwd").value;
+					paypwd = md5(paypwd);
 					$.post("../php/trade.php", {"func":"confirmOrder","orderId":orderId,"addressId":addressId,"paypwd":paypwd}, function(data){			
 						if (data.error == "false") {
 								alert("订单已确认！");	
@@ -283,7 +285,7 @@ if ($orderid != '') {
 				<h3 id="pay_title">确认付款</h3>
 				<input id="paypwd" type="password" class="form-control" style="width: 50%;" placeholder="请输入您的支付密码" onkeypress="return onlyCharAndNum(event)" />
 				<br>
-				<input type="button" class="button-rounded" style="width: 50%;" value="付款" onclick="pay()" />
+				<input type="button" class="button-rounded" id="pay_btn" style="width: 50%;" value="付款" onclick="pay()" />
 			</div>
 			<div id="blockSetPayPwd" style="display: <?php if (!$isPayPwdSet) echo "inline"; else echo "none"; ?> ;">
 				<p>您还没有设置支付密码，请先设置</p>
