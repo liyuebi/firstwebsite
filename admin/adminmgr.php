@@ -39,6 +39,14 @@ if (!checkLoginOrJump()) {
 			</ul>
 		</div>
 		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+			<div>
+				<input type="button" value="修改密码" />
+				<input type="button" value="添加管理员" />
+			</div>
+			<div id='blk_changepwd'>
+			</div>
+			<div id='blk_add'>
+			</div>
 		</div>
     </body>
     <div style="text-align:center;">
