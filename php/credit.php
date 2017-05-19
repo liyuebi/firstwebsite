@@ -255,7 +255,7 @@ function allowRecharge()
 		}
 	}
 	
-	echo json_encode(array('error'=>'false','index'=>$index));
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$credit,'post'=>$total));
 	return;
 }
 

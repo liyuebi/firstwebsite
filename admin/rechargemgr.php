@@ -55,6 +55,7 @@ $result = getRechargeApplication();
 						alert("通过申请！" + data.index);	
 						var str = "col_status_"+data.index;
 						document.getElementById(str).innerHTML = "通过";
+						document.getElementById("col_record_" + data.index).innerHTML = data.pre + " => " + data.post;
 // 						location.href = "pwd.php";
 					}
 					else {
