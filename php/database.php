@@ -116,17 +116,18 @@ function createCreditTable()
 
 function createAdminTable()
 {
-	$sql = "create table if not exists Admin
+	$sql = "create table if not exists AdminTable
 	(
 		AdminId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(AdminId),
-		Name varchar(30),
-		Password varchar(12),
-		Priority int
+		Name varchar(30) not null,
+		Password varchar(256) not null,
+		Priority int not null,
+		LastLoginTime int default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
-		echo "create Admin table error: " . mysql_error() . "<br>";
+		echo "create AdminTable table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }

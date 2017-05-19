@@ -121,28 +121,39 @@ function loginAdmin()
 	$con = connectToDB();
 	if (!$con)
 	{
-		die("Could not connect: " . mysql_error());
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'连接失败，请稍后重试！'));
+		return;
 	}
 	else 
 	{		
-// 		echo("success<br>'");
+		createAdminTable();
 		
-		$result = mysql_query("select * from Admin where Name='$name' and Password='$password'");
+		$result = mysql_query("select * from AdminTable where Name='$name'");
 		if (!$result) {
-			echo "Query Admin User failed<br>";
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号或密码出错，请重新输入！'));	
+			return;		
 		}
 		else if (0 == mysql_num_rows($result)) {
-			echo "Admin User not exists!<br>";
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'账号或密码出错，请重新输入！'));	
+			return;		
 		}
-		else {
-// 			echo "Admin User exists! <br>";
-			$arr = array('isLogin'=>'true');
-			echo json_encode($arr);
+		
+		$row = mysql_fetch_assoc($result);
+		if (!password_verify($password, $row["Password"])) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'账号或密码出错，请重新输入！'));	
+			return;		
 		}
-		mysql_close($con);
+		
+		include "admin_func.php";
+		setAdminSession($row);
+		
+		$userid = $row["AdminId"];
+		$now = time();
+		mysql_query("update AdminTable set LastLoginTime='$now' where AdminId='$userid'");
 	}
 	
-	exit;
+	$arr = array('error'=>'false');
+	echo json_encode($arr);
 }
 
 function setPayPwd()

@@ -1,3 +1,11 @@
+<?php
+	include "../php/admin_func.php";
+	
+	if (!checkLoginOrJump()) {
+		exit();
+	}
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 	<head>
@@ -16,13 +24,14 @@
 			<ul style="list-style: none; padding: 0">
 <!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
 				<li><a href="productmgr.php">产品管理</a></li>
-				<li><a href="usermgr.html">用户管理</a></li>
+				<li><a href="usermgr.php">用户管理</a></li>
 				<li><a href="ordermgr.php">订单管理</a></li>
 				<li><a href="rechargemgr.php">充值管理</a></li>
 				<li><a href="withdrawmgr.php">取现管理</a></li>
 				<li><a href="configmgr.php">配置管理</a></li>
 				<li><a href="statistics.php">统计数据</a></li>
 				<li><a href="configRwdRate.php">配置动态拨比</a></li>
+				<li><a href="adminmgr.php">管理员账号维护</a></li>
 			</ul>
 		</div>
 		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >

@@ -7,32 +7,35 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="js/md5.js" ></script>
 		<script type="text/javascript">
 			function login()
 			{
 				var user = document.getElementById("user").value;
 				var pwd = document.getElementById("pwd").value;
+				pwd = $.trim(pwd);
+				pwd = md5(pwd);
 				var data = "func=loginAdmin,user=" + user +",pwd="+pwd;
 				$.post("php/login.php", {"func":"loginAdmin","user":user,"pwd":pwd}, function(data){
-					if (data.isLogin == "true") {
-						location.href = "admin/adminhome.html";
+					if (data.error == "false") {
+						location.href = "admin/adminhome.php";
 					}
 					else {
-						
+						alert('登录失败：' + data.error_msg);
 					}
 				}, "json");
 			}
 		</script>
 	</head>
 	<body>
-        <div>
-            用户名
-            <input id="user" type="text" placeholder="请输入管理员账号" />
+        <div align="center" style="margin: 30px;">
+            用户名 <input id="user" type="text" placeholder="请输入管理员账号" />
             <br>
-            密码
-            <input id="pwd" type="password" placeholder="请输入密码" />
+            密码 <input id="pwd" type="password" placeholder="请输入密码" />
             <br>
             <input type="button" value="登录" onclick="login()" />
         </div>
