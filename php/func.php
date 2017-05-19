@@ -197,8 +197,8 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 						}
 						else {
 							$row9 = mysql_fetch_assoc($res9);
-							$vault = $row9["Vault"];
-							$vault += $levelBonus[$lvl - 2];
+// 							$vault = $row9["Vault"];
+							$vault = $levelBonus[$lvl - 2];
 							$res10 = mysql_query("update Credit set Vault='$vault' where UserId='$parentId'");
 							if (!$res10) {
 								// !!! log error
