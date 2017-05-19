@@ -30,7 +30,7 @@ function setAdminSession($row)
 function checkLoginOrJump()
 {
 	if (!isset($_COOKIE['adminLogin']) || !$_COOKIE['adminLogin']) {	
-		$home_url = '../admin.html';
+		$home_url = '../admin.php';
 		header('Location: ' . $home_url);
 		return false;
 	}
