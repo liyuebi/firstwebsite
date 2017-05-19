@@ -246,8 +246,10 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			</ul>
 		</div>
 		
-		<div id="post" style="background: #dddbdb;">
+		<div id="post" style="background: #dddbdb; margin-bottom: 30px;">
 			<h3>公告：</h3>
+				<a href="poster2.html">蜜蜂工坊创富启航2</a>
+				<br>
 				<a href="poster.html">蜜蜂工坊创富启航</a>
 		</div>
 	</body>
