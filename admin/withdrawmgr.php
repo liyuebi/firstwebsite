@@ -76,6 +76,7 @@ $result = getWithdrawApplication();
 						<th>用户手机号</th>
 						<th>申请金额</th>
 						<th>手续费</th>
+						<th style="color: red;">实际金额</th>
 						<th>收款方式</th>
 						<th>账号</th>
 						<th>账号其他信息</th>
@@ -96,6 +97,7 @@ $result = getWithdrawApplication();
 									<td><?php echo $row["PhoneNum"]; ?></td>
 									<th><?php echo $row["ApplyAmount"]; ?></th>
 									<th><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></th>
+									<th style="color: red;"><?php echo $row["ActualAmount"]; ?></th>
 									<td><?php if ($row["Method"] == 1) echo "微信"; 
 											  else if ($row["Method"] == 2) echo "支付宝"; 
 											  else if ($row["Method"] == 3) echo "银行"; ?>
