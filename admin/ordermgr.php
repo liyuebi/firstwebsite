@@ -8,21 +8,20 @@ if (!checkLoginOrJump()) {
 
 include "../php/database.php";
 
-function getTransaction()
-{
-	$con = connectToDB();
-	if (!$con)
-	{
-		return false;
-	}
-	
-// 	include "../php/constant.php";
-// 	$result = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'");
-	$result = mysql_query("select * from Transaction");
-	return $result;
-}
+$result = false;
+$res1 = false;
 
-$result = getTransaction();		
+$con = connectToDB();
+if (!$con)
+{
+	return false;
+}
+	
+include "../php/constant.php";
+$result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy'");
+// 	$result = mysql_query("select * from Transaction");
+$res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'");
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -63,6 +62,18 @@ $result = getTransaction();
 			{
 				alert(btn.id);
 			}
+			
+			function getWaitForDelivery()
+			{
+				document.getElementById("tbl").style.display = "block";
+				document.getElementById("tbl1").style.display = "none";
+			}
+			
+			function getOthers()
+			{	
+				document.getElementById("tbl").style.display = "none";
+				document.getElementById("tbl1").style.display = "block";
+			}
 		</script>
 	</head>
 	<body>
@@ -81,8 +92,13 @@ $result = getTransaction();
 			</ul>
 		</div>
 		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+			<div>
+				<input type="button" value="查看待发货订单" onclick="getWaitForDelivery()"/>
+				<input type="button" value="查看其他订单" onclick="getOthers()"/>
+<!-- 				<input type="button" value="查看已完成订单" onclick=""/> -->
+			</div>
 	        <div>
-				<table border="1">
+				<table id="tbl" border="1">
 					<tr>
 						<th>下单时间</th>
 						<th>用户id</th>
@@ -114,6 +130,39 @@ $result = getTransaction();
 						}
 					?>
 				</table>
+				<table id="tbl1" border="1" style="display: none;">
+					<tr>
+						<th>下单时间</th>
+						<th>用户id</th>
+						<th>数量</th>
+						<th>收件人</th>
+						<th>收货人手机</th>
+						<th>收货地址</th>
+						<th>状态</th>
+						<th>快递单号</th>
+						<th>确认发货</th>
+					</tr>
+					<?php
+						include "../php/constant.php";
+						date_default_timezone_set('PRC');
+						while($row = mysql_fetch_array($res1)) {
+					?>
+							<tr>
+								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
+								<td><?php echo $row["UserId"]; ?></td>
+								<td><?php echo $row["Count"]; ?></td>
+								<td><?php echo $row["Receiver"]; ?></td>
+								<td><?php echo $row["PhoneNum"]; ?></td>
+								<td><?php echo $row["Address"]; ?></td>
+								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></td>
+								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td>
+								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
+							</tr>
+					<?php
+						}
+					?>
+				</table>
+
 	        </div>
 		</div>
     </body>
