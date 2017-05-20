@@ -194,7 +194,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 					<td id="todayobtain"><?php if ($row) echo $dayObtained; else echo '0'; ?></td>
 				</tr>
 			</table>
-			<table class="t1" border="1" align="center" style="margin-top: 0;">
+			<table class="t1" border="1" align="center" style="margin-top: 0; " rules="none">
 				<tr>
 					<td width="25%">蜜券</td>
 					<td width="25%">当月蜜券</td>
