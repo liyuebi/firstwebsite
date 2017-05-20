@@ -16,6 +16,8 @@ function getTransaction()
 		return false;
 	}
 	
+// 	include "../php/constant.php";
+// 	$result = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'");
 	$result = mysql_query("select * from Transaction");
 	return $result;
 }
@@ -38,13 +40,18 @@ $result = getTransaction();
 			
 			function onConfirm(btn)
 			{
-// 				alert(btn.id);	
+				var courier = document.getElementById("courierNum_" + btn.id).value;
+				courier = $.trim(courier);
+				if (courier.length == 0) {
+					alert("请输入快递单号！");
+					return;
+				}
 				document.getElementById(btn.id).disabled = true;
-				$.post("../php/trade.php", {"func":"delivery","index":btn.id}, function(data){
+				$.post("../php/trade.php", {"func":"delivery","index":btn.id,"courier":courier}, function(data){
 					
 					if (data.error == "false") {
-						alert("发货状态修改成功！");	
-						location.href = "pwd.php";
+						alert("发货状态修改成功！");
+						document.getElementById("status_" + data.index).innerHTML = "已发货";	
 					}
 					else {
 						alert("发货状态修改失败: " + data.error_msg);
@@ -84,6 +91,7 @@ $result = getTransaction();
 						<th>收货人手机</th>
 						<th>收货地址</th>
 						<th>状态</th>
+						<th>快递单号</th>
 						<th>确认发货</th>
 					</tr>
 					<?php
@@ -92,14 +100,15 @@ $result = getTransaction();
 						while($row = mysql_fetch_array($result)) {
 					?>
 							<tr>
-								<th><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></th>
-								<th><?php echo $row["UserId"]; ?></th>
-								<th><?php echo $row["Count"]; ?></th>
-								<th><?php echo $row["Receiver"]; ?></th>
-								<th><?php echo $row["PhoneNum"]; ?></th>
-								<th><?php echo $row["Address"]; ?></th>
-								<th><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></th>
-								<th><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></th>
+								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
+								<td><?php echo $row["UserId"]; ?></td>
+								<td><?php echo $row["Count"]; ?></td>
+								<td><?php echo $row["Receiver"]; ?></td>
+								<td><?php echo $row["PhoneNum"]; ?></td>
+								<td><?php echo $row["Address"]; ?></td>
+								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></td>
+								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td>
+								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
 							</tr>
 					<?php
 						}

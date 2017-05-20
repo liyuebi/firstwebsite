@@ -131,22 +131,21 @@ if ($res3) {
 				<table border="1" width="100%">
 					<tr>
 						<th>订单号</th>
-						<th>产品信息</th>
 						<th>数量</th>
 						<th>价格</th>
+						<th>订单号</th>
 						<th>状态</th>
-	<!-- 					<th>确认收货</th> -->
 					</tr>
 					<?php
 						include "../php/constant.php";
 						while($row = mysql_fetch_array($result)) {
 					?>
 							<tr>
-								<th><?php echo $row["UserId"]; ?></th>
-								<th></th>
-								<th><?php echo $row["Count"] ?></th>
-								<th><?php echo $row["Price"]; ?></th>
-								<th><?php 
+								<td><?php echo $row["UserId"]; ?></td>
+								<td><?php echo $row["Count"] ?></td>
+								<td><?php echo $row["Price"]; ?></td>
+								<td><?php echo $row["CourierNum"]; ?></td>
+								<td align="center"><?php 
 									if ($OrderStatusBuy == $row["Status"]) 
 										echo "等待发货"; 
 									else if ($OrderStatusDefault == $row["Status"]) {
@@ -163,8 +162,7 @@ if ($res3) {
 									else if ($OrderStatusAccept == $row["Status"])
 										echo "已收货";
 									?>
-								</th>
-	<!-- 							<th></th> -->
+								</td>
 							</tr>
 					<?php
 						}

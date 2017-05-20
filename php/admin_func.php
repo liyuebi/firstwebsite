@@ -11,14 +11,14 @@ function setAdminCookie($name, $userid)
 function deleteAdminCookie()
 {
 	$time = time() - 1000;
-	setcookie("userN", '', $time, '/');
-	setcookie("useI", '', $time, '/');
-	setcookie("isLogin", 'false', $time, '/');
+	setcookie("name", '', $time, '/');
+	setcookie("adminId", '', $time, '/');
+	setcookie("adminLogin", 'false', $time, '/');
 }
 
 function setAdminSession($row)
 {
-	$_SESSION["adminId"] = $row['AdminId'];
+	$_SESSION['adminUid'] = $row['AdminId'];
 	$_SESSION['name'] = $row['Name'];
 	$_SESSION['pwd'] = $row['Password'];
 	$_SESSION['priority'] = $row['Priority'];
@@ -36,8 +36,14 @@ function checkLoginOrJump()
 	}
 	
 	session_start();
-	setAdminCookie($_SESSION['name'], $_SESSION["adminId"]);
+	setAdminCookie($_SESSION['name'], $_SESSION['adminUid']);
 	
+	return true;
+}
+
+function isAdminLogin()
+{
+// 	return $_SESSION['adminLogin'];
 	return true;
 }
 

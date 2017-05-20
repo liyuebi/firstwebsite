@@ -168,6 +168,7 @@ function createTransactionTable()
 		OrderTime int NOT NULL,
 		DeliveryTime int DEFAULT 0,
 		CompleteTime int DEFAULT 0,
+		CourierNum varchar(24) default '',
 		Status int
 	)";
 

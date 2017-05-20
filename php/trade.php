@@ -342,8 +342,21 @@ function deliveryProduct()
 	// 权限判断 ！！！！！！！！！！！！！！
 	
 	include 'constant.php';
+	include_once 'admin_func.php';
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
 	
 	$TransactionId = trim(htmlspecialchars($_POST["index"]));
+	$courier = trim(htmlspecialchars($_POST['courier']));
+	
+	if (strlen($courier) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的快递单号，请重新检查！'));
+		return;
+	}
 	
 	$con = connectToDB();
 	if (!$con)
@@ -362,18 +375,18 @@ function deliveryProduct()
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusBuy) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'不是等待发货的状态，请重新检查！'));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'不是等待发货的状态，请重新检查！'));
 		return;
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time' where OrderId='$TransactionId'");
+	$result = mysql_query("update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time', CourierNum='$courier' where OrderId='$TransactionId'");
 	if (!$result) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
 	}
 		
-	echo json_encode(array('error'=>'false'));
+	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
 }
 
