@@ -74,6 +74,7 @@ if ($con) {
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -147,56 +148,67 @@ if ($con) {
         <div>
             <h3>购买蜜券</h3>
         </div>
-        <div name="display">
+        <div name="display" style="padding-bottom: 20px;">
 	        <p>您可以选择以下方式支付，充值蜜券1:1</p>
-	        <p>微信：mifenggf</p>
-	        <p>支付宝：17379371413</p>
-<!--
-	        <p>银行账号：</p>
-	        <ol> 
-		        <li>收款人: 李青 
-		        <li>收款账号: 621467 2080000039339 
-		        <li>所属行: 中国建设银行 
-		        <li>开户分行: 江西省上饶市婺源县天佑支行
-		    </ol>
--->
-	        <hr>
-	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
 	        <div>
-		        <input type="radio" name="method" value="1" /> 微信
-		        <input type="radio" name="method" value="2" /> 支付宝
-<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
+		        <div style="float: left; width: 49%; border: 1px solid black;">
+			        <p>微信：mifenggf</p>
+			        <img src='../img/wechat.jpg' width="100%" />
+		        </div>
+		        <div style="float: right; width: 49%; border: 1px solid black;">
+			        <p>支付宝：17379371413</p>
+			        <img src='../img/alipay.jpg' width="100%" />
+		        </div>
+	<!--
+		        <p>银行账号：</p>
+		        <ol> 
+			        <li>收款人: 李青 
+			        <li>收款账号: 621467 2080000039339 
+			        <li>所属行: 中国建设银行 
+			        <li>开户分行: 江西省上饶市婺源县天佑支行
+			    </ol>
+	-->
 	        </div>
-	        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
-		        <?php 
-			        if ($isWechatSet) {
-				?>
-				<p>您的微信账号： <b><?php echo $weAcc; ?></b></p>
-				<?php
-					}
-					else {
-				?>
-				<input type="button" value="设置微信账号" onclick="goToPayment()" />
-				<?php
-			        }
-		        ?>
+	        <div style="clear: both; padding-top: 3px; ">
+		        <hr>
+		        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
+		        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
 	        </div>
-	        
-	        <div id="alipay_block" style="border: 1px black solid; padding: 5px; display: none;">
-		        <?php 
-			        if ($isAlipaySet) {
-				?>
-				<p>您的微信账号： <b><?php echo $aliAcc; ?></b></p>
-				<?php
-					}
-					else {
-				?>
-				<input type="button" value="设置支付宝账号" onclick="goToPayment()" />
-				<?php
-			        }
-		        ?>
-			</div>
+	        <div style="padding: 10px 0;">
+		        <div>
+			        <input type="radio" name="method" value="1" /> 微信
+			        <input type="radio" name="method" value="2" /> 支付宝
+	<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
+		        </div>
+		        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
+			        <?php 
+				        if ($isWechatSet) {
+					?>
+					<p>您的微信账号： <b><?php echo $weAcc; ?></b></p>
+					<?php
+						}
+						else {
+					?>
+					<input type="button" value="设置微信账号" onclick="goToPayment()" />
+					<?php
+				        }
+			        ?>
+		        </div>
+		        
+		        <div id="alipay_block" style="border: 1px black solid; padding: 5px; display: none;">
+			        <?php 
+				        if ($isAlipaySet) {
+					?>
+					<p>您的微信账号： <b><?php echo $aliAcc; ?></b></p>
+					<?php
+						}
+						else {
+					?>
+					<input type="button" value="设置支付宝账号" onclick="goToPayment()" />
+					<?php
+				        }
+			        ?>
+				</div>
 	        
 <!--
 			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
@@ -214,9 +226,12 @@ if ($con) {
 		        ?>
 			</div>
 -->
+	        </div>
 	        
-	        <input type="button" value="提交申请" onclick="onConfirm()" />
-	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />
+			<div style="padding: 10px 0;">        
+		        <input type="button" value="提交申请" class="button-rounded" style="width: 48%; height: 30px; float: left;" onclick="onConfirm()" />
+		        <input type="button" value="取消" class="button-rounded" style="width: 48%; height: 30px; float: right;" onclick="javascript:history.back(-1);" />
+			</div>
         </div>
     </body>
     <div style="text-align:center;">
