@@ -21,6 +21,9 @@ else if ("withdraw" == $_POST['func']) {
 else if ("allowWithdraw" == $_POST['func']) {
 	allowWithdraw();
 }
+else if ("denyWithdraw" == $_POST['func']) {
+	denyWithdraw();
+}
 else if ("transfer" == $_POST['func']) {
 	transfer();
 }
@@ -45,6 +48,9 @@ else if ("acceptDBonus" == $_POST['func']) {
 	}
 	$userid = $_SESSION['userId'];
 	acceptDBonus($userid);	
+}
+else if ("getCredit" == $_POST['func']) {
+	queryCredit();
 }
 
 function applyRecharge()
@@ -525,6 +531,96 @@ function allowWithdraw()
 	return;
 }
 
+function denyWithdraw()
+{
+	// 权限检查 	！！！！！！！
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$result = mysql_query("select * from WithdrawApplication where IndexId='$index'");
+	if (!$result && mysql_num_rows($result) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
+		return;			
+	}
+	
+	$row = mysql_fetch_assoc($result);
+	$userid = $row["UserId"];
+	$amount = $row["ApplyAmount"];
+	$fee = $amount - $row["ActualAmount"];
+	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'找不到申请对应的用户，操作中断！','index'=>$index));	
+		return;					
+	}
+	$row1 = mysql_fetch_assoc($res);
+	$credit = $row1["Credits"];
+	$creditPost = $credit + $amount;
+	$prefee = $row1["TotalFee"];
+	$postfee = $prefee - $fee;
+	$preWithdraw = $row1["TotalWithdraw"];
+	$postWithdraw = $preWithdraw - $amount;
+	$lastModified = $row1["LastWithdrawTime"];
+	$dayWithdraw = 0;
+	$monWithdraw = 0;
+	$yearWithdraw = 0;
+	$now = time();
+	if (isInTheSameDay($now, $lastModified)) {
+		$dayWithdraw = $row1["DayWithdraw"] - $amount;
+	}
+	else  {
+		$dayWithdraw = $amount;
+	}
+	if (isInTheSameMonth($now, $lastModified)) {
+		$monWithdraw = $row1["MonthWithdraw"] - $amount;
+	}
+	else {
+		$monWithdraw = $amount;
+	}
+	if (isInTheSameYear($now, $lastModified)) {
+		$yearWithdraw = $row1["YearWithdraw"] - $amount;
+	}
+	else {
+		$yearWithdraw = $amount;
+	}
+	
+	// 删除取现申请
+	$result = mysql_query("delete from WithdrawApplication where IndexId='$index'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'删除取现申请失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+	
+	// 更新用户数据
+	$result = mysql_query("update Credit set Credits='$creditPost', TotalFee='$postfee', TotalWithdraw='$postWithdraw', DayWithdraw='$dayWithdraw', MonthWithdraw='$monWithdraw', YearWithdraw='$yearWithdraw' where UserId='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+
+	// 添加交易记录
+	$result = createCreditRecordTable();
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
+		return;
+	}
+	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, HandleFee)
+					VALUES('$userid', '$amount', '$creditPost', '$now', '$index', '$codeWithdrawCancelled', '$now', '0')");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysql_error()));
+		return; 				
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$credit,'post'=>$creditPost));
+}
+
 function transfer()
 {	
 	session_start();
@@ -624,6 +720,28 @@ function transfer()
 	// 增加统计数据，如出错忽略
 	include "func.php";
 	insertTransferStatistics($amount, $fee);
+}
+
+function queryCredit()
+{
+	$index = trim(htmlspecialchars($_POST["index"]));
+	$userId = trim(htmlspecialchars($_POST["user"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$res = mysql_query("select * from Credit where UserId='$userId'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到对应用户！','index'=>$index));
+		return;
+	}
+	$row = mysql_fetch_assoc($res);
+	$credit = $row["Credits"];
+	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit));
 }
 	
 ?>

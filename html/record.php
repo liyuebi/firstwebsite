@@ -82,6 +82,9 @@ if ($con) {
 				    	else if ($row["Type"] == $codeDynDivident) {					    	
 					    	echo "您动态分红得到" . $row["Amount"] . "蜜券。";
 				    	}
+				    	else if ($row["Type"] == $codeWithdrawCancelled) {					    	
+					    	echo "您的取现申请取消，退回" . $row["Amount"] . "蜜券到账。";
+				    	}
 				    	
 					    echo "<br>";
 					    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";

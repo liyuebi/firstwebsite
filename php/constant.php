@@ -30,6 +30,7 @@
 	$codeTransferTo = 8;// 向用户转积分
 	$codeTransferFrom = 9;	// 收到其他人转的积分
 	$codeDynDivident = 10;	// 动态分红导致积分变化，根据每日订单总额去一定比例，再除以动态蜂值总和，返还给用户
+	$codeWithdrawCancelled = 11; // 提现请求取消或被管理员拒绝
 	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息

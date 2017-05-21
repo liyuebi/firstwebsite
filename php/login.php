@@ -145,6 +145,7 @@ function loginAdmin()
 		}
 		
 		include "admin_func.php";
+		session_start();
 		setAdminSession($row);
 		
 		$userid = $row["AdminId"];
