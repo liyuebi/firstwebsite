@@ -68,6 +68,14 @@ if ($orderid != '') {
 					productCount = getCookie("willbuyCount");	
 				}
 				
+				/**********************************/
+				// hide address info
+				if (productId == 2 || productId == '2') {
+					document.getElementById("address").style.display = "none";
+				}
+				
+				/**********************************/
+				
 				var data1 = 'func=getProductInfo&productid=' + productId;
 				$.getJSON("../php/product.php", data1, function(json){
 					if (json.error == "true") {
@@ -258,8 +266,8 @@ if ($orderid != '') {
 			<p id="productCount"></p>
         </div>
         
-        <div id="address" style="border-bottom: 1px solid black;">
-	        <input type="hidden" id="addId" value="0" />
+        <div id="address" style="border-bottom: 1px solid black; " >
+	        <input type="hidden" id="addId" value="0" /> 
 	        <h3>请选择地址</h3>
 	        <div id="selectedAddBlock" style="display: none">
 		        <p id="selectedAddress" style="font-weight: bold; margin: 0 0 5px 5px"></p>

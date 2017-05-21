@@ -153,6 +153,9 @@ function createAddressTable()
 
 function createTransactionTable()
 {
+	/*
+	 * AddressId: 添加订单后用户可能修改地址，所以应以记录的地址信息为准。添加原因，发现有订单的地址信息为空，所以添加来防错
+	 */
 	$sql = "create table if not exists Transaction
 	(
 		OrderId int NOT NULL AUTO_INCREMENT,
@@ -161,6 +164,7 @@ function createTransactionTable()
 		ProductId int NOT NULL,
 		Price decimal(10,2) NOT NULL,
 		Count int NOT NULL,
+		AddressId int default 0,
 		Receiver varchar(30) DEFAULT '',
 		PhoneNum varchar(15) DEFAULT '',
 		Address varchar(128) DEFAULT '',

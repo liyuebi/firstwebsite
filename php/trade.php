@@ -136,16 +136,22 @@ function purchaseProduct()
 		return;				
 	}
 	
-	$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-	if (!$result || mysql_num_rows($result) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
-		return;								
+	$address = '';
+	$zipcode = '';
+	$receiver = '';
+	$phonenum = '';
+	if ($productId != 2) {
+		$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
+		if (!$result || mysql_num_rows($result) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
+			return;								
+		}
+		$row = mysql_fetch_assoc($result);
+		$address = $row["Address"];
+// 		$zipcode = $row["ZipCode"];
+		$receiver = $row["Receiver"];
+		$phonenum = $row["PhoneNum"];
 	}
-	$row = mysql_fetch_assoc($result);
-	$address = $row["Address"];
-	$zipcode = $row["ZipCode"];
-	$receiver = $row["Receiver"];
-	$phonenum = $row["PhoneNum"];
 	
 	$result = createTransactionTable();
 	if (!$result) {
@@ -199,8 +205,8 @@ function purchaseProduct()
 	if ($productId == 2) {
 		$status = $OrderStatusAccept;
 	}
-	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
-					VALUES('$userid', '$productId', '$totalPrice', '$count', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$status')");
+	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, AddressId, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
+					VALUES('$userid', '$productId', '$totalPrice', '$count', '0', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$status')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
 		return;						
@@ -316,7 +322,7 @@ function confirmOrder()
 	$count = $row['Count'];
 	
 	$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-	if (!$result) {
+	if (!$result || mysql_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'选择无效的地址！'));	
 		return;								
 	}
@@ -327,7 +333,7 @@ function confirmOrder()
 	$phonenum = $row["PhoneNum"];
 
 	$time = time();
-	$result = mysql_query("update Transaction set Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
+	$result = mysql_query("update Transaction set AddressId='$addressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新订单状态出错，请稍后重试！'));	
 		return;								
