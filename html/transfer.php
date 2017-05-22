@@ -127,7 +127,7 @@ if ($con) {
 				
 				var actualCount = 0;
 				var rate = <?php echo $handlefee; ?>;
-				actualCount = amount - Math.floor(amount * rate);
+				actualCount = amount - Math.floor(amount * rate * 100) / 100;
 				document.getElementById("autual_count").innerHTML = actualCount;
 			} 
 			
@@ -169,7 +169,7 @@ if ($con) {
 				}
 				
 				var rate = <?php echo $handlefee; ?>;
-				var fee = Math.floor(amount * rate)
+				var fee = Math.floor(amount * rate * 100) / 100;
 				var actualCount = amount - fee;
 				var toPhone = document.getElementById("phone").innerHTML;
 				var toName = document.getElementById("name").innerHTML;

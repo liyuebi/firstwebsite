@@ -74,6 +74,12 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				document.getElementById("tbl").style.display = "none";
 				document.getElementById("tbl1").style.display = "block";
 			}
+			
+			function exportToExcel()
+			{
+				var filePath = document.getElementById("file_path").files.item(0);
+				alert(filePath.length);
+			}
 		</script>
 	</head>
 	<body>
@@ -98,38 +104,42 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 <!-- 				<input type="button" value="查看已完成订单" onclick=""/> -->
 			</div>
 	        <div>
-				<table id="tbl" border="1">
-					<tr>
-						<th>下单时间</th>
-						<th>用户id</th>
-						<th>数量</th>
-						<th>收件人</th>
-						<th>收货人手机</th>
-						<th>收货地址</th>
-						<th>状态</th>
-						<th>快递单号</th>
-						<th>确认发货</th>
-					</tr>
-					<?php
-						include "../php/constant.php";
-						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($result)) {
-					?>
-							<tr>
-								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
-								<td><?php echo $row["UserId"]; ?></td>
-								<td><?php echo $row["Count"]; ?></td>
-								<td><?php echo $row["Receiver"]; ?></td>
-								<td><?php echo $row["PhoneNum"]; ?></td>
-								<td><?php echo $row["Address"]; ?></td>
-								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></td>
-								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td>
-								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
-							</tr>
-					<?php
-						}
-					?>
-				</table>
+		        <div id="tbl">
+    				<input id="file_path" type="file" />
+					<input type="button" value="导出到excel" onclick="exportToExcel()"  />
+					<table id="tbl" border="1">
+						<tr>
+							<th>下单时间</th>
+							<th>用户id</th>
+							<th>数量</th>
+							<th>收件人</th>
+							<th>收货人手机</th>
+							<th>收货地址</th>
+							<th>状态</th>
+							<th>快递单号</th>
+							<th>确认发货</th>
+						</tr>
+						<?php
+							include "../php/constant.php";
+							date_default_timezone_set('PRC');
+							while($row = mysql_fetch_array($result)) {
+						?>
+								<tr>
+									<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
+									<td><?php echo $row["UserId"]; ?></td>
+									<td><?php echo $row["Count"]; ?></td>
+									<td><?php echo $row["Receiver"]; ?></td>
+									<td><?php echo $row["PhoneNum"]; ?></td>
+									<td><?php echo $row["Address"]; ?></td>
+									<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待发货"; else if ($OrderStatusDefault == $row["Status"]) echo "等待用户确认订单"; else if ($OrderStatusDelivery == $row["Status"]) echo "已收货"; else if ($OrderStatusAccept == $row["Status"]) echo "已收货"; ?></td>
+									<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td>
+									<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
+								</tr>
+						<?php
+							}
+						?>
+					</table>
+		        </div>
 				<table id="tbl1" border="1" style="display: none;">
 					<tr>
 						<th>下单时间</th>

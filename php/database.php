@@ -678,7 +678,7 @@ function updateDayObtained($userid, $obtained, $time)
 }
 
 function calcHandleFee($amount, $rate) {
-	$fee = floor($amount * $rate);
+	$fee = floor($amount * $rate * 100) / 100;
 	return $fee;
 }
 
