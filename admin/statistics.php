@@ -11,6 +11,8 @@ include "../php/database.php";
 $result = false;
 $row = false;
 $row1 = false;
+$userCnt = array();
+$totalCnt = 0;
 
 $con = connectToDB();
 if (!$con)
@@ -28,6 +30,25 @@ if ($res) {
 $res1 = mysql_query("select * from ShortStatis");
 if ($res1) {
 	$row1 = mysql_fetch_assoc($res1);
+}
+
+$i = 1;
+while ($i <= 10) {
+	$userCnt[$i] = 0;
+	
+	$res2 = mysql_query("select count(*) from ClientTable where Lvl='$i'");
+	if ($res2 && mysql_num_rows($res2) > 0) {
+		$row2 = mysql_fetch_assoc($res2);
+		$userCnt[$i] = $row2["count(*)"];
+	}
+	
+	++$i;
+}
+
+$res3 = mysql_query("select count(*) from ClientTable");
+if ($res3 && mysql_num_rows($res3) > 0) {
+	$row3 = mysql_fetch_assoc($res3);
+	$totalCnt = $row3["count(*)"];
 }
 
 ?>
@@ -155,6 +176,27 @@ if ($res1) {
 						}
 					?>
 				</table>
+	        </div>
+	        <div>
+		        <p>级别人数统计</p>
+		        <table border="1">
+			        <tr>
+				        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>总人数</th>
+			        </tr>
+					<tr>
+						<?php
+							$cnt = count($userCnt);
+							$j = 1;
+							while ($j <= $cnt) {		
+						?>
+								<td><?php echo $userCnt[$j]; ?></td>
+						<?php		
+								++$j;
+							}
+						?>
+ 						<td><?php echo $totalCnt; ?></td>
+					</tr>
+		        </table>
 	        </div>
 		</div>
     </body>
