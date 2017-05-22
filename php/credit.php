@@ -689,6 +689,9 @@ function transfer()
 	// 扣款
 	$left = $credit - $amount;
 	$fee = calcHandleFee($amount, $transferHandleRate);
+	if ($userid == "100016" || $userid == "100030") {
+		$fee = 0;
+	}
 	$actualamount = $amount - $fee;
 	$totalFee = $row2["TotalFee"] + $fee;
 	$res3 = mysql_query("update Credit set Credits='$left', TotalFee='$totalFee' where UserId='$userid'");
