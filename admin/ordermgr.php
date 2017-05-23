@@ -88,6 +88,7 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 // 				alert(navigator.userAgent);
 				
 
+				alert(navigator.userAgent);
 				if (!(window.attachEvent && navigator.userAgent.indexOf('Opera') === -1)) {
 					alert("您没有使用ie浏览器！");
 					return;
