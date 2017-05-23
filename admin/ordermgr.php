@@ -97,7 +97,7 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				var date = new Date();
 				var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
 				var folderPath = "D://导出订货单//" + name;
-				fso.CreateFolder(folderPath);
+				var folder = fso.CreateFolder(folderPath);
 				
 				var XLObj = new ActiveXObject("Excel.Application");
 /*
@@ -129,6 +129,7 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				alert(4);
 				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
 				alert(filePath);
+				alert(folder.attributes);
 				try {
 				ExcelSheet.SaveAs(filePath);
 				}
