@@ -96,21 +96,33 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				}
 				var date = new Date();
 				var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
-				var folderPath = "D://导出订货单/" + name;
+				var folderPath = "D://导出订货单//" + name;
 				fso.CreateFolder(folderPath);
 				
 				var XLObj = new ActiveXObject("Excel.Application");
 				alert("1");
+/*
 				var xlBook = XLObj.Workbooks.Add();
 				alert("2");
 				var ExcelSheet = xlBook.Worksheets(1);
 				alert("3");
 				
-				ExcelSheet.SaveAs(folderPath + "/普通EXCEL模板.xls");
+				ExcelSheet.SaveAs(folderPath + "//普通EXCEL模板.xls");
 				alert("4");
 				
 				xlBook.Close(true);
 				alert("5");
+*/
+				var ExcelSheet = new ActiveXObject("Excel.Sheet");
+				alert(2);
+				ExcelSheet.Application.Visible = true;
+				alert(3);
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "This is column A, row 1";
+				alert(4);
+				ExcelSheet.SaveAs(folderPath + "//普通EXCEL模板.xls");
+				alert(5);
+				ExcelSheet.Application.Quit();
+				alert(6);
 			}
 		</script>
 	</head>
