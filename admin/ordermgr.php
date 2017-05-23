@@ -90,26 +90,27 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 					return;					
 				}
 
-				alert("0");
 				var fso = new ActiveXObject("Scripting.FileSystemObject");
-				alert("0.2");
 				if (!fso.FolderExists("D://导出订货单")) {
 					fso.CreateFolder("D://导出订货单");
-					alert("1");
 				}
-				alert("2");
 				var date = new Date();
 				var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
 				var folderPath = "D://导出订货单/" + name;
 				fso.CreateFolder(folderPath);
 				
 				var XLObj = new ActiveXObject("Excel.Applicaction");
+				alert("1");
 				var xlBook = XLObj.Workbooks.Add();
+				alert("2");
 				var ExcelSheet = xlBook.Worksheets(1);
+				alert("3");
 				
 				ExcelSheet.SaveAs(folderPath + "/普通EXCEL模板.xls");
+				alert("4");
 				
-				xlBook.Close();
+				xlBook.Close(true);
+				alert("5");
 			}
 		</script>
 	</head>
