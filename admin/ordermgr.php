@@ -102,7 +102,7 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				var XLObj = new ActiveXObject("Excel.Application");
 				alert("1");
 /*
-				var xlBook = XLObj.Workbooks.Add();
+				var xlBook = XLObj.Workbooks.Add;
 				alert("2");
 				var ExcelSheet = xlBook.Worksheets(1);
 				alert("3");
@@ -117,9 +117,18 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				alert(2);
 				ExcelSheet.Application.Visible = true;
 				alert(3);
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "This is column A, row 1";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "订单编号";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "收件人";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "固话";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "手机";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "地址";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "发货信息";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "备注";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "代收金额";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "保价金额";
+				ExcelSheet.ActiveSheet.Cells(1,1).Value = "业务类型";
 				alert(4);
-				var filePath = folderPath + "//普通EXCEL模板.xls";
+				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
 				alert(filePath);
 				ExcelSheet.SaveAs(filePath);
 				alert(5);
