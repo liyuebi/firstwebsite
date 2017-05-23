@@ -100,7 +100,6 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				fso.CreateFolder(folderPath);
 				
 				var XLObj = new ActiveXObject("Excel.Application");
-				alert("1");
 /*
 				var xlBook = XLObj.Workbooks.Add;
 				alert("2");
@@ -118,19 +117,24 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				ExcelSheet.Application.Visible = true;
 				alert(3);
 				ExcelSheet.ActiveSheet.Cells(1,1).Value = "订单编号";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "收件人";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "固话";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "手机";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "地址";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "发货信息";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "备注";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "代收金额";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "保价金额";
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "业务类型";
+				ExcelSheet.ActiveSheet.Cells(1,2).Value = "收件人";
+				ExcelSheet.ActiveSheet.Cells(1,3).Value = "固话";
+				ExcelSheet.ActiveSheet.Cells(1,4).Value = "手机";
+				ExcelSheet.ActiveSheet.Cells(1,5).Value = "地址";
+				ExcelSheet.ActiveSheet.Cells(1,6).Value = "发货信息";
+				ExcelSheet.ActiveSheet.Cells(1,7).Value = "备注";
+				ExcelSheet.ActiveSheet.Cells(1,8).Value = "代收金额";
+				ExcelSheet.ActiveSheet.Cells(1,9).Value = "保价金额";
+				ExcelSheet.ActiveSheet.Cells(1,10).Value = "业务类型";
 				alert(4);
 				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
 				alert(filePath);
+				try {
 				ExcelSheet.SaveAs(filePath);
+				}
+				catch (err) {
+					alert(err.description);
+				}
 				alert(5);
 				ExcelSheet.Application.Quit();
 				alert(6);
