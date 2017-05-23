@@ -127,7 +127,8 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				ExcelSheet.ActiveSheet.Cells(1,9).Value = "保价金额";
 				ExcelSheet.ActiveSheet.Cells(1,10).Value = "业务类型";
 				alert(4);
-				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
+// 				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
+				var filePath = "D://普通EXCEL模板.XLS";
 				alert(filePath);
 				alert(folder.attributes);
 				try {
