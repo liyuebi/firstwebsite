@@ -92,8 +92,6 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 
 				alert("0");
 				var fso = new ActiveXObject("Scripting.FileSystemObject");
-				alert("0.1");
-				fso.CreateFolder("D://hellokitty");
 				alert("0.2");
 				if (!fso.FolderExists("D://导出订货单")) {
 					fso.CreateFolder("D://导出订货单");
