@@ -98,6 +98,8 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
 				var folderPath = "D://导出订货单//" + name;
 				var folder = fso.CreateFolder(folderPath);
+				var filePath1 = folderPath + "//普通EXCEL模板.XLS";
+				var file = fso.CreateTextFile(filePath1, true);
 				
 				var XLObj = new ActiveXObject("Excel.Application");
 /*
