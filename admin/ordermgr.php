@@ -99,7 +99,7 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				var folderPath = "D://导出订货单/" + name;
 				fso.CreateFolder(folderPath);
 				
-				var XLObj = new ActiveXObject("Excel.Applicaction");
+				var XLObj = new ActiveXObject("Excel.Application");
 				alert("1");
 				var xlBook = XLObj.Workbooks.Add();
 				alert("2");
