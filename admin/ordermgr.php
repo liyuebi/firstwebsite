@@ -77,22 +77,19 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 			
 			function exportToExcel()
 			{
-/*
-				var file = document.getElementById("file_path"); //files.item(0).getAsDataURL();
-				var path = file.dir;
-				alert(path);
-				file.select();
-				var filePath = document.selection.createRange().text;
-				alert(filePath);
-*/
 // 				alert(navigator.userAgent);
-				
-
-				alert(navigator.userAgent);
+/*
 				if (!(window.attachEvent && navigator.userAgent.indexOf('Opera') === -1)) {
 					alert("您没有使用ie浏览器！");
 					return;
 				}
+*/
+				var isIE = !!window.ActiveXObject || "ActiveXObject" in window;
+				if (!isIE) {
+					alert("您没有使用ie浏览器！");
+					return;					
+				}
+
 				var fso = new ActiveXObject("Scripting.FileSystemObject");
 				if (!fso.FolderExists("D://导出订货单")) {
 					fso.CreateFolder("D://导出订货单");
