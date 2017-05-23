@@ -119,7 +119,9 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 				alert(3);
 				ExcelSheet.ActiveSheet.Cells(1,1).Value = "This is column A, row 1";
 				alert(4);
-				ExcelSheet.SaveAs(folderPath + "//普通EXCEL模板.xls");
+				var filePath = folderPath + "//普通EXCEL模板.xls";
+				alert(4.5);
+				ExcelSheet.SaveAs(filePath);
 				alert(5);
 				ExcelSheet.Application.Quit();
 				alert(6);
