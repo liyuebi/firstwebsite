@@ -77,8 +77,38 @@ $res1 = mysql_query("select * from Transaction  where Status!='$OrderStatusBuy'"
 			
 			function exportToExcel()
 			{
-				var filePath = document.getElementById("file_path").files.item(0);
-				alert(filePath.length);
+/*
+				var file = document.getElementById("file_path"); //files.item(0).getAsDataURL();
+				var path = file.dir;
+				alert(path);
+				file.select();
+				var filePath = document.selection.createRange().text;
+				alert(filePath);
+*/
+// 				alert(navigator.userAgent);
+				
+
+				if (!(window.attachEvent && navigator.userAgent.indexOf('Opera') === -1)) {
+					alert("您没有使用ie浏览器！");
+					return;
+				}
+				var fso = new ActiveXObject("Scripting.FileSystemObject");
+				if (!fso.FolderExists("D://导出订货单")) {
+					fso.CreateFolder("D://导出订货单");
+				}
+				
+				var date = new Date();
+				var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
+				var folderPath = "D://导出订货单/" + name;
+				fso.CreateFolder(folderPath);
+				
+				var XLObj = new ActiveXObject("Excel.Applicaction");
+				var xlBook = XLObj.Workbooks.Add();
+				var ExcelSheet = xlBook.Worksheets(1);
+				
+				ExcelSheet.SaveAs(folderPath + "/普通EXCEL模板.xls");
+				
+				xlBook.Close();
 			}
 		</script>
 	</head>
