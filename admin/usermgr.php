@@ -101,6 +101,25 @@ if (!checkLoginOrJump()) {
 						var d9 = document.createElement("td");	
 						d9.innerHTML = data.dvault;
 						trow.appendChild(d9);
+						var d11 = document.createElement("td");	
+						d11.innerHTML = data.RecoCnt;
+						trow.appendChild(d11);
+						var d12 = document.createElement("td");	
+						d12.innerHTML = data.Group1Child;
+						trow.appendChild(d12);
+						var d13 = document.createElement("td");	
+						d13.innerHTML = data.Group2Child;
+						trow.appendChild(d13);
+						var d14 = document.createElement("td");	
+						d14.innerHTML = data.bpCnt;
+						trow.appendChild(d14);
+						var d15 = document.createElement("td");	
+						d15.innerHTML = data.charge;
+						trow.appendChild(d15);
+						var d16 = document.createElement("td");	
+						d16.innerHTML = data.withdraw;
+						trow.appendChild(d16);
+
 						
 						var d10 = document.createElement("td");	
 						trow.appendChild(d10);
@@ -186,8 +205,8 @@ if (!checkLoginOrJump()) {
 	        <div>
 		        <h3>用户管理</h3>
 	        </div>
-	        <input type="button" value="添加新用户" onclick="showAddBlk()" />
-	        <input type="button" value="查询用户" onclick="showQueryBlk()" />
+<!-- 	        <input type="button" value="添加新用户" onclick="showAddBlk()" /> -->
+<!--  	        <input type="button" value="查询用户" onclick="showQueryBlk()" /> -->
 	        <div id="blk_add" style="display: none">
 		        <input type="hidden" name='func' value="addNew" />
 		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
@@ -196,7 +215,7 @@ if (!checkLoginOrJump()) {
 				<br>
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
-			<div id="blk_chk" style="display: none">
+			<div id="blk_chk" style="display: block">
 				<input id="id_input" type="text" placeholder="请输入用户id" />
 				<input type="button" value="查找" onclick="queryUser()" />
 				
@@ -211,6 +230,12 @@ if (!checkLoginOrJump()) {
 						<th>蜜券</th>
 						<th>固定蜂值</th>
 						<th>动态蜂值</th>
+						<th>推荐人数</th>
+						<th>第一团队下属</th>
+						<th>第二团队下属</th>
+						<th>购物总数</th>
+						<th>充值</th>
+						<th>取现</th>
 						<th>操作</th>
 					</tr>
 				</table>

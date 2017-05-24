@@ -163,17 +163,24 @@ function queryUser()
 	$credit = 0;
 	$vault = 0;
 	$dvault = 0;
+	$bpCnt = 0;
+	$charge = 0;
+	$withdraw = 0;
 	$res1 = mysql_query("select * from Credit where UserId='$userid'");
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		$row1 = mysql_fetch_assoc($res1);
 		$credit = $row1["Credits"];
 		$vault = $row1["Vault"];
 		$dvault = $row1["DVault"];
+		$bpCnt = $row1["BPCnt"];
+		$charge = $row1["TotalRecharge"];
+		$withdraw = $row1["TotalWithdraw"];
 	}
 	
-	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"], 		
-				'id'=>$row["UserId"],'phone'=>$row["PhoneNum"],'name'=>$row["Name"],
-				'IDNum'=>$row["IDNum"],'lvl'=>$row["Lvl"],'credit'=>$credit,'vault'=>$vault,'dvault'=>$dvault));
+	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"],'id'=>$row["UserId"],
+				'phone'=>$row["PhoneNum"],'name'=>$row["Name"],'IDNum'=>$row["IDNum"],
+				'lvl'=>$row["Lvl"],'Group1Child'=>$row['Group1Child'],'Group2Child'=>$row['Group2Child'],'RecoCnt'=>$row['RecoCnt'],
+				'credit'=>$credit,'vault'=>$vault,'dvault'=>$dvault,'bpCnt'=>$bpCnt,'charge'=>$charge,'withdraw'=>$withdraw));
 }
 
 function getAllDFeng()
