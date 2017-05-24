@@ -18,6 +18,9 @@ else if ("accept" == $_POST['func']) {
 else if ("confirmOrder" == $_POST['func']) {
 	confirmOrder();
 }
+else if ("queryUserOrder" == $_POST['func']) {
+	quertUserOrder();
+}
 /*
 else if ("logout" == $_POST['func']) {
 	logout();	
@@ -442,6 +445,39 @@ function acceptProduct()
 // 	echo mysql_error();
 	echo json_encode(array('error'=>'false'));
 	return;
+}
+
+function quertUserOrder()
+{
+	$userid = trim(htmlspecialchars($_POST["uid"]));	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','uid'=>$userid));
+		return;
+	}
+	$res = mysql_query("select * from ClientTable where UserId='$userid'");
+	if (!$res || mysql_num_rows($res)<=0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的用户ID，请重新输入！','uid'=>$userid));
+		return;				
+	}
+	$result = mysql_query("select * from Transaction where UserId='$userid'"); 
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！','uid'=>$userid));
+		return;		
+	}
+	$array = array();
+	while ($row = mysql_fetch_array($result)) {
+		$productId = $row['ProductId'];
+		$res1 = mysql_query("select * from Product where ProductId='$productId'");
+		if ($res1 && mysql_num_rows($res1) > 0) {
+			$row1 = mysql_fetch_assoc($res1);
+			$row["ProductName"] = $row1["ProductName"];
+		}
+		$array[$row['OrderId']] = $row;
+	}
+	
+	echo json_encode(array('error'=>'false','uid'=>$userid,'num'=>mysql_num_rows($result),'order_list'=>$array));
 }
 
 ?>
