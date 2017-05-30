@@ -512,6 +512,33 @@ function createShortStatisTable()
 	return $result;
 }
 
+function createPostTable()
+{
+	/*
+	 * AddTime: 添加时间
+	 * OnlineTime: 上线时间
+	 * LMT: 上次更新时间
+	 * Ret: 下架时间
+	 */
+	$sql = "create table if not exists PostTable
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		Title varchar(32) not null,
+		TextFile varchar(32) not null,
+		AddTime int not null,
+		OnlineTime int default 0,
+		LMT int default 0,
+		ReT int default 0,
+		Status int default 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create PostTable table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
 function isInTheSameDay($time1, $time2)
 {
 	date_default_timezone_set('PRC');		// get local time

@@ -42,10 +42,17 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 	</head>
 	<body>
         <div align="center" style="margin: 30px;">
-            用户名 <input id="user" type="text" placeholder="请输入管理员账号" />
-            <br>
-            密码 <input id="pwd" type="password" placeholder="请输入密码" />
-            <br>
+	        <h2>蜜蜂工坊后台管理系统</h2>
+	        <table>
+		        <tr>
+			        <td>用户名</td>
+			        <td><input id="user" type="text" placeholder="请输入管理员账号" /></td>
+		        </tr>
+		        <tr>
+			        <td>密码</td>
+			        <td><input id="pwd" type="password" placeholder="请输入密码" /></td>
+		        </tr>
+	        </table>
             <input type="button" value="登录" onclick="login()" />
         </div>
     </body>

@@ -42,6 +42,10 @@
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
 	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
 	
+	$postStatusWait = 0;	// 公告状态，新添加后等待发布
+	$postStatusOnline = 1;	// 公告状态，已发布，用户可见
+	$postStatusDown = 2;	// 公告状态，删除公告，用户不可见
+	
 	$paymentWechat = 1;
 	$paymentAlipay = 2;
 	$paymentBank = 3;

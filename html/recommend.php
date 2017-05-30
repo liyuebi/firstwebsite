@@ -48,6 +48,7 @@ if ($con) {
 			{
 				var phonenum = document.getElementById("phonenum").value;
 				var paypwd = document.getElementById("paypwd").value;
+				phonenum=$.trim(phonenum);
 				if (!isPhoneNumValid(phonenum)) {
 					alert("无效的电话号码！");
 					return;
