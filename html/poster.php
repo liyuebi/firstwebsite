@@ -83,9 +83,8 @@ if ($idx > 0) {
 			</p>
 			<p style="float: right;">
 				<?php
-					$now = time();
 					date_default_timezone_set('PRC');
-					echo date("Y-m-d", $now); 
+					echo date("Y-m-d", $row["OnlineTime"]); 
 				?>
 			</p>
         </div>

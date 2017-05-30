@@ -101,7 +101,6 @@ if ($idx > 0) {
 						alert('编辑失败：' + data.error_msg);
 					}
 				}, "json");
-
 			}
 			
 			function discard()
