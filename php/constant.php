@@ -31,6 +31,11 @@
 	$codeTransferFrom = 9;	// 收到其他人转的积分
 	$codeDynDivident = 10;	// 动态分红导致积分变化，根据每日订单总额去一定比例，再除以动态蜂值总和，返还给用户
 	$codeWithdrawCancelled = 11; // 提现请求取消或被管理员拒绝
+	$codeTransferToPnts = 12; // 积分转移到采蜜券
+	
+	$code2Divident = 1; // 固定分红导致采蜜券变化
+	$code2DynDivident = 2; // 动态分红导致采蜜券变化，
+	$code2TransferFromCredit = 12; // 从蜜券转换而来
 	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息

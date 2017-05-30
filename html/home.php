@@ -56,7 +56,7 @@ if ($con) {
 	}
 }
 
-$monConsumption = getMonthConsumption($userid);
+// $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
 $feng = ceil($vault / $fengzhiValue);
 $dfeng = ceil($dvault / $fengzhiValue);
@@ -197,13 +197,13 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<table class="t1" border="1" align="center" style="margin-top: 0; " rules="none">
 				<tr>
 					<td width="25%">蜜券</td>
-					<td width="25%">当月蜜券</td>
+					<td width="25%">采蜜券</td>
 					<td width="25%">固定蜂值</td>
 					<td width="25%">动态蜂值</td>
 				</tr>
 				<tr>
 					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
-					<td id="todayexpense"><?php if ($row) echo $monConsumption; else echo '0'; ?></td>
+					<td><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php echo $vault; ?></td>
 					<td id="dbonuspool"><?php echo $dfeng; ?></td>
 				</tr>

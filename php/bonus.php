@@ -52,8 +52,8 @@ function calcBonus($file)
 	writeLog($file, "积分池余额：" . $pool . "\n");
 	writeLog($file, "前期的固定分红总额：" . $lastBonusTotal . "\n");
 	writeLog($file, "前期的固定分红余额：" . $lastBonusLeft . "\n");
-	writeLog($file, "前期的动态分红总额：" . $lastBonusTotal . "\n");
-	writeLog($file, "前期的动态分红余额：" . $lastBonusLeft . "\n");
+	writeLog($file, "前期的动态分红总额：" . $lastDBonusTotal . "\n");
+	writeLog($file, "前期的动态分红余额：" . $lastDBonusLeft . "\n");
 	if ($bCalcBonus) {
 		writeLog($file, "\n### 本次需重新计算固定分红\n\n");
 	}

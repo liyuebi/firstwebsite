@@ -64,6 +64,8 @@ function createClientTable()
 function createCreditTable()
 {
 	/*
+	 * Credits: 蜜券
+	 * Points: 采蜜券
 	 * Vault: 静态金库
 	 * DVault: 动态金库
 	 * BPCnt: buy product count 总共购买的产品件数
@@ -102,6 +104,12 @@ function createCreditTable()
 		LastConsumptionTime int DEFAULT 0,
 		DayObtained decimal(10,2) DEFAULT 0,
 		LastObtainedTime int DEFAULT 0,
+		Pnts decimal(10,2) DEFAULT 0,
+		LastObtainedPntTime int DEFAULT 0,
+		DayObtainedPnts decimal(10,2) DEFAULT 0,
+		MonObtainedPnts decimal(10,2) DEFAULT 0,
+		YearObtainedPnts decimal(10,2) DEFAULT 0,
+		TotalObtainedPnts decimal(10,2) DEFAULT 0,
 		CurrBonus decimal(10,2) DEFAULT 0,
 		LastCBTime int DEFAULT 0,
 		CurrDBonus decimal(10,2) DEFAULT 0,
@@ -369,6 +377,29 @@ function createCreditRecordTable()
 	$result = mysql_query($sql);
 	if (!$result) {
 		echo "create CreditRecord table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createPntsRecordTable()
+{
+	$sql = "create table if not exists PntsRecord
+	(
+		IndexId int not null AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int not null,
+		Amount decimal(10,2) not null,
+		CurrAmount decimal(10,2) not null,
+		HandleFee decimal(10,2) default 0,
+		ApplyTime int not null,
+		ApplyIndexId int default 0,
+		AcceptTime int default 0,
+		WithUserId int default 0,
+		Type int not null
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create PntsRecord table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }

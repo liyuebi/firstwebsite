@@ -95,6 +95,9 @@ if (!checkLoginOrJump()) {
 						var d7 = document.createElement("td");
 						d7.innerHTML = data.credit;
 						trow.appendChild(d7);
+						var d20 = document.createElement("td");
+						d20.innerHTML = data.pnt;
+						trow.appendChild(d20);
 						var d8 = document.createElement("td");
 						d8.innerHTML = data.vault;
 						trow.appendChild(d8);
@@ -228,6 +231,7 @@ if (!checkLoginOrJump()) {
 						<th>身份证号</th>
 						<th>等级</th>
 						<th>蜜券</th>
+						<th>采蜜券</th>
 						<th>固定蜂值</th>
 						<th>动态蜂值</th>
 						<th>推荐人数</th>

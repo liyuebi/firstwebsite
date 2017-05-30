@@ -85,6 +85,9 @@ if ($con) {
 				    	else if ($row["Type"] == $codeWithdrawCancelled) {					    	
 					    	echo "您的取现申请取消，退回" . $row["Amount"] . "蜜券到账。";
 				    	}
+				    	else if ($row["Type"] == $codeTransferToPnts) {
+					    	echo "您的" . $row["Amount"] . "蜜券转换成采蜜券。";
+				    	}
 				    	
 					    echo "<br>";
 					    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";
