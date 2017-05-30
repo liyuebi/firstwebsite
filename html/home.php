@@ -32,6 +32,8 @@ $bonus = 0;
 $dBonus = 0;
 $lastCBTime = 0;
 
+$res = false;
+
 $con = connectToDB();
 if ($con) {
 		
@@ -54,6 +56,8 @@ if ($con) {
 			$bonus = 0;	
 		}
 	}
+	
+	$res = mysql_query("select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
 }
 
 // $monConsumption = getMonthConsumption($userid);
@@ -248,9 +252,16 @@ $hasBonus = ($bonus + $dBonus) > 0;
 		
 		<div id="post" style="background: #dddbdb; margin-bottom: 30px;">
 			<h3>公告：</h3>
-				<a href="poster2.html">蜜蜂工坊创富启航2</a>
-				<br>
-				<a href="poster.html">蜜蜂工坊创富启航</a>
+			<?php 
+				if ($res) {
+					while ($row = mysql_fetch_array($res)) {
+			?>
+					<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>"><?php echo $row["Title"]; ?></a>
+					<br>		
+			<?php
+					}
+				}
+			?>
 		</div>
 	</body>
 </html>
