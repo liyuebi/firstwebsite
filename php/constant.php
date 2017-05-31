@@ -5,7 +5,7 @@
 	$dyNewAccountVault = 1000;	// 给新用户的静态返还蜜券总额
 	$fengzhiValue = 1000;		// 1蜂值等于多少蜜券值
 	
-	$rewardRate =0.51;		// 从每日的交易额中取出多少来返还给用户
+	$rewardRate =0.717;		// 从每日的交易额中取出多少来返还给用户
 	$rewardVal = 15.02;		// 不计算交易额，直接按照值进行分红
 	
 	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采蜜券，剩下的依旧返还成蜜券
@@ -14,7 +14,7 @@
 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
 	
-	$withdrawFloorAmount = 100;	// 提现最少的积分额度
+	$withdrawFloorAmount =300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
 	
 	$transferFloorAmount =1;// 转账最低的积分额度
