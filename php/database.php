@@ -413,6 +413,8 @@ function createStatisticsTable()
 	 * NSCount  - New User Count 新用户总数
 	 * BonusTotal - 每日给用户的固定分红总额
 	 * DBonusTotal - 每日给用户的动态分红总额
+ 	 * BonusPntTotal - 每日给用户的固定分红得到的采蜜券总额
+	 * DBonusPntTotal - 每日给用户的动态分红得到的采蜜券总额
 	 * OrderNum - 成交的订单数量
 	 * SPNum	- sell product num 卖出的产品数量，是每笔订单的产品数的总和
 	 * TfTimes  - Transfer Times 转账次数
@@ -431,6 +433,8 @@ function createStatisticsTable()
 		NSCount int DEFAULT 0,
 		BonusTotal decimal(10,2) DEFAULT 0,
 		DBonusTotal decimal(10,2) DEFAULT 0,
+		BonusPntTotal decimal(10,2) DEFAULT 0,
+		DBonusPntTotal decimal(10,2) DEFAULt 0,
 		RecommendFee decimal(10,2) DEFAULT 0,
 		WithdrawFee decimal(10,2) DEFAULT 0,
 		OrderGross decimal(10,2) DEFAULT 0,
@@ -449,6 +453,12 @@ function createStatisticsTable()
 
 function createTotalStatisTable()
 {
+	/*
+	 * BonusTotal: 		固定分红得到的蜜券总额
+	 * DBonusTotal: 	动态分红得到的蜜券总额
+	 * BonusPntTotal: 	固定分红得到的采蜜券总额
+	 * DBonusPntTotal:  动态分红得到的采蜜券总额
+	 */
 	$sql = "create table if not exists TotalStatis
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
@@ -470,6 +480,8 @@ function createTotalStatisTable()
 		RecommendTotal int DEFAULT 0,
 		BonusTotal decimal(10,2) DEFAULT 0,
 		DBonusTotal decimal(10,2) DEFAULt 0,
+		BonusPntTotal decimal(10,2) DEFAULT 0,
+		DBonusPntTotal decimal(10,2) DEFAULt 0,
 		OrderGross decimal(10,2) DEFAULT 0,
 		OrderNum int DEFAULT 0,
 		SPNum int DEFAULT 0

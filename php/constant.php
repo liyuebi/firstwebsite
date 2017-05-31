@@ -6,6 +6,9 @@
 	$fengzhiValue = 1000;		// 1蜂值等于多少蜜券值
 	
 	$rewardRate =0.51;		// 从每日的交易额中取出多少来返还给用户
+	$rewardVal = 15.02;		// 不计算交易额，直接按照值进行分红
+	
+	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采蜜券，剩下的依旧返还成蜜券
 	
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 

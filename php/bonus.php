@@ -20,7 +20,7 @@ function calcBonus($file)
 	
 	$res = mysql_query("select * from TotalStatis where IndexId=1");
 	if (!$res || mysql_num_rows($res) < 1) {
-		writeLog($file, "！！！ 查找TotalStatis记录出错!\n");
+		writeLog($file, "!!! 查找TotalStatis记录出错!\n");
 		return false;
 	}
 	$row = mysql_fetch_assoc($res);
@@ -28,7 +28,7 @@ function calcBonus($file)
 	
 	$res1 = mysql_query("select * from ShortStatis where IndexId=1");
 	if (!$res1 || mysql_num_rows($res1) < 1) {
-		writeLog($file, "\n！！！ 查找Short记录出错!\n\n");
+		writeLog($file, "\n!!! 查找Short记录出错!\n\n");
 		return false;
 	}
 	
@@ -67,10 +67,10 @@ function calcBonus($file)
 	
 	// 剩余分红额小于0，说明超领了
 	if ($lastBonusLeft < 0) {
-		writeLog($file, "\n！！！ 固定分红剩余小于0，出错！\n\n");
+		writeLog($file, "\n!!! 固定分红剩余小于0，出错！\n\n");
 	}
 	if ($lastDBonusLeft < 0) {
-		writeLog($file, "\n！！！ 动态分红剩余小于0，出错！\n\n");
+		writeLog($file, "\n!!! 动态分红剩余小于0，出错！\n\n");
 	}
 	
 	$dBonusTotal = floor($gross * $rewardRate * 100) / 100;
@@ -78,6 +78,9 @@ function calcBonus($file)
 	writeLog($file, "本期的订单总额：" . $gross . "\n");
 	writeLog($file, "本期的订单分红比例：" . $rewardRate . "\n");
 	writeLog($file, "本期的动态分红额：" . $dBonusTotal . "\n");
+	if ($rewardVal > 0) {
+		writeLog($file, "\n 本期设置了动态分红值，每蜂值分红：" . $rewardVal . "\n\n");
+	}
 	
 	// 未领取的分红返回基金池 
 	$pool += $lastDBonusLeft;	
@@ -121,23 +124,31 @@ function calcBonus($file)
 
 				if ($lvl > 1) {
 					$bonus = $levelDayBonus[$lvl - 2];
+/*
 					// 如果已经是最高级且没有固定蜂值剩余，则不予以拨分红，以节省分红
 					// 否则即使用户没有峰值，也先播出固态分红，如果用户升级即可继续领取
 					if ($lvl == $allLevel && $vault <= 0) {
 						$bonus = 0;
 					}
+*/
+					// 如果分红大于固定分红剩余，按剩余额进行分红；并即时减去固定蜂值
+					if ($bonus > $vault) {
+						$bonus = $vault;
+					}
+					$vault -= $bonus;
+					
 					$totalBonus += $bonus;
 				}
 				
 				if ($bonus > 0) {
 					++$dCnt;
 				}
-				$res7 = mysql_query("update Credit set CurrBonus='$bonus' where UserId='$userid'");
+				$res7 = mysql_query("update Credit set CurrBonus='$bonus', Vault='$vault' where UserId='$userid'");
 				if (!$res7) {
-					writeLog($file, "\n!!! 更新用户 " . $userid . " 的固定分红失败: " . mysql_error() . "\n");
+					writeLog($file, "\n!!! 更新用户 " . $userid . " 的固定分红失败: " . mysql_error() . "\n\n");
 				}
 				else {
-					writeLog($file, $userid . " : " . $bonus . "\n");
+					writeLog($file, $userid . " 固定分红：" . $bonus . "，固定蜂值： " . $vault . "\n");
 				}
 			}
 		}
@@ -152,22 +163,27 @@ function calcBonus($file)
 		
 	// 计算每个动态峰值分多少积分 
 	$dBonusPerF = 0;
-	if ($totalDFeng > 0) {
-		$dBonusPerF = floor($dBonusTotal / $totalDFeng * 100) / 100;	
+	if ($rewardVal > 0) {
+		$dBonusPerF = $rewardVal;
 	}
-	
-	if ($dBonusPerF > 0) {
-				
-		$cnt = 0;
-		writeLog($file, "\n------------------------------------------------------------------\n");
-		$res8 = mysql_query("select * from ClientTable");
-		if (!$res8) {
-			writeLog($file, "\n!!! 查询用户表失败！\n");
+	else {
+		if ($totalDFeng > 0) {
+			$dBonusPerF = floor($dBonusTotal / $totalDFeng * 100) / 100;	
 		}
-		else {
-			while($row8 = mysql_fetch_array($res8)) {
-				
-				$userid = $row8["UserId"];
+	}
+	$dBonusTotal = 0; // 先清空计算得到的总动态分红值，根据实际分红计算总额
+					
+	$cnt = 0;
+	writeLog($file, "\n------------------------------------------------------------------\n");
+	$res8 = mysql_query("select * from ClientTable");
+	if (!$res8) {
+		writeLog($file, "\n!!! 查询用户表失败！\n");
+	}
+	else {
+		while($row8 = mysql_fetch_array($res8)) {
+			
+			$userid = $row8["UserId"];
+			if ($dBonusPerF > 0) {
 				$res6 = mysql_query("select * from Credit where UserId='$userid'");
 				if (!$res6 || mysql_num_rows($res6) < 1) {
 					writeLog($file, "\n!!! 查询用户" . $userid . "的积分表失败！\n");
@@ -177,31 +193,48 @@ function calcBonus($file)
 					
 					// 累计计算动态峰值总数
 					$dVault = $row6["DVault"];
+					$dBonus = 0;
 					if ($dVault > 0) {
 						$dfeng = ceil($dVault / $fengzhiValue);
 						$dBonus = $dfeng * $dBonusPerF;
-					
-						$res7 = mysql_query("update Credit set CurrDBonus='$dBonus' where UserId='$userid'");
-						if (!$res7) {
-							writeLog($file, "\n!!! 更新用户" . $userid . "的动态分红失败: " . mysql_error() . "\n");
-						}
-						else {
-							writeLog($file, $userid . " : " . $dBonus . "\n");	
-						}
 						
 						++$cnt;
 					}
+						
+					if ($dBonus > $dVault) {
+						$dBonus = $dVault; 
+					}
+					$dVault -= $dBonus;
+					
+					$dBonusTotal += $dBonus;
+				
+					$res7 = mysql_query("update Credit set CurrDBonus='$dBonus', DVault='$dVault' where UserId='$userid'");
+					if (!$res7) {
+						writeLog($file, "\n!!! 更新用户" . $userid . "的动态分红失败: " . mysql_error() . "\n");
+					}
+					else {
+						writeLog($file, $userid . " 动态分红：" . $dBonus . "，动态蜂值：" . $dVault . "\n");	
+					}
+				}
+			}
+			else {
+				$res7 = mysql_query("update Credit set CurrDBonus=0 where UserId='$userid'");
+				if (!$res7) {
+					writeLog($file, "\n!!! 清空用户 " . $userid . " 的动态分红失败: " . mysql_error() . "\n");
 				}
 			}
 		}
-		writeLog($file, "\n------------------------------------------------------------------\n");
+	}
+	writeLog($file, "\n------------------------------------------------------------------\n");
+	if ($dBonusPerF <= 0) {
+		writeLog($file, "--- 动态分红每蜂值为0，不进行动态分红！需清空用户之前的动态分红值！\n");
+	}
+	else {
 		writeLog($file, "--- 共分红给了 " . $cnt . " 用户\n");
 		writeLog($file, "--- 动态分红总值是 " . $dBonusTotal . "\n");
 		writeLog($file, "--- 动态分红每蜂值分得 " . $dBonusPerF . "\n");
 	}
-	else {
-		writeLog($file, "--- 动态分红每蜂值为0，不进行动态分红！\n");
-	}
+
 
 	// 如果积分池小于分红额度，有问题，记log
 	if ($pool < $totalBonus + $dBonusTotal) {
@@ -240,6 +273,8 @@ function calcBonus($file)
 function acceptBonus($userId)
 {	
 	include_once "func.php";
+	include "constant.php";
+	
 	$con = connectToDB();
 	if (!$con) {
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
@@ -259,6 +294,7 @@ function acceptBonus($userId)
 		$feng = $row1["Vault"];
 		$dayObtained = $row1["DayObtained"];
 		$lastObtainedtime = $row1["LastObtainedTime"];
+		$lastObtainedPntTime = $row1["LastObtainedPntTime"];
 		$lastCBTime = $row1["LastCBTime"];
 		
 		$now = time();
@@ -272,49 +308,61 @@ function acceptBonus($userId)
 			return;
 		}		
 		
-		if ($feng <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'您已经没有固定蜂值了，暂时不能领取！'));
-			return;
-		}
-		
-		$bNotEnoughFeng = false;
-		// 分红值大于蜂值，按剩余蜂值给用户分红
-		if ($currBonus > $feng) {
-			$currBonus = $feng;
-			$bNotEnoughFeng = true;
-		}
-		$feng -= $currBonus;
-					
-		$bonusTotal += $currBonus;
+		$toPnts = floor($currBonus * $pntInRewardRate * 100) / 100;
+		$toCredit = $currBonus - $toPnts;
+							
+		$bonusTotal += $toCredit;
 		if (isInTheSameDay($now, $lastObtainedtime)) {
-			$dayObtained += $currBonus;
+			$dayObtained += $toCredit;
 		}
 		else {
-			$dayObtained = $currBonus;
+			$dayObtained = $toCredit;
 		}
 		
-		$credit = $row1["Credits"] + $currBonus;
-		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng' where UserId='$userId'");
+		$totalPnt = $row1["TotalObtainedPnts"];
+		$yearPnt = $row1["YearObtainedPnts"];
+		$monPnt = $row1["MonObtainedPnts"];
+		$dayPnt = $row1["DayObtainedPnts"];
+		if (isInTheSameDay($now, $lastObtainedPntTime)) {
+			$dayPnt += $toPnts;
+		}
+		else {
+			$dayPnt = $toPnts;
+		}
+		if (isInTheSameMonth($now, $lastObtainedPntTime)) {
+			$monPnt += $toPnts;
+		}
+		else {
+			$monPnt = $toPnts; 
+		}
+		if (isInTheSameYear($now, $lastObtainedPntTime)) {
+			$yearPnt += $toPnts;
+		}
+		else {
+			$yearPnt = $toPnts;
+		}
+		$totalPnt += $toPnts;
+		
+		$credit = $row1["Credits"] + $toCredit;
+		$pnts = $row1["Pnts"] + $toPnts;
+		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$lastObtainedPntTime' where UserId='$userId'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'领取失败，请稍后重试'));
 			return;
 		}
 		
-		if ($bNotEnoughFeng) {
-			$msg = "您的固定蜂值余额不足，实际获得" . $currBonus . "蜜券！";
-			echo json_encode(array('error'=>'false','not_enough'=>'true','error_msg'=>$msg,'credit'=>$credit,'vault'=>$feng,'DayObtained'=>$dayObtained));
-		}
-		else {
-			echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'vault'=>$feng,'DayObtained'=>$dayObtained));
-		}
+		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'vault'=>$feng,'DayObtained'=>$dayObtained));
 		
 		// 添加积分记录
-		include "constant.php";
 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-						VALUES('$userId', '$currBonus', '$credit', '$now', '$now', '$codeDivident')");
+						VALUES('$userId', '$toCredit', '$credit', '$now', '$now', '$codeDivident')");
+						
+		// 添加采蜜券记录
+		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
 		
 		// 统计分红信息
-		insertBonusStatistics($currBonus);
+		insertBonusStatistics($toCredit, $toPnts);
 	}
 }
 
@@ -342,6 +390,7 @@ function acceptDBonus($userid)
 		$dynFeng = $row1["DVault"];
 		$dayObtained = $row1["DayObtained"];
 		$lastObtainedtime = $row1["LastObtainedTime"];
+		$lastObtainedPntTime = $row1["LastObtainedPntTime"];
 // 		$lastCDBTime = $row1["LastCDBTime"];
 		
 		$now = time();
@@ -350,50 +399,64 @@ function acceptDBonus($userid)
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'今天没有动态分红或您已经领取！'));
 			return;
 		}		
-		
-		if ($dynFeng <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'您已经没有动态蜂值了，暂时不能领取！'));
-			return;
-		}
-		
-		$bNotEnoughFeng = false;
-		// 分红值大于蜂值，按剩余蜂值给用户分红
-		if ($currDBonus > $dynFeng) {
-			$currDBonus = $dynFeng;
-			$bNotEnoughFeng = true;
-		}
-		$dynFeng -= $currDBonus;
 					
-		$dBonusTotal += $currDBonus;
+		$toPnts = floor($currDBonus * $pntInRewardRate * 100) / 100;
+		$toCredit = $currDBonus - $toPnts;
+		
+		$dBonusTotal += $toCredit;
 		if (isInTheSameDay($now, $lastObtainedtime)) {
-			$dayObtained += $currDBonus;
+			$dayObtained += $toCredit;
 		}
 		else {
-			$dayObtained = $currDBonus;
+			$dayObtained = $toCredit;
 		}
 		
-		$credit = $row1["Credits"] + $currDBonus;
-		$res2 = mysql_query("update Credit set Credits='$credit', TotalDBonus='$dBonusTotal', CurrDBonus=0, LastCDBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', DVault='$dynFeng' where UserId='$userid'");
+		$totalPnt = $row1["TotalObtainedPnts"];
+		$yearPnt = $row1["YearObtainedPnts"];
+		$monPnt = $row1["MonObtainedPnts"];
+		$dayPnt = $row1["DayObtainedPnts"];
+		if (isInTheSameDay($now, $lastObtainedPntTime)) {
+			$dayPnt += $toPnts;
+		}
+		else {
+			$dayPnt = $toPnts;
+		}
+		if (isInTheSameMonth($now, $lastObtainedPntTime)) {
+			$monPnt += $toPnts;
+		}
+		else {
+			$monPnt = $toPnts; 
+		}
+		if (isInTheSameYear($now, $lastObtainedPntTime)) {
+			$yearPnt += $toPnts;
+		}
+		else {
+			$yearPnt = $toPnts;
+		}
+		$totalPnt += $toPnts;
+
+		
+		$credit = $row1["Credits"] + $toCredit;
+		$pnts = $row1["Pnts"] + $toPnts;
+		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', TotalDBonus='$dBonusTotal', CurrDBonus=0, LastCDBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', DVault='$dynFeng', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$lastObtainedPntTime' where UserId='$userid'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'领取失败，请稍后重试','sql_error'=>mysql_error()));
 			return;
 		}
 		
 		$dynFeng = ceil($dynFeng / $fengzhiValue);
-		if ($bNotEnoughFeng) {
-			$msg = "您的动态蜂值余额不足，实际获得" . $currDBonus . "蜜券！";
-			echo json_encode(array('error'=>'false','not_enough'=>'true','error_msg'=>$msg,'credit'=>$credit,'dVault'=>$dynFeng,'DayObtained'=>$dayObtained));
-		}
-		else {
-			echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'dVault'=>$dynFeng,'DayObtained'=>$dayObtained));
-		}
+		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'dVault'=>$dynFeng,'DayObtained'=>$dayObtained));
 		
 		// 添加积分记录
 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-						VALUES('$userid', '$currDBonus', '$credit', '$now', '$now', '$codeDynDivident')");
+						VALUES('$userid', '$toCredit', '$credit', '$now', '$now', '$codeDynDivident')");
+						
+		// 添加采蜜券记录
+		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
 		
 		// 统计分红信息
-		insertDynBonusStatistics($currDBonus);
+		insertDynBonusStatistics($toCredit, $toPnts);
 	}
 }
 

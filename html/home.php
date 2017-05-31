@@ -67,6 +67,11 @@ $dfeng = ceil($dvault / $fengzhiValue);
 
 $hasBonus = ($bonus + $dBonus) > 0;
 
+$bonusPnts = floor($bonus * $pntInRewardRate * 100) / 100;
+$bonusCredit = $bonus - $bonusPnts;
+$dbonusPnts = floor($dBonus * $pntInRewardRate * 100) / 100;
+$dbonusCredit = $dBonus - $dbonusPnts;
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -110,13 +115,13 @@ $hasBonus = ($bonus + $dBonus) > 0;
 					location.href = 'home.php';
 				}
 				
-				var feng = <?php echo $vault; ?>;
-				if (bonus > feng) {
-					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
-						return;
-					}
-					bonus = feng;
-				}
+// 				var feng = <?php echo $vault; ?>;
+// 				if (bonus > feng) {
+// 					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
+// 						return;
+// 					}
+// 					bonus = feng;
+// 				}
 				
 				$.post("../php/credit.php", {"func":"acceptBonus"}, function(data){
 					
@@ -132,6 +137,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 						document.getElementById("todayobtain").innerHTML = data.DayObtained;
 						document.getElementById("bonuspool").innerHTML = data.vault;
 						document.getElementById("point").innerHTML = data.credit;
+						document.getElementById("pnts").innerHTML=data.pnts;
 					}
 					else {
 						alert("领取失败：" + data.error_msg);
@@ -147,13 +153,13 @@ $hasBonus = ($bonus + $dBonus) > 0;
 					location.href = 'home.php';
 				}
 				
-				var dvault = <?php echo $dvault; ?>;
-				if (dBonus > dvault) {
-					if (!confirm("动态蜂值余额不足了，如果继续，只能领取" + dvault + "蜜券，是否继续？")) {
-						return;
-					}
-					dBonus = dvault;
-				}
+// 				var dvault = <?php echo $dvault; ?>;
+// 				if (dBonus > dvault) {
+// 					if (!confirm("动态蜂值余额不足了，如果继续，只能领取" + dvault + "蜜券，是否继续？")) {
+// 						return;
+// 					}
+// 					dBonus = dvault;
+// 				}
 				
 				$.post("../php/credit.php", {"func":"acceptDBonus"}, function(data){
 					
@@ -169,6 +175,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 						document.getElementById("todayobtain").innerHTML = data.DayObtained;
 						document.getElementById("dbonuspool").innerHTML = data.dVault;
 						document.getElementById("point").innerHTML = data.credit;
+						document.getElementById("pnts").innerHTML=data.pnts;
 					}
 					else {
 						alert("领取失败：" + data.error_msg);
@@ -207,7 +214,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 				</tr>
 				<tr>
 					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
-					<td><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
+					<td id="pnts"><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php echo $vault; ?></td>
 					<td id="dbonuspool"><?php echo $dfeng; ?></td>
 				</tr>
@@ -218,7 +225,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<table width="100%">
 				<?php if ($bonus > 0) { ?>
 				<tr>
-					<td style="width: 60%;"><p>固定分润 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<td style="width: 60%;"><p>固定分润 <b><?php echo $bonusCredit; ?></b> 蜜券， <b><?php echo $bonusPnts; ?></b> 采蜜券！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
 						<p id="accept_logo" style="color: red; display: none;">已领取</p>
@@ -226,7 +233,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 				</tr>
 				<?php } ?>
 				<?php if ($dBonus > 0) { ?>
-					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 蜜券！</p></td>
+					<td style="width: 60%;"><p>动态分润 <b><?php echo $dbonusCredit; ?></b> 蜜券， <b><?php echo $dbonusPnts; ?></b> 采蜜券！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
 						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
