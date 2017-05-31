@@ -13,6 +13,9 @@ else if ("changeCeil" == $_POST['func']) {
 else if ("changeRwdRate" == $_POST['func']) {
 	changeRwdRateValue();
 }
+else if ("changeRwdVal" == $_POST['func']) {
+	changeRwdValValue();
+}
 else if ("changeTransferFloor" == $_POST['func']) {
 	changeTransferFloorValue();
 }
@@ -88,6 +91,19 @@ function changeRwdRateValue()
 	
 	$err_msg = '';
 	if (!changeConfig("rewardRate", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeRwdValValue()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("rewardVal", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}

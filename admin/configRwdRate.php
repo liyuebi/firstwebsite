@@ -94,6 +94,24 @@ if ($res1) {
 					}
 				}, "json");
 			}
+			
+			function modifyVal()
+			{
+				var val = document.getElementById("rwdVal").value;
+				val = parseFloat(val);
+				if (val < 0) {
+					val = 0;
+				}
+				$.post("../php/changeConfig.php", {"func":"changeRwdVal","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
 		</script>
 	</head>
 	<body>
@@ -126,6 +144,12 @@ if ($res1) {
 				<input type="button" value="获得动态蜂值总数" onclick="getTotalDFeng()" />
 				<input type="button" value="计算每蜂值分润" onclick="calc()" />
 				<input type="button" value="修改配比" onclick="modifyRate()" />
+			</div>
+			<hr>
+			<div>
+				<p>设置动态分红值，如果大于0，则每蜂值分红使用设置的值，而不会使用计算得到的分红值。</p>
+				<input id="rwdVal" type="text" value="<?php echo $rewardVal; ?>" />
+				<input type="button" value="修改分红值" onclick="modifyVal()" />
 			</div>
 		</div>
     </body>
