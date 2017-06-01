@@ -767,7 +767,7 @@ function insertDynBonusStatistics($dBonus, $dBonusPnts)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$total = $row1["DBonusTotal"] + $dBonus;
-		$total1 = $row["DBonusPntTotal"] + $dBonusPnts;
+		$total1 = $row1["DBonusPntTotal"] + $dBonusPnts;
 		
 		mysql_query("update TotalStatis set DBonusTotal='$total', DBonusPntTotal='$total1' where IndexId=1");
 	}

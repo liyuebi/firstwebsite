@@ -623,6 +623,9 @@ function denyWithdraw()
 
 function transfer()
 {	
+	echo json_encode(array('error'=>'true','error_code'=>'50','error_msg'=>'转账功能已禁用！'));
+	return;
+		
 	session_start();
 	if (!$_SESSION["isLogin"]) {
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));

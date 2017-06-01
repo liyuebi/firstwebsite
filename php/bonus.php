@@ -453,7 +453,7 @@ function acceptDBonus($userid)
 						
 		// 添加采蜜券记录
 		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
+				VALUES('$userid', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
 		
 		// 统计分红信息
 		insertDynBonusStatistics($toCredit, $toPnts);
