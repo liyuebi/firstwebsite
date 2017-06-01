@@ -728,7 +728,7 @@ function insertBonusStatistics($bonus, $bonusPnts)
 			// record error
 		}
 		
-		$left -= $bonus;
+		$left -= ($bonus + $bonusPnts);
 		mysql_query("update ShortStatis set BonusLeft='$left' where IndexId=1");
 	}
 
@@ -782,7 +782,7 @@ function insertDynBonusStatistics($dBonus, $dBonusPnts)
 			// record error
 		}
 		
-		$left -= $dBonus;
+		$left -= ($dBonus + $dBonusPnts);
 		mysql_query("update ShortStatis set DBonusLeft='$left' where IndexId=1");
 	}
 
