@@ -223,12 +223,13 @@ if ($orderid != '') {
 				$.post("../php/trade.php", {"func":"purchase","productId":productId,"count":count,"addressId":addressId,"paypwd":paypwd}, function(data){
 							
 					if (data.error == "false") {
-						if (data.has_new_user == "true") {
-							alert("订单已确认，已为您生成了新的关联账号（" + data.new_user_id + "）。");	
-						}
-						else {
-							alert("购买成功！");	
-						}
+// 						if (data.has_new_user == "true") {
+// 							alert("订单已确认，已为您生成了新的关联账号（" + data.new_user_id + "）。");	
+// 						}
+// 						else {
+// 							alert("购买成功！");	
+// 						}
+						alert("购买成功！");
 						location.href = "home.php";
 					}
 					else {

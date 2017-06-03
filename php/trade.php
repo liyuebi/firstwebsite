@@ -112,8 +112,6 @@ function purchaseProduct()
 	}
 	$row1 = mysql_fetch_assoc($res1);
 	
-	// check if count surpass the buy limit error_code 5，选择的数量超过购买上限
-	
 	$totalPrice = $price * $count;
 	$creditInfo = false;
 	$credit = 0;
@@ -196,8 +194,9 @@ function purchaseProduct()
 	}
 	$cnt = floor(($bpCntPost - $lastRwdBPCnt) / $rewardBPCnt);
 	$lastRwdBPCntPost = $lastRwdBPCnt + $cnt * $rewardBPCnt;
+	$dynVault = $creditInfo['DVault'] + $count * $dyNewAccountVault;
 	
-	$result = mysql_query("update Credit set Credits='$left', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
+	$result = mysql_query("update Credit set Credits='$left', DVault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
@@ -250,7 +249,7 @@ function purchaseProduct()
 				$num = mysql_num_rows($result);
 				if ($num == 0) {
 					$vault = 0;
-					$dynVault = $dyNewAccountVault;
+					$dynVault = 0;
 					$result = mysql_query("insert into Credit (UserId, Vault, DVault)
 						VALUES('$newUserId', '$vault', '$dynVault')");
 					if (!$result) {

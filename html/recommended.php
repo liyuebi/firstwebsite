@@ -32,10 +32,10 @@ $numRefAccount = 0;
 $res1 = false;
 $res2 = false;
 if ($groupId > 0) {
-	$res1 = mysql_query("select * from ClientTable where GroupId='$groupId' and UserId!='$userid'");
-	if ($res1) {
-		$numAssoAccount = mysql_num_rows($res1);
-	}
+// 	$res1 = mysql_query("select * from ClientTable where GroupId='$groupId' and UserId!='$userid'");
+// 	if ($res1) {
+// 		$numAssoAccount = mysql_num_rows($res1);
+// 	}
 	$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid' and GroupId!='$groupId'");
 }
 else {
@@ -68,10 +68,8 @@ if ($res2) {
 				if (isNotLoginAndJump()) {
 					return;
 				}
-				
+/*
 				document.getElementById("1").style.color = "red";
- 				 				
-				var data = 'func=getRecommended';
 				
 				$('table#tag_table td').click(function(){
 					$(this).css('color','red');//点击的设置字色为红色
@@ -86,17 +84,18 @@ if ($res2) {
 						switchToFans();
 					}
 				});
+*/
 			});
 			
 			function switchToAssociated()
 			{
-				document.getElementById("blk_asso").style.display = "inline";
+// 				document.getElementById("blk_asso").style.display = "inline";
 				document.getElementById("blk_fans").style.display = "none";
 			}
 			
 			function switchToFans()
 			{
-				document.getElementById("blk_asso").style.display = "none";
+// 				document.getElementById("blk_asso").style.display = "none";
 				document.getElementById("blk_fans").style.display = "inline";
 			}
 			
@@ -128,9 +127,10 @@ if ($res2) {
 		<?php if ($lvl > $group3StartLvl) { ?>
 			<p>蜂队三：<?php echo $group3; ?>人</p>
 		<?php } ?>
-		<p>关联账号： <?php echo $numAssoAccount; ?>人</p>
+<!--  		<p>关联账号： <?php echo $numAssoAccount; ?>人</p> -->
 		<p>直推蜜粉： <?php echo $numRefAccount; ?>人</p>
 		
+<!--
 		<table id="tag_table" class="t2">
 			<tr>
 				<td id="1" width="50%" >关联账户</th>
@@ -171,7 +171,8 @@ if ($res2) {
 	        }
 	        ?>
         </div>
-        <div id="blk_fans" style="display: none;">
+-->
+        <div id="blk_fans" style="display: block;">
 	        <?php
 			if ($res2) {
 				if ($numRefAccount > 0) {
