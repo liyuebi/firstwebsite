@@ -308,8 +308,8 @@ function acceptBonus($userId)
 			return;
 		}		
 		
-		$toPnts = floor($currBonus * $pntInRewardRate * 100) / 100;
-		$toCredit = $currBonus - $toPnts;
+		$toPnts = 0;
+		$toCredit = $currBonus;
 							
 		$bonusTotal += $toCredit;
 		if (isInTheSameDay($now, $lastObtainedtime)) {
@@ -319,6 +319,7 @@ function acceptBonus($userId)
 			$dayObtained = $toCredit;
 		}
 		
+/*
 		$totalPnt = $row1["TotalObtainedPnts"];
 		$yearPnt = $row1["YearObtainedPnts"];
 		$monPnt = $row1["MonObtainedPnts"];
@@ -342,10 +343,11 @@ function acceptBonus($userId)
 			$yearPnt = $toPnts;
 		}
 		$totalPnt += $toPnts;
+*/
 		
 		$credit = $row1["Credits"] + $toCredit;
 		$pnts = $row1["Pnts"] + $toPnts;
-		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$lastObtainedPntTime' where UserId='$userId'");
+		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng' where UserId='$userId'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'领取失败，请稍后重试'));
 			return;
@@ -357,9 +359,9 @@ function acceptBonus($userId)
 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 						VALUES('$userId', '$toCredit', '$credit', '$now', '$now', '$codeDivident')");
 						
-		// 添加采蜜券记录
-		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
+//		// 添加采蜜券记录
+// 		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+// 				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
 		
 		// 统计分红信息
 		insertBonusStatistics($toCredit, $toPnts);
@@ -400,15 +402,20 @@ function acceptDBonus($userid)
 			return;
 		}		
 					
-		$toPnts = floor($currDBonus * $pntInRewardRate * 100) / 100;
-		$toCredit = $currDBonus - $toPnts;
+		$toPnts = $currDBonus;
+		$toCredit = 0;
 		
+/*
 		$dBonusTotal += $toCredit;
 		if (isInTheSameDay($now, $lastObtainedtime)) {
 			$dayObtained += $toCredit;
 		}
 		else {
 			$dayObtained = $toCredit;
+		}
+*/
+		if (!isInTheSameDay($now, $lastObtainedtime)) {
+			$dayObtained = 0;
 		}
 		
 		$totalPnt = $row1["TotalObtainedPnts"];
@@ -438,7 +445,7 @@ function acceptDBonus($userid)
 		
 		$credit = $row1["Credits"] + $toCredit;
 		$pnts = $row1["Pnts"] + $toPnts;
-		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', TotalDBonus='$dBonusTotal', CurrDBonus=0, LastCDBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', DVault='$dynFeng', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$lastObtainedPntTime' where UserId='$userid'");
+		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', CurrDBonus=0, LastCDBTime='$now', DayObtained='$dayObtained', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$now' where UserId='$userid'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'领取失败，请稍后重试','sql_error'=>mysql_error()));
 			return;
@@ -448,8 +455,8 @@ function acceptDBonus($userid)
 		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'dVault'=>$dynFeng,'DayObtained'=>$dayObtained));
 		
 		// 添加积分记录
-		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-						VALUES('$userid', '$toCredit', '$credit', '$now', '$now', '$codeDynDivident')");
+// 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+// 						VALUES('$userid', '$toCredit', '$credit', '$now', '$now', '$codeDynDivident')");
 						
 		// 添加采蜜券记录
 		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
