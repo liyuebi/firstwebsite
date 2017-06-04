@@ -38,6 +38,8 @@
 	
 	$code2Divident = 1; // 固定分红导致采蜜券变化
 	$code2DynDivident = 2; // 动态分红导致采蜜券变化，
+	$code2TransferTo = 3;	// 向用户转采蜜券
+	$code2TransferFrom = 4;	// 收到其他人转的采蜜券
 	$code2TransferFromCredit = 12; // 从蜜券转换而来
 	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
