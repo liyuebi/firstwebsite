@@ -94,7 +94,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 	        <div> <!-- style="margin-top: 6%;" -->
 	            <form method="post" action="php/login.php" onsubmit="return submitCheck();">
 		            <input type="hidden" name="func" value="login" />
-		            <input id="phonenum" class="form-control" type="tel" name="phonenum" class="phonenum" placeholder="请输入您的用户ID／昵称！" />
+		            <input id="phonenum" class="form-control" name="phonenum" placeholder="请输入您的用户ID／昵称！" />
 		            <br>
 	                <input id="password" class="form-control" type="password" name="password" class="password" placeholder="请输入您的用户密码！">
 	                <br>
