@@ -36,6 +36,9 @@
 	$codeWithdrawCancelled = 11; // 提现请求取消或被管理员拒绝
 	$codeTransferToPnts = 12; // 积分转移到采蜜券
 	
+	$codeChargeRegiToken = 20; // 充注册币变化
+	$codeRecoRegiToken = 21;   // 推荐导致注册币变化
+	
 	$code2Divident = 1; // 固定分红导致采蜜券变化
 	$code2DynDivident = 2; // 动态分红导致采蜜券变化，
 	$code2TransferTo = 3;	// 向用户转采蜜券

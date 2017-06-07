@@ -88,9 +88,21 @@ if ($con) {
 				    	else if ($row["Type"] == $codeTransferToPnts) {
 					    	echo "您的" . $row["Amount"] . "蜜券转换成采蜜券。";
 				    	}
+				    	else if ($row["Type"] == $codeChargeRegiToken) {
+					    	echo "您充值了" . $row["Amount"] . "注册券。";
+				    	}
+				    	else if ($row["Type"] == $codeRecoRegiToken) {
+					    	echo "您推荐新用户" . $row["WithUserId"] . "，使用了" . $row["Amount"] . "注册券。";	
+				    	}
 				    	
 					    echo "<br>";
-					    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";
+					    if ($row["Type"] == $codeChargeRegiToken
+					    	|| $row["Type"] == $codeRecoRegiToken) {
+						    echo "当前剩余注册券" . $row["CurrAmount"] . "。";
+					    }
+					    else {
+						    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";
+					    }
 					    ?>
 					</p>
 			</div>

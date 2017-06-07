@@ -24,6 +24,7 @@ $bankAcc = '';
 $isBankSet = false;
 
 include "../php/database.php";
+include "../php/constant.php";
 $con = connectToDB();
 if ($con) {
 	
@@ -31,7 +32,7 @@ if ($con) {
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if ($result && mysql_num_rows($result) > 0) {
 		$row = mysql_fetch_assoc($result);
-		$mycredit = $row["Credits"];
+		$mycredit = $row["RegiToken"];
 	}
 	
 	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
@@ -99,6 +100,11 @@ if ($con) {
 					return;
 				}
 				
+				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
+					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
+					return;
+				}
+				
 				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
 					
 					if (data.error == "false") {
@@ -146,10 +152,10 @@ if ($con) {
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
         <div>
-            <h3>购买蜜券</h3>
+            <h3>购买注册券</h3>
         </div>
         <div name="display" style="padding-bottom: 20px;">
-	        <p>您可以选择以下方式支付，充值蜜券1:1</p>
+	        <p>您可以选择以下方式支付，充值注册券比例为1:1，充值金额必须是<b> <?php echo $refererConsumePoint; ?> </b>的倍数</p>
 	        <div>
 		        <div style="float: left; width: 49%; border: 1px solid black;">
 			        <p>微信：mifenggf</p>
@@ -171,7 +177,7 @@ if ($con) {
 	        </div>
 	        <div style="clear: both; padding-top: 3px; ">
 		        <hr>
-		        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
+		        <p>您现在拥有注册券：<?php echo $mycredit;?></p>
 		        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
 	        </div>
 	        <div style="padding: 10px 0;">

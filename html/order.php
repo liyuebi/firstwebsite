@@ -133,7 +133,7 @@ if ($res3) {
 						<th>订单号</th>
 						<th>数量</th>
 						<th>价格</th>
-						<th>订单号</th>
+						<th>快递单号</th>
 						<th>状态</th>
 					</tr>
 					<?php

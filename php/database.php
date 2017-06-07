@@ -64,6 +64,7 @@ function createClientTable()
 function createCreditTable()
 {
 	/*
+	 * RegiToken: 注册券
 	 * Credits: 蜜券
 	 * Points: 采蜜券
 	 * Vault: 静态金库
@@ -80,6 +81,7 @@ function createCreditTable()
 		UserId int NOT NULL,
 		PRIMARY KEY(UserId),
 		Credits decimal(10,2) DEFAULT 0,
+		RegiToken decimal(10,2) default 0,
 		Vault decimal(10,2) DEFAULT 0,
 		DVault decimal(10,2) DEFAULT 0,
 		BPCnt int DEFAULT 0,

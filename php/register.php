@@ -50,15 +50,15 @@ else
 	
 	$userid = $_SESSION["userId"];
 	$res1 = mysql_query("select * from Credit where UserId='$userid'");
-	$credit = 0;
+	$regiToken = 0;
 	if (!$res1) {
 	}
 	else {
 		$row = mysql_fetch_assoc($res1);
-		$credit = $row["Credits"];
+		$regiToken = $row["RegiToken"];
 	}
 	
-	if ($credit < $refererConsumePoint) {
+	if ($regiToken < $refererConsumePoint) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'您的蜜券不足，不能推荐用户！'));
 		return;		
 	}
@@ -134,7 +134,7 @@ else
 	}
 	else {
 		$row3 = mysql_fetch_assoc($res3);
-		$credit = $row3["Credits"];
+		$regiToken = $row3["RegiToken"];
 		$vault = $row3["Vault"];
 	}
 	
@@ -175,12 +175,12 @@ else
 	}
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
-	$leftCredit = $credit - $refererConsumePoint;
-	mysql_query("update Credit set Credits='$leftCredit', Vault='$vault' where UserId='$userid'");
+	$leftCredit = $regiToken - $refererConsumePoint;
+	mysql_query("update Credit set RegiToken='$leftCredit', Vault='$vault' where UserId='$userid'");
 	
 	// 修改用户的积分纪录，若失败不影响返回结果
 	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecommend)");
+								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecoRegiToken)");
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 	insertOrderStatistics($refererConsumePoint, 1);

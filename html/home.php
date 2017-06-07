@@ -203,15 +203,17 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<table class="t1" border="1" align="center" style="margin-top: 0; " rules="none">
 				<tr>
 					<td width="25%">蜜券</td>
+					<td width="25%">注册券</td>
 					<td width="25%">采蜜券</td>
 					<td width="25%">固定蜂值</td>
-					<td width="25%">动态蜂值</td>
+<!-- 					<td width="25%">动态蜂值</td> -->
 				</tr>
 				<tr>
-					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
+					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
+					<td id="regiToken"><?php if ($row) echo $row["RegiToken"]; else echo '0'; ?></td>
 					<td id="pnts"><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php echo $vault; ?></td>
-					<td id="dbonuspool"><?php echo $dfeng; ?></td>
+<!-- 					<td id="dbonuspool"><?php echo $dfeng; ?></td> -->
 				</tr>
 			</table>
 		</div>
@@ -242,7 +244,7 @@ $hasBonus = ($bonus + $dBonus) > 0;
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
 				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">蜂值倍增</a></li>
 				<li><a class="icon_btn2" href="recommended.php">蜜粉好友</a></li>
-				<li><a class="icon_btn6" href="charge.php">购买蜜券</a></li>
+				<li><a class="icon_btn6" href="charge.php">充注册券</a></li>
 				<li><a class="icon_btn5" href="withdraw.php">蜜券提现</a></li>
 <!-- 				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li> -->
 				<li><a class="icon_btn7" href="order.php">订单查询</a></li>

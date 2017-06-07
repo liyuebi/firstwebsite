@@ -72,6 +72,12 @@ function applyRecharge()
 		return;		
 	}
 	
+	if ($amount % $refererConsumePoint != 0) {
+		$msg = '选择的金额必须是' . $refererConsumePoint . '的倍数！';
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>$msg));
+		return;		
+	}
+	
 	$method = intval($method);
 	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'请选择支付方式！'));
@@ -213,12 +219,12 @@ function allowRecharge()
 				return;
 			}
 			$row = mysql_fetch_assoc($result);
-			$credit = $row["Credits"];
-			$total = $credit + $amount;
+			$regiToken = $row["RegiToken"];
+			$total = $regiToken + $amount;
 			$now = time();
 			
 			$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime)
-							VALUES('$userid', '$amount', '$total', '$applyTime', '$index', '$codeRecharge', '$now')");
+							VALUES('$userid', '$amount', '$total', '$applyTime', '$index', '$codeChargeRegiToken', '$now')");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index));	
 				return; 				
@@ -249,7 +255,7 @@ function allowRecharge()
 				$yearRecharge = $amount;
 			}
 
-			$result = mysql_query("update Credit set Credits='$total', LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', YearRecharge='$yearRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
+			$result = mysql_query("update Credit set RegiToken='$total', LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', YearRecharge='$yearRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
 				return; 				
@@ -261,7 +267,7 @@ function allowRecharge()
 		}
 	}
 	
-	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$credit,'post'=>$total));
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$regiToken,'post'=>$total));
 	return;
 }
 

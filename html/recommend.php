@@ -20,7 +20,7 @@ if ($con) {
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if ($result && mysql_num_rows($result) > 0) {
 		$row = mysql_fetch_assoc($result);
-		$mycredit = $row["Credits"];
+		$mycredit = $row["RegiToken"];
 	}
 }
 
@@ -105,7 +105,7 @@ if ($con) {
 <!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
 <!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
 <!-- 			<br> -->
-			<p style="margin-bottom: 0;">注册用户需要使用<?php echo $neededcredit;?>蜜券,您现在拥有蜜券数量为<strong><?php echo $mycredit; ?></strong></p>
+			<p style="margin-bottom: 0;">注册用户需要<b> <?php echo $neededcredit;?> </b>注册券，您的余额为 <strong><?php echo $mycredit; ?></strong></p>
 			<?php
 				if ($paypwd == "") {		
 			?>
@@ -115,7 +115,7 @@ if ($con) {
 				}
 				else if ($neededcredit > $mycredit) {
 			?>
-			<p>您的余额不足</p>
+			<p>您的注册券余额不足</p>
 			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="去充值" onclick="goCharge()" />
 			<?php
 				}
