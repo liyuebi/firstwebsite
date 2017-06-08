@@ -178,6 +178,22 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 					}
 				}, "json");
 			}
+			
+			function goToRecommend()
+			{
+				var regiToken = document.getElementById("regiToken").innerHTML;
+				regiToken = $.trim(regiToken);
+				regiToken = parseFloat(regiToken);
+				
+				if (regiToken < <?php echo $refererConsumePoint; ?>) {
+					if (confirm("您的注册券不足，需要先充值才能进入注册页面，是否前去？")) {
+						location.href = "charge.php";
+					}
+				}
+				else {
+					location.href = "recommend.php";
+				}
+			}
 		</script>
 	</head>
 	
@@ -247,7 +263,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 		
 		<div class="btn_box" width="auto">
 			<ul>
-				<li><a class="icon_btn1" href="recommend.php">推荐蜜粉</a></li>
+				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">推荐蜜粉</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
 				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">蜂值倍增</a></li>
 				<li><a class="icon_btn2" href="recommended.php">蜜粉好友</a></li>
