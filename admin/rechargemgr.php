@@ -109,7 +109,7 @@ $result = getRechargeApplication();
 				<li><a href="withdrawmgr.php">取现管理</a></li>
 				<li><a href="configmgr.php">配置管理</a></li>
 				<li><a href="statistics.php">统计数据</a></li>
-				<li><a href="configRwdRate.php">配置动态拨比</a></li>
+<!-- 				<li><a href="configRwdRate.php">配置动态拨比</a></li> -->
 				<li><a href="postmgr.php">公告管理</a></li>
 				<li><a href="adminmgr.php">管理员账号维护</a></li>
 			</ul>
