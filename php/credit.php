@@ -753,7 +753,7 @@ function queryCredit()
 	}
 	$row = mysql_fetch_assoc($res);
 	$credit = $row["Credits"];
-	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit));
+	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit,'regiToken'=>$row['RegiToken']));
 }
 	
 ?>
