@@ -29,10 +29,12 @@ function addNewPoster()
 		return;
 	}
 	
+/*
 	if (strlen($content) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'内容不能为空！'));
 		return;
 	}
+*/
 	
 	$now = time();
 	
@@ -64,7 +66,7 @@ function addNewPoster()
 
 	$res = mysql_query("insert into PostTable (Title, TextFile, AddTime) values('$title', '$filename', '$now')");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加公告失败！'));
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加公告失败！','sql_error'=>mysql_error()));
 		return;		
 	}
 	

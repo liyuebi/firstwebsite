@@ -58,10 +58,12 @@ if ($idx > 0) {
 					return;
 				}	
 				
+/*
 				if (content.length <= 0) {
 					alert("内容不能为空");
 					return;
 				}
+*/
 				
 				$.post("../php/poster_ctl.php", {"func":"addNew","tle":title,"cont":content}, function(data){
 					

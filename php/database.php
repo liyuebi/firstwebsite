@@ -538,8 +538,9 @@ function createPostTable()
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IndexId),
-		Title varchar(32) not null,
+		Title varchar(64) not null,
 		TextFile varchar(32) not null,
+		Pic varchar(32) default '',
 		AddTime int not null,
 		OnlineTime int default 0,
 		LMT int default 0,

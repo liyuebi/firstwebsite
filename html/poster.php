@@ -81,6 +81,17 @@ if ($idx > 0) {
 					}
 				?>
 			</p>
+			<?php
+				if ($row && $row['Pic'] != '') {
+// 					$filename = $row["Pic"];
+// 					$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;
+			?>
+	        <div width="100%">
+	            <img src="../poster/<?php echo $row['Pic']; ?>" width="100%" />
+	        </div>
+			<?php
+				}
+			?>
 			<p style="float: right;">
 				<?php
 					date_default_timezone_set('PRC');
