@@ -176,24 +176,28 @@ if (!checkLoginOrJump()) {
 	        <div>
 		        <table border="1">
 			        <tr>
-				        <th>等级</th><th>称号</th><th>一组人数</th><th>二组人数</th><th>三组人数</th><th>分红总额</th><th>每日分红</th>
+				        <th>等级</th><th>称号</th><th>一组人数</th><th>二组人数</th><th>三组人数</th><th>分红总额</th><th>每日分红</th><th>升级奖励</th><th>每日采蜜券比例</th>
 			        </tr>
+<!--
 			        <tr>
-				        <td>1</td><td>蜂粉</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+				        <td>1</td><td>蜂粉</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
 			        </tr>
+-->
 					<?php 
 						$cnt = count($levelBonus);
 						$idx = 0;
 						while ($idx < $cnt) {
 					?>
 					<tr>
-						<td><?php echo ($idx + 2); ?></td>
-						<td><?php echo $levelName[$idx + 1]; ?></td>
+						<td><?php echo ($idx + 1); ?></td>
+						<td><?php echo $levelName[$idx]; ?></td>
 						<td><?php echo $team1Cnt[$idx]; ?></td>
 						<td><?php echo $team2Cnt[$idx]; ?></td>
 						<td><?php echo $team3Cnt[$idx]; ?></td>
 						<td><?php echo $levelBonus[$idx]; ?></td>
 						<td><?php echo $levelDayBonus[$idx]; ?></td>
+						<td><?php echo $levelUpBonus[$idx]; ?></td>
+						<td><?php echo $levelPntsRate[$idx]; ?></td>
 					</tr>
 					<?php
 							++$idx;

@@ -86,7 +86,7 @@ else
 			}
 		}
 		else {
-			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'账号已经注册过了！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'该手机号已经注册过了！','sql_error'=>mysql_error()));
 			return;
 		}
 	}
@@ -101,8 +101,8 @@ else
 		else {
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
-				$vault1 = 0;
-				$dynVault = $dyNewUserVault;
+				$vault1 = $dyNewUserVault;
+				$dynVault = 0;
 				$result = mysql_query("insert into Credit (UserId, Vault, DVault, BPCnt, LastRwdBPCnt)
 					VALUES('$newuserid', '$vault1', '$dynVault', '1', '1')");
 				if (!$result) {
@@ -130,14 +130,27 @@ else
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
 	$res3 = mysql_query("select * from Credit where UserId='$userid'");
 	$vault = 0;
+	$regiToken = 0;
+	$credit = 0;
+	$pnts = 0;
 	if (!$res3) {
 	}
 	else {
 		$row3 = mysql_fetch_assoc($res3);
 		$regiToken = $row3["RegiToken"];
 		$vault = $row3["Vault"];
+		$credit = $row3["Credits"];	
+		$pnts = $row3["Pnts"];
 	}
 	
+	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
+	$leftCredit = $regiToken - $refererConsumePoint;
+	mysql_query("update Credit set RegiToken='$leftCredit' where UserId='$userid'");
+	
+	// 修改用户的积分纪录，若失败不影响返回结果
+	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecoRegiToken)");
+								
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from ClientTable where UserId='$userid'");
 	if (!$result) {
@@ -150,18 +163,26 @@ else
 		if ($lvl <= 1) {
 			if ($count >= 3) {
 				$lvl = 2;
-				$vault += $levelBonus[0];
+				
+				// 第一级剩余的蜂值转到采蜜券, 优先从固定蜂值中播出升级奖励，不够则从采蜜券中播出
+				$addedPnts = $vault;
+				$vault = 0;
+				$pnts += $addedPnts;	
+				mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+								values('$userid', '$addedPnts', '$pnts', '$now', '$now', '$code2TransferFromVault')");
+								
+				attributeLevelupBonus($userid, 2, $credit, $pnts, $vault);
 				
 				$group1Cnt = $row['Group1Cnt'];
 				$group2Cnt = $row['Group2Cnt'];
 				$group3Cnt = $row['Group3Cnt'];
-				$idx = 1;
+				$idx = 2;
 				$length = count($team1Cnt);
 				while ($idx < $length) {
 					
 					if ($group1Cnt >= $team1Cnt[$idx] && $group2Cnt >= $team2Cnt[$idx] && $group3Cnt >= $team3Cnt[$idx]) {
 						++$lvl;
-						$vault += $levelBonus[$idx];
+						attributeLevelupBonus($userid, $lvl, $credit, $pnts, $vault);
 					}
 					else {
 						break;
@@ -172,15 +193,8 @@ else
 			}
 		}
 		mysql_query("update ClientTable set RecoCnt='$count', Lvl='$lvl' where UserId='$userid'");
+		$_SESSION['lvl'] = $lvl;
 	}
-	
-	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
-	$leftCredit = $regiToken - $refererConsumePoint;
-	mysql_query("update Credit set RegiToken='$leftCredit', Vault='$vault' where UserId='$userid'");
-	
-	// 修改用户的积分纪录，若失败不影响返回结果
-	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecoRegiToken)");
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 	insertOrderStatistics($refererConsumePoint, 1);

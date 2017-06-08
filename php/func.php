@@ -34,6 +34,57 @@ function setSession($row)
 	setUserCookie($row['Name'], $row['UserId']);
 }
 
+/*
+ * $lvl: 升到第几级
+ * $credit: 目前的蜜券数量
+ * $pnts: 目前的采蜜券数量
+ * $vault: 目前的固定蜂值，需要先分发新级别的固定蜂值
+ */
+function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault)
+{
+	include "constant.php";
+	if ($lvl <= count($levelBonus)) {
+		$vault = $levelBonus[$lvl - 1];
+		$addedCredit = 0;
+		$now = time();
+		
+		if ($vault >= $levelUpBonus[$lvl - 1]) {
+			
+			$addedCredit += $levelUpBonus[$lvl - 1];
+			$vault -= $levelUpBonus[$lvl - 1];	
+		}
+		else {
+			$vault = 0;
+			$addedCredit = $vault;
+			
+			$v1 = $levelUpBonus[$lvl - 1] - $vault;
+			if ($pnts >= $v1) {
+				$pnts -= $v1;
+			}
+			else {
+				$v1 = $pnts;
+				$pnts = 0;
+			}
+			
+			$addedCredit += $v1;
+			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+								values('$userid', '$v1', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+		}
+		
+		$credit += $addedCredit;
+		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts' where UserId='$userid'");
+		if (!$res) {
+			// 出错
+		}
+		
+		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+							values('$userid', '$addedCredit', '$credit', '$now', '$now', '$codeLevelupBonus')");		
+	}
+	else {
+		// do nothing
+	}
+}
+
 // 插入一个新用户账号
 function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUserId, &$error_code, &$error_msg, &$sql_error)
 {
@@ -177,14 +228,14 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 					$levelup = 0;
 					// 还在两组的层级呢
 					if ($lvl < $group3StartLvl) {
-						if ($group1Cnt >= $team1Cnt[$lvl - 1] && $group2Cnt >= $team2Cnt[$lvl - 1]) {
+						if ($group1Cnt >= $team1Cnt[$lvl] && $group2Cnt >= $team2Cnt[$lvl]) {
 							$lvl += 1;
 							$levelup = true;
 						}
 					}
 					// 可以开第三组了
 					else {
-						if ($group1Cnt >= $team1Cnt[$lvl - 1] && $group2Cnt >= $team2Cnt[$lvl - 1] && $group3Cnt >= $team3Cnt[$lvl - 1]) {
+						if ($group1Cnt >= $team1Cnt[$lvl] && $group2Cnt >= $team2Cnt[$lvl] && $group3Cnt >= $team3Cnt[$lvl]) {
 							$lvl += 1;
 							$levelup = true;
 						}
@@ -197,12 +248,10 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 						}
 						else {
 							$row9 = mysql_fetch_assoc($res9);
-// 							$vault = $row9["Vault"];
-							$vault = $levelBonus[$lvl - 2];
-							$res10 = mysql_query("update Credit set Vault='$vault' where UserId='$parentId'");
-							if (!$res10) {
-								// !!! log error
-							}
+							$credit = $row9["Credits"];
+							$pnts = $row9["Pnts"];
+ 							$vault = $row9["Vault"];
+ 							attributeLevelupBonus($parentId, $lvl, $credit, $pnts, $vault);
 						}
 					}
 				}

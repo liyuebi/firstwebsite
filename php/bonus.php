@@ -62,7 +62,7 @@ function calcBonus($file)
 	}
 	
 	// 计算所有层级
-	$allLevel = count($levelBonus) + 1;
+	$allLevel = count($levelBonus);
 	writeLog($file, "\n### 目前共有 " . $allLevel . " 个层级\n\n");
 	
 	// 剩余分红额小于0，说明超领了
@@ -123,7 +123,7 @@ function calcBonus($file)
 				$bonus = 0;
 
 				if ($lvl > 1) {
-					$bonus = $levelDayBonus[$lvl - 2];
+					$bonus = $levelDayBonus[$lvl - 1];
 /*
 					// 如果已经是最高级且没有固定蜂值剩余，则不予以拨分红，以节省分红
 					// 否则即使用户没有峰值，也先播出固态分红，如果用户升级即可继续领取
