@@ -41,8 +41,8 @@ function calcBonus($file)
 	$lastDCalcTime = $row1["LastDCalcTime"];
  	$lastBonusTotal = $row1["BonusTotal"];
 	$lastBonusLeft = $row1["BonusLeft"];
-	$lastDBonusTotal = $row1["DBonusTotal"];
-	$lastDBonusLeft = $row1["DBonusLeft"];
+// 	$lastDBonusTotal = $row1["DBonusTotal"];
+// 	$lastDBonusLeft = $row1["DBonusLeft"];
 	
 	$bCalcBonus = true;
 	if (isInTheSameDay($now, $lastCalcTime)) {
@@ -52,13 +52,14 @@ function calcBonus($file)
 	writeLog($file, "积分池余额：" . $pool . "\n");
 	writeLog($file, "前期的固定分红总额：" . $lastBonusTotal . "\n");
 	writeLog($file, "前期的固定分红余额：" . $lastBonusLeft . "\n");
-	writeLog($file, "前期的动态分红总额：" . $lastDBonusTotal . "\n");
-	writeLog($file, "前期的动态分红余额：" . $lastDBonusLeft . "\n");
+// 	writeLog($file, "前期的动态分红总额：" . $lastDBonusTotal . "\n");
+// 	writeLog($file, "前期的动态分红余额：" . $lastDBonusLeft . "\n");
 	if ($bCalcBonus) {
 		writeLog($file, "\n### 本次需重新计算固定分红\n\n");
 	}
 	else {
 		writeLog($file, "\n### 本次不重新计算固定分红\n\n");
+		return;
 	}
 	
 	// 计算所有层级
@@ -69,27 +70,26 @@ function calcBonus($file)
 	if ($lastBonusLeft < 0) {
 		writeLog($file, "\n!!! 固定分红剩余小于0，出错！\n\n");
 	}
-	if ($lastDBonusLeft < 0) {
-		writeLog($file, "\n!!! 动态分红剩余小于0，出错！\n\n");
-	}
+// 	if ($lastDBonusLeft < 0) {
+// 		writeLog($file, "\n!!! 动态分红剩余小于0，出错！\n\n");
+// 	}
 	
-	$dBonusTotal = floor($gross * $rewardRate * 100) / 100;
+// 	$dBonusTotal = floor($gross * $rewardRate * 100) / 100;
 	
 	writeLog($file, "本期的订单总额：" . $gross . "\n");
-	writeLog($file, "本期的订单分红比例：" . $rewardRate . "\n");
-	writeLog($file, "本期的动态分红额：" . $dBonusTotal . "\n");
-	if ($rewardVal > 0) {
-		writeLog($file, "\n 本期设置了动态分红值，每蜂值分红：" . $rewardVal . "\n\n");
-	}
+// 	writeLog($file, "本期的订单分红比例：" . $rewardRate . "\n");
+// 	writeLog($file, "本期的动态分红额：" . $dBonusTotal . "\n");
+// 	if ($rewardVal > 0) {
+// 		writeLog($file, "\n 本期设置了动态分红值，每蜂值分红：" . $rewardVal . "\n\n");
+// 	}
 	
 	// 未领取的分红返回基金池 
-	$pool += $lastDBonusLeft;	
+// 	$pool += $lastDBonusLeft;	
 	if ($bCalcBonus) {
 		$pool += $lastBonusLeft;
 	}
 		
 	// 计算并分发固定分红
-	$cnt = 0;
 	$dCnt = 0;
 	$totalDFeng = 0;
 	$totalBonus = 0;
@@ -111,19 +111,18 @@ function calcBonus($file)
 				$row6 = mysql_fetch_assoc($res6);
 				
 				// 累计计算动态峰值总数
-				$dVault = $row6["DVault"];
-				$dfeng = ceil($dVault / $fengzhiValue);
-				$totalDFeng += $dfeng;
-				
-				if (!$bCalcBonus) {
-					continue;
-				}
+// 				$dVault = $row6["DVault"];
+// 				$dfeng = ceil($dVault / $fengzhiValue);
+// 				$totalDFeng += $dfeng;
+// 				
+// 				if (!$bCalcBonus) {
+// 					continue;
+// 				}
 				
 				$vault = $row6["Vault"];
 				$bonus = 0;
 
-				if ($lvl > 1) {
-					$bonus = $levelDayBonus[$lvl - 1];
+				$bonus = $levelDayBonus[$lvl - 1];
 /*
 					// 如果已经是最高级且没有固定蜂值剩余，则不予以拨分红，以节省分红
 					// 否则即使用户没有峰值，也先播出固态分红，如果用户升级即可继续领取
@@ -132,13 +131,12 @@ function calcBonus($file)
 					}
 */
 					// 如果分红大于固定分红剩余，按剩余额进行分红；并即时减去固定蜂值
-					if ($bonus > $vault) {
-						$bonus = $vault;
-					}
-					$vault -= $bonus;
-					
-					$totalBonus += $bonus;
+				if ($bonus > $vault) {
+					$bonus = $vault;
 				}
+				$vault -= $bonus;
+					
+				$totalBonus += $bonus;
 				
 				if ($bonus > 0) {
 					++$dCnt;
@@ -161,6 +159,7 @@ function calcBonus($file)
 		writeLog($file, "--- 不进行固定分红！\n");
 	}
 		
+/*
 	// 计算每个动态峰值分多少积分 
 	$dBonusPerF = 0;
 	if ($rewardVal > 0) {
@@ -234,14 +233,15 @@ function calcBonus($file)
 		writeLog($file, "--- 动态分红总值是 " . $dBonusTotal . "\n");
 		writeLog($file, "--- 动态分红每蜂值分得 " . $dBonusPerF . "\n");
 	}
+*/
 
 
 	// 如果积分池小于分红额度，有问题，记log
-	if ($pool < $totalBonus + $dBonusTotal) {
+	if ($pool < $totalBonus /* + $dBonusTotal */) {
 		writeLog($file, "\n!!! 积分池不够，分红池高于积分池！\n");
 	}
 	
-	$pool -= $dBonusTotal;		// 从积分池中播出此次分红额度
+// 	$pool -= $dBonusTotal;		// 从积分池中播出此次分红额度
 	if ($bCalcBonus) {
 		$pool -= $totalBonus;
 	}
@@ -249,12 +249,15 @@ function calcBonus($file)
 	writeLog($file, "\n分红后积分池余额：" . $pool . "\n");
 	
 	// 更新总统计表
-	$res3 = mysql_query("update TotalStatis set CreditsPool='$pool', DFengTotal='$totalDFeng' where IndexId=1");
+	$res3 = mysql_query("update TotalStatis set CreditsPool='$pool' where IndexId=1");
 	if (!$res3) {
 		echo "\n!!! 更新总统计表失败： " . mysql_error() . "\n";
 	}
 	
 	// 更新短期统计表	
+	$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+						BonusTotal='$totalBonus', BonusLeft='$totalBonus', LastCalcTime='$now' where IndexId=1");
+/*
 	$res4 = false;
 	if ($bCalcBonus) {
 		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
@@ -265,6 +268,7 @@ function calcBonus($file)
 		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
 								DBonusTotal='$dBonusTotal', DBonusLeft='$dBonusTotal', LastDCalcTime='$now' where IndexId=1");		
 	}
+*/
 	if (!$res4) {
 		echo "\n!!! 更新短期统计表失败： " . mysql_error() . "\n";
 	}
@@ -308,8 +312,8 @@ function acceptBonus($userId)
 			return;
 		}		
 		
-		$toPnts = 0;
-		$toCredit = $currBonus;
+		$toPnts = floor($currBonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;;
+		$toCredit = $currBonus - $toPnts;
 							
 		$bonusTotal += $toCredit;
 		if (isInTheSameDay($now, $lastObtainedtime)) {
@@ -319,35 +323,36 @@ function acceptBonus($userId)
 			$dayObtained = $toCredit;
 		}
 		
-/*
 		$totalPnt = $row1["TotalObtainedPnts"];
 		$yearPnt = $row1["YearObtainedPnts"];
 		$monPnt = $row1["MonObtainedPnts"];
 		$dayPnt = $row1["DayObtainedPnts"];
-		if (isInTheSameDay($now, $lastObtainedPntTime)) {
-			$dayPnt += $toPnts;
+		if ($toPnts > 0) {
+			if (isInTheSameDay($now, $lastObtainedPntTime)) {
+				$dayPnt += $toPnts;
+			}
+			else {
+				$dayPnt = $toPnts;
+			}
+			if (isInTheSameMonth($now, $lastObtainedPntTime)) {
+				$monPnt += $toPnts;
+			}
+			else {
+				$monPnt = $toPnts; 
+			}
+			if (isInTheSameYear($now, $lastObtainedPntTime)) {
+				$yearPnt += $toPnts;
+			}
+			else {
+				$yearPnt = $toPnts;
+			}
+			$totalPnt += $toPnts;
+			$lastObtainedPntTime = $now;
 		}
-		else {
-			$dayPnt = $toPnts;
-		}
-		if (isInTheSameMonth($now, $lastObtainedPntTime)) {
-			$monPnt += $toPnts;
-		}
-		else {
-			$monPnt = $toPnts; 
-		}
-		if (isInTheSameYear($now, $lastObtainedPntTime)) {
-			$yearPnt += $toPnts;
-		}
-		else {
-			$yearPnt = $toPnts;
-		}
-		$totalPnt += $toPnts;
-*/
 		
 		$credit = $row1["Credits"] + $toCredit;
 		$pnts = $row1["Pnts"] + $toPnts;
-		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng' where UserId='$userId'");
+		$res2 = mysql_query("update Credit set Credits='$credit', TotalBonus='$bonusTotal', CurrBonus=0, LastCBTime='$now', DayObtained='$dayObtained', LastObtainedTime='$now', Vault='$feng', Pnts='$pnts', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$lastObtainedPntTime' where UserId='$userId'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'领取失败，请稍后重试'));
 			return;
@@ -356,12 +361,16 @@ function acceptBonus($userId)
 		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'vault'=>$feng,'DayObtained'=>$dayObtained));
 		
 		// 添加积分记录
-		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-						VALUES('$userId', '$toCredit', '$credit', '$now', '$now', '$codeDivident')");
+		if ($toCredit) {
+			mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+							VALUES('$userId', '$toCredit', '$credit', '$now', '$now', '$codeDivident')");
+		}
 						
-//		// 添加采蜜券记录
-// 		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-// 				VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
+		// 添加采蜜券记录
+		if ($toPnts) {
+			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+					VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
+		}
 		
 		// 统计分红信息
 		insertBonusStatistics($toCredit, $toPnts);

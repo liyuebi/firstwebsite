@@ -101,7 +101,7 @@ else
 		else {
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
-				$vault1 = $dyNewUserVault;
+				$vault1 = $levelBonus[0];
 				$dynVault = 0;
 				$result = mysql_query("insert into Credit (UserId, Vault, DVault, BPCnt, LastRwdBPCnt)
 					VALUES('$newuserid', '$vault1', '$dynVault', '1', '1')");

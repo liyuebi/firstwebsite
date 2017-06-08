@@ -132,11 +132,13 @@ if (!checkLoginOrJump()) {
 					<tr>
 						<td>一蜂值</td><td><?php echo $fengzhiValue; ?></td>
 					</tr>
+<!--
 					<tr>
 						<td>新用户初始动态蜂值</td>
 						<td><input type="text" id="newUserFeng" value="<?php echo $dyNewUserVault;  ?>" /></td>
 						<td><input type="button" value="修改" onclick="changeNUFeng()" /></td>
 					</tr>
+-->
 					<tr>
 						<td>关联账号初始动态蜂值</td>
 						<td><input type="text" id="newAccntFeng" value="<?php echo $dyNewAccountVault;  ?>" /></td>

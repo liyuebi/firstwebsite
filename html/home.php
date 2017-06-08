@@ -47,7 +47,7 @@ if ($con) {
 		$vault = $row["Vault"];
 		$dvault = $row["DVault"];
 		$bonus = $row["CurrBonus"];
-		$dBonus = $row["CurrDBonus"];
+// 		$dBonus = $row["CurrDBonus"];
 		$lastCBTime = $row["LastCBTime"];
 		
 		$now = time();
@@ -66,6 +66,7 @@ $feng = ceil($vault / $fengzhiValue);
 $dfeng = ceil($dvault / $fengzhiValue);
 
 $hasBonus = ($bonus + $dBonus) > 0;
+$bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 
 ?>
 
@@ -222,19 +223,25 @@ $hasBonus = ($bonus + $dBonus) > 0;
 			<table width="100%">
 				<?php if ($bonus > 0) { ?>
 				<tr>
-					<td style="width: 60%;"><p>固定分润 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<?php if ($bonusPnts > 0) { ?>
+					<td style="width: 60%;"><p>分润 <b><?php echo ($bonus - $bonusPnts); ?></b> 蜜券，<b><?php echo $bonusPnts; ?></b>采蜜券！</p></td>
+					<?php } else { ?>
+					<td style="width: 60%;"><p>分润 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<?php } ?>
 					<td style="width: 36%;">
 						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
 						<p id="accept_logo" style="color: red; display: none;">已领取</p>
 					</td>		
 				</tr>
 				<?php } ?>
+<!--
 				<?php if ($dBonus > 0) { ?>
 					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 采蜜券！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
 						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
 				<?php } ?>
+-->
 			</table>
 		</div>
 		
