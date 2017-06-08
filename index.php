@@ -12,7 +12,7 @@ if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>蜜蜂工坊登录</title>
+		<title>蜜蜂工坊</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">

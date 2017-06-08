@@ -11,7 +11,7 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>茗菊春管理系统</title>
+		<title>蜜蜂工坊管理系统</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">

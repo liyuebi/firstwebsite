@@ -135,7 +135,7 @@ if (!checkLoginOrJump()) {
 <!--
 					<tr>
 						<td>新用户初始动态蜂值</td>
-						<td><input type="text" id="newUserFeng" value="<?php echo $dyNewUserVault;  ?>" /></td>
+						<td><input type="text" id="newUserFeng" value="" /></td>
 						<td><input type="button" value="修改" onclick="changeNUFeng()" /></td>
 					</tr>
 -->

@@ -43,8 +43,7 @@ function checkLoginOrJump()
 
 function isAdminLogin()
 {
-// 	return $_SESSION['adminLogin'];
-	return true;
+	return isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'];
 }
 
 ?>

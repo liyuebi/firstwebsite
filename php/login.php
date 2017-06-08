@@ -44,6 +44,12 @@ else if ("getProfile" == $_POST['func']) {
 else if ("switchAccount" == $_POST['func']) {
 	switchAccount();
 }
+else if ("admChP" == $_POST['func']) {
+	adminChangePwd();
+}
+else if ("admAddA" == $_POST['func']) {
+	adminAddAccount();
+}
 
 function login()
 {	
@@ -155,6 +161,93 @@ function loginAdmin()
 	
 	$arr = array('error'=>'false');
 	echo json_encode($arr);
+}
+
+function adminChangePwd()
+{
+	session_start();
+	
+	include_once "admin_func.php";
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$oldpwd = trim(htmlspecialchars($_POST["opd"]));
+	$newpwd = trim(htmlspecialchars($_POST["npd"]));
+	
+	$adminUid = $_SESSION['adminUid'];
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$res = mysql_query("select * from AdminTable where AdminId='$adminUid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'您的账号有问题，请稍后重试！'));
+		return;		
+	}
+	$row = mysql_fetch_assoc($res);
+	$pwd = $row["Password"];
+	
+	if (!password_verify($oldpwd, $pwd)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'原密码输入错误，请重新输入！'));	
+		return;		
+	}
+	
+	$pwd = password_hash($newpwd, PASSWORD_DEFAULT);
+	$res1 = mysql_query("update AdminTable set Password='$pwd' where AdminId='$adminUid'");
+	if (!$res1) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改密码失败，请稍后重试！'));
+		return;
+	}
+	
+	$_SESSION['pwd'] = $pwd;
+	echo json_encode(array('error'=>'false'));
+}
+
+function adminAddAccount()
+{
+	session_start();
+	
+	include_once "admin_func.php";
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$account = trim(htmlspecialchars($_POST["acc"]));
+	$pwd = trim(htmlspecialchars($_POST["pd"]));
+	
+	// 检查权限
+
+	if ($account == "") {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账户不能为空！'));
+		return;		
+	}	
+	if ($pwd == "") {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'密码不能为空！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
+	$res = mysql_query("insert into AdminTable (Name, Password, Priority)
+							values('$account', '$pwd', '6')");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加账户失败，请稍后重试！'));
+		return;		
+	}
+	
+	echo json_encode(array('error'=>'false'));
 }
 
 function setPayPwd()
