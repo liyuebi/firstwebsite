@@ -24,12 +24,21 @@ if (!checkLoginOrJump()) {
 			{
 				document.getElementById("blk_add").style.display = "block"; 
 				document.getElementById("blk_chk").style.display = "none";
+				document.getElementById("blk_condQuery").style.display = "none";
 			}
 			
 			function showQueryBlk()
 			{
 				document.getElementById("blk_chk").style.display = "block";
+				document.getElementById("blk_condQuery").style.display = "none";
 				document.getElementById("blk_add").style.display = "none";
+			}
+			
+			function showCondQueryBlk()
+			{
+				document.getElementById("blk_chk").style.display = "none";
+				document.getElementById("blk_condQuery").style.display = "block";
+				document.getElementById("blk_add").style.display = "none";				
 			}
 			
 			function addUser()
@@ -163,6 +172,95 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
+			function queryUserByCond()
+			{
+				var lvl = document.getElementById("input_lvl").value;
+				var recoLow = document.getElementById("input_recoLow").value;
+				var recoHigh = document.getElementById("input_recoHigh").value;
+				
+				lvl = $.trim(lvl);
+				recoLow = $.trim(recoLow);
+				recoHigh = $.trim(recoHigh);
+				
+				if (lvl == "" && recoLow == "" && recoHigh == "") {
+					alert("条件不能都为空！");
+					return;
+				}
+				
+				$.post("../php/usrMgr.php", {"func":"qubd","lvl":lvl,"rlow":recoLow,"rhigh":recoHigh}, function(data){
+					
+					var container = document.getElementById("user_tbl1");
+				    var rowNum = container.rows.length;
+				     for (i=1;i<rowNum;++i)
+				     {
+				         container.deleteRow(i);
+				         rowNum=rowNum-1;
+				         i=i-1;
+				     }
+					if (data.error == "false") {
+						document.getElementById("span_res").innerHTML = "查询到符合条件的用户共" + data.cnt + "人！";
+						
+						var list = data.list;
+						for (var key in list) {
+							var trow = document.createElement("tr");
+							container.appendChild(trow);
+							
+							var d1 = document.createElement("td");
+							d1.innerHTML = key;
+							trow.appendChild(d1);
+							var d2 = document.createElement("td");
+							d2.innerHTML = list[key].nickname;
+							trow.appendChild(d2);
+							var d3 = document.createElement("td");
+							d3.innerHTML = list[key].phone;
+							trow.appendChild(d3);
+							var d4 = document.createElement("td");
+							d4.innerHTML = list[key].name;
+							trow.appendChild(d4);
+							var d5 = document.createElement("td");
+							d5.innerHTML = list[key].IDNum;
+							trow.appendChild(d5);
+							var d6 = document.createElement("td");
+							d6.innerHTML = list[key].lvl;
+							trow.appendChild(d6);
+							var d21 = document.createElement("td");
+							d21.innerHTML = list[key].regi;
+							trow.appendChild(d21);
+							var d7 = document.createElement("td");
+							d7.innerHTML = list[key].credit;
+							trow.appendChild(d7);
+							var d20 = document.createElement("td");
+							d20.innerHTML = list[key].pnt;
+							trow.appendChild(d20);
+							var d8 = document.createElement("td");
+							d8.innerHTML = list[key].vault;
+							trow.appendChild(d8);
+	/*
+							var d9 = document.createElement("td");	
+							d9.innerHTML = data.dvault;
+							trow.appendChild(d9);
+	*/
+							var d11 = document.createElement("td");	
+							d11.innerHTML = list[key].RecoCnt;
+							trow.appendChild(d11);
+							var d14 = document.createElement("td");	
+							d14.innerHTML = list[key].bpCnt;
+							trow.appendChild(d14);
+							var d15 = document.createElement("td");	
+							d15.innerHTML = list[key].charge;
+							trow.appendChild(d15);
+							var d16 = document.createElement("td");	
+							d16.innerHTML = list[key].withdraw;
+							trow.appendChild(d16);
+						}
+					}
+					else {
+						document.getElementById("span_res").innerHTML = "查询失败！";
+						alert("查询失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+			
 			function resetLoginPwd(e)
 			{
 				if (!confirm("你确定要重置用户" + e.target.id + "的登录密码吗？")) {
@@ -215,7 +313,8 @@ if (!checkLoginOrJump()) {
 		        <h3>用户管理</h3>
 	        </div>
 <!-- 	        <input type="button" value="添加新用户" onclick="showAddBlk()" /> -->
-<!--  	        <input type="button" value="查询用户" onclick="showQueryBlk()" /> -->
+ 	        <input type="button" value="账户查询" onclick="showQueryBlk()" />
+ 	        <input type="button" value="条件查询" onclick="showCondQueryBlk()" />
 	        <div id="blk_add" style="display: none">
 		        <input type="hidden" name='func' value="addNew" />
 		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
@@ -224,13 +323,13 @@ if (!checkLoginOrJump()) {
 				<br>
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
-			<div id="blk_chk" style="display: block">
+			<div id="blk_chk" style="display: block;">
 				<input id="id_input" type="text" placeholder="请输入用户id" />
 				<input type="button" value="查找" onclick="queryUser()" />
 				
 				<table id="user_tbl" border="1">
 					<tr>
-						<th>用户名</th>
+						<th>用户id</th>
 						<th>昵称</th>
 						<th>电话号码</th>
 						<th>姓名</th>
@@ -239,8 +338,8 @@ if (!checkLoginOrJump()) {
 						<th>注册券</th>
 						<th>蜜券</th>
 						<th>采蜜券</th>
-<!-- 						<th>固定蜂值</th> -->
-						<th>动态蜂值</th>
+						<th>固定蜂值</th>
+<!-- 						<th>动态蜂值</th> -->
 						<th>推荐人数</th>
 						<th>第一团队下属</th>
 						<th>第二团队下属</th>
@@ -250,6 +349,33 @@ if (!checkLoginOrJump()) {
 						<th>操作</th>
 					</tr>
 				</table>
+			</div>
+			<div id="blk_condQuery" style="display: none;">
+				等级<input type="text" id="input_lvl" placeholder="请输入等级" />
+				推荐人数<input type="text" id="input_recoLow" /> ~ <input type="text" id="input_recoHigh" />
+				<input type="button" value="查询" onclick="queryUserByCond()" />
+				<br>
+				<span id="span_res"></span>
+				<table id="user_tbl1" border="1">
+					<tr>
+						<th>用户id</th>
+						<th>昵称</th>
+						<th>电话号码</th>
+						<th>姓名</th>
+						<th>身份证号</th>
+						<th>等级</th>
+						<th>注册券</th>
+						<th>蜜券</th>
+						<th>采蜜券</th>
+						<th>固定蜂值</th>
+<!-- 						<th>动态蜂值</th> -->
+						<th>推荐人数</th>
+						<th>购物总数</th>
+						<th>充值</th>
+						<th>取现</th>
+					</tr>
+				</table>
+
 			</div>
 		</div>
     </body>

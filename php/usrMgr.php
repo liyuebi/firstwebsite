@@ -15,6 +15,9 @@ if ("addUser" == $_POST['func']) {
 else if ("queryUser" == $_POST['func']) {
 	queryUser();	
 }
+else if ("qubd" == $_POST['func']) {
+	queryUserByCondition();
+} 
 else if ("getDFeng" == $_POST['func']) {
 	getAllDFeng();
 }
@@ -185,6 +188,80 @@ function queryUser()
 				'phone'=>$row["PhoneNum"],'name'=>$row["Name"],'IDNum'=>$row["IDNum"],
 				'lvl'=>$row["Lvl"],'Group1Child'=>$row['Group1Child'],'Group2Child'=>$row['Group2Child'],'RecoCnt'=>$row['RecoCnt'],
 				'regi'=>$regiToken,'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault,'dvault'=>$dvault,'bpCnt'=>$bpCnt,'charge'=>$charge,'withdraw'=>$withdraw));
+}
+
+function queryUserByCondition()
+{
+	$lvl = trim(htmlspecialchars($_POST["lvl"]));
+	$recoLow = trim(htmlspecialchars($_POST["rlow"]));
+	$recoHigh = trim(htmlspecialchars($_POST["rhigh"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$sql = "select * from ClientTable where ";
+	$cond = 0;
+	if ($lvl != "") {
+		$sql = $sql . "Lvl = " . $lvl;
+		++$cond;
+	}
+	if ($recoLow != "") {
+		if ($cond > 0) {
+			$sql = $sql . " and ";
+		}
+		$sql = $sql . "RecoCnt >= " . $recoLow;
+		++$cond;
+	}
+	if ($recoHigh != "") {
+		if ($cond > 0) {
+			$sql = $sql . " and ";
+		}
+		$sql = $sql . "RecoCnt <= " . $recoHigh;
+		++$cond;
+	}
+	
+	if ($cond <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请至少选择一个有效条件！','sql_error'=>mysql_error()));
+		return;	
+	}
+	$res = mysql_query($sql);
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'查询出错！','sql_error'=>mysql_error()));
+		return;		
+	}
+	
+	$arr = array();
+	while ($row = mysql_fetch_array($res)) {
+		
+		$arr1 = array();
+		
+		$arr1["nickname"] = $row["NickName"];
+		$arr1["phone"] = $row["PhoneNum"];
+		$arr1["name"] = $row["Name"];
+		$arr1["IDNum"] = $row["IDNum"];
+		$arr1["lvl"] = $row["Lvl"];
+		$arr1["RecoCnt"] = $row["RecoCnt"];
+		
+		$userid = $row['UserId'];
+		$res1 = mysql_query("select * from Credit where UserId='$userid'");
+		if ($res1 && mysql_num_rows($res1)) {
+			$row1 = mysql_fetch_assoc($res1);
+			$arr1["regi"] = $row1["RegiToken"];
+			$arr1["credit"] = $row1["Credits"];
+			$arr1["pnt"] = $row1["Pnts"];
+			$arr1["vault"] = $row1["Vault"];
+			$arr1["bpCnt"] = $row1["BPCnt"];
+			$arr1['charge'] = $row1["TotalRecharge"];
+			$arr1['withdraw'] = $row1["TotalWithdraw"];
+		}
+		
+		$arr[$userid] = $arr1;
+	}
+	echo json_encode(array('error'=>'false','cnt'=>mysql_num_rows($res),'list'=>$arr));
 }
 
 function getAllDFeng()
