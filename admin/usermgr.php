@@ -92,6 +92,9 @@ if (!checkLoginOrJump()) {
 						var d6 = document.createElement("td");
 						d6.innerHTML = data.lvl;
 						trow.appendChild(d6);
+						var d21 = document.createElement("td");
+						d21.innerHTML = data.regi;
+						trow.appendChild(d21);
 						var d7 = document.createElement("td");
 						d7.innerHTML = data.credit;
 						trow.appendChild(d7);
@@ -101,9 +104,11 @@ if (!checkLoginOrJump()) {
 						var d8 = document.createElement("td");
 						d8.innerHTML = data.vault;
 						trow.appendChild(d8);
+/*
 						var d9 = document.createElement("td");	
 						d9.innerHTML = data.dvault;
 						trow.appendChild(d9);
+*/
 						var d11 = document.createElement("td");	
 						d11.innerHTML = data.RecoCnt;
 						trow.appendChild(d11);
@@ -231,9 +236,10 @@ if (!checkLoginOrJump()) {
 						<th>姓名</th>
 						<th>身份证号</th>
 						<th>等级</th>
+						<th>注册券</th>
 						<th>蜜券</th>
 						<th>采蜜券</th>
-						<th>固定蜂值</th>
+<!-- 						<th>固定蜂值</th> -->
 						<th>动态蜂值</th>
 						<th>推荐人数</th>
 						<th>第一团队下属</th>

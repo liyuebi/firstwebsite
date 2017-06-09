@@ -25,6 +25,12 @@ else if ("changeNUF" == $_POST['func']) {
 else if ("changeNAF" == $_POST['func']) {
 	changeNewAccountVault();	
 }
+else if ("changeWHR" == $_POST['func']) {
+	changeWithdrawHandleRate();
+}
+else if ("changeTHR" == $_POST['func']) {
+	changeTransferHandleRate();
+}
 
 function changeConfig($name, $val, &$err)
 {
@@ -143,6 +149,32 @@ function changeNewAccountVault()
 	
 	$err_msg = '';
 	if (!changeConfig("dyNewAccountVault", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeWithdrawHandleRate()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("withdrawHandleRate", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeTransferHandleRate()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("transferHandleRate", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}

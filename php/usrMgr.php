@@ -160,6 +160,7 @@ function queryUser()
 	
 	$row = mysql_fetch_assoc($res);
 	
+	$regiToken = 0;
 	$credit = 0;
 	$pnts = 0;
 	$vault = 0;
@@ -170,6 +171,7 @@ function queryUser()
 	$res1 = mysql_query("select * from Credit where UserId='$userid'");
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		$row1 = mysql_fetch_assoc($res1);
+		$regiToken = $row1["RegiToken"];
 		$credit = $row1["Credits"];
 		$pnts = $row1["Pnts"];
 		$vault = $row1["Vault"];
@@ -182,7 +184,7 @@ function queryUser()
 	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"],'id'=>$row["UserId"],
 				'phone'=>$row["PhoneNum"],'name'=>$row["Name"],'IDNum'=>$row["IDNum"],
 				'lvl'=>$row["Lvl"],'Group1Child'=>$row['Group1Child'],'Group2Child'=>$row['Group2Child'],'RecoCnt'=>$row['RecoCnt'],
-				'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault,'dvault'=>$dvault,'bpCnt'=>$bpCnt,'charge'=>$charge,'withdraw'=>$withdraw));
+				'regi'=>$regiToken,'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault,'dvault'=>$dvault,'bpCnt'=>$bpCnt,'charge'=>$charge,'withdraw'=>$withdraw));
 }
 
 function getAllDFeng()

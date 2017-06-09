@@ -169,7 +169,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 						document.getElementById("accept_btn1").style.display = "none";
 						document.getElementById("accept_logo1").style.display = "block";
 						document.getElementById("todayobtain").innerHTML = data.DayObtained;
-						document.getElementById("dbonuspool").innerHTML = data.dVault;
+// 						document.getElementById("dbonuspool").innerHTML = data.dVault;
 						document.getElementById("point").innerHTML = data.credit;
 						document.getElementById("pnts").innerHTML=data.pnts;
 					}

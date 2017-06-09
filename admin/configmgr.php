@@ -105,6 +105,34 @@ if (!checkLoginOrJump()) {
 					}
 				}, "json");
 			}
+			
+			function changeWithdrawHandleRate()
+			{
+				var val = document.getElementById("withdrawRate").value;
+				$.post("../php/changeConfig.php", {"func":"changeWHR","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");				
+			}
+			
+			function changeTransferHandleRate()
+			{
+				var val = document.getElementById("transferRate").value;
+				$.post("../php/changeConfig.php", {"func":"changeTHR","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}
 		</script>
 	</head>
 	<body>
@@ -129,10 +157,11 @@ if (!checkLoginOrJump()) {
 					<tr>
 						<th align="center">参数名</th><th>值</th><th>操作</th>
 					</tr>
-					<tr>
-						<td>一蜂值</td><td><?php echo $fengzhiValue; ?></td>
-					</tr>
 <!--
+					<tr>
+						<td>一蜂值</td>
+						<td><?php echo $fengzhiValue; ?></td>
+					</tr>
 					<tr>
 						<td>新用户初始动态蜂值</td>
 						<td><input type="text" id="newUserFeng" value="" /></td>
@@ -140,7 +169,7 @@ if (!checkLoginOrJump()) {
 					</tr>
 -->
 					<tr>
-						<td>关联账号初始动态蜂值</td>
+						<td>复投一单增加固定蜂值</td>
 						<td><input type="text" id="newAccntFeng" value="<?php echo $dyNewAccountVault;  ?>" /></td>
 						<td><input type="button" value="修改" onclick="changeNewAntFeng()" /></td>
 					</tr>
@@ -163,16 +192,22 @@ if (!checkLoginOrJump()) {
 						<td><input type="button" value="修改" onclick="changeTransferFloor()" /></td>
 					</tr>
 					<tr>
-						<td>提现手续费</td><td><?php echo $withdrawHandleRate;?></td>
+						<td>提现手续费</td>
+						<td><input type="text" id="withdrawRate" value="<?php echo $withdrawHandleRate;?>"</td>
+						<td><input type="button" value="修改" onclick="changeWithdrawHandleRate()" /></td>
 					</tr>
 					<tr>
-						<td>转账手续费</td><td><?php echo $transferHandleRate;?></td>
+						<td>转账手续费</td>
+						<td><input type="text" id="transferRate" value="<?php echo $transferHandleRate;?>"</td>
+						<td><input type="button" value="修改" onclick="changeTransferHandleRate()" /></td>
 					</tr>
+<!--
 					<tr>
 						<td>动态分红比例</td>
 						<td><input type="text" id="rwdRate" value="<?php echo $rewardRate;?>" /></td>
 						<td><input type="button" value="修改" onclick="changeRewardRate()" /></td>
 					</tr>					
+-->
 				</table>
 	        </div>
 	        <div>

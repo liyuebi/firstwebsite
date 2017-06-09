@@ -127,14 +127,14 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		        <p>即时统计</p>
 		        <table border="1">
 			        <tr>
-				        <th>订单额</th><th>充值</th><th>提现</th><th>当日预计固定分润总额</th><th>当日预计动态分润总额</th>
+				        <th>订单额</th><th>充值</th><th>提现</th><th>当日预计固定分润总额</th><th>当日动态分润剩余</th>
 			        </tr>
 			        <tr>
 				        <td><?php echo $row1["OrderGross"]; ?></td>
 				        <td><?php echo $row1["Recharge"]; ?></td>
 				        <td><?php echo $row1["Withdraw"]; ?></td>
 				        <td><?php echo $row1["BonusTotal"]; ?></td>
-				        <td><?php echo $row1["DBonusTotal"]; ?></td>
+				        <td><?php echo $row1["BonusLeft"]; ?></td>
 			        </tr>
 		        </table>
 	        </div>

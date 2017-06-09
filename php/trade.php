@@ -194,9 +194,9 @@ function purchaseProduct()
 	}
 	$cnt = floor(($bpCntPost - $lastRwdBPCnt) / $rewardBPCnt);
 	$lastRwdBPCntPost = $lastRwdBPCnt + $cnt * $rewardBPCnt;
-	$dynVault = $creditInfo['DVault'] + $count * $dyNewAccountVault;
+	$dynVault = $creditInfo['Vault'] + $count * $dyNewAccountVault;
 	
-	$result = mysql_query("update Credit set Credits='$left', DVault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
+	$result = mysql_query("update Credit set Credits='$left', Vault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
