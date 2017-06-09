@@ -1,6 +1,7 @@
 <?php
 
 include "../php/database.php";
+include "../php/constant.php";
 
 if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
 	
@@ -36,6 +37,8 @@ if ($result && mysql_num_rows($result)>0) {
 
 $dayBought = getDayBoughtCount($userid, $productId);
 $leftCount = max(0, $countlimit - $dayBought);
+
+$lvlBought = getLevelBoughtCnt($userid, $_SESSION['lvl'], 0); // use 0 as productId for reinvest
 
 ?>
 
@@ -91,7 +94,23 @@ $leftCount = max(0, $countlimit - $dayBought);
 					return;
 				}
 				if (<?php echo $countlimit; ?> > 0 && count > <?php echo $leftCount; ?>) {
-					alert("选择的数量超过今天剩余可以卖的数量，请重新选择！");
+					alert("选择的数量超过今天剩余可以购买的数量，请重新选择！");
+					return;
+				}
+				
+				<?php 
+					if ($levelReinvestTime[$_SESSION['lvl'] - 1] <= 0) {
+						echo "alert('在当前级别不能购买此产品！');";
+						echo "return;";						
+					}
+					if ($levelReinvestTime[$_SESSION['lvl'] - 1] <= $lvlBought) {
+						echo "alert('在当前级别您已不能再购买此产品！');";
+						echo "return;";
+					}
+				?>
+				
+				if (count > <?php echo ($levelReinvestTime[$_SESSION['lvl'] - 1] - $lvlBought); ?>) {
+					alert("选择的数量超过当前级别剩余可购买数，请重新选择！");
 					return;
 				}
 				
@@ -122,6 +141,7 @@ $leftCount = max(0, $countlimit - $dayBought);
 			<?php
 		    }
 	        ?>
+			<h5 style="margin-left: 5px;">级别在<?php echo $levelName[$_SESSION['lvl'] - 1] ?>可以购买此产品 <?php echo $levelReinvestTime[$_SESSION['lvl'] - 1]; ?> 次，您已购买过 <?php echo $lvlBought; ?> 次。</h5>
 	        <input id="product_id" type="hidden" value="<?php echo $productId; ?>" />
 	        <input type="button" value="-" onclick="reduce()" />
 	        <input id="count" type="text" value="1" />

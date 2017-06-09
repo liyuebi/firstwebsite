@@ -211,9 +211,9 @@ if (!checkLoginOrJump()) {
 				</table>
 	        </div>
 	        <div>
-		        <table border="1">
+		        <table border="1" align="center" style="margin: auto; text-align: center;">
 			        <tr>
-				        <th>等级</th><th>称号</th><th>一组人数</th><th>二组人数</th><th>三组人数</th><th>分红总额</th><th>每日分红</th><th>升级奖励</th><th>每日采蜜券比例</th>
+				        <th>等级</th><th>称号</th><th>一组人数</th><th>二组人数</th><th>三组人数</th><th>分红总额</th><th>每日分红</th><th>升级奖励</th><th>每日采蜜券比例</th><th>可复投次数</th>
 			        </tr>
 <!--
 			        <tr>
@@ -235,6 +235,7 @@ if (!checkLoginOrJump()) {
 						<td><?php echo $levelDayBonus[$idx]; ?></td>
 						<td><?php echo $levelUpBonus[$idx]; ?></td>
 						<td><?php echo $levelPntsRate[$idx]; ?></td>
+						<td><?php echo $levelReinvestTime[$idx]; ?></td>
 					</tr>
 					<?php
 							++$idx;

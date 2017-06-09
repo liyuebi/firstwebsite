@@ -254,6 +254,25 @@ function createProductDayBoughtTable()
 	return $result;
 }
 
+function createProductLevelBoughtTable()
+{
+	$sql = "create table if not exists ProductLevelBought
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		Level int not null,
+		ProductId int NOT NULL,
+		LastBoughtTime int DEFAULT 0,
+		Count int DEFAULT 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create ProductLevelBought table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
 function createRechargeTable()
 {
 	$sql = "create table if not exists RechargeApplication
@@ -772,6 +791,18 @@ function getDayBoughtCount($userid, $productid)
 	return $count;
 }
 
+function getLevelBoughtCnt($userid, $lvl, $productid)
+{
+	$count = 0;
+	$res = mysql_query("select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+	if ($res && mysql_num_rows($res) > 0) {
+		
+		$row = mysql_fetch_assoc($res);
+		$count = $row["Count"];
+	}
+	return $count;
+}
+
 function updateDayBoughtCount($userid, $productid, $count) 
 {
 	$result = createProductDayBoughtTable();
@@ -796,6 +827,31 @@ function updateDayBoughtCount($userid, $productid, $count)
 		else {
 			mysql_query("insert into ProductDayBought (UserId, ProductId, Count, LastBoughtTime)
 							VALUES('$userid', '$productid', '$count', '$now')");
+		}
+	}
+}
+
+function updateLevelBoughtCount($userid, $lvl, $productid, $count) 
+{
+	$result = createProductLevelBoughtTable();
+	if (!$result) {
+		return;
+	}
+	
+	$result = mysql_query("select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+	if ($result) {
+		
+		$now = time();
+		if (mysql_num_rows($result) > 0) {
+		
+			$row = mysql_fetch_assoc($result);
+			$count += $row["Count"];
+			
+			mysql_query("update ProductLevelBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+		}
+		else {
+			mysql_query("insert into ProductLevelBought (UserId, Level, ProductId, Count, LastBoughtTime)
+							values('$userid', '$lvl', '$productid', '$count', '$now')");
 		}
 	}
 }

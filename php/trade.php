@@ -98,6 +98,17 @@ function purchaseProduct()
 			return;				
 	 	}
  	}
+ 	
+ 	// 检查是否超过等级购买上限
+ 	$lvlBought = getLevelBoughtCnt($userid, $_SESSION['lvl'], 0);	// use 0 as product id for reinvest
+ 	if ($lvlBought >= $levelReinvestTime[$_SESSION['lvl'] - 1]) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'当前等级下此产品已达到购买上限，暂时不能购买！'));
+		return;				
+ 	}
+ 	if ($count > $levelReinvestTime[$_SESSION['lvl'] - 1] - $lvlBought) {
+		echo json_encode(array('error'=>'true','error_code'=>'16','error_msg'=>'购买个数超过当前等级购买上限，请重新选择！'));
+		return;				
+ 	}
 	
 	if ($price <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'产品的价格信息出错，请稍后再试'));
@@ -274,6 +285,8 @@ function purchaseProduct()
 
 	// 修改今天购买个数
 	updateDayBoughtCount($userid, $productId, $count);
+	// 修改等级购买个数
+	updateLevelBoughtCount($userid, $_SESSION['lvl'], 0, $count);
 	
 	// 纪录积分记录
 	$now = time();
