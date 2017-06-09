@@ -133,6 +133,8 @@ else
 	$regiToken = 0;
 	$credit = 0;
 	$pnts = 0;
+	$lastObtainedT = 0;
+	$dayObtainedCredit = 0;
 	if (!$res3) {
 	}
 	else {
@@ -141,6 +143,8 @@ else
 		$vault = $row3["Vault"];
 		$credit = $row3["Credits"];	
 		$pnts = $row3["Pnts"];
+		$lastObtainedT = $row3["LastObtainedTime"];
+		$dayObtainedCredit = $row3["DayObtained"];
 	}
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
@@ -150,6 +154,9 @@ else
 	// 修改用户的积分纪录，若失败不影响返回结果
 	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 								VALUES($userid, $refererConsumePoint, $leftCredit, $now, $now, $newuserid, $codeRecoRegiToken)");
+								
+	// 分发推荐奖励
+	attributeRecoBonus($userid, $lvl, $newuserid, $credit, $pnts, $vault, $lastObtainedT, $dayObtainedCredit);
 								
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from ClientTable where UserId='$userid'");
@@ -171,7 +178,7 @@ else
 				mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 								values('$userid', '$addedPnts', '$pnts', '$now', '$now', '$code2TransferFromVault')");
 								
-				attributeLevelupBonus($userid, 2, $credit, $pnts, $vault);
+				attributeLevelupBonus($userid, 2, $credit, $pnts, $vault, $lastObtainedT, $dayObtainedCredit);
 				
 				$group1Cnt = $row['Group1Cnt'];
 				$group2Cnt = $row['Group2Cnt'];
@@ -182,7 +189,7 @@ else
 					
 					if ($group1Cnt >= $team1Cnt[$idx] && $group2Cnt >= $team2Cnt[$idx] && $group3Cnt >= $team3Cnt[$idx]) {
 						++$lvl;
-						attributeLevelupBonus($userid, $lvl, $credit, $pnts, $vault);
+						attributeLevelupBonus($userid, $lvl, $credit, $pnts, $vault, $lastObtainedT, $dayObtainedCredit);
 					}
 					else {
 						break;

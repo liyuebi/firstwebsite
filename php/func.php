@@ -35,17 +35,78 @@ function setSession($row)
 }
 
 /*
+ * 分发直推奖励，先从蜂值里扣，若蜂值不够，则从采蜜券里扣，若依然不够，仍给足用户推荐奖励
+ * $lvl: 推荐人时自己处于第几级
+ * $credit: 目前的蜜券数量
+ * $pnts: 目前的采蜜券数量
+ * $vault: 目前的固定蜂值，需要先分发新级别的固定蜂值
+ * $lastObtainedT: 上次获得蜜券的时刻
+ * $dayObtained: 当日获得蜜券数量
+ */
+function attributeRecoBonus($userid, $lvl, $newuserid, &$credit, &$pnts, &$vault, &$lastObtainedT, &$dayObtained)
+{
+	include "constant.php";
+	include_once "database.php";
+	if ($lvl <= $recoBonusTillLevel) {
+		
+		$credit += $recoBonus;
+		$pntsToCredit = 0;
+		
+		if ($vault >= $recoBonus) {
+			$vault -= $recoBonus;
+		}
+		else {
+			$vault = 0;
+			if ($pnts > 0) {
+				if ($pnts > $recoBonus - $vault) {
+					$pntsToCredit = $recoBonus - $vault;
+					$pnts -= $pntsToCredit;
+				}	
+				else {
+					$pntsToCredit = $pnts;
+					$pnts = 0;
+				}
+			}
+		}
+		
+		$now = time();
+		if (!isInTheSameDay($now, $lastObtainedT)) {
+			$dayObtained = 0;
+		}
+		$dayObtained += $recoBonus;
+		$lastObtainedT = $now;
+		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts', LastObtainedTime='$lastObtainedT', DayObtained='$dayObtained' where UserId='$userid'");
+		if (!$res) {
+			// !!! 失败
+			return;
+		}
+		
+		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+						values('$userid', '$recoBonus', '$credit', '$now', '$now', '$newuserid', '$codeRecoBonus')");
+		if ($pntsToCredit > 0) {
+			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+				values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+		}
+	}
+}
+
+/*
+ * 分发升级奖励，先从蜂值里扣，若蜂值不够，则从采蜜券里扣，若依然不够，按前两者总数拨款
  * $lvl: 升到第几级
  * $credit: 目前的蜜券数量
  * $pnts: 目前的采蜜券数量
  * $vault: 目前的固定蜂值，需要先分发新级别的固定蜂值
+ * $lastObtainedT: 上次获得蜜券的时刻
+ * $dayObtained: 当日获得蜜券数量
  */
-function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault)
+function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastObtainedT, &$dayObtained)
 {
 	include "constant.php";
+	include_once "database.php";
 	if ($lvl <= count($levelBonus)) {
 		$vault = $levelBonus[$lvl - 1];
 		$addedCredit = 0;
+		$pntsToCredit = 0;
 		$now = time();
 		
 		if ($vault >= $levelUpBonus[$lvl - 1]) {
@@ -58,27 +119,38 @@ function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault)
 			$addedCredit = $vault;
 			
 			$v1 = $levelUpBonus[$lvl - 1] - $vault;
-			if ($pnts >= $v1) {
-				$pnts -= $v1;
-			}
-			else {
-				$v1 = $pnts;
-				$pnts = 0;
-			}
-			
-			$addedCredit += $v1;
-			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-								values('$userid', '$v1', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+			if ($pnts > 0) {
+				if ($pnts >= $v1) {
+					$pnts -= $v1;
+					$pntsToCredit = $v1;
+				}
+				else {
+					$v1 = $pnts;
+					$pnts = 0;
+					$pntsToCredit = $v1;
+				}
+				$addedCredit += $v1;
+			}			
 		}
 		
 		$credit += $addedCredit;
-		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts' where UserId='$userid'");
+		if (!isInTheSameDay($now, $lastObtainedT)) {
+			$dayObtained = 0;
+		}
+		$dayObtained += $addedCredit;
+		$lastObtainedT = $now;
+		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts', LastObtainedTime='$lastObtainedT', DayObtained='$dayObtained' where UserId='$userid'");
 		if (!$res) {
 			// 出错
 		}
 		
 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 							values('$userid', '$addedCredit', '$credit', '$now', '$now', '$codeLevelupBonus')");		
+							
+		if ($pntsToCredit > 0) {
+			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+					values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+		}
 	}
 	else {
 		// do nothing

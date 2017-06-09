@@ -22,6 +22,9 @@
 	$withdrawHandleRate = 0.05;	// 提现手续费率
 	$transferHandleRate = 0.05;	// 转账手续费率 
 	
+	$recoBonusTillLevel = 5;	// 几级前有推荐奖励蜜券，包括此级别
+	$recoBonus = 100; 		// 推荐奖励蜜券额度
+	
 	// credit code
 	$codeRecharge = 1;	// 充值积分变化
 	$codeWithdraw = 2;	// 取现积分变化
@@ -37,6 +40,7 @@
 	$codeTransferToPnts = 12; // 积分转移到采蜜券
 	$codeLevelupBonus = 13;	// 升级的蜜券奖励，一次发放
 	$codeTransferFromPnts = 14; // 采蜜券转到蜜券
+	$codeRecoBonus = 15;    // 直推蜂粉奖励，一次发放
 	
 	$codeChargeRegiToken = 20; // 充注册币变化
 	$codeRecoRegiToken = 21;   // 推荐导致注册币变化

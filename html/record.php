@@ -94,6 +94,9 @@ if ($con) {
 				    	else if ($row["Type"] == $codeTransferFromPnts) {
 					    	echo "您的" . $row["Amount"] . "采蜜券转到蜜券。";
 				    	}
+				    	else if ($row["Type"] == $codeRecoBonus) {
+					    	echo "您直推用户" . $row["WithUserId"] . "获得了推荐奖励" . $row["Amount"] . "蜜券。";
+				    	}
 				    	else if ($row["Type"] == $codeChargeRegiToken) {
 					    	echo "您充值了" . $row["Amount"] . "注册券。";
 				    	}
