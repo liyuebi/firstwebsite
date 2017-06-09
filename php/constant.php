@@ -36,6 +36,7 @@
 	$codeWithdrawCancelled = 11; // 提现请求取消或被管理员拒绝
 	$codeTransferToPnts = 12; // 积分转移到采蜜券
 	$codeLevelupBonus = 13;	// 升级的蜜券奖励，一次发放
+	$codeTransferFromPnts = 14; // 采蜜券转到蜜券
 	
 	$codeChargeRegiToken = 20; // 充注册币变化
 	$codeRecoRegiToken = 21;   // 推荐导致注册币变化

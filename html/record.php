@@ -91,6 +91,9 @@ if ($con) {
 				    	else if ($row["Type"] == $codeLevelupBonus) {
 					    	echo "获得升级奖励，得到蜜券" . $row["Amount"] ; 
 				    	}
+				    	else if ($row["Type"] == $codeTransferFromPnts) {
+					    	echo "您的" . $row["Amount"] . "采蜜券转到蜜券。";
+				    	}
 				    	else if ($row["Type"] == $codeChargeRegiToken) {
 					    	echo "您充值了" . $row["Amount"] . "注册券。";
 				    	}
