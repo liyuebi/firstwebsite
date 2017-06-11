@@ -1,10 +1,14 @@
 <?php
 
-if (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin']) {	
+session_start();
+// check if logined. check cookie to limit login time
+// check session first to avoid if user close browser and reopen, cookie is still valid but can't find session
+if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
+	&& (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin'])) {
 	$home_url = 'html/home.php';
 	header('Location: ' . $home_url);
 	exit();
-}
+} 
 	
 ?>
 

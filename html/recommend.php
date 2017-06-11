@@ -3,13 +3,19 @@
 include "../php/constant.php";
 include "../php/database.php";
 
-if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {	
+session_start();
+// check if logined. check cookie to limit login time
+// check session first to avoid if user close browser and reopen, cookie is still valid but can't find session
+if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
+	&& (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin'])) {
+	// no code here, just continue;		
+} 
+else {
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
 
-session_start();
 $mycredit = 0;
 $neededcredit = $refererConsumePoint;
 $userid = $_SESSION["userId"];

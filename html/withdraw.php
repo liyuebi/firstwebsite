@@ -1,13 +1,18 @@
 <?php
 
-// if not login, jump to index page
-if (!isset($_COOKIE['isLogin']) || !$_COOKIE['isLogin']) {
+session_start();
+// check if logined. check cookie to limit login time
+// check session first to avoid if user close browser and reopen, cookie is still valid but can't find session
+if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
+	&& (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin'])) {
+	// no code here, just continue;		
+} 
+else {
 	$home_url = '../index.php';
 	header('Location: ' . $home_url);
 	exit();
 }
 
-session_start();
 if ($_SESSION['buypwd'] == '') {
 	
 	$url = 'jump.php?source=3';
