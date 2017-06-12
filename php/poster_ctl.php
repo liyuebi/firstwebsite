@@ -18,43 +18,85 @@ else if ("post" == $_POST['func']) {
 else if ("unpost" == $_POST['func']) {
 	unpostPoster();
 }
+else if ("delete" == $_POST['func']) {
+	deletePoster();
+}
 
 function addNewPoster()
 {
-	$title = trim(htmlspecialchars($_POST["tle"]));
-	$content = trim(htmlspecialchars($_POST["cont"]));
-	
+	$title = trim(htmlspecialchars($_POST["title"]));
+	$content = trim(htmlspecialchars($_POST["content"]));
+	$imgfile = $_FILES['file'];
+
 	if (strlen($title) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'标题不能为空！'));
 		return;
 	}
 	
-/*
-	if (strlen($content) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'内容不能为空！'));
+	// make sure the poster has proper content
+	if (strlen($content) <= 0 && $imgfile == '') {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'公告正文和图片不能为空！'));
 		return;
 	}
-*/
-	
+		
 	$now = time();
+	$textFileName = '';
+	$imgFileName = '';
 	
-	date_default_timezone_set('PRC');
-	$filename = date("YmdHis", $now) . ".txt";
-	
-	$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;
-	if (file_exists($fileNameStr)) {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'文件名重复，请稍后重试！'));
-		return;		
+	if (strlen($content) > 0) {
+		date_default_timezone_set('PRC');
+		$filename = date("YmdHis", $now) . ".txt";	
+		
+		$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;
+		if (file_exists($fileNameStr)) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'文件名重复，请稍后重试！'));
+			return;		
+		}	
+		
+		$file = fopen($fileNameStr, "w");
+		if (!$file) {
+			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'打开文件失败！'));
+			return;
+		}
+		
+		fwrite($file, $content);
+		fclose($file);
+		
+		$textFileName = $filename;
 	}
 	
-	$file = fopen($fileNameStr, "w");
-	if (!$file) {
-		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'打开文件失败！'));
-		return;
+	if ($imgfile != '') {
+		
+		$imgType = $imgfile['type'];
+		$imgSize = $imgfile['size'];
+		$error = $imgfile['error'];
+		
+		if ($error != 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'上传图片出错，出错码是 ' . $error));
+			return;
+		}
+		
+		if ($imgSize > 1024 * 1024) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'图片大小不能超过1MB！'));
+			return;
+		}
+		
+		if ($imgType != 'image/jpeg' && $imgType != 'image/png') {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'图片格式不对，请使用jpg或png格式的图片，使用图片的格式是' . $imgType));
+			return;
+		}
+		
+		$name = $imgfile['name'];
+		$pos = strpos($name, '.');
+		$prename = substr($name, 0, $pos);
+		$postname = substr($name, $pos);
+		
+		$prename .= '_' . $now;
+		$imgFileName = $prename . $postname;
+		
+		$new_name = dirname(__FILE__) . '/../poster/' . $imgFileName;
+		move_uploaded_file($imgfile['tmp_name'], $new_name);
 	}
-	
-	fwrite($file, $content);
-	fclose($file);
 	
 	$con = connectToDB();
 	if (!$con)
@@ -64,7 +106,7 @@ function addNewPoster()
 	}
 	createPostTable();
 
-	$res = mysql_query("insert into PostTable (Title, TextFile, AddTime) values('$title', '$filename', '$now')");
+	$res = mysql_query("insert into PostTable (Title, TextFile, Pic, AddTime) values('$title', '$textFileName', '$imgFileName', '$now')");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加公告失败！','sql_error'=>mysql_error()));
 		return;		
@@ -76,16 +118,12 @@ function addNewPoster()
 function editPoster()
 {
 	$idx = trim(htmlspecialchars($_POST["idx"]));
-	$title = trim(htmlspecialchars($_POST["tle"]));
-	$content = trim(htmlspecialchars($_POST["cont"]));
+	$title = trim(htmlspecialchars($_POST["title"]));
+	$content = trim(htmlspecialchars($_POST["content"]));
+	$imgfile = $_FILES['file'];
 	
 	if (strlen($title) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'标题不能为空！'));
-		return;
-	}
-	
-	if (strlen($content) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'内容不能为空！'));
 		return;
 	}
 	
@@ -104,25 +142,79 @@ function editPoster()
 		return;		
 	}
 	$row = mysql_fetch_assoc($res);
+	
+	$textFileName = $row["TextFile"];
+	$imgFileName = $row['Pic'];
+	
+	// 更新文本
 	$filename = $row["TextFile"];
-	$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;
-	// if cannot find previous file, create a new file -- but this should not happen
-	if (!file_exists($fileNameStr)) {
-		date_default_timezone_set('PRC');
-		$filename = date("YmdHis", $now) . ".txt";	
-		$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;	
+	if ($filename != '' || strlen($content) > 0) {
+		$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;
+		
+		// if cannot find previous file, create a new file -- but this should not happen
+		if ($filename == '' || !file_exists($fileNameStr)) {
+			date_default_timezone_set('PRC');
+			$filename = date("YmdHis", $now) . ".txt";	
+			$fileNameStr = dirname(__FILE__) . "/../poster/" . $filename;	
+		}
+		
+		$file = fopen($fileNameStr, "w");
+		if (!$file) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'打开文件失败！'));
+			return;
+		}
+		
+		fwrite($file, $content);
+		fclose($file);
+		
+		$textFileName = $filename;
 	}
 	
-	$file = fopen($fileNameStr, "w");
-	if (!$file) {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'打开文件失败！'));
-		return;
+	// 如果有新选择的图片，保存新图片
+	if ($imgfile != '') {
+		
+		$imgType = $imgfile['type'];
+		$imgSize = $imgfile['size'];
+		$error = $imgfile['error'];
+		
+		if ($error != 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'上传图片出错，出错码是 ' . $error));
+			return;
+		}
+		
+		if ($imgSize > 1024 * 1024) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'图片大小不能超过1MB！'));
+			return;
+		}
+		
+		if ($imgType != 'image/jpeg' && $imgType != 'image/png') {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'图片格式不对，请使用jpg或png格式的图片，使用图片的格式是' . $imgType));
+			return;
+		}
+		
+		$name = $imgfile['name'];
+		$pos = strpos($name, '.');
+		$prename = substr($name, 0, $pos);
+		$postname = substr($name, $pos);
+		
+		$prename .= '_' . $now;
+		$imgFileName = $prename . $postname;
+		
+		$new_name = dirname(__FILE__) . '/../poster/' . $imgFileName;
+		move_uploaded_file($imgfile['tmp_name'], $new_name);
 	}
+	else {
+		// 如果没有新图片，检查是否删除了原图
+		if ($row['Pic'] != '') {
+			$rmOri = trim(htmlspecialchars($_POST['rmOriImg']));
+			if ($rmOri == '1') {
+				$imgFileName = '';
+			}
+		}
+	}
+
 	
-	fwrite($file, $content);
-	fclose($file);
-	
-	$res2 = mysql_query("update PostTable set Title='$title', TextFile='$filename', LMT='$now' where IndexId='$idx'");
+	$res2 = mysql_query("update PostTable set Title='$title', TextFile='$filename', Pic='$imgFileName', LMT='$now' where IndexId='$idx'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新数据库失败，请稍后重试！'));
 		return;		
@@ -182,6 +274,32 @@ function unpostPoster()
 	$res2 = mysql_query("update PostTable set Status='$postStatusDown', ReT='$now' where IndexId='$idx'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'修改公告状态失败！'));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false', 'idx'=>$idx));
+}
+
+function deletePoster()
+{
+	$idx = trim(htmlspecialchars($_POST["idx"]));		
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$res = mysql_query("select * from PostTable where IndexId='$idx'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的公告！'));
+		return;		
+	}
+	
+	$res2 = mysql_query("delete from PostTable where IndexId='$idx'");
+	if (!$res2) {
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'删除出错','sql_error'=>mysql_error()));
 		return;				
 	}
 	

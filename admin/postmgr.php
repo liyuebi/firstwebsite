@@ -17,7 +17,7 @@ if (!$con)
 	return false;
 }
 
-$result = mysql_query("select * from PostTable");
+$result = mysql_query("select * from PostTable order by AddTime desc");
 
 ?>
 
@@ -77,6 +77,27 @@ $result = mysql_query("select * from PostTable");
 					}
 				}, "json");				
 			}
+			
+			function deletePost(btn) 
+			{
+				$.post("../php/poster_ctl.php", {"func":"delete","idx":btn.name}, function(data){
+					
+					if (data.error == "false") {
+						alert("删除成功！");
+						document.getElementById("status_" + data.idx).innerHTML = "已删除";
+						document.getElementById("status_" + data.idx).style.color = "red";
+						var btn = document.getElementById("btn_" + data.idx);
+// 						btn.value = "下线";
+						if (btn) {
+							btn.disabled = true;
+						}
+					}
+					else {
+						alert('删除失败：' + data.error_msg);
+					}
+				}, "json");
+	
+			}
 		</script>
 	</head>
 	<body>
@@ -113,7 +134,7 @@ $result = mysql_query("select * from PostTable");
 					<tr>
 						<td><?php echo $row["Title"]; ?></td>
 						<td><?php echo date("Y.m.d H:i" ,$row["AddTime"]); ?></td>
-						<td><?php echo date("Y.m.d H:i" ,$row["LMT"]); ?></td>
+						<td><?php if ($row["LMT"] > 0) echo date("Y.m.d H:i" ,$row["LMT"]); ?></td>
 						<td id="status_<?php echo $row["IndexId"]; ?>">
 						<?php 
 							if ($row["Status"] == $postStatusWait) 
@@ -145,6 +166,7 @@ $result = mysql_query("select * from PostTable");
 						<?php
 							}
 						?>
+							<input type="button" name="<?php echo $row["IndexId"]; ?>" value="删除" onclick="deletePost(this)" />
 						</td>
 					</tr>
 				<?php
