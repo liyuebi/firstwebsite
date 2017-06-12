@@ -177,7 +177,9 @@ $res = mysql_query("select * from AdminTable where Name!='admin'");
 						if ($res) {
 							while ($row = mysql_fetch_array($res)) {
 					?>
-								<td><?php echo $row["Name"]; ?></td>
+								<tr>
+									<td><?php echo $row["Name"]; ?></td>
+								</tr>
 					<?php
 							}
 						}
