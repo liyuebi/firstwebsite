@@ -16,7 +16,7 @@ function getWithdrawApplication()
 		return false;
 	}
 	
-	$result = mysql_query("select * from WithdrawApplication");
+	$result = mysql_query("select * from WithdrawApplication order by ApplyTime");
 	return $result;
 }
 
