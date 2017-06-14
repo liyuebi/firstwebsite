@@ -7,7 +7,7 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
 		
 <!-- 	<script src="assets/js/scripts.js" ></script> -->
 		<script type="text/javascript">

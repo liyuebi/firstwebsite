@@ -32,7 +32,7 @@ else if ($_GET["source"] == '3') {
 		<meta name="author" content="">
 		<meta http-equiv="Refresh" content="5;url=<?php echo $page; ?>" />
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
 	</head>
 	
 	<body>

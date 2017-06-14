@@ -57,7 +57,7 @@ if ($res2) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
