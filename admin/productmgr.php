@@ -109,7 +109,7 @@ $result = mysql_query("select * from Product");
 			        <table border="1">
 						<tr>
 <!-- 							<th>产品Id</th> -->
-							<th>产品名</th><th>产品价格</th><th>产品描述</th><th>操作</th>
+							<th>产品名</th><th>产品价格</th><th>产品描述</th><th>每日购买上限</th><th>操作</th>
 						</tr>
 						<?php
 						if ($result) {
