@@ -21,7 +21,7 @@ if (!$con) {
 	exit();
 }
 
-$result = mysql_query("select * from Product where Status=1");
+$result = mysql_query("select * from Product where Status=1 and ProductId!=2");
 $error = mysql_error();
 	
 ?>
@@ -40,46 +40,14 @@ $error = mysql_error();
 		<script src="../js/jquery-1.8.3.min.js"></script>		
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
-// 			$(document).ready(function(){
-// 				if (!isLogined())
-//  					location.href = "pleaselogin.html";
-
-/*
-				var data = 'func=getProducts';
-				$.getJSON("../php/product.php", data, function(json){
-					
-					var container = document.getElementById("product_list");
-					for (var key in json) {
-		 				var h = document.createElement("ul");
-		 				
-		 				var i = document.createElement("li");
-		 				i.innerHTML = json[key]["name"];
-		 				i.id = "product_name" + key;
-		 				h.appendChild(i);
-		 				
-		 				var j = document.createElement("li");
-		 				j.innerHTML = json[key]["price"];
-		 				h.appendChild(j);
-		 				
-		 				var k = document.createElement("input");
-		 				k.type="button";
-		 				k.value = "购买";
-		 				k.var = key;
-// 		 				o.onclick = "editAddress()";
-						if (k.addEventListener) {
-							k.addEventListener('click', buyItem, false);
-						}
-						else if (o.attachEvent) {
-							k.attachEvent('onclick', buyItem);
-						}
-		 				h.appendChild(k);
-
-		 				container.appendChild(h);
-					}
-				});
-			});
-*/
+			$(document).ready(function(){
+				
+				var width = $(".product_frame").width();
+				$(".product_frame").height(width * 0.9);
+				$(".img_container").height(width * 0.7);
+			})
 			
+/*
 			function buyItem() {
 				
 				var productId = e.target.var;
@@ -87,6 +55,13 @@ $error = mysql_error();
 				setCookie("willbuy", productId, 0.5);
 				setCookie("willbuyname", productName, 0.5);
 				location.href = "deal.php";
+			}
+*/
+			
+			function buyItem(div) {
+				
+				var productId = div.id;
+				location.href = "productdetail.php?product_id=" + productId;
 			}
 		</script>
 	</head>
@@ -99,16 +74,19 @@ $error = mysql_error();
 		
         <div id="product_list">
 			<?php
-				$width = "<script type=text/javascript>document.write(document.body.clientWidth)</script>";
 				while($row = mysql_fetch_array($result)) {
-			?>
-					<div class="product_frame" width="<?php echo $width?>" height="100px" style="width: <?php echo $width; ?>px; height: 100px;"></div>
+			?>	
+					<div class="product_frame" id="<?php echo $row["ProductId"]; ?>" style="border: black solid 1;" onclick="buyItem(this)" >
+						<div class="img_container" align="center" style="text-align: center;">
+							<img src="<?php if ($row["FirstImg"] != "") echo "../img/icon/" . $row["FirstImg"]; ?>" style="max-width: 100%; max-height: 100%;" ></img>
+						</div>
+						<h3 align="center"><?php echo $row["ProductName"]; ?></h3>
+						<p><?php echo $row["Price"]; ?> 采蜜券</p>
+					</div>
 			<?php
-					echo $width;
 				}
 			?>
         </div>
-        <div class="product_frame" width="100px" height="100px"></div>
     </body>
     <div style="text-align:center;">
     </div>

@@ -115,9 +115,9 @@ $leftCount = max(0, $countlimit - $dayBought);
 		</div>
 		
         <div id="product_info" style="border-bottom: 1px solid black;">
-	        <img src="../img/product_display/3.jpg" width="100%" />
+	        <img src="<?php if ($row && $row["SecondImg"] != "") echo "../img/product_display/" . $row["SecondImg"]; ?>" width="100%" />
 	        <h3 style="margin-left: 5px;"><?php echo $productName; ?></h3>
-	        <h4 style="margin-left: 5px;"><?php echo $productPrice; ?></h4>
+	        <h4 style="margin-left: 5px;"><?php echo $productPrice; ?> 采蜜券</h4>
 	        <?php 
 		    if ($countlimit > 0) {
 			?>
@@ -135,10 +135,19 @@ $leftCount = max(0, $countlimit - $dayBought);
         <div id="detail_info">
 	        <h3>商品详情</h3>
 	        <p><?php echo $productDesc; ?></p>
-	        <img src="../img/product_info/5.jpg" width="100%" />
-	        <img src="../img/product_info/6.jpg" width="100%" />
-	        <img src="../img/product_info/7.jpg" width="100%" />
-	        <img src="../img/product_info/8.jpg" width="100%" />
+	        <?php 
+		      	if ($row && $row["ExhibitImg"] != "") {
+			      	
+			      	$arr = explode(',', $row["ExhibitImg"]);
+				  	$cnt = count($arr);
+				  	for ($idx = 0; $idx < $cnt; ++$idx)
+				  	{
+			?>
+						<img src="../img/product_info/<?php echo $arr[$idx]; ?>" style="max-width: 100%; margin: 2px;" />
+			<?php
+				  	}
+		      	}  
+		    ?>
         </div>
         <div class="product_frame" width="100px" height="100px"></div>
     </body>

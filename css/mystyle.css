@@ -13,7 +13,13 @@
 /* 	border:1px solid #F00; */
 	color: #994d4d;
 	background: #e1dede;
-	margin: 5px 5px 0 5px;
+	margin: 1px 0.7%;
+	padding: 1px;
+	width: 48%;
+}
+
+.product_frame p,h3 {
+	margin: 1px 5px;
 }
 
 .big_frame {
@@ -270,6 +276,11 @@ table.t2 td {
     background-size: 40px;
 }
 
+.btn_box ul li .icon_btn13 {
+    background: url('../img/sys/sysIcon16.jpg') center 10px no-repeat;
+    background-size: 40px;
+}
+
 .add_block {
 	margin: 2px;
 	background-color: white;
@@ -335,10 +346,18 @@ table.t2 td {
 }
 
 #product_list ul {
-	margin: 5px;
+	margin: 1px;
 	padding: 0px;
-	list_style: none;
+	list-style: none;
+/* 	outline: black thin solid; */
+}
+
+#product_list ul li {
+	margin: 1px 0.7%;
+	padding: 1px;
+	width: 48%;
 	outline: black thin solid;
+	float: left;
 }
 
 .productname {
