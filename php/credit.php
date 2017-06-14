@@ -79,10 +79,10 @@ function applyRecharge()
 	}
 	
 	$method = intval($method);
-	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'请选择支付方式！'));
-		return;		
-	}
+// 	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
+// 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'请选择支付方式！'));
+// 		return;		
+// 	}
 	
 	$con = connectToDB();
 	if (!$con)

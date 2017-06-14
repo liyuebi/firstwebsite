@@ -98,12 +98,13 @@ if ($con) {
 					document.getElementById("amount").focus();
 					return;
 				}
-				
-				var method = $("input[name='method']:checked").val();
-				if (method != "1" && method != "2" && method != "3") {
-					alert("还没有选择支付方式！");
-					return;
-				}
+
+				var method = "0";				
+// 				var method = $("input[name='method']:checked").val();
+// 				if (method != "1" && method != "2" && method != "3") {
+// 					alert("还没有选择支付方式！");
+// 					return;
+// 				}
 				
 				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
 					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
@@ -161,7 +162,7 @@ if ($con) {
         </div>
         <div name="display" style="padding-bottom: 20px;">
 	        <p>您可以选择以下方式支付，充值注册券比例为1:1，充值金额必须是<b> <?php echo $refererConsumePoint; ?> </b>的倍数</p>
-	        <div>
+	        <div style="display: none;">
 		        <div style="float: left; width: 49%; border: 1px solid black;">
 			        <p>微信：mifenggf</p>
 			        <img src='../img/wechat.jpg' width="100%" />
@@ -185,7 +186,7 @@ if ($con) {
 		        <p>您现在拥有注册券：<?php echo $mycredit;?></p>
 		        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
 	        </div>
-	        <div style="padding: 10px 0;">
+	        <div style="padding: 10px 0; display: none;">
 		        <div>
 			        <input type="radio" name="method" value="1" /> 微信
 			        <input type="radio" name="method" value="2" /> 支付宝
