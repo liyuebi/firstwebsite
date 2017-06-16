@@ -19,8 +19,6 @@ if (!$con)
 {
 	return false;
 }
-	
-$result = mysql_query("select * from Statistics");
 
 $res = mysql_query("select * from TotalStatis");
 if ($res) {
@@ -91,22 +89,7 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		</script>
 	</head>
 	<body>
-		<div style="padding: 10px 10px 0 5px; height: 100%; display:inline; float: left; border-right: 1px solid black;">
-			<ul style="list-style: none; padding: 0">
-<!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
-				<li><a href="productmgr.php">产品管理</a></li>
-				<li><a href="usermgr.php">用户管理</a></li>
-				<li><a href="ordermgr.php">订单管理</a></li>
-				<li><a href="rechargemgr.php">充值管理</a></li>
-				<li><a href="withdrawmgr.php">取现管理</a></li>
-				<li><a href="configmgr.php">配置管理</a></li>
-				<li><a href="statistics.php">统计数据</a></li>
-<!-- 				<li><a href="configRwdRate.php">配置动态拨比</a></li> -->
-				<li><a href="postmgr.php">公告管理</a></li>
-				<li><a href="adminmgr.php">管理员账号维护</a></li>
-			</ul>
-		</div>
-		<div style="display: inline; float: left; padding: 10px 0 0 10px;" >
+		<div style="padding: 10px 0 0 10px;" >
 	        <div>
 		        <p>总统计</p>
 		        <table border="1">
@@ -137,46 +120,6 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 				        <td><?php echo $row1["BonusLeft"]; ?></td>
 			        </tr>
 		        </table>
-	        </div>
-	        <div>
-		        <p>按日统计</p>
-				<table border="1">
-					<tr>
-						<th>年</th>
-						<th>月</th>
-						<th>日</th>
-						<th>新用户数</th>
-						<th>总充值额</th>
-						<th>总提现额</th>
-						<th>提现手续费</th>
-						<th>总转账额</th>
-						<th>转账手续费</th>
-						<th>订单总收入</th>
-						<th>订单件数</th>
-	<!-- 					<th>拒绝</th> -->
-					</tr>
-					<?php
-						while($row = mysql_fetch_array($result)) {
-					?>
-							<tr>
-								<th><?php echo $row["Ye"]; ?></th>
-								<th><?php echo $row["Mon"]; ?></th>
-								<th><?php echo $row["Day"]; ?></th>
-								<th><?php echo $row["NSCount"] ?></th>
-								<th><?php echo $row["RechargeTotal"]; ?></th>
-								<th><?php echo $row["WithdrawTotal"]; ?></th>
-								<th><?php echo $row["WithdrawFee"]; ?></th>
-								<th><?php echo $row["TfTotal"]; ?></th>
-								<th><?php echo $row["TfFee"]; ?></th>
-								<th><?php echo $row["OrderGross"]; ?></th>
-								<th><?php echo $row["SPNum"]; ?></th>
-	<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
-	<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
-							</tr>
-					<?php
-						}
-					?>
-				</table>
 	        </div>
 	        <div>
 		        <p>级别人数统计</p>

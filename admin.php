@@ -11,14 +11,19 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		
 		<title>蜜蜂工坊管理系统</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+<!-- 		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" /> -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/adminlte/AdminLTE.min.css" />
 		
-		<script src="../js/jquery-1.8.3.min.js" ></script>
+		
+		<script src="../js/jquery-3.2.1.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script src="js/md5.js" ></script>
 		<script type="text/javascript">
@@ -40,22 +45,33 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 			}
 		</script>
 	</head>
-	<body>
-        <div align="center" style="margin: 30px;">
-	        <h2>蜜蜂工坊后台管理系统</h2>
-	        <table>
-		        <tr>
-			        <td>用户名</td>
-			        <td><input id="user" type="text" placeholder="请输入管理员账号" /></td>
-		        </tr>
-		        <tr>
-			        <td>密码</td>
-			        <td><input id="pwd" type="password" placeholder="请输入密码" /></td>
-		        </tr>
-	        </table>
-            <input type="button" value="登录" onclick="login()" />
-        </div>
+	<body class="hold-transition login-page">
+<!--         <div align="center" style="margin: 30px;">     -->
+            <div class="login-box">
+				<div class="login-logo">
+			    	<a href="#"><b>蜜蜂工坊后台管理系统</b></a>
+				</div>
+				<!-- /.login-logo -->
+				<div class="login-box-body">
+					<p class="login-box-msg">请登录</p>
+			
+					<div class="form-group has-feedback">
+			        	<input type="email" id="user" class="form-control" placeholder="请输入管理员账号">
+						<span class="glyphicon glyphicon-user form-control-feedback"></span>
+			    	</div>
+					<div class="form-group has-feedback">
+						<input type="password" id="pwd" class="form-control" placeholder="请输入密码">
+						<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+			    	</div>
+					<div class="row">
+				        <!-- /.col -->
+				        <div class="col-xs-12">
+					        <button type="button" class="btn btn-primary btn-block btn-flat" onclick="login()">登录</button>
+				        </div>
+				        <!-- /.col -->
+			    	</div>
+				</div>
+	        </div>
+<!--         </div> -->
     </body>
-    <div style="text-align:center;">
-    </div>
 </html>

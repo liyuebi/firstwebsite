@@ -310,11 +310,13 @@ if (!checkLoginOrJump()) {
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
 -->
-			<div id="blk_chk" style="display: block;">
-				<input id="id_input" type="text" placeholder="请输入用户id" />
-				<input type="button" value="查找" onclick="queryUser()" />
-				
-				<table id="user_tbl" border="1">
+			<div id="blk_condQuery">
+				等级<input type="text" id="input_lvl" placeholder="请输入等级" />
+				推荐人数<input type="text" id="input_recoLow" /> ~ <input type="text" id="input_recoHigh" />
+				<input type="button" value="查询" onclick="queryUserByCond()" />
+				<br>
+				<span id="span_res"></span>
+				<table id="user_tbl1" border="1">
 					<tr>
 						<th>用户id</th>
 						<th>昵称</th>
@@ -328,14 +330,12 @@ if (!checkLoginOrJump()) {
 						<th>固定蜂值</th>
 <!-- 						<th>动态蜂值</th> -->
 						<th>推荐人数</th>
-						<th>第一团队下属</th>
-						<th>第二团队下属</th>
 						<th>购物总数</th>
 						<th>充值</th>
 						<th>取现</th>
-						<th>操作</th>
 					</tr>
 				</table>
+
 			</div>
 		</div>
     </body>
