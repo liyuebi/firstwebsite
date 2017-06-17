@@ -12,6 +12,9 @@ if ("purchase" == $_POST['func']) {
 else if ("delivery" == $_POST['func']) {
 	deliveryProduct();
 }
+else if ("markExported" == $_POST['func']) {
+	markProductExported();
+}
 else if ("accept" == $_POST['func']) {
 	acceptProduct();
 }
@@ -748,6 +751,58 @@ function quertUserOrder()
 	}
 	
 	echo json_encode(array('error'=>'false','uid'=>$userid,'num'=>mysql_num_rows($result),'order_list'=>$array));
+}
+
+/*
+ * Modify db to signal transaction info has been exported to excel.
+ */
+function markProductExported()
+{
+	session_start();
+	
+	include_once "admin_func.php";
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$ids = trim(htmlspecialchars($_POST['ids']));
+	
+	$arr = explode(',', $ids);
+	$cnt = count($arr);
+	if ($cnt <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'要导出的订单列表为空！','uid'=>$userid));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','uid'=>$userid));
+		return;
+	}
+	
+	for ($idx = 0; $idx < $cnt; ++$idx) {
+		
+		$orderid = $arr[$idx];
+	 	$res = mysql_query("select * from Transaction where OrderId='$orderid'");
+	 	if (!$res || mysql_num_rows($res) <= 0) {
+		 	// ..
+			continue; 	
+	 	} 
+	 	
+	 	$row = mysql_fetch_assoc($res);
+	 	$val = $row["Exported"] + 1;
+	 	$res1 = mysql_query("update Transaction set Exported='$val' where OrderId='$orderid'");
+	 	if (!$res) {
+		 	// .. 
+		 	continue;
+	 	}
+	 	
+	 	
+	}
+	
+	echo json_encode(array('error'=>'false'));
 }
 
 ?>

@@ -163,6 +163,15 @@ $res1 = mysql_query("select * from Transaction  where Status='$OrderStatusDefaul
 			
 			function queryUserOrders()
 			{
+				var container = document.getElementById("tbl2");
+			    var rowNum = container.rows.length;
+			    for (i=1;i<rowNum;++i)
+			    {
+			        container.deleteRow(i);
+			        rowNum=rowNum-1;
+			        i=i-1;
+			    }
+
 				var userid = document.getElementById("input_userid").value;
 				$.post("../php/trade.php", {"func":"queryUserOrder","uid":userid}, function(data){
 					

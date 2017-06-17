@@ -191,12 +191,12 @@ if (!checkLoginOrJump()) {
 					
 					var container = document.getElementById("user_tbl1");
 				    var rowNum = container.rows.length;
-				     for (i=1;i<rowNum;++i)
-				     {
-				         container.deleteRow(i);
-				         rowNum=rowNum-1;
-				         i=i-1;
-				     }
+				    for (i=1;i<rowNum;++i)
+				    {
+				        container.deleteRow(i);
+				        rowNum=rowNum-1;
+				        i=i-1;
+				    }
 					if (data.error == "false") {
 						document.getElementById("span_res").innerHTML = "查询到符合条件的用户共" + data.cnt + "人！";
 						

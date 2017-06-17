@@ -26,7 +26,7 @@ if ($res) {
 }
 
 include "../php/constant.php";
-$result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy' and Exported=0");
+$result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy' and Exported>0");
 // 	$result = mysql_query("select * from Transaction");
 // $res1 = mysql_query("select * from Transaction  where Status='$OrderStatusDefault'");
 
@@ -259,8 +259,6 @@ $result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy'
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
 		        <div>
- 					<input type="button" value="切换到导出界面" onclick="goToExport()"  />
- 					<hr>
 					<table id="tbl" border="1">
 						<tr>
 							<th>下单时间</th>

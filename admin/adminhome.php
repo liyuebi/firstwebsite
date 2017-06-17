@@ -104,6 +104,9 @@
 		            		<li onclick="makecss(this)" data-id="index_Order">
 		            			<a href='ordermgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待发货订单</a>
 							</li>
+		            		<li onclick="makecss(this)" data-id="index_Order3">
+		            			<a href='orderExported.php' target='rightContent'><i class="fa fa-circle-o"></i>已导出订单</a>
+							</li>
 		            		<li onclick="makecss(this)" data-id="index_Order1">
 		            			<a href='ordermgr1.php' target='rightContent'><i class="fa fa-circle-o"></i>待确认订单</a>
 							</li>
