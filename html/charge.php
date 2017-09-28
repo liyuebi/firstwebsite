@@ -164,7 +164,7 @@ if ($con) {
 	        <p>您可以选择以下方式支付，充值注册券比例为1:1，充值金额必须是<b> <?php echo $refererConsumePoint; ?> </b>的倍数</p>
 	        <div style="display: none;">
 		        <div style="float: left; width: 49%; border: 1px solid black;">
-			        <p>微信：mifenggf</p>
+			        <p>微信：fslqt01</p>
 			        <img src='../img/wechat.jpg' width="100%" />
 		        </div>
 		        <div style="float: right; width: 49%; border: 1px solid black;">

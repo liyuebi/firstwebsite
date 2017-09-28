@@ -108,7 +108,7 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 		            <a name="forget" style="margin-right: 5%;" href="html/findPwd.php?type=login">忘记密码</a>
 	            </div>
 	            <div style="text-align: center;">
-		        	<p>客服微信：mifenggf</p>    
+		        	<p>客服微信：fslqt01</p>    
 	            </div>
 	        </div>
 		</div>
