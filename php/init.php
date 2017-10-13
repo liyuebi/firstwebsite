@@ -9,7 +9,7 @@ if (!$con)
 	return; 
 }
 
-if (mysql_query("create database mifeng_db", $con)) {
+if (mysql_query("create database my_db", $con)) {
 	echo "Database created";
 	echo "<br>";
 }
@@ -18,7 +18,7 @@ else {
 	echo "<br>";
 }
 
-$db_selected = mysql_select_db("mifeng_db", $con);
+$db_selected = mysql_select_db("my_db", $con);
 if (!$db_selected) {
 	echo "select db failed: " , mysql_error();
 	return;
@@ -26,12 +26,55 @@ if (!$db_selected) {
 
 $now = time();
 
+// create client table and credit talbe and root user account
 createClientTable();
 createCreditTable();
+
+$pwd = md5('000000');
+$pwd = password_hash($pwd, PASSWORD_DEFAULT);
+$time = time();
+if (mysql_query("insert into ClientTable (UserId, PhoneNum, NickName, Password, RegisterTime)
+					values('10000', '13800000000', 'peter', '$pwd', '$time')"))
+{
+	echo "root user created";
+	echo "<br>";	
+	
+	if (mysql_query("insert into Credit (UserId, Credits)
+			values(10000, 10000)"))
+	{
+		echo "root user credit created";
+		echo "<br>";		
+	}
+	else {
+		echo "Error creating root user credit: " . mysql_error();
+		echo "<br>";
+	}
+}
+else {
+	echo "Error creating root user: " . mysql_error();
+	echo "<br>";
+}
+
+// create admin table and default admin account
+createAdminTable();
+$pwd = md5("super_admin");
+$pwd = password_hash($pwd, PASSWORD_DEFAULT);
+if (mysql_query("insert into AdminTable (Name, Password, Priority)
+					values('admin', '$pwd', '10')")) {
+	echo "Default admin created";
+	echo "<br>";	
+}
+else {
+	echo "Error creating default admin: " . mysql_error();
+	echo "<br>";
+}
+
 createStatisticsTable();
 initGeneralStatisTable();
+createCreditRecordTable();
 
 // 创建产品表，推入第一个产品
+/*
 $ret = createProductTable();
 if ($ret) {
 	$res = mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime, FirstImg)
@@ -41,5 +84,6 @@ if ($ret) {
 		echo "<br>";
 	}
 }
+*/
 
 ?>

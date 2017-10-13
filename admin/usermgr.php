@@ -113,20 +113,9 @@ if (!checkLoginOrJump()) {
 						var d8 = document.createElement("td");
 						d8.innerHTML = data.vault;
 						trow.appendChild(d8);
-/*
-						var d9 = document.createElement("td");	
-						d9.innerHTML = data.dvault;
-						trow.appendChild(d9);
-*/
 						var d11 = document.createElement("td");	
 						d11.innerHTML = data.RecoCnt;
 						trow.appendChild(d11);
-						var d12 = document.createElement("td");	
-						d12.innerHTML = data.Group1Child;
-						trow.appendChild(d12);
-						var d13 = document.createElement("td");	
-						d13.innerHTML = data.Group2Child;
-						trow.appendChild(d13);
 						var d14 = document.createElement("td");	
 						d14.innerHTML = data.bpCnt;
 						trow.appendChild(d14);
@@ -235,11 +224,6 @@ if (!checkLoginOrJump()) {
 							var d8 = document.createElement("td");
 							d8.innerHTML = list[key].vault;
 							trow.appendChild(d8);
-	/*
-							var d9 = document.createElement("td");	
-							d9.innerHTML = data.dvault;
-							trow.appendChild(d9);
-	*/
 							var d11 = document.createElement("td");	
 							d11.innerHTML = list[key].RecoCnt;
 							trow.appendChild(d11);
@@ -301,15 +285,17 @@ if (!checkLoginOrJump()) {
 	        <input type="button" value="添加新用户" onclick="showAddBlk()" />
  	        <input type="button" value="账户查询" onclick="showQueryBlk()" />
  	        <input type="button" value="条件查询" onclick="showCondQueryBlk()" />
-	        <div id="blk_add" style="display: none">
+-->
+	        <div id="blk_add">
 		        <input type="hidden" name='func' value="addNew" />
 		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
 		        <br>
-		        姓名: <input type="text" name="name" id="name" placeholder="请填写用户姓名" />
+		        姓名: <input type="text" name="name" id="name" placeholder="请填写昵称" />
 				<br>
+				推荐人: <input type="texxt" name="referer" id="referer" placeholder="请填写推荐人" />
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
--->
+	        <hr>
 			<div id="blk_chk" style="display: block;">
 				<input id="id_input" type="text" placeholder="请输入用户id" />
 				<input type="button" value="查找" onclick="queryUser()" />
@@ -328,8 +314,6 @@ if (!checkLoginOrJump()) {
 						<th>固定蜂值</th>
 <!-- 						<th>动态蜂值</th> -->
 						<th>推荐人数</th>
-						<th>第一团队下属</th>
-						<th>第二团队下属</th>
 						<th>购物总数</th>
 						<th>充值</th>
 						<th>取现</th>

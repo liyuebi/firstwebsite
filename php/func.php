@@ -21,72 +21,95 @@ function setSession($row)
 	$_SESSION["userId"] = $row['UserId'];
 	$_SESSION['phonenum'] = $row['PhoneNum'];
 	$_SESSION['nickname'] = $row['NickName'];
-	$_SESSION['name'] = $row['Name'];
-	$_SESSION['lvl'] = $row['Lvl'];
 	$_SESSION['password'] = $row['Password'];
 	$_SESSION['buypwd'] = $row["PayPwd"];
-	$_SESSION["idnum"] = $row['IDNum'];
-	$_SESSION["groupId"] = $row['GroupId'];
 	$_SESSION['isLogin'] = true;
 	$_SESSION['pwdModiT'] = $row["LastPwdModiTime"];
 	$_SESSION['ppwdModiT'] = $row["LastPPwdModiTime"];
 	
-	setUserCookie($row['Name'], $row['UserId']);
+	setUserCookie($row['NickName'], $row['UserId']);
 }
 
 /*
  * 分发直推奖励，先从蜂值里扣，若蜂值不够，则从采蜜券里扣，若依然不够，仍给足用户推荐奖励
- * $lvl: 推荐人时自己处于第几级
- * $credit: 目前的蜜券数量
- * $pnts: 目前的采蜜券数量
- * $vault: 目前的固定蜂值，需要先分发新级别的固定蜂值
- * $lastObtainedT: 上次获得蜜券的时刻
- * $dayObtained: 当日获得蜜券数量
+ * $collisionVal: 新用户支线的碰撞值
  */
-function attributeRecoBonus($userid, $lvl, $newuserid, &$credit, &$pnts, &$vault, &$lastObtainedT, &$dayObtained)
+function attributeCollisionBonus($userid, $newuserid, $collisionVal)
 {
 	include "constant.php";
 	include_once "database.php";
-	if ($lvl <= $recoBonusTillLevel) {
+	
+	$collChild1 = $newuserid;
+	$collVal1 = $collisionVal;
+
+	while ($userid != 0) {	
 		
-		$credit += $recoBonus;
-		$pntsToCredit = 0;
+		// 对当前父节点进行碰撞
+		$res = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res) {
+			// !!! log error
+			break;
+		}
 		
-		if ($vault >= $recoBonus) {
-			$vault -= $recoBonus;
+		$row = mysql_fetch_assoc($res);
+		$credit = $row["Credits"];
+		$vault = $row["Vault"];
+		$collChild2 = $row["CollChild"];
+		$collVal2 = $row["CollVal"];
+		
+		$newCollChild = 0;
+		$newCollVal = 0;
+		$currCollVal = 0;
+		$addedCredit = 0;
+		
+		if ($collChild1 == $collChild2) {
+			$newCollChild = $collChild2;
+			$newCollVal = $collVal1 + $collVal2;	
 		}
 		else {
-			$vault = 0;
-			if ($pnts > 0) {
-				if ($pnts > $recoBonus - $vault) {
-					$pntsToCredit = $recoBonus - $vault;
-					$pnts -= $pntsToCredit;
-				}	
-				else {
-					$pntsToCredit = $pnts;
-					$pnts = 0;
-				}
+			if ($collVal2 >= $collVal1) {
+				$newCollChild = $collChild2;
+				$newCollVal = $collVal2 - $collVal1;
+				$currCollVal = $collVal1;
 			}
+			else {
+				$newCollChild = $collChild1;
+				$newCollVal = $collVal1 - $collVal2;
+				$currCollVal = $collVal2;
+			}
+			
+			$addedCredit = $currCollVal * 0.1;
+			if ($addedCredit > $vault) {
+				$addedCredit = $vault;
+			}
+			$vault -= $addedCredit;
+			$credit += $addedCredit;
 		}
 		
-		$now = time();
-		if (!isInTheSameDay($now, $lastObtainedT)) {
-			$dayObtained = 0;
+		$res1 = mysql_query("update Credit set Credits='$credit', Vault='$vault', CollChild='$newCollChild', CollVal='$newCollVal' where UserId='$userid'");
+		if (!$res1) {
+			// !!! log error
 		}
-		$dayObtained += $recoBonus;
-		$lastObtainedT = $now;
-		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts', LastObtainedTime='$lastObtainedT', DayObtained='$dayObtained' where UserId='$userid'");
-		if (!$res) {
-			// !!! 失败
-			return;
+		else {
+			$now = time();
+			mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+								VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $codeColliBonus)");
 		}
 		
-		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-						values('$userid', '$recoBonus', '$credit', '$now', '$now', '$newuserid', '$codeRecoBonus')");
-		if ($pntsToCredit > 0) {
-			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-				values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+		// 取得下一个进行碰撞的父节点
+		$res2 = mysql_query("select * from ClientTable where UserId='$userid'");
+		if (!$res2) {
+			// !!! log error
+			break;
 		}
+		if (mysql_num_rows($res2) <= 0) {
+			// !!! log error
+			break;
+		}
+			
+		$row2 = mysql_fetch_assoc($res2);
+		$collChild1 = $userid;
+		$userid = $row2["ParentId"];
 	}
 }
 
@@ -162,55 +185,9 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 {
 	include "constant.php";
 	
-	$listChild = array($userid);
-	$parentId = 0;
-	$slot = 0;
-	while (count($listChild)) {
-		$currUid = array_shift($listChild);
-		$res3 = mysql_query("select * from ClientTable where UserId='$currUid'");
-		if (!$res3 || mysql_num_rows($res3) <= 0) {
-			// !!! log
-			continue;
-		}
-		else {
-			$row3 = mysql_fetch_assoc($res3);
-			$child1 = $row3["Group1Child"];
-			$child2 = $row3["Group2Child"];
-			$child3 = $row3["Group3Child"];
-			$lvl = $res3["Lvl"];
-			
-			if ($child1 == 0) {
-				$parentId = $currUid;	
-				$slot = 1;
-				break;
-			}
-			else if ($child1 > 0) {
-				array_push($listChild, $child1);
-			}
-			
-			if ($child2 == 0) {
-				$parentId = $currUid;
-				$slot = 2;
-				break;
-			}
-			else if ($child2 > 0) {
-				array_push($listChild, $child2);
-			}
-			
-			if ($lvl >= $group3StartLvl) {
-				if ($child3 == 0) {
-					$parentId = $currUid;
-					$slot = 3;
-					break;
-				}
-				else {
-					array_push($listChild, $child3);
-				}
-			}
-		}
-	}
+	$parentId = $userid;
 	
-	if ($parentId == 0 || $slot == 0) {
+	if ($parentId == 0) {
 		$error_code = '51';
 		$error_msg = '查找可插入的父节点失败，请稍后重试';
 		$sql_error = mysql_error();
@@ -220,125 +197,15 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 	$now = time();
 	$pwd = md5('000000');
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res4 = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, GroupId, RegisterTime)
-							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$groupId', '$now')");
+	$res4 = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
+							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$now')");
 	if (!$res4) {
 		$error_code = '52';
 		$error_msg = '插入用户失败，请稍后重试';
 		$sql_error = mysql_error();
 		return false;
 	}
-	$newUserId = mysql_insert_id();
-	
-	$groupName = "";
-	$gounpCntName = "";
-	if ($slot == 1) {
-		$groupName = "Group1Child";
-		$gounpCntName = "Group1Cnt";
-	}
-	else if ($slot == 2) {
-		$groupName = "Group2Child";
-		$gounpCntName = "Group2Cnt";
-	}
-	else if ($slot == 3) {
-		$groupName = "Group3Child";
-		$gounpCntName = "Group3Cnt";
-	}
-	
-	$res5 = mysql_query("update ClientTable set $groupName='$newUserId', $gounpCntName=1 where UserId='$parentId'");
-	if (!$res5) {
-		// !!! log
-	}
-	else {
-		$res6 = mysql_query("select * from ClientTable where UserId='$parentId'");
-		if (!$res6 || mysql_num_rows($res6) <= 0) {
-			// !!! log	
-		}
-		else {			
-			$row6 = mysql_fetch_assoc($res6);
-			$currUid = $parentId;
-			$parentId = $row6["ParentId"];
-			while (true) {
-				
-				if ($parentId <= 0) {
-					break;	
-				}
-				
-				$res7 = mysql_query("select * from ClientTable where UserId='$parentId'");
-				if (!$res7 || mysql_num_rows($res7) <= 0) {
-					// !!! log
-					// can't find parent node, jump out
-					break;
-				}
-				
-				$row7 = mysql_fetch_assoc($res7);					
-				$group1Cnt = $row7["Group1Cnt"];
-				$group2Cnt = $row7["Group2Cnt"];
-				$group3Cnt = $row7["Group3Cnt"];
-				$lvl = $row7["Lvl"];
-				
-				$gounpCntName = "";
-				$currCnt = 0;
-				if ($currUid == $row7["Group1Child"]) {
-					$gounpCntName = "Group1Cnt";
-					++$group1Cnt;
-					$currCnt = $group1Cnt;
-					
-				}
-				else if ($currUid == $row7["Group2Child"]) {
-					$gounpCntName = "Group2Cnt";
-					++$group2Cnt;	
-					$currCnt = $group2Cnt;
-				}
-				else if ($currUid == $row7["Group3Child"]) {
-					$gounpCntName = "Group3Cnt";
-					++$group3Cnt;
-					$currCnt = $group3Cnt;
-				}
-				
-				if ($lvl > 1 && $lvl < 14) {
-					$levelup = 0;
-					// 还在两组的层级呢
-					if ($lvl < $group3StartLvl) {
-						if ($group1Cnt >= $team1Cnt[$lvl] && $group2Cnt >= $team2Cnt[$lvl]) {
-							$lvl += 1;
-							$levelup = true;
-						}
-					}
-					// 可以开第三组了
-					else {
-						if ($group1Cnt >= $team1Cnt[$lvl] && $group2Cnt >= $team2Cnt[$lvl] && $group3Cnt >= $team3Cnt[$lvl]) {
-							$lvl += 1;
-							$levelup = true;
-						}
-					}
-					
-					if ($levelup) {
-						$res9 = mysql_query("select * from Credit where UserId='$parentId'");
-						if (!$res9 || mysql_num_rows($res9) <= 0) {
-							// !!! log error
-						}
-						else {
-							$row9 = mysql_fetch_assoc($res9);
-							$credit = $row9["Credits"];
-							$pnts = $row9["Pnts"];
- 							$vault = $row9["Vault"];
- 							attributeLevelupBonus($parentId, $lvl, $credit, $pnts, $vault);
-						}
-					}
-				}
-				
-				$res8 = mysql_query("update ClientTable set $gounpCntName='$currCnt', Lvl='$lvl' where UserId='$parentId'");
-				if (!$res8) {
-					// !!! log error
-				}
-				
-				$currUid = $parentId;
-				$parentId = $row7["ParentId"];
-			}
-		}
-	}
-	
+	$newUserId = mysql_insert_id();	
 	return true;
 }
 
@@ -406,7 +273,7 @@ function distributeReferBonus($con, $userid, $count)
 					
 					if ($add > 0) {
 						// must be a dynamic user
-						$val4 = $row2["Vault"] + $row2["DVault"];
+						$val4 = $row2["Vault"];
 					
 						if ($val4 < $add) {
 							$add = $val4;
@@ -426,7 +293,7 @@ function distributeReferBonus($con, $userid, $count)
 							}
 							$val1 += $add;
 		
-							mysql_query("update Credit set Credits='$val1', Vault='$val4', DVault='0', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
+							mysql_query("update Credit set Credits='$val1', Vault='$val4', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
 
 							include "constant.php";
 							mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, WithUserId)

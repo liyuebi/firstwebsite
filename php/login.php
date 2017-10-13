@@ -71,7 +71,7 @@ function login()
 		}
 		else {
 			$bUseNickName = false;
-			$result = mysql_query("select * from ClientTable where UserId='$phonenum'");
+			$result = mysql_query("select * from ClientTable where PhoneNum='$phonenum'");
 			if (!$result || 0 == mysql_num_rows($result)) {
 				$result = mysql_query("select * from ClientTable where NickName='$phonenum'");				
 				$bUseNickName = true;
@@ -84,7 +84,7 @@ function login()
 			else {
 				if ($bUseNickName) {
 					if (mysql_num_rows($result) > 1) {
-						echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您使用的昵称别人也使用了，请使用用户ID登录！'));	
+						echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您使用的昵称别人也使用了，请使用手机号登录！'));	
 						return;								
 					}
 				}
@@ -547,11 +547,6 @@ function switchAccount()
 		return;
 	}
 	$row = mysql_fetch_assoc($res);
-	$groupId = $row["GroupId"];
-	if ($groupId != $_SESSION["groupId"]) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'非法操作！'));
-		return;
-	}
 	
 	include "func.php";
 	setSession($row);

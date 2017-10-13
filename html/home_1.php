@@ -30,6 +30,7 @@ if ($_SESSION['pwdModiT'] == 0
 }
 
 $vault = 0;
+$dvault = 0;
 $feng = 0;
 $dfeng = 0;
 $row = false;
@@ -50,7 +51,9 @@ if ($con) {
 		$row = mysql_fetch_assoc($result);
 		
 		$vault = $row["Vault"];
+		$dvault = $row["DVault"];
 		$bonus = $row["CurrBonus"];
+// 		$dBonus = $row["CurrDBonus"];
 		$lastCBTime = $row["LastCBTime"];
 		
 		$now = time();
@@ -66,6 +69,7 @@ if ($con) {
 // $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
 $feng = ceil($vault / $fengzhiValue);
+$dfeng = ceil($dvault / $fengzhiValue);
 
 $hasBonus = ($bonus + $dBonus) > 0;
 $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
@@ -151,6 +155,14 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 					location.href = 'home.php';
 				}
 				
+// 				var dvault = <?php echo $dvault; ?>;
+// 				if (dBonus > dvault) {
+// 					if (!confirm("动态蜂值余额不足了，如果继续，只能领取" + dvault + "蜜券，是否继续？")) {
+// 						return;
+// 					}
+// 					dBonus = dvault;
+// 				}
+				
 				$.post("../php/credit.php", {"func":"acceptDBonus"}, function(data){
 					
 					if (data.error == "false") {
@@ -163,6 +175,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 						document.getElementById("accept_btn1").style.display = "none";
 						document.getElementById("accept_logo1").style.display = "block";
 						document.getElementById("todayobtain").innerHTML = data.DayObtained;
+// 						document.getElementById("dbonuspool").innerHTML = data.dVault;
 						document.getElementById("point").innerHTML = data.credit;
 						document.getElementById("pnts").innerHTML=data.pnts;
 					}
@@ -174,7 +187,6 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			
 			function goToRecommend()
 			{
-/*
 				var regiToken = document.getElementById("regiToken").innerHTML;
 				regiToken = $.trim(regiToken);
 				regiToken = parseFloat(regiToken);
@@ -187,24 +199,19 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				else {
 					location.href = "recommend.php";
 				}
-*/
-				location.href = "recommend.php";
 			}
 		</script>
 	</head>
 	
 	<body>
-<!--
 		<div id="banner_bar" class="banner_info">			
 			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
  			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
--->
 		
 		<div>
-<!--
-			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none">
+			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none"> <!-- rules="none" -->
 				<tr>
 					<td width="49" align="left"><?php echo $_SESSION['nickname'] . "(" . $_SESSION["userId"] . ")"; ?></td>
 					<td width="25%">总蜜券</td>
@@ -216,18 +223,19 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 					<td id="todayobtain"><?php if ($row) echo $dayObtained; else echo '0'; ?></td>
 				</tr>
 			</table>
--->
 			<table class="t1" border="1" align="center" style="margin-top: 0; " rules="none">
 				<tr>
-					<td width="33%">线上资产</td>
-					<td width="33%">线下资产</td>
-					<td width="33%">固定蜂值</td>
+					<td width="25%">蜜券</td>
+					<td width="25%">注册券</td>
+					<td width="25%">采蜜券</td>
+					<td width="25%">固定蜂值</td>
+<!-- 					<td width="25%">动态蜂值</td> -->
 				</tr>
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
-					<td id=""><?php if ($row) echo '0'; else echo '0'; ?></td>
+					<td id="regiToken"><?php if ($row) echo $row["RegiToken"]; else echo '0'; ?></td>
 					<td id="pnts"><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
-<!-- 					<td id="bonuspool"><?php echo $vault; ?></td> -->
+					<td id="bonuspool"><?php echo $vault; ?></td>
 <!-- 					<td id="dbonuspool"><?php echo $dfeng; ?></td> -->
 				</tr>
 			</table>
@@ -261,22 +269,21 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 		
 		<div class="btn_box" width="auto">
 			<ul>
-				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">分享粉丝</a></li>
+				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">推荐蜜粉</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
-				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">自由集市</a></li>
+				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">蜂值倍增</a></li>
 <!-- 				<li><a class="icon_btn13" href="products.php">商城</a></li> -->
-				<li><a class="icon_btn2" href="virtuelife.php">虚拟生活</a></li>
-				<li><a class="icon_btn6" href="exchange.php">交易所</a></li>
-				<li><a class="icon_btn5" href="withdraw.php">会员慈善</a></li>
+				<li><a class="icon_btn2" href="recommended.php">蜜粉好友</a></li>
+				<li><a class="icon_btn6" href="charge.php">充注册券</a></li>
+				<li><a class="icon_btn5" href="withdraw.php">蜜券提现</a></li>
 <!-- 				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li> -->
-				<li><a class="icon_btn7" href="order.php">会员创业</a></li>
-				<li><a class="icon_btn4" href="record.php">直播购</a></li>
-				<li><a class="icon_btn12" href="#">粉丝传媒</a></li>
-				<li><a class="icon_btn12" href="#">厂商商城</a></li>
+				<li><a class="icon_btn7" href="order.php">订单查询</a></li>
+				<li><a class="icon_btn4" href="record.php">蜜券记录</a></li>
+				<li><a class="icon_btn12" href="contactus.html">客服信息</a></li>
+				<li><a href="#"></a></li>
 			</ul>
 		</div>
 		
-<!--
 		<div id="post" style="background: #dddbdb; margin-bottom: 30px;">
 			<h3>公告：</h3>
 			<?php 
@@ -289,14 +296,6 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 					}
 				}
 			?>
-		</div>
--->
-		<div class="btn_box" width="auto">
-			<ul>
-				<li><a class="" href="#">首页</a></li>
-				<li><a class="" href="#">朋友</a></li>
-				<li><a class="" href="#">个人中心</a></li>
-			</ul>
 		</div>
 	</body>
 </html>

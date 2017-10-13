@@ -53,7 +53,6 @@ $result = getRechargeApplication();
 				$.post("../php/credit.php", {"func":"getCredit","index":idx,"user":userId}, function(data){
 					
 					if (data.error == "false") {
-						document.getElementById("regiToken_"+data.index).innerHTML = data.regiToken;
 						document.getElementById("credit_"+data.index).innerHTML = data.credit;
 					}
 					else {
@@ -129,7 +128,6 @@ $result = getRechargeApplication();
 						<th>账号</th>
 						<th>账号其他信息</th>
 						<th>查询蜜券</th>
-						<th>目前注册券</th>
 						<th>目前蜜券</th>
 						<th>申请状态</th>
 						<th>确认订单</th>
@@ -155,7 +153,6 @@ $result = getRechargeApplication();
 									<td><?php echo $row["Account"]; ?></td>
 									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
 									<td><input type="button" value="查看积分" name=<?php echo $row["UserId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="queryCredit(this)" /></td>
-									<td id="regiToken_<?php echo $row["IndexId"]; ?>"></td>
 									<td id="credit_<?php echo $row["IndexId"]; ?>"></td>
 									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>
 									<td><input type="button" value="确认充值" name="<?php echo $row["IndexId"]; ?>" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></td>

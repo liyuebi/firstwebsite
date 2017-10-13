@@ -219,8 +219,7 @@ function allowRecharge()
 				return;
 			}
 			$row = mysql_fetch_assoc($result);
-			$regiToken = $row["RegiToken"];
-			$total = $regiToken + $amount;
+			$total = 0;
 			$now = time();
 			
 			$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime)
@@ -255,7 +254,7 @@ function allowRecharge()
 				$yearRecharge = $amount;
 			}
 
-			$result = mysql_query("update Credit set RegiToken='$total', LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', YearRecharge='$yearRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
+			$result = mysql_query("update Credit set LastRechargeTime='$now', DayRecharge='$dayRecharge', MonthRecharge='$monRecharge', YearRecharge='$yearRecharge', TotalRecharge='$totalRecharge' where UserId='$userid'");
 			if (!$result) {
 				echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
 				return; 				
@@ -267,7 +266,7 @@ function allowRecharge()
 		}
 	}
 	
-	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$regiToken,'post'=>$total));
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>0,'post'=>$total));
 	return;
 }
 
@@ -753,7 +752,7 @@ function queryCredit()
 	}
 	$row = mysql_fetch_assoc($res);
 	$credit = $row["Credits"];
-	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit,'regiToken'=>$row['RegiToken']));
+	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit));
 }
 	
 ?>

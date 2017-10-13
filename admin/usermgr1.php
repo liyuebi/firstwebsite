@@ -113,20 +113,9 @@ if (!checkLoginOrJump()) {
 						var d8 = document.createElement("td");
 						d8.innerHTML = data.vault;
 						trow.appendChild(d8);
-/*
-						var d9 = document.createElement("td");	
-						d9.innerHTML = data.dvault;
-						trow.appendChild(d9);
-*/
 						var d11 = document.createElement("td");	
 						d11.innerHTML = data.RecoCnt;
 						trow.appendChild(d11);
-						var d12 = document.createElement("td");	
-						d12.innerHTML = data.Group1Child;
-						trow.appendChild(d12);
-						var d13 = document.createElement("td");	
-						d13.innerHTML = data.Group2Child;
-						trow.appendChild(d13);
 						var d14 = document.createElement("td");	
 						d14.innerHTML = data.bpCnt;
 						trow.appendChild(d14);
@@ -235,11 +224,6 @@ if (!checkLoginOrJump()) {
 							var d8 = document.createElement("td");
 							d8.innerHTML = list[key].vault;
 							trow.appendChild(d8);
-	/*
-							var d9 = document.createElement("td");	
-							d9.innerHTML = data.dvault;
-							trow.appendChild(d9);
-	*/
 							var d11 = document.createElement("td");	
 							d11.innerHTML = list[key].RecoCnt;
 							trow.appendChild(d11);

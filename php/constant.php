@@ -26,10 +26,13 @@
 	$recoBonus = 100; 		// 推荐奖励蜜券额度
 	
 	// credit code
-	$codeRecharge = 1;	// 充值积分变化
-	$codeWithdraw = 2;	// 取现积分变化
-	$codeDivident = 3;	// 固定分红导致积分变化，根据用户等级每日返还部分积分
-	$codeBonus    = 4;	// 奖励积分，推荐的用户每购物一笔，有一部分奖励
+	$codeBuy = 1;			// 购买积分
+	$codeSell = 2;			// 卖出积分
+	$codeDivident = 3;		// 固定分红导致积分变化
+	$codeReferer = 4; 		// 推荐用户，扣除积分
+	$codeReferBonus = 5;	// 直推奖励
+	$codeColliBonus = 6;	// 碰撞奖励
+	
 	$codeConsume = 5;	// 消费消耗积分
 	$codeCancelPurchase = 6; // 取消购物，积分返还
 	$codeRecommend = 7;	// 推荐用户，扣除积分

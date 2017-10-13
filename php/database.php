@@ -7,9 +7,10 @@ function connectToDB()
 	{
 		echo "Could not connect: " . mysql_error();
 	}
-	$db_selected = mysql_select_db("mifeng_db", $con);
+	/* mifeng_db */
+	$db_selected = mysql_select_db("my_db", $con);
 	if (!$db_selected) {
-		echo "Cannot use mifeng_db : " . mysql_error();
+		echo "Cannot use my_db : " . mysql_error();
 		$con = false;
 	}
 	return $con;
@@ -20,9 +21,8 @@ function createClientTable()
 	/*
 	 * UserId: Id of user 用户编号 
 	 * ParentId: 父节点的UserId
-	 * Group*Child: 第几组的子节点
-	 * Group*Cnt: 第几组的总人数
 	 * RecoCnt: Recommending count 推荐人数
+	 * ChildCnt: 子节点总数
 	 * Lvl: level 用户等级
 	 * LastPwdModiTime: last password modify time 上次登录密码修改时间
 	 * LastPPwdModiTime: last pay password modify time 上次用户支付密码修改时间
@@ -31,7 +31,6 @@ function createClientTable()
 	(
 		UserId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(UserId),
-		GroupId int DEFAULT 0,
 		PhoneNum varchar(15) NOT NULL,
 		Lvl	int DEFAULT 1,
 		Name varchar(16) DEFAULT '',
@@ -41,19 +40,14 @@ function createClientTable()
 		PayPwd varchar(256) DEFAULT '',
 		ReferreeId int DEFAULT 0,
 		ParentId int DEFAULT 0,
-		Group1Child int DEFAULT 0,
-		Group1Cnt int DEFAULT 0,
-		Group2Child int DEFAULT 0,
-		Group2Cnt int DEFAULT 0,
-		Group3Child int DEFAULT 0,
-		Group3Cnt int DEFAULT 0,
 		RecoCnt int DEFAULT 0,
+		ChildCnt int DEFAULT 0,
 		RegisterTime int NOT NULL,
 		LastLoginTime int DEFAULT 0,
 		LastPwdModiTime int DEFAULT 0,
 		LastPPwdModiTime int DEFAULT 0,
 		DefaultAddressId int DEFAULT 0
-	) ENGINE=MEMORY AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
+	) ENGINE=MEMORY AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	$result = mysql_query($sql);
 	if (!$result) {
 		echo "create ClientTable table error: " . mysql_error() . "<br>";
@@ -66,32 +60,32 @@ function createCreditTable()
 	/*
 	 * RegiToken: 注册券
 	 * Credits: 蜜券
-	 * Points: 采蜜券
+	 * Pnts: 线下资产
 	 * Vault: 静态金库
-	 * DVault: 动态金库
+	 * CollChild: 对碰金所在下线的直接子节点
+	 * CollVal: 对碰金所在下线的总金额
 	 * BPCnt: buy product count 总共购买的产品件数
 	 * LastRwdBPCnt: last reward buy product count 上次发放奖励时购买的产品盒数
 	 * TotalBonus: 固定总分红，根据用户级别每天固定分红
 	 * TotalDBonus: 动态总分红，根据每天订单量按比例给用户的分红
 	 * LastCBTime: last collect bonus time 上次收获分红的时间
-	 * LastCDBTime: last collect static bonus time 上次收获静态分红的时间
 	 */
 	$sql = "create table if not exists Credit
 	(
 		UserId int NOT NULL,
 		PRIMARY KEY(UserId),
 		Credits decimal(10,2) DEFAULT 0,
-		RegiToken decimal(10,2) default 0,
+		Pnts decimal(10,2) DEFAULT 0,
+		Charity decimal(10,2) DEFAULT 0,
 		Vault decimal(10,2) DEFAULT 0,
-		DVault decimal(10,2) DEFAULT 0,
+		CollChild int DEFAULT 0,
+		CollVal int DEFAULT 0,
 		BPCnt int DEFAULT 0,
-		LastRwdBPCnt int DEFAULT 0,
 		TotalRecharge int DEFAULT 0,
 		TotalWithdraw int DEFAULT 0,
 		TotalConsumption decimal(10,2) DEFAULT 0,
 		TotalFee decimal(10,2) DEFAULT 0,
 		TotalBonus decimal(10,2) DEFAULT 0,
-		TotalDBonus decimal(10,2) DEFAULT 0,
 		YearRecharge int DEFAULT 0,
 		YearWithdraw int DEFAULT 0,
 		YearConsumption decimal(10,2) DEFAULT 0,
@@ -106,16 +100,13 @@ function createCreditTable()
 		LastConsumptionTime int DEFAULT 0,
 		DayObtained decimal(10,2) DEFAULT 0,
 		LastObtainedTime int DEFAULT 0,
-		Pnts decimal(10,2) DEFAULT 0,
 		LastObtainedPntTime int DEFAULT 0,
 		DayObtainedPnts decimal(10,2) DEFAULT 0,
 		MonObtainedPnts decimal(10,2) DEFAULT 0,
 		YearObtainedPnts decimal(10,2) DEFAULT 0,
 		TotalObtainedPnts decimal(10,2) DEFAULT 0,
 		CurrBonus decimal(10,2) DEFAULT 0,
-		LastCBTime int DEFAULT 0,
-		CurrDBonus decimal(10,2) DEFAULT 0,
-		LastCDBTime int DEFAULT 0
+		LastCBTime int DEFAULT 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

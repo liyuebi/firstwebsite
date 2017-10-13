@@ -13,13 +13,6 @@ else {
 	exit();
 }
 
-if ($_SESSION['pwdModiT'] == 0) {
-	
-	$url = 'jump.php?source=2';
-	header('Location: ' . $url);
-	exit;
-}
-
 $mycredit = 0;
 $weAcc = '';
 $isWechatSet = false;
@@ -152,100 +145,8 @@ if ($con) {
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
-		</div>
-        <div>
-            <h3>购买注册券</h3>
-        </div>
-        <div name="display" style="padding-bottom: 20px;">
-	        <p>您可以选择以下方式支付，充值注册券比例为1:1，充值金额必须是<b> <?php echo $refererConsumePoint; ?> </b>的倍数</p>
-	        <div style="display: none;">
-		        <div style="float: left; width: 49%; border: 1px solid black;">
-			        <p>微信：fslqt01</p>
-			        <img src='../img/wechat.jpg' width="100%" />
-		        </div>
-		        <div style="float: right; width: 49%; border: 1px solid black;">
-			        <p>支付宝：17379371413</p>
-			        <img src='../img/alipay.jpg' width="100%" />
-		        </div>
-	<!--
-		        <p>银行账号：</p>
-		        <ol> 
-			        <li>收款人: 李青 
-			        <li>收款账号: 621467 2080000039339 
-			        <li>所属行: 中国建设银行 
-			        <li>开户分行: 江西省上饶市婺源县天佑支行
-			    </ol>
-	-->
-	        </div>
-	        <div style="clear: both; padding-top: 3px; ">
-		        <hr>
-		        <p>您现在拥有注册券：<?php echo $mycredit;?></p>
-		        <input id="amount" class="form-control" type="text" placeholder="请输入购买数量！" onkeypress="return onlyNumber(event)" /> 
-	        </div>
-	        <div style="padding: 10px 0; display: none;">
-		        <div>
-			        <input type="radio" name="method" value="1" /> 微信
-			        <input type="radio" name="method" value="2" /> 支付宝
-	<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
-		        </div>
-		        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
-			        <?php 
-				        if ($isWechatSet) {
-					?>
-					<p>您的微信账号： <b><?php echo $weAcc; ?></b></p>
-					<?php
-						}
-						else {
-					?>
-					<input type="button" value="设置微信账号" onclick="goToPayment()" />
-					<?php
-				        }
-			        ?>
-		        </div>
-		        
-		        <div id="alipay_block" style="border: 1px black solid; padding: 5px; display: none;">
-			        <?php 
-				        if ($isAlipaySet) {
-					?>
-					<p>您的微信账号： <b><?php echo $aliAcc; ?></b></p>
-					<?php
-						}
-						else {
-					?>
-					<input type="button" value="设置支付宝账号" onclick="goToPayment()" />
-					<?php
-				        }
-			        ?>
-				</div>
-	        
-<!--
-			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
-		        <?php 
-			        if ($isBankSet) {
-				?>
-				<p>您的微信账号： <b><?php echo $bankAcc; ?></b></p>
-				<?php
-					}
-					else {
-				?>
-				<input type="button" value="设置银行账号" onclick="goToPayment()" />
-				<?php
-			        }
-		        ?>
-			</div>
--->
-	        </div>
-	        
-			<div style="padding: 10px 0;">        
-		        <input type="button" value="提交申请" class="button-rounded" style="width: 48%; height: 30px; float: left;" onclick="onConfirm()" />
-		        <input type="button" value="取消" class="button-rounded" style="width: 48%; height: 30px; float: right;" onclick="javascript:history.back(-1);" />
-			</div>
-        </div>
+		<p align="center">交易所</p>
+<!-- 		<p align="right">交易记录</p> -->
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" />
     </body>
-    <div style="text-align:center;">
-    </div>
 </html>

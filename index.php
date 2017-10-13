@@ -16,7 +16,7 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>蜜蜂工坊</title>
+		<title>物联网</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -59,7 +59,7 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 // 				if (!val) {
 				if (0 == num.length) {
 					document.getElementById("phonenum").focus();
-					alert("无效的用户ID／昵称！");
+					alert("无效的手机号／昵称！");
 					return false;
  				}
 				
@@ -88,28 +88,37 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 	</head>
 	
 	<body class='grey_body'>
-		<div class="big_frame">
+		<div class="big_frame" style="padding: 20px;">
+<!--
 	        <div width="100%">
 	            <img src="img/gongfang.jpg" width="100%" />
 	        </div>
+-->
 	        
-	        <p align="center" style="font-size: 20px; margin: 2px;">会员登录</p>
+<!-- 	        <p align="center" style="font-size: 20px; margin: 2px;">会员登录</p> -->
+	        
+	        <div>
+		        <p align="center" style="font-size: 20px; padding: 40px">连物网</p>
+	        </div>
 	        
 	        <div> <!-- style="margin-top: 6%;" -->
 	            <form method="post" action="php/login.php" onsubmit="return submitCheck();">
 		            <input type="hidden" name="func" value="login" />
-		            <input id="phonenum" class="form-control" name="phonenum" placeholder="请输入您的用户ID／昵称！" />
+		            <input id="phonenum" class="form-control" name="phonenum"  placeholder="请输入您的手机号／昵称！" />
+		            <!-- style="border-top-style: none; border-left-style: none; border-right-style: none; background-color: transparent" -->
 		            <br>
 	                <input id="password" class="form-control" type="password" name="password" class="password" placeholder="请输入您的用户密码！">
 	                <br>
 					<input type="button" class="button button-glow button-border button-rounded button-primary" name="submit" style="width: 100%;" value="登陆" onclick="tryLogin()" />
 	            </form>
+<!--
 	            <div style="text-align: right; margin-top: 4%;" />
 		            <a name="forget" style="margin-right: 5%;" href="html/findPwd.php?type=login">忘记密码</a>
 	            </div>
 	            <div style="text-align: center;">
 		        	<p>客服微信：fslqt01</p>    
 	            </div>
+-->
 	        </div>
 		</div>
     </body>
