@@ -240,19 +240,11 @@ function reinvest()
 		$phone = $row1["PhoneNum"]; 
 		$name = $row1["Name"];
 		$idNum = $row1["IDNum"];
-		$groupId = $row1["GroupId"];
 		$error_code = '';
 		$error_msg = '';
 		$sql_error = '';
 		
-		// 更新groupId
-		if ($groupId == 0) {
-			$groupId = $userid;
-			mysql_query("update ClientTable set GroupId='$groupId' where UserId='$userid'");
-			$_SESSION["groupId"] = $groupId;
-		}
-		
-		insertNewUserNode($userid, $phone, $name, $idNum, $groupId, $newUserId, $error_code, $error_msg, $sql_error);	
+		insertNewUserNode($userid, $phone, $name, $idNum, 0, $newUserId, $error_code, $error_msg, $sql_error);	
 	
 		if (0 != $newUserId) {
 			$result = mysql_query("select * from Credit where UserId='$newUserId'");
@@ -264,8 +256,8 @@ function reinvest()
 				if ($num == 0) {
 					$vault = 0;
 					$dynVault = 0;
-					$result = mysql_query("insert into Credit (UserId, Vault, DVault)
-						VALUES('$newUserId', '$vault', '$dynVault')");
+					$result = mysql_query("insert into Credit (UserId, Vault)
+						VALUES('$newUserId', '$vault')");
 					if (!$result) {
 						// !!! log
 					}
@@ -490,61 +482,6 @@ function purchaseProduct()
 	
 	$hasNewUser = "false";
 	$newUserIds = '';
-	// 添加新节点，并添加credit信息，没买一盒需要做一次这种操作
-/*
-	while ($cnt > 0) {
-		
-		--$cnt;
-		
-		$phone = $row1["PhoneNum"]; 
-		$name = $row1["Name"];
-		$idNum = $row1["IDNum"];
-		$groupId = $row1["GroupId"];
-		$error_code = '';
-		$error_msg = '';
-		$sql_error = '';
-		
-		// 更新groupId
-		if ($groupId == 0) {
-			$groupId = $userid;
-			mysql_query("update ClientTable set GroupId='$groupId' where UserId='$userid'");
-			$_SESSION["groupId"] = $groupId;
-		}
-		
-		insertNewUserNode($userid, $phone, $name, $idNum, $groupId, $newUserId, $error_code, $error_msg, $sql_error);	
-	
-		if (0 != $newUserId) {
-			$result = mysql_query("select * from Credit where UserId='$newUserId'");
-			if (!$result) {
-				// !!! log error
-			}
-			else {
-				$num = mysql_num_rows($result);
-				if ($num == 0) {
-					$vault = 0;
-					$dynVault = 0;
-					$result = mysql_query("insert into Credit (UserId, Vault, DVault)
-						VALUES('$newUserId', '$vault', '$dynVault')");
-					if (!$result) {
-						// !!! log
-					}
-				}					
-				else {
-					// !!! log
-				}
-			}
-			
-			$hasNewUser = "true";
-			if (strlen($newUserIds) > 0) {
-				$newUserIds .= ' ';
-			}
-			$newUserIds .= strval($newUserId);
-		}
-		
-		// 统计新用户总数增加
-		insertRecommendStatistics(0, false);
-	}
-*/
 
 	// 修改今天购买个数
 	updateDayBoughtCount($userid, $productId, $count);

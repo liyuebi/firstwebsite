@@ -99,12 +99,14 @@ if ($res3) {
 			$(document).ready(function(){		
 				
 				document.getElementById("1").style.color = "red";
+				document.getElementById("1").style.borderBottomColor = "red";
 				
 				$('table#tag_table td').click(function(){
 					$(this).css('color','red');//点击的设置字色为红色
-// 					$(this).css('border-bottom','soild red 1px');//点击的设置为绿色
+					$(this).css('borderBottomColor','red');//点击的设置为绿色
+					var value = $(this).css("border-bottom");//点击的设置字色为红色
 					$('#tag_table td').not(this).css('color','black');//其他的全部设置为黑色
-// 					$('#tag_table td').not(this).css('border-bottom','none');//其他的全部设置为红色
+					$('#tag_table td').not(this).css("borderBottomColor","rgba(0, 0, 0, 0)");//其他的全部设置为黑色
 
 					if ($(this).attr("id") == "1" ) {
 						switchToUnfinished();
@@ -128,8 +130,8 @@ if ($res3) {
 	
 			<table id="tag_table" class="t2">
 				<tr>
-					<td id="1" width="50%" >未完成订单</th>
-					<td id="2" width="50%" >已完成订单</th>
+					<td id="1" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 10%; margin-right: 5%;" >未完成订单</td>
+					<td id="2" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 5%; margin-right: 10%;">已完成订单</td>
 				</tr>
 			</table>
 			

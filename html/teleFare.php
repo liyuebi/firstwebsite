@@ -13,25 +13,16 @@ else {
 	exit();
 }
 
-$mycredit = 0;
-$weAcc = '';
-$isWechatSet = false;
-$aliAcc = '';
-$isAlipaySet = false;
-$bankAcc = '';
-$isBankSet = false;
-
 include "../php/database.php";
 include "../php/constant.php";
 $con = connectToDB();
+
+$userid = $_SESSION["userId"];
+$result = false;
+
 if ($con) {
 	
-	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
-		$mycredit = 0;
-	}
+	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited'");
 }
 
 ?>
@@ -40,7 +31,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>充值</title>
+		<title>话费充值</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -90,39 +81,29 @@ if ($con) {
 				}, "json");
 			}
 			
-			function goToPayment()
+			function tryCreateTrade()
 			{
-				location.href = "payment.php";
+				location.href = "exchangeCreate.php";
+			}			
+			
+			function tryStartTrade(btn)
+			{
+				var idx = btn.id;
+// 				var url = "exchageStart.php?h=" + idx;
+				location.href = "exchangeStart.php?h=" + idx;
 			}
 			
-			$(function() {
-				$(":radio").click(function(){
-					var val = $(this).val();
-					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "block";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "2") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "block";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "3") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
-					}
-				});
-			});
+			function gotoCreditOrder()
+			{
+				location.href = "exchangeOrder.php";
+			}
 		</script>
 	</head>
 	<body>
-		<p align="center">虚拟生活</p>
-		<a href="bank.php">存储线上资产</a>
-		<br>
-		<a href="teleFare.php">充话费</a>
-		<br>
-		<a href="fuelFare.php">充油费</a>
+		<p align="center">交易所</p>
+		<input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
+		<input id="amount" class="form-control" type="text" placeholder="请输入充值手机号！" onkeypress="return onlyNumber(event)" />
+		<input id="amount" class="form-control" type="text" placeholder="请输入支付密码！" />		
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="确认充值" onclick="" />
     </body>
 </html>

@@ -7,7 +7,6 @@ $name = $_SESSION["name"];
 $idnum = $_SESSION["idnum"]; 
 
 include "../php/constant.php";
-$lvlName = $levelName[$_SESSION['lvl'] - 1];
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -19,7 +18,9 @@ $lvlName = $levelName[$_SESSION['lvl'] - 1];
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+		<link rel="stylesheet" type="text/css" href="../css/buttons.css" />
 		
         <script src="../js/jquery-1.8.3.min.js" ></script>
         <script src="../js/scripts.js" ></script>        
@@ -57,24 +58,15 @@ $lvlName = $levelName[$_SESSION['lvl'] - 1];
 	</head>
 	
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
-		</div>
+		<h3><?php echo $_SESSION['nickname']; ?>（<?php echo "$phone" ?>）</h3>
 		
-		<h3>我的资料</h3>
-		
+<!--
         <div>
             <table width="100%" align="center">
 	            <tr>
 		            <td>用户ID</td>
 		            <td><?php echo $_SESSION['userId']; ?></td>
 	            </tr>
-	            <tr>
-		            <td>用户等级</td>
-		            <td><?php echo $lvlName; ?></td>
-	            </tr>	     
 	            <tr>
 		            <td>昵称</td>
 		            <td><?php echo $_SESSION['nickname']; ?></td>
@@ -91,17 +83,32 @@ $lvlName = $levelName[$_SESSION['lvl'] - 1];
 		            <td>身份证号</td>
 		            <td><?php echo "$idnum" ?></td>
 	            </tr>
-<!-- 	            <tr> -->
-<!-- 		            <td></td> -->
-<!-- 		            <td></td> -->
-<!-- 	            </tr> -->
             </table>
         </div>
+-->
 	        
 	    <p class="navhref"><a href="editme.php">编辑资料</a></p>
         <p class="navhref"><a href="address.html">地址管理</a></p>
         <p class="navhref"><a href="pwd.php">密码管理</a></p>
         <p class="navhref"><a href="payment.php">支付方式管理</a></p>
+        
+        <hr>
+        
+        客服微信：fslqt01
+        
+        <hr>
+        
+		<input type="button" class="button button-glow button-border button-rounded button-primary" name="submit" style="width: 100%;" value="退出" onclick="logout()" />
+        
+		<footer class="footer"> 
+			<div>
+				<ul class="nav nav-pills nav-justified" >
+					<li><a class="" href="home.php">首页</a></li>
+					<li><a class="" href="recommended.php">朋友</a></li>
+					<li class="active"><a class="" href="#">个人中心</a></li>
+				</ul>
+			</div>
+		</footer>
     </body>
     <div style="text-align:center;">
     </div>

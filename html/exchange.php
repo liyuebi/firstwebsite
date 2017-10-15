@@ -13,52 +13,16 @@ else {
 	exit();
 }
 
-$mycredit = 0;
-$weAcc = '';
-$isWechatSet = false;
-$aliAcc = '';
-$isAlipaySet = false;
-$bankAcc = '';
-$isBankSet = false;
-
 include "../php/database.php";
 include "../php/constant.php";
 $con = connectToDB();
+
+$userid = $_SESSION["userId"];
+$result = false;
+
 if ($con) {
 	
-	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
-		$mycredit = 0;
-	}
-	
-	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
-	if ($res1) {
-		if (mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
-			$weAcc = $row1["WechatAcc"];
-			$isWechatSet = true;
-		}
-	}
-	$res2 = mysql_query("select * from AlipayAccount where UserId='$userid'");
-	if ($res2) {
-		if (mysql_num_rows($res2) > 0) {
-			$row2 = mysql_fetch_assoc($res2);
-			$aliAcc = $row2["AlipayAcc"];
-			$isAlipaySet = true;
-		}
-	}
-/*
-	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
-	if ($res3) {
-		if (mysql_num_rows($res3) > 0) {
-			$row3 = mysql_fetch_assoc($res3);
-			$bankAcc = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
-			$isBankSet = true;
-		}
-	}
-*/
+	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited'");
 }
 
 ?>
@@ -67,7 +31,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>充值</title>
+		<title>交易所</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -117,36 +81,47 @@ if ($con) {
 				}, "json");
 			}
 			
-			function goToPayment()
+			function tryCreateTrade()
 			{
-				location.href = "payment.php";
+				location.href = "exchangeCreate.php";
+			}			
+			
+			function tryStartTrade(btn)
+			{
+				var idx = btn.id;
+// 				var url = "exchageStart.php?h=" + idx;
+				location.href = "exchangeStart.php?h=" + idx;
 			}
 			
-			$(function() {
-				$(":radio").click(function(){
-					var val = $(this).val();
-					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "block";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "2") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "block";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "3") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
-					}
-				});
-			});
+			function gotoCreditOrder()
+			{
+				location.href = "exchangeOrder.php";
+			}
 		</script>
 	</head>
 	<body>
 		<p align="center">交易所</p>
 <!-- 		<p align="right">交易记录</p> -->
-		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" />
+		<?php
+			if ($result) {
+				date_default_timezone_set('PRC');
+				while ($row = mysql_fetch_array($result)) {
+		?>
+					<hr>
+					<div>
+						<p>交易编号：<?php echo $row["TradeId"]; ?></p>
+						<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
+						<p>总交易额：<?php echo $row["Quantity"] ?></p>
+						<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
+						<p>交易过期时间：<?php echo 0; ?></p>
+						<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="购买" onclick="tryStartTrade(this)" />
+					</div>
+					<hr>
+		<?php
+				}
+			}
+		?>
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="交易订单" onclick="gotoCreditOrder()" />
     </body>
 </html>

@@ -13,24 +13,18 @@ else {
 	exit();
 }
 
-$mycredit = 0;
-$weAcc = '';
-$isWechatSet = false;
-$aliAcc = '';
-$isAlipaySet = false;
-$bankAcc = '';
-$isBankSet = false;
-
 include "../php/database.php";
 include "../php/constant.php";
+
+$userid = $_SESSION["userId"];
+$idx = $_GET["h"];
+
 $con = connectToDB();
 if ($con) {
 	
-	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
+	$result = mysql_query("select * from CreditTrade where IdxId='$idx'");
 	if ($result && mysql_num_rows($result) > 0) {
 		$row = mysql_fetch_assoc($result);
-		$mycredit = 0;
 	}
 }
 
@@ -40,7 +34,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>充值</title>
+		<title>确认购买</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -90,39 +84,53 @@ if ($con) {
 				}, "json");
 			}
 			
-			function goToPayment()
+			function tryStartrade(btn)
 			{
-				location.href = "payment.php";
-			}
-			
-			$(function() {
-				$(":radio").click(function(){
-					var val = $(this).val();
-					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "block";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "none";
+				var idx = btn.id;
+				var amount = document.getElementById("cnt").value;
+				var amountReg = /^[1-9]\d*$/;
+				var val = amountReg.test(amount);
+				if (!amountReg.test(amount)) {
+					alert("无效的金额，请重新输入！");
+					document.getElementById("cnt").value = "";
+					document.getElementById("cnt").focus();
+					return;
+				}
+				
+				$.post("../php/creditTrade.php", {"func":"startTrade","amount":amount,"idx":idx}, function(data){
+					
+					if (data.error == "false") {
+						alert("创建成功！");	
+// 						location.href = "exchange.php";
 					}
-					else if (val == "2") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "block";
-// 						document.getElementById("bank_block").style.display = "none";
+					else {
+						alert("创建失败: " + data.error_msg);
+						document.getElementById("cnt").value = "";
+						document.getElementById("cnt").focus();
+						
+						return;
 					}
-					else if (val == "3") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
-					}
-				});
-			});
+				}, "json");			
+					
+			}			
 		</script>
 	</head>
 	<body>
-		<p align="center">虚拟生活</p>
-		<a href="bank.php">存储线上资产</a>
-		<br>
-		<a href="teleFare.php">充话费</a>
-		<br>
-		<a href="fuelFare.php">充油费</a>
+		<p align="center">确认交易</p>
+		
+		<p>交易编号：<?php echo $row["TradeId"]; ?></p>
+		<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
+		<p>总交易额：<?php echo $row["Quantity"] ?></p>
+		<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
+		<p>交易过期时间：<?php echo 0; ?></p>
+		<hr>
+		
+		<p>最少购买数量为100</p>
+		<input type="text" id="cnt" style="width: 100%; height: 30px; margin-bottom: 10px" value="" placeholder="请输入购买数额" />
+		<input type="button" id="<?php echo $idx; ?>" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="确认购买" onclick="tryStartrade(this)" />
     </body>
 </html>
+ 
+
+
+

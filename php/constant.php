@@ -56,6 +56,17 @@
 	$code2TransferFromCredit = 12; // 从蜜券转换而来
 	$code2TransferFromVault = 13; // 升到第二级时，固定蜂值余额转到采蜜券
 	
+	// credit trade status
+	$creditTradeInited = 1;		// 卖家创建了交易
+	$creditTradeCancelled = 2;	// 卖家取消了交易
+	$creditTradeReserved = 3;	// 买家下单
+	$creditTradeAbandoned = 4;	// 买家弃单
+	$creditTradePayed = 5;		// 买家确认付款
+	$creditTradeNotPayed = 6;	// 买家超时未支付
+	$creditTradeConfirmed = 7;	// 卖家确认支付，交易完成
+	$creditTradeAutoConfirmed = 8;	// 卖家超时未确认支付，交易自动完成
+	
+	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货

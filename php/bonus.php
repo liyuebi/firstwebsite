@@ -110,15 +110,6 @@ function calcBonus($file)
 			else {
 				$row6 = mysql_fetch_assoc($res6);
 				
-				// 累计计算动态峰值总数
-// 				$dVault = $row6["DVault"];
-// 				$dfeng = ceil($dVault / $fengzhiValue);
-// 				$totalDFeng += $dfeng;
-// 				
-// 				if (!$bCalcBonus) {
-// 					continue;
-// 				}
-				
 				$vault = $row6["Vault"];
 				$bonus = 0;
 
@@ -158,82 +149,6 @@ function calcBonus($file)
 	else {
 		writeLog($file, "--- 不进行固定分红！\n");
 	}
-		
-/*
-	// 计算每个动态峰值分多少积分 
-	$dBonusPerF = 0;
-	if ($rewardVal > 0) {
-		$dBonusPerF = $rewardVal;
-	}
-	else {
-		if ($totalDFeng > 0) {
-			$dBonusPerF = floor($dBonusTotal / $totalDFeng * 100) / 100;	
-		}
-	}
-	$dBonusTotal = 0; // 先清空计算得到的总动态分红值，根据实际分红计算总额
-					
-	$cnt = 0;
-	writeLog($file, "\n------------------------------------------------------------------\n");
-	$res8 = mysql_query("select * from ClientTable");
-	if (!$res8) {
-		writeLog($file, "\n!!! 查询用户表失败！\n");
-	}
-	else {
-		while($row8 = mysql_fetch_array($res8)) {
-			
-			$userid = $row8["UserId"];
-			if ($dBonusPerF > 0) {
-				$res6 = mysql_query("select * from Credit where UserId='$userid'");
-				if (!$res6 || mysql_num_rows($res6) < 1) {
-					writeLog($file, "\n!!! 查询用户" . $userid . "的积分表失败！\n");
-				}
-				else {
-					$row6 = mysql_fetch_assoc($res6);
-					
-					// 累计计算动态峰值总数
-					$dVault = $row6["DVault"];
-					$dBonus = 0;
-					if ($dVault > 0) {
-						$dfeng = ceil($dVault / $fengzhiValue);
-						$dBonus = $dfeng * $dBonusPerF;
-						
-						++$cnt;
-					}
-						
-					if ($dBonus > $dVault) {
-						$dBonus = $dVault; 
-					}
-					$dVault -= $dBonus;
-					
-					$dBonusTotal += $dBonus;
-				
-					$res7 = mysql_query("update Credit set CurrDBonus='$dBonus', DVault='$dVault' where UserId='$userid'");
-					if (!$res7) {
-						writeLog($file, "\n!!! 更新用户" . $userid . "的动态分红失败: " . mysql_error() . "\n");
-					}
-					else {
-						writeLog($file, $userid . " 动态分红：" . $dBonus . "，动态蜂值：" . $dVault . "\n");	
-					}
-				}
-			}
-			else {
-				$res7 = mysql_query("update Credit set CurrDBonus=0 where UserId='$userid'");
-				if (!$res7) {
-					writeLog($file, "\n!!! 清空用户 " . $userid . " 的动态分红失败: " . mysql_error() . "\n");
-				}
-			}
-		}
-	}
-	writeLog($file, "\n------------------------------------------------------------------\n");
-	if ($dBonusPerF <= 0) {
-		writeLog($file, "--- 动态分红每蜂值为0，不进行动态分红！需清空用户之前的动态分红值！\n");
-	}
-	else {
-		writeLog($file, "--- 共分红给了 " . $cnt . " 用户\n");
-		writeLog($file, "--- 动态分红总值是 " . $dBonusTotal . "\n");
-		writeLog($file, "--- 动态分红每蜂值分得 " . $dBonusPerF . "\n");
-	}
-*/
 
 
 	// 如果积分池小于分红额度，有问题，记log
@@ -396,22 +311,13 @@ function acceptDBonus($userid)
 	else {
 		$row1 = mysql_fetch_assoc($res1);
 		
-		$dBonusTotal = $row1["TotalDBonus"];
-		$currDBonus = $row1["CurrDBonus"];
-		$dynFeng = $row1["DVault"];
 		$dayObtained = $row1["DayObtained"];
 		$lastObtainedtime = $row1["LastObtainedTime"];
 		$lastObtainedPntTime = $row1["LastObtainedPntTime"];
-// 		$lastCDBTime = $row1["LastCDBTime"];
 		
 		$now = time();
-		
-		if ($currDBonus <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'今天没有动态分红或您已经领取！'));
-			return;
-		}		
 					
-		$toPnts = $currDBonus;
+		$toPnts = 0;
 		$toCredit = 0;
 		
 /*
@@ -454,14 +360,13 @@ function acceptDBonus($userid)
 		
 		$credit = $row1["Credits"] + $toCredit;
 		$pnts = $row1["Pnts"] + $toPnts;
-		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', CurrDBonus=0, LastCDBTime='$now', DayObtained='$dayObtained', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$now' where UserId='$userid'");
+		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', DayObtained='$dayObtained', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$now' where UserId='$userid'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'领取失败，请稍后重试','sql_error'=>mysql_error()));
 			return;
 		}
 		
-		$dynFeng = ceil($dynFeng / $fengzhiValue);
-		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'dVault'=>$dynFeng,'DayObtained'=>$dayObtained));
+		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'DayObtained'=>$dayObtained));
 		
 		// 添加积分记录
 // 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)

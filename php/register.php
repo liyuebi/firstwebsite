@@ -110,11 +110,13 @@ else
 // 			return;
 		}
 		else {
+			$diviCnt = 0;
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
 				$vault1 = $quantity * 3;
 				$charity = floor($vault1 * 0.05 * 100) / 100;
 				$pnts = floor($vault1 * 0.15 * 100) / 100;
+				$diviCnt = floor($vault1 * 0.005 * 100) / 100;
 				$vault1 = $vault1 - $charity - $pnts;
 				$result = mysql_query("insert into Credit (UserId, Vault, Pnts, Charity)
 					VALUES('$newuserid', '$vault1', '$pnts', '$charity')");
@@ -128,6 +130,13 @@ else
 				}
 			}					
 			else {
+				// !!! log error
+			}
+			
+			// insert credit bank 
+			$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
+								values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now')");
+			if (!$res4) {
 				// !!! log error
 			}
 		}

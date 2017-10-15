@@ -76,11 +76,12 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>蜜蜂工坊主页</title>
+		<title>物连网主页</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="keywords" content="" />				<!-- ????? 便于搜索 -->
 		<meta name="description" content="" />
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 <!-- 		<link rel="stylesheet" type="text/css" href="../css/luara.left.css"/> -->
 		
@@ -225,8 +226,8 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				</tr>
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
-					<td id=""><?php if ($row) echo '0'; else echo '0'; ?></td>
-					<td id="pnts"><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
+					<td id=""><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
+					<td id="pnts"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
 <!-- 					<td id="bonuspool"><?php echo $vault; ?></td> -->
 <!-- 					<td id="dbonuspool"><?php echo $dfeng; ?></td> -->
 				</tr>
@@ -263,7 +264,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			<ul>
 				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">分享粉丝</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
-				<li><a class="icon_btn3" href="productdetail2.php?product_id=2">自由集市</a></li>
+				<li><a class="icon_btn3" href="#">自由集市</a></li>
 <!-- 				<li><a class="icon_btn13" href="products.php">商城</a></li> -->
 				<li><a class="icon_btn2" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn6" href="exchange.php">交易所</a></li>
@@ -291,12 +292,15 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			?>
 		</div>
 -->
-		<div class="btn_box" width="auto">
-			<ul>
-				<li><a class="" href="#">首页</a></li>
-				<li><a class="" href="#">朋友</a></li>
-				<li><a class="" href="#">个人中心</a></li>
-			</ul>
-		</div>
+<!-- 		<div class="btn_box" width="auto"> -->
+		<footer class="footer"> 
+			<div>
+				<ul class="nav nav-pills nav-justified" >
+					<li class="active"><a class="" href="#">首页</a></li>
+					<li><a class="" href="recommended.php">朋友</a></li>
+					<li><a class="" href="me.php">个人中心</a></li>
+				</ul>
+			</div>
+		</footer>
 	</body>
 </html>

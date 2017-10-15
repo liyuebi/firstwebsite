@@ -4,10 +4,6 @@ include "../php/database.php";
 include "../php/constant.php";
 
 $lvl = 0;
-$group1 = 0;
-$group2 = 0;
-$group3 = 0;
-$groupId = 0;
 
 $con = connectToDB();
 if (!$con) {
@@ -20,28 +16,13 @@ $userid = $_SESSION["userId"];
 $result = mysql_query("select * from ClientTable where UserId='$userid'");
 if ($result) {
 	$row = mysql_fetch_assoc($result);
-	$group1 = $row["Group1Cnt"];
-	$group2 = $row["Group2Cnt"];
-	$group3 = $row["Group3Cnt"];
-	$groupId = $row["GroupId"];
 }
 
 $numAssoAccount = 0;
 $numRefAccount = 0;
 
 $res1 = false;
-$res2 = false;
-if ($groupId > 0) {
-// 	$res1 = mysql_query("select * from ClientTable where GroupId='$groupId' and UserId!='$userid'");
-// 	if ($res1) {
-// 		$numAssoAccount = mysql_num_rows($res1);
-// 	}
-	$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid' and GroupId!='$groupId'");
-}
-else {
-	$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid'");
-}
-
+$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid'");
 
 if ($res2) {
 	$numRefAccount = mysql_num_rows($res2);
@@ -57,6 +38,7 @@ if ($res2) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
@@ -116,19 +98,9 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
-		</div>
 		
-		<p>蜂队一：<?php echo $group1; ?>人</p>
-		<p>蜂队二：<?php echo $group2; ?>人</p>
-		<?php if ($lvl > $group3StartLvl) { ?>
-			<p>蜂队三：<?php echo $group3; ?>人</p>
-		<?php } ?>
-<!--  		<p>关联账号： <?php echo $numAssoAccount; ?>人</p> -->
-		<p>直推蜜粉： <?php echo $numRefAccount; ?>人</p>
+		<p>队伍人数： <?php echo 0; ?>人</p>
+		<p>直推人数： <?php echo $numRefAccount; ?>人</p>
 		
 <!--
 		<table id="tag_table" class="t2">
@@ -179,16 +151,16 @@ if ($res2) {
 	        ?>
 		        <table id="list" style="width: 100%; text-align: center;">
 			        <tr>
-				        <th style="width: 33%;">用户id</th>
-				        <th style="width: 33%;">昵称</th>
-				        <th style="width: 33%;">手机号</th>
+<!-- 				        <th style="width: 33%;">用户id</th> -->
+				        <th style="width: 50%;">昵称</th>
+				        <th style="width: 50%;">手机号</th>
 			        </tr>
 			<?php
 				while ($row2 = mysql_fetch_array($res2)) {
 			?>
 					<tr>
-						<td><?php echo $row2["UserId"]; ?></td>
-						<td><?php echo $row2["NickName"]; ?></td>
+<!--  						<td><?php echo $row2["UserId"]; ?></td> -->
+						<td><?php if ($row2["NickName"] != "") echo $row2["NickName"]; else echo "没有设置"; ?></td>
 						<td><?php echo $row2["PhoneNum"]; ?></td>
 					</tr>
 			<?php
@@ -205,6 +177,16 @@ if ($res2) {
 	        }
 	        ?>
         </div>
+        
+		<footer class="footer"> 
+			<div>
+				<ul class="nav nav-pills nav-justified" >
+					<li><a class="" href="home.php">首页</a></li>
+					<li class="active"><a class="" href="#">朋友</a></li>
+					<li><a class="" href="me.php">个人中心</a></li>
+				</ul>
+			</div>
+		</footer>
     </body>
     <div style="text-align:center;">
     </div>

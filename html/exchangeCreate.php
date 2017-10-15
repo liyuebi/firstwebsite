@@ -32,6 +32,33 @@ if ($con) {
 		$row = mysql_fetch_assoc($result);
 		$mycredit = 0;
 	}
+	
+	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
+	if ($res1) {
+		if (mysql_num_rows($res1) > 0) {
+			$row1 = mysql_fetch_assoc($res1);
+			$weAcc = $row1["WechatAcc"];
+			$isWechatSet = true;
+		}
+	}
+	$res2 = mysql_query("select * from AlipayAccount where UserId='$userid'");
+	if ($res2) {
+		if (mysql_num_rows($res2) > 0) {
+			$row2 = mysql_fetch_assoc($res2);
+			$aliAcc = $row2["AlipayAcc"];
+			$isAlipaySet = true;
+		}
+	}
+/*
+	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
+	if ($res3) {
+		if (mysql_num_rows($res3) > 0) {
+			$row3 = mysql_fetch_assoc($res3);
+			$bankAcc = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
+			$isBankSet = true;
+		}
+	}
+*/
 }
 
 ?>
@@ -40,7 +67,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>充值</title>
+		<title>交易创建</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -90,39 +117,41 @@ if ($con) {
 				}, "json");
 			}
 			
-			function goToPayment()
+			function tryCreateTrade()
 			{
-				location.href = "payment.php";
-			}
-			
-			$(function() {
-				$(":radio").click(function(){
-					var val = $(this).val();
-					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "block";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "none";
+				var amount = document.getElementById("cnt").value;
+				var amountReg = /^[1-9]\d*$/;
+				var val = amountReg.test(amount);
+				if (!amountReg.test(amount)) {
+					alert("无效的金额，请重新输入！");
+					document.getElementById("cnt").value = "";
+					document.getElementById("cnt").focus();
+					return;
+				}
+				
+				$.post("../php/creditTrade.php", {"func":"createTrade","amount":amount}, function(data){
+					
+					if (data.error == "false") {
+						alert("创建成功！");	
+						location.href = "exchange.php";
 					}
-					else if (val == "2") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "block";
-// 						document.getElementById("bank_block").style.display = "none";
+					else {
+						alert("创建失败: " + data.error_msg);
+						document.getElementById("cnt").value = "";
+						document.getElementById("cnt").focus();
+						
+						return;
 					}
-					else if (val == "3") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
-					}
-				});
-			});
+				}, "json");			
+					
+			}			
 		</script>
 	</head>
 	<body>
-		<p align="center">虚拟生活</p>
-		<a href="bank.php">存储线上资产</a>
-		<br>
-		<a href="teleFare.php">充话费</a>
-		<br>
-		<a href="fuelFare.php">充油费</a>
+		<p align="center">新建交易</p>
+<!-- 		<p align="right">交易记录</p> -->
+		<p>交易额至少为100，手续费为10%</p>
+		<input type="text" id="cnt" style="width: 100%; height: 30px; margin-bottom: 10px" value="" placeholder="请输入交易数额" />
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
     </body>
 </html>

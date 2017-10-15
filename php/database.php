@@ -152,6 +152,81 @@ function createAddressTable()
 	return $result;
 }
 
+function createCreditTradeTable()
+{
+	/*
+	* IdxId: 订单序号，按顺序生成
+	* TradeId: 交易订单编号，与时间相关的一个数字
+	* Quantity: 卖家需交易的总数量
+	* BuyCnt: 买家准备购买的数量
+	* CreateTime: 卖家创建订单时间
+	* ReserveTime: 买家下单时间
+	* PayTime: 买家确认支付时间
+	* ConfirmTime: 卖家确认支付时间
+	* CancelTime: 卖家取消订单时间
+	*/
+	$sql = "create table if not exists CreditTrade
+	(	
+		IdxId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IdxId),
+		TradeId int not null,
+		SellerId int not null,
+		SellNickN varchar(16) default '',
+		Quantity int NOT NULL,
+		HanderRate decimal(10,2) not null,
+		BuyerId int default 0,
+		BuyerNickN varchar(16) default '',
+		BuyCnt int default 0,
+		CreateTime int not null,
+		CancelTime int default 0,
+		ReserveTime int default 0,
+		PayTime int default 0,
+		ConfirmTime int default 0,
+		Status int not null
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create CreditTrade table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createCreditBankTable()
+{
+	/*
+	* IdxId: 存储序号
+	* Quantity: 总存储额（玩家能拿回的总返还额度），设计时为投资额的3倍减去分到线下资产和慈善金中的部分
+	* Invest: 买家投资额
+	* Balance: 余额
+	* Divident: 实际分红值，总存储额中分红额占的部分
+	* DiviCnt: 每日分红值，根据比例计算得到
+	* SaveTime: 存储的时间
+	* LastDiviT: 上次获取分红的时间
+	* LastChangeT: 上次余额变换的时间
+	* EmptyTime: 存储额度全部消耗完的时间
+	*/
+	$sql = "create table if not exists CreditBank
+	(	
+		IdxId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IdxId),
+		UserId int not null,
+		Quantity decimal(10,2) not null,
+		Invest decimal(10,2) not null,
+		Balance decimal(10,2) not null,
+		Divident decimal(10,2) default 0,
+		DiviCnt	decimal(10,2) not null,
+		SaveTime int not null,
+		LastDiviT int default 0,
+		LastChangeT int default 0,
+		EmptyTime int default 0
+	)";
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create CreditBank table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
 function createTransactionTable()
 {
 	/*
