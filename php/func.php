@@ -41,6 +41,8 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal)
 	
 	$collChild1 = $newuserid;
 	$collVal1 = $collisionVal;
+	
+	$now = time();
 
 	while ($userid != 0) {	
 		
@@ -91,9 +93,10 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal)
 			// !!! log error
 		}
 		else {
-			$now = time();
-			mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $codeColliBonus)");
+			if ($addedCredit != 0) {
+				mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+									VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $codeColliBonus)");
+			}
 		}
 		
 		// 取得下一个进行碰撞的父节点

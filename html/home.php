@@ -202,7 +202,10 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
  			<a class="banner_info_data" href='me.php'>我的资料</a></p>
 		</div>
 -->
-		
+        <div width="100%">
+            <img src="../img/wuyuan.jpg" width="100%" />
+        </div>
+	        
 		<div>
 <!--
 			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none">
@@ -268,10 +271,10 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 <!-- 				<li><a class="icon_btn13" href="products.php">商城</a></li> -->
 				<li><a class="icon_btn2" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn6" href="exchange.php">交易所</a></li>
-				<li><a class="icon_btn5" href="withdraw.php">会员慈善</a></li>
+				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li>
 <!-- 				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li> -->
-				<li><a class="icon_btn7" href="order.php">会员创业</a></li>
-				<li><a class="icon_btn4" href="record.php">直播购</a></li>
+				<li><a class="icon_btn7" href="#">会员创业</a></li>
+				<li><a class="icon_btn4" href="#">直播购</a></li>
 				<li><a class="icon_btn12" href="#">粉丝传媒</a></li>
 				<li><a class="icon_btn12" href="#">厂商商城</a></li>
 			</ul>

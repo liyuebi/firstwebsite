@@ -76,11 +76,17 @@ if ($con) {
 				}, "json");
 			}
 			
+			function goback() 
+			{
+				location.href = "virtuelife.php";
+			}
 		</script>
 	</head>
 	<body>
-		<p align="center">存储</p>
-<!-- 		<p align="right">交易记录</p> -->
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">存储</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
 
 		<div>
 			<p>添加新存储：</p>

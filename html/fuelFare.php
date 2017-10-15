@@ -97,10 +97,19 @@ if ($con) {
 			{
 				location.href = "exchangeOrder.php";
 			}
+			
+			function goback() 
+			{
+				location.href = "virtuelife.php";
+			}
 		</script>
 	</head>
 	<body>
-		<p align="center">油卡充值</p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">油卡充值</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
+
 		<input id="amount" class="form-control" type="text" placeholder="中石油／中石化" /> 
 		<input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
 		<input id="amount" class="form-control" type="text" placeholder="请输入油卡关联手机号！" onkeypress="return onlyNumber(event)" />

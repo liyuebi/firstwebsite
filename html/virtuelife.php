@@ -115,10 +115,17 @@ if ($con) {
 					}
 				});
 			});
+			function goback() 
+			{
+				location.href = "home.php";
+			}
 		</script>
 	</head>
 	<body>
-		<p align="center">虚拟生活</p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">虚拟生活</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
 		<a href="bank.php">存储线上资产</a>
 		<br>
 		<a href="teleFare.php">充话费</a>

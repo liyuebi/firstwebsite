@@ -79,44 +79,6 @@ if ($con) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
-			function onConfirm()
-			{
-				var amount = document.getElementById("amount").value;
-				
-				var amountReg = /^[1-9]\d*$/;
-				var val = amountReg.test(amount);
-				if (!amountReg.test(amount)) {
-					alert("无效的金额，请重新输入！");
-					document.getElementById("amount").value = "";
-					document.getElementById("amount").focus();
-					return;
-				}
-
-				var method = "0";				
-// 				var method = $("input[name='method']:checked").val();
-// 				if (method != "1" && method != "2" && method != "3") {
-// 					alert("还没有选择支付方式！");
-// 					return;
-// 				}
-				
-				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
-					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
-					return;
-				}
-				
-				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
-					
-					if (data.error == "false") {
-						alert("申请成功！");	
-						location.href = "home.php";
-					}
-					else {
-						alert("申请失败: " + data.error_msg);
-						document.getElementById("amount").value = "";
-					}
-				}, "json");
-			}
-			
 			function tryCreateTrade()
 			{
 				var amount = document.getElementById("cnt").value;
@@ -144,13 +106,21 @@ if ($con) {
 					}
 				}, "json");			
 					
-			}			
+			}		
+			
+			function goback()
+			{
+				location.href = "exchange.php";
+			}	
 		</script>
 	</head>
 	<body>
-		<p align="center">新建交易</p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">新建交易</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
 <!-- 		<p align="right">交易记录</p> -->
-		<p>交易额至少为100，手续费为10%</p>
+		<p>交易额为100的整数倍，手续费为10%</p>
 		<input type="text" id="cnt" style="width: 100%; height: 30px; margin-bottom: 10px" value="" placeholder="请输入交易数额" />
 		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
     </body>

@@ -32,21 +32,11 @@
 	$codeReferer = 4; 		// 推荐用户，扣除积分
 	$codeReferBonus = 5;	// 直推奖励
 	$codeColliBonus = 6;	// 碰撞奖励
-	
-	$codeConsume = 5;	// 消费消耗积分
-	$codeCancelPurchase = 6; // 取消购物，积分返还
-	$codeRecommend = 7;	// 推荐用户，扣除积分
-	$codeTransferTo = 8;// 向用户转积分
-	$codeTransferFrom = 9;	// 收到其他人转的积分
-	$codeDynDivident = 10;	// 动态分红导致积分变化，根据每日订单总额去一定比例，再除以动态蜂值总和，返还给用户
-	$codeWithdrawCancelled = 11; // 提现请求取消或被管理员拒绝
-	$codeTransferToPnts = 12; // 积分转移到采蜜券
-	$codeLevelupBonus = 13;	// 升级的蜜券奖励，一次发放
-	$codeTransferFromPnts = 14; // 采蜜券转到蜜券
-	$codeRecoBonus = 15;    // 直推蜂粉奖励，一次发放
-	
-	$codeChargeRegiToken = 20; // 充注册币变化
-	$codeRecoRegiToken = 21;   // 推荐导致注册币变化
+	$codeSave = 7;			// 存储金币	
+	$codeDailyBonus = 8;	// 每日分红
+	$codeCreTradeInit = 9;	// 创建交易，扣除积分
+	$codeCreTradeSucc = 10;	// 交易成功，退回未购买的积分和手续费
+	$codeCreTradeCancel = 11;//	交易取消，返还积分
 	
 	$code2Divident = 1; // 固定分红导致采蜜券变化
 	$code2DynDivident = 2; // 动态分红导致采蜜券变化，
@@ -65,6 +55,7 @@
 	$creditTradeNotPayed = 6;	// 买家超时未支付
 	$creditTradeConfirmed = 7;	// 卖家确认支付，交易完成
 	$creditTradeAutoConfirmed = 8;	// 卖家超时未确认支付，交易自动完成
+	$creditTradeExpired = 9;	// 卖家创建交易指定时间无人购买，过期
 	
 	
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单

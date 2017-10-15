@@ -22,8 +22,8 @@ $res = false;
 $res1 = false;
 
 if ($con) {
-	$res = mysql_query("select * from CreditTrade where SellerId='$userid'");
-	$res1 = mysql_query("select * from CreditTrade where BuyerId='$userid'");
+	$res = mysql_query("select * from CreditTrade where SellerId='$userid' order by CreateTime desc");
+	$res1 = mysql_query("select * from CreditTrade where BuyerId='$userid' order by ReserveTime desc ");
 }
 
 ?>
@@ -77,10 +77,84 @@ if ($con) {
 				document.getElementById("block_sell").style.display = "none";
 				document.getElementById("block_buy").style.display = "inline";				
 			}
+			
+			function tryCancel(btn)
+			{
+				var idx = btn.id;
+				if (confirm("确定要取消挂单？")) {
+					$.post("../php/creditTrade.php", {"func":"cancelTrade","idx":idx}, function(data){
+						
+						if (data.error == "false") {
+							alert("取消挂单成功！");	
+							location.reload();
+						}
+						else {
+							alert("取消挂单失败: " + data.error_msg);
+							location.reload();
+							
+							return;
+						}
+					}, "json");			
+				}
+			}
+			
+			function checkSellerInfo()
+			{
+				
+			}
+			
+			function tryConfirmPayment(btn)
+			{
+				var idx = btn.id;
+				if (confirm("确认已完成支付？")) {
+					$.post("../php/creditTrade.php", {"func":"confirmPayment","idx":idx}, function(data){
+						
+						if (data.error == "false") {
+							alert("确认支付成功！");	
+							location.reload();
+						}
+						else {
+							alert("确认支付失败: " + data.error_msg);
+							location.reload();
+							
+							return;
+						}
+					}, "json");			
+				}
+			}
+			
+			function abandonPayment(btn)
+			{
+				var idx = btn.id;
+				if (confirm("确认要放弃交易支付？")) {
+
+					$.post("../php/creditTrade.php", {"func":"abandonPayment","idx":idx}, function(data){
+						
+						if (data.error == "false") {
+							alert("取消买入成功！");	
+							location.reload();
+						}
+						else {
+							alert("取消买入失败: " + data.error_msg);
+							location.reload();							
+							return;
+						}
+					}, "json");			
+				}
+			}
+			
+			function goback() 
+			{
+				location.href = "exchange.php";
+			}
+
 		</script>
 	</head>
 	<body>
-		<p align="center">交易所订单</p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">交易所订单</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
 		
 		<hr>
 		<table id="tag_table" class="t2">
@@ -103,12 +177,15 @@ if ($con) {
 							<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
 							<p>总交易额：<?php echo $row["Quantity"] ?></p>
 							<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-							<p>交易过期时间：<?php echo 0; ?></p>
-							<?php 	if ($row["Status"] == $creditTradeInited) { ?>
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryStartTrade(this)" />
+							<p>交易过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
+							<?php 	if ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] < 60 * 60 * 24) { ?>
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeCancelled) { ?>
 								<p>已撤单</p>
+							<?php 	} 
+									else if ($row["Status"] == $creditTradeExpired || ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] >= 60 * 60 * 24)) { ?>
+								<p>已过期</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeReserved) { ?>
 								<p>等待支付</p>
@@ -134,15 +211,26 @@ if ($con) {
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
 							<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
 							<p>总交易额：<?php echo $row["Quantity"] ?></p>
-							<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-							<p>交易过期时间：<?php echo 0; ?></p>
+							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
+							<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeReserved) { ?>
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="查看卖家信息" onclick="tryStartTrade(this)" />
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="支付完成" onclick="tryStartTrade(this)" />
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="放弃买入" onclick="tryStartTrade(this)" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo()" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeAbandoned) { ?>
 								<p>放弃买入</p>
+							<?php
+									}
+									else if ($row["Status"] == $creditTradePayed) { ?>
+							<?php
+									}
+									else if ($row["Status"] == $creditTradeNotPayed || $row["Status"] == $creditTradeReserved && time() - $row["ReserveTime"] >= 60 * 60 * 24) { ?>
+								<p>超时未付款</p>
+							<?php
+									}
+									else if ($row["Status"] == $creditTradeConfirmed || $row["Status"] == $creditTradeAutoConfirmed) { ?>
+							
 							<?php	} ?>
 						</div>
 						<hr>

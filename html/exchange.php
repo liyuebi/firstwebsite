@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited'");
+	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited' order by CreateTime desc");
 }
 
 ?>
@@ -97,10 +97,18 @@ if ($con) {
 			{
 				location.href = "exchangeOrder.php";
 			}
+			
+			function goback() 
+			{
+				location.href = "home.php";
+			}
 		</script>
 	</head>
 	<body>
-		<p align="center">交易所</p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">交易所</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
 <!-- 		<p align="right">交易记录</p> -->
 		<?php
 			if ($result) {
@@ -113,7 +121,7 @@ if ($con) {
 						<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
 						<p>总交易额：<?php echo $row["Quantity"] ?></p>
 						<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-						<p>交易过期时间：<?php echo 0; ?></p>
+						<p>交易过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
 						<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="购买" onclick="tryStartTrade(this)" />
 					</div>
 					<hr>

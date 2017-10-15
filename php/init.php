@@ -9,7 +9,7 @@ if (!$con)
 	return; 
 }
 
-if (mysql_query("create database my_db", $con)) {
+if (mysql_query("create database mifeng_db", $con)) {
 	echo "Database created";
 	echo "<br>";
 }
@@ -18,7 +18,7 @@ else {
 	echo "<br>";
 }
 
-$db_selected = mysql_select_db("my_db", $con);
+$db_selected = mysql_select_db("mifeng_db", $con);
 if (!$db_selected) {
 	echo "select db failed: " , mysql_error();
 	return;
@@ -69,9 +69,11 @@ else {
 	echo "<br>";
 }
 
+createCreditRecordTable();
+createCreditBankTable();
+
 createStatisticsTable();
 initGeneralStatisTable();
-createCreditRecordTable();
 
 // 创建产品表，推入第一个产品
 /*

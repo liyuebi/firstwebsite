@@ -8,9 +8,9 @@ function connectToDB()
 		echo "Could not connect: " . mysql_error();
 	}
 	/* mifeng_db */
-	$db_selected = mysql_select_db("my_db", $con);
+	$db_selected = mysql_select_db("mifeng_db", $con);
 	if (!$db_selected) {
-		echo "Cannot use my_db : " . mysql_error();
+		echo "Cannot use mifeng_db : " . mysql_error();
 		$con = false;
 	}
 	return $con;

@@ -113,9 +113,19 @@ if ($con) {
 				}, "json");			
 					
 			}			
+			
+			function goback() 
+			{
+				location.href = "exchange.php";
+			}
 		</script>
 	</head>
 	<body>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">开始交易</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		</div>
+	
 		<p align="center">确认交易</p>
 		
 		<p>交易编号：<?php echo $row["TradeId"]; ?></p>
