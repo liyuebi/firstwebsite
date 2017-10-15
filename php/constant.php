@@ -35,8 +35,9 @@
 	$codeSave = 7;			// 存储金币	
 	$codeDailyBonus = 8;	// 每日分红
 	$codeCreTradeInit = 9;	// 创建交易，扣除积分
-	$codeCreTradeSucc = 10;	// 交易成功，退回未购买的积分和手续费
+	$codeCreTradeSucc = 10;	// 交易成功，卖家退回未购买的积分和手续费
 	$codeCreTradeCancel = 11;//	交易取消，返还积分
+	$codeCreTradeRec = 12;	// 交易成功，买家收款
 	
 	$code2Divident = 1; // 固定分红导致采蜜券变化
 	$code2DynDivident = 2; // 动态分红导致采蜜券变化，

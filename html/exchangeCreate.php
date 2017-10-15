@@ -125,3 +125,4 @@ if ($con) {
 		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
     </body>
 </html>
+

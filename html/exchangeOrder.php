@@ -103,6 +103,27 @@ if ($con) {
 				
 			}
 			
+			function tryConfirmReceive(btn)
+			{
+				var idx = btn.id;
+				if (confirm("您确定已经受到汇款?")) {
+					
+					$.post("../php/creditTrade.php", {"func":"confirmReceive","idx":idx}, function(data){
+						
+						if (data.error == "false") {
+							alert("确认支付成功！");	
+							location.reload();
+						}
+						else {
+							alert("确认支付失败: " + data.error_msg);
+							location.reload();
+							
+							return;
+						}
+					}, "json");			
+				}
+			}
+			
 			function tryConfirmPayment(btn)
 			{
 				var idx = btn.id;
@@ -190,8 +211,15 @@ if ($con) {
 									else if ($row["Status"] == $creditTradeReserved) { ?>
 								<p>等待支付</p>
 							<?php 	} 
+									else if ($row["Status"] == $creditTradePayed) { ?>
+								<p>买家已支付,请确认</p>
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="确认收款" onclick="tryConfirmReceive(this)" />
+							<?php 	} 
 									else if ($row["Status"] == $creditTradeAbandoned) { ?>
 								<p>买家弃购</p>
+							<?php 	} 
+									else if ($row["Status"] == $creditTradeConfirmed) { ?>
+								<p>交易已完成</p>
 							<?php	} ?>
 						</div>
 						<hr>
@@ -223,6 +251,7 @@ if ($con) {
 							<?php
 									}
 									else if ($row["Status"] == $creditTradePayed) { ?>
+								<p>已付款，等待买家确认</p>
 							<?php
 									}
 									else if ($row["Status"] == $creditTradeNotPayed || $row["Status"] == $creditTradeReserved && time() - $row["ReserveTime"] >= 60 * 60 * 24) { ?>

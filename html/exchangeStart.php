@@ -45,45 +45,7 @@ if ($con) {
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
-			
-			function onConfirm()
-			{
-				var amount = document.getElementById("amount").value;
-				
-				var amountReg = /^[1-9]\d*$/;
-				var val = amountReg.test(amount);
-				if (!amountReg.test(amount)) {
-					alert("无效的金额，请重新输入！");
-					document.getElementById("amount").value = "";
-					document.getElementById("amount").focus();
-					return;
-				}
-
-				var method = "0";				
-// 				var method = $("input[name='method']:checked").val();
-// 				if (method != "1" && method != "2" && method != "3") {
-// 					alert("还没有选择支付方式！");
-// 					return;
-// 				}
-				
-				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
-					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
-					return;
-				}
-				
-				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
-					
-					if (data.error == "false") {
-						alert("申请成功！");	
-						location.href = "home.php";
-					}
-					else {
-						alert("申请失败: " + data.error_msg);
-						document.getElementById("amount").value = "";
-					}
-				}, "json");
-			}
-			
+						
 			function tryStartrade(btn)
 			{
 				var idx = btn.id;
@@ -100,14 +62,11 @@ if ($con) {
 				$.post("../php/creditTrade.php", {"func":"startTrade","amount":amount,"idx":idx}, function(data){
 					
 					if (data.error == "false") {
-						alert("创建成功！");	
-// 						location.href = "exchange.php";
+						alert("下单成功！");	
+						location.href = "exchangeOrder.php";
 					}
 					else {
-						alert("创建失败: " + data.error_msg);
-						document.getElementById("cnt").value = "";
-						document.getElementById("cnt").focus();
-						
+						alert("下单失败: " + data.error_msg);
 						return;
 					}
 				}, "json");			
@@ -129,8 +88,8 @@ if ($con) {
 		<p align="center">确认交易</p>
 		
 		<p>交易编号：<?php echo $row["TradeId"]; ?></p>
-		<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
-		<p>总交易额：<?php echo $row["Quantity"] ?></p>
+		<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
+		<p>总交易额：<?php echo $row["Quantity"]; ?></p>
 		<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
 		<p>交易过期时间：<?php echo 0; ?></p>
 		<hr>

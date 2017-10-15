@@ -24,6 +24,9 @@ else if ("confirmPayment" == $_POST['func']) {
 else if ("abandonPayment" == $_POST['func']) {
 	abandonTradeOrderPay();
 }
+else if ("confirmReceive" == $_POST['func']) {
+	confirmReceiveMoney();
+}
 
 function createTradeOrder()
 {	
@@ -333,7 +336,7 @@ function confirmTradeOrderPay()
 		if ($now - $reserveTime >= 60 * 60 * 24) {
 			
 			// 修改订单状态
-			mysql_query("update CreditTrade set Status='$creditTradeNotPayed' where IdxId='$idx'");
+			mysql_query("update CreditTrade set Status='$creditTradePayed' where IdxId='$idx'");
 			// 退款
 			$quantity = $row["Quantity"];
 			$handleRate = $row["HanderRate"];
@@ -345,7 +348,7 @@ function confirmTradeOrderPay()
 			return;	
 		}
 	
-		$res1 = mysql_query("update CreditTrade set PayTime='$now', Status='$creditTradeReserved' where IdxId='$idx'");
+		$res1 = mysql_query("update CreditTrade set PayTime='$now', Status='$creditTradePayed' where IdxId='$idx'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'确认支付失败，请稍后重试！'));	
 			return;			
@@ -413,6 +416,115 @@ function abandonTradeOrderPay()
 		
 		refundSeller($sellid, $quantity, $handleFee);
 	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function confirmReceiveMoney()
+{
+	include 'regtest.php';
+	include 'constant.php';
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$idx = trim(htmlspecialchars($_POST["idx"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$userid = $_SESSION['userId'];
+		
+		$res = mysql_query("select * from CreditTrade where IdxId='$idx'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表交易失败，请稍后重试！'));	
+			return;
+		}		
+		
+		$row = mysql_fetch_assoc($res);
+		$status = $row["Status"];
+
+		if ($userid != $row["SellerId"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查询交易出错，请稍后重试！'));	
+			return;
+		}
+
+		if ($status != $creditTradePayed) {
+			echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'交易状态改变，请稍后重试！'));	
+			return;
+		}
+		
+		$buyerId = $row["BuyerId"];
+		$buyCnt = $row["BuyCnt"];
+		$quantity = $row["Quantity"];
+		$handleFee = $quantity * $row["HanderRate"];		
+
+		$now = time();
+		
+		$res1 = mysql_query("update CreditTrade set ConfirmTime='$now', Status='$creditTradeConfirmed' where IdxId='$idx'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'确定收货失败，请稍后重试!'));	
+			return;			
+		}
+		
+		$res3 = mysql_query("select * from Credit where UserId='$buyerId'");
+		if (!$res3 || mysql_num_rows($res3) <= 0) {
+			// !!! log error
+		}
+		else {
+			
+			$row3 = mysql_fetch_assoc($res3);
+			$credit = $row3["Credits"];
+			$credit += $buyCnt;
+			
+			$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$buyerId'");
+			if (!$res4) {
+				// !!! log error
+			}
+			else {
+				$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+					VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $codeCreTradeRec)");		
+				if (!$res5) {
+					// !!! log error
+				}
+			}
+		}
+		
+		if ($buyCnt != $quantity) {
+			$res3 = mysql_query("select * from Credit where UserId='$userid'");
+			if (!$res3 || mysql_num_rows($res3) <= 0) {
+				// !!! log error
+			}
+			else {
+				$actualHandleFee = $buyCnt * $row["HanderRate"];
+				$refund = $quantity - $buyCnt + $handleFee - $actualHandleFee;
+				
+				$row3 = mysql_fetch_assoc($res3);
+				$credit = $row3["Credits"];
+				$credit += $refund;
+				
+				$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+				if (!$res4) {
+					// !!! log error
+				}
+				else {
+					$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+						VALUES($buyerId, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
+					if (!$res5) {
+						// !!! log error
+					}
+				}
+			}
+		}
+	}	
 	
 	echo json_encode(array('error'=>'false'));
 }
