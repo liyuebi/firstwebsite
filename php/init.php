@@ -34,7 +34,7 @@ $pwd = md5('000000');
 $pwd = password_hash($pwd, PASSWORD_DEFAULT);
 $time = time();
 if (mysql_query("insert into ClientTable (UserId, PhoneNum, NickName, Password, RegisterTime)
-					values('10000', '13800000000', 'peter', '$pwd', '$time')"))
+					values('10000', '13812345678', 'peter', '$pwd', '$time')"))
 {
 	echo "root user created";
 	echo "<br>";	
