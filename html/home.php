@@ -296,14 +296,14 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 		</div>
 -->
 <!-- 		<div class="btn_box" width="auto"> -->
-		<footer class="footer"> 
+		<div class="footer"> 
 			<div>
-				<ul class="nav nav-pills nav-justified" >
-					<li class="active"><a class="" href="#">首页</a></li>
-					<li><a class="" href="recommended.php">朋友</a></li>
-					<li><a class="" href="me.php">个人中心</a></li>
+				<ul class="nav nav-pills">
+					<li class="active" style="display:table-cell; width:1%; float: none"><a href="#" style="text-align: center;">首页</a></li>
+					<li style="display:table-cell; width:1%; float: none"><a href="recommended.php" style="text-align: center">朋友</a></li>
+					<li style="display:table-cell; width:1%; float: none"><a href="me.php" style="text-align: center">个人中心</a></li>
 				</ul>
 			</div>
-		</footer>
+		</div>
 	</body>
 </html>

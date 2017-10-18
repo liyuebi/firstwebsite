@@ -178,15 +178,15 @@ if ($res2) {
 	        ?>
         </div>
         
-		<footer class="footer"> 
+		<div class="footer"> 
 			<div>
-				<ul class="nav nav-pills nav-justified" >
-					<li><a class="" href="home.php">首页</a></li>
-					<li class="active"><a class="" href="#">朋友</a></li>
-					<li><a class="" href="me.php">个人中心</a></li>
+				<ul class="nav nav-pills" >
+					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
+					<li style="display:table-cell; width:1%; float: none" class="active"><a style="text-align: center;" href="#">朋友</a></li>
+					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="me.php">个人中心</a></li>
 				</ul>
 			</div>
-		</footer>
+		</div>
     </body>
     <div style="text-align:center;">
     </div>
