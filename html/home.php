@@ -203,7 +203,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 		</div>
 -->
         <div width="100%">
-            <img src="../img/wuyuan.jpg" width="100%" />
+            <img src="../img/lian-post.jpg" width="100%" />
         </div>
 	        
 		<div>

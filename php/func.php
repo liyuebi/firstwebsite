@@ -184,18 +184,11 @@ function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastO
 }
 
 // 插入一个新用户账号
-function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUserId, &$error_code, &$error_msg, &$sql_error)
+function insertNewUserNode($userid, $phonenum, $name, $idNum, &$newUserId, &$error_code, &$error_msg, &$sql_error)
 {
 	include "constant.php";
 	
 	$parentId = $userid;
-	
-	if ($parentId == 0) {
-		$error_code = '51';
-		$error_msg = '查找可插入的父节点失败，请稍后重试';
-		$sql_error = mysql_error();
-		return false;
-	}
 	
 	$now = time();
 	$pwd = md5('000000');
@@ -203,7 +196,7 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, $groupId, &$newUse
 	$res4 = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
 							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$now')");
 	if (!$res4) {
-		$error_code = '52';
+		$error_code = '51';
 		$error_msg = '插入用户失败，请稍后重试';
 		$sql_error = mysql_error();
 		return false;

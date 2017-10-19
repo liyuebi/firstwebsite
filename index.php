@@ -98,7 +98,10 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 <!-- 	        <p align="center" style="font-size: 20px; margin: 2px;">会员登录</p> -->
 	        
 	        <div>
-		        <p align="center" style="font-size: 20px; padding: 40px">连物网</p>
+		        <p align="center" style="font-size: 20px; padding: 50px">
+			        <img src="img/lian-logo.jpg" style="width: 96px; margin-bottom: -5px;  display: block"></img>
+			        <span style="font-size: 20px; color: #3365e3;">连物网</span>
+			    </p>
 	        </div>
 	        
 	        <div> <!-- style="margin-top: 6%;" -->

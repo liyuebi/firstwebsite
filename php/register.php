@@ -90,7 +90,7 @@ else
 			$error_msg = '';
 			$sql_error = '';
 			
-			$ret = insertNewUserNode($userid, $phonenum, '', '', 0, $newuserid, $error_code, $error_msg, $sql_error);	
+			$ret = insertNewUserNode($userid, $phonenum, '', '', $newuserid, $error_code, $error_msg, $sql_error);	
 			if (!$ret) {
 				echo json_encode(array('error'=>'true','error_code'=>$error_code,'error_msg'=>$error_msg,'sql_error'=>$sql_error));
 				return;
