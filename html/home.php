@@ -76,7 +76,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>物连网主页</title>
+		<title>连物网主页</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="keywords" content="" />				<!-- ????? 便于搜索 -->
 		<meta name="description" content="" />
@@ -223,9 +223,9 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 -->
 			<table class="t1" border="1" align="center" style="margin-top: 0; " rules="none">
 				<tr>
-					<td width="33%">线上资产</td>
-					<td width="33%">线下资产</td>
-					<td width="33%">固定蜂值</td>
+					<td width="33%">线上云量</td>
+					<td width="33%">线下云量</td>
+					<td width="33%">财富云量</td>
 				</tr>
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
@@ -276,7 +276,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<li><a class="icon_btn7" href="#">会员创业</a></li>
 				<li><a class="icon_btn4" href="#">直播购</a></li>
 				<li><a class="icon_btn12" href="#">粉丝传媒</a></li>
-				<li><a class="icon_btn12" href="#">厂商商城</a></li>
+				<li><a class="icon_btn12" href="#">云量商城</a></li>
 			</ul>
 		</div>
 		

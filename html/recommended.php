@@ -100,8 +100,8 @@ if ($res2) {
 	<body>
 		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; line-height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
 		
-		<p>队伍人数： <?php echo 0; ?>人</p>
-		<p>直推人数： <?php echo $numRefAccount; ?>人</p>
+		<p>队友人数： <?php echo 0; ?>人</p>
+		<p>分享人数： <?php echo $numRefAccount; ?>人</p>
 		
 <!--
 		<table id="tag_table" class="t2">
@@ -172,7 +172,7 @@ if ($res2) {
 		        }
 		        else {
 		    ?>
-			    	<p>您现在还没有蜜粉。</p>
+			    	<p>您现在还没有分享。</p>
 		    <?php   
 		        }
 	        }

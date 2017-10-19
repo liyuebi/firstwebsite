@@ -141,10 +141,6 @@ if ($new) {
         <div>
             <table width="100%" align="center">
 	            <tr>
-		            <td width="30%" style="text-align: right;">用户ID</td>
-		            <td width="70%" style="text-align: left;"><?php echo $_SESSION['userId']; ?></td>
-	            </tr>
-	            <tr>
 		            <td width="30%" style="text-align: right;">手机号</td>
 		            <td width="70%" style="text-align: left;"><?php echo "$phone" ?></td>
 	            </tr>
