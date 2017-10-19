@@ -18,7 +18,7 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-<!-- 		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" /> -->
+<!-- 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" /> -->
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/adminlte/AdminLTE.min.css" />
 		

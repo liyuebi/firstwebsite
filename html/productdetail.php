@@ -53,7 +53,7 @@ $leftCount = max(0, $countlimit - $dayBought);
 		<meta name="description" content="">
 		<meta name="author" content="">
 
-		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js"></script>		

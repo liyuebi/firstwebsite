@@ -39,7 +39,7 @@ if ($res2) {
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -98,6 +98,7 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
+		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; line-height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
 		
 		<p>队伍人数： <?php echo 0; ?>人</p>
 		<p>直推人数： <?php echo $numRefAccount; ?>人</p>

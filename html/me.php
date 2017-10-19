@@ -19,7 +19,7 @@ include "../php/constant.php";
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" type="text/css" href="../css/buttons.css" />
 		
         <script src="../js/jquery-1.8.3.min.js" ></script>
@@ -58,43 +58,24 @@ include "../php/constant.php";
 	</head>
 	
 	<body>
-		<h3><?php echo $_SESSION['nickname']; ?>（<?php echo "$phone" ?>）</h3>
+		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; line-height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;"><?php echo $_SESSION['nickname']; ?>（<?php echo "$phone" ?>）</h3>
 		
-<!--
-        <div>
-            <table width="100%" align="center">
-	            <tr>
-		            <td>用户ID</td>
-		            <td><?php echo $_SESSION['userId']; ?></td>
-	            </tr>
-	            <tr>
-		            <td>昵称</td>
-		            <td><?php echo $_SESSION['nickname']; ?></td>
-	            </tr>       
-	            <tr>
-		            <td>手机号</td>
-		            <td><?php echo "$phone" ?></td>
-	            </tr>
-	            <tr>
-		            <td>姓名</td>
-		            <td><?php echo "$name" ?></td>
-	            </tr>
-	            <tr>
-		            <td>身份证号</td>
-		            <td><?php echo "$idnum" ?></td>
-	            </tr>
-            </table>
-        </div>
--->
-	        
-	    <p class="navhref"><a href="editme.php">编辑资料</a></p>
-        <p class="navhref"><a href="address.html">地址管理</a></p>
-        <p class="navhref"><a href="pwd.php">密码管理</a></p>
-        <p class="navhref"><a href="payment.php">支付方式管理</a></p>
+		<a class="link_forward" href="editme.php">
+ 			<span>编辑资料</span>
+		</a>
+		<a class="link_forward" href="address.html">
+ 			<span>地址管理</span>
+		</a>		
+		<a class="link_forward" href="pwd.php">
+ 			<span>密码管理</span>
+		</a>		
+		<a class="link_forward" href="payment.php" style="border-bottom: 0">
+ 			<span>支付方式管理</span>
+		</a>		
         
         <hr>
         
-        客服微信：fslqt01
+        <p style="padding-left: 20px;">客服微信：fslqt01</p>
         
         <hr>
         

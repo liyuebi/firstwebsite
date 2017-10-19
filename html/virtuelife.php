@@ -45,7 +45,8 @@ if ($con) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle-1.01.css" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
@@ -126,10 +127,15 @@ if ($con) {
 			<h2 style="display: inline">虚拟生活</h2>
 			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
 		</div>
-		<a href="bank.php">存储线上资产</a>
-		<br>
-		<a href="teleFare.php">充话费</a>
-		<br>
-		<a href="fuelFare.php">充油费</a>
+		
+		<a class="link_forward" href="bank.php">
+ 			<span>存储财富</span>
+		</a>
+		<a class="link_forward" href="teleFare.php">
+			<span>话费充值</span>
+		</a>
+		<a class="link_forward" href="fuelFare.php">
+			<span>油费充值</span>
+		</a>
     </body>
 </html>
