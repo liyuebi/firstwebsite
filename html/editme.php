@@ -127,17 +127,20 @@ if ($new) {
 					}, "json");
 				}
 			}
+			
+			function goback()
+			{
+				location.href = "me.php";
+			}
 		</script>
 	</head>
 	
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">更新个人资料</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
 		</div>
 		
-		<h3>请更新资料</h3>
         <div>
             <table width="100%" align="center">
 	            <tr>

@@ -30,8 +30,8 @@ if ($paypwd != "") {
 		<meta name="description" content="">
 		<meta name="author" content="">
 
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" href="../css/buttons.css">
+		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -51,25 +51,27 @@ if ($paypwd != "") {
 				else {
 					location.href = "setBuyPwd.php";
 				}
+				return false;
+			}
+			
+			function goback()
+			{
+				location.href = "me.php";
 			}
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">密码管理</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
 		</div>
-		
-        <div>
-            <h3>密码管理</h3>
-        </div>
         
-        <div name="display">
-	        <input type="button" value="修改登录密码" class="button-rounded" style="width: 50%; height: 30px;" onclick="onBtnLoginPwdClicked()" />
-	        <br>
-	        <input type="button" value="<?php echo $text;?>" id="btnPayPwd" class="button-rounded" style="width: 50%; height: 30px; margin-top: 10px;" onclick="onBtnPayPwdClicked()" />
-        </div>
+		<a class="link_forward" href="changeLoginPwd.html">
+ 			<span>修改登录密码</span>
+		</a>		
+		<a class="link_forward" onclick="onBtnPayPwdClicked()" style="border-bottom: 0">
+ 			<span id="btnPayPwd"><?php echo $text;?></span>
+		</a>
     </body>
     <div style="text-align:center;">
     </div>

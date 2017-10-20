@@ -96,16 +96,18 @@ if ($con) {
 				location.href = "charge.php";
 			}
 			
+			function goback()
+			{
+				location.href = "home.php";
+			}
+			
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
+			<h2 style="display: inline">推荐新用户</h2>
+			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
 		</div>
-		
-		<h3>注册新用户</h3>
 		
         <div>    
             <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
