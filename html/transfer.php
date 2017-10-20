@@ -66,7 +66,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>蜜券互转</title>
+		<title>线上云量互转</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -124,7 +124,7 @@ if ($con) {
 				
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
-					alert("每次提取至少" + least + "蜜券！");
+					alert("每次提取至少" + least + "线上云量！");
 					document.getElementById("autual_count").innerHTML = "0";
 					return;
 				}
@@ -216,7 +216,7 @@ if ($con) {
 		</div>
 		
         <div>
-            <h3>蜜券互转</h3>
+            <h3>线上云量互转</h3>
         </div>
         
         <div name="display">
@@ -240,10 +240,10 @@ if ($con) {
 
 	        </table>
 	        	    
-	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <p>转账每笔最少为<?php echo $leastCredit; ?>蜜券。</p>    
+	        <p>您现在拥有线上云量：<?php echo $mycredit;?></p>
+	        <p>转账每笔最少为<?php echo $leastCredit; ?>线上云量。</p>    
 	        <input class="form-control" id="amount" value="" placeholder="请输入您要转的金额" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
-			<p>您实际将提转出的蜜券数量是：<span id="autual_count">0</span></p>
+			<p>您实际将提转出的线上云量数量是：<span id="autual_count">0</span></p>
 			
 	        <input class="form-control"  id="pwd" type="password" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>

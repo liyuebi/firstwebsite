@@ -59,7 +59,7 @@ function createCreditTable()
 {
 	/*
 	 * RegiToken: 注册券
-	 * Credits: 蜜券
+	 * Credits: 线上云量
 	 * Pnts: 线下资产
 	 * Vault: 静态金库
 	 * CollChild: 对碰金所在下线的直接子节点
@@ -500,8 +500,8 @@ function createStatisticsTable()
 	 * NSCount  - New User Count 新用户总数
 	 * BonusTotal - 每日给用户的固定分红总额
 	 * DBonusTotal - 每日给用户的动态分红总额
- 	 * BonusPntTotal - 每日给用户的固定分红得到的采蜜券总额
-	 * DBonusPntTotal - 每日给用户的动态分红得到的采蜜券总额
+ 	 * BonusPntTotal - 每日给用户的固定分红得到的采线上云量总额
+	 * DBonusPntTotal - 每日给用户的动态分红得到的采线上云量总额
 	 * OrderNum - 成交的订单数量
 	 * SPNum	- sell product num 卖出的产品数量，是每笔订单的产品数的总和
 	 * TfTimes  - Transfer Times 转账次数
@@ -541,10 +541,10 @@ function createStatisticsTable()
 function createTotalStatisTable()
 {
 	/*
-	 * BonusTotal: 		固定分红得到的蜜券总额
-	 * DBonusTotal: 	动态分红得到的蜜券总额
-	 * BonusPntTotal: 	固定分红得到的采蜜券总额
-	 * DBonusPntTotal:  动态分红得到的采蜜券总额
+	 * BonusTotal: 		固定分红得到的线上云量总额
+	 * DBonusTotal: 	动态分红得到的线上云量总额
+	 * BonusPntTotal: 	固定分红得到的采线上云量总额
+	 * DBonusPntTotal:  动态分红得到的采线上云量总额
 	 */
 	$sql = "create table if not exists TotalStatis
 	(

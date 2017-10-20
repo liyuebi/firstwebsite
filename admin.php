@@ -13,7 +13,7 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		
-		<title>蜜蜂工坊管理系统</title>
+		<title>连物网管理系统</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -49,7 +49,7 @@ if (isset($_COOKIE['adminLogin']) && $_COOKIE['adminLogin']) {
 <!--         <div align="center" style="margin: 30px;">     -->
             <div class="login-box">
 				<div class="login-logo">
-			    	<a href="#"><b>蜜蜂工坊后台管理系统</b></a>
+			    	<a href="#"><b>连物网后台管理系统</b></a>
 				</div>
 				<!-- /.login-logo -->
 				<div class="login-box-body">

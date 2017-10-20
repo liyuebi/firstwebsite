@@ -159,7 +159,7 @@ if (!checkLoginOrJump()) {
 						<td><input type="button" value="修改" onclick="changeNewAntFeng()" /></td>
 					</tr>
 					<tr>
-						<td>推荐用户消耗蜜券</td><td><?php echo $refererConsumePoint;?></td>
+						<td>推荐用户消耗线上云量</td><td><?php echo $refererConsumePoint;?></td>
 					</tr>
 					<tr>
 						<td>每次提现下限</td>

@@ -97,7 +97,7 @@ function applyRecharge()
 		include "func.php";
 		$left = getCreditsPoolLeft($con);
 		if ($amount > $left) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'暂时无空闲蜜券发放，请稍后重试！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'暂时无空闲线上云量发放，请稍后重试！'));	
 			return;
 		}
 		
@@ -195,7 +195,7 @@ function allowRecharge()
 		include "func.php";
 		$left = getCreditsPoolLeft($con);
 		if ($amount > $left) {
-			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'暂时无空闲蜜券发放，通过充值失败！','index'=>$index));	
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'暂时无空闲线上云量发放，通过充值失败！','index'=>$index));	
 			return;
 		}
 
@@ -704,7 +704,7 @@ function transfer()
 	$totalFee = $row2["TotalFee"] + $fee;
 	$res3 = mysql_query("update Credit set Credits='$left', TotalFee='$totalFee' where UserId='$userid'");
 	if (!$res3) {
-		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的账户扣蜜券失败，请重试！'));
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的账户扣线上云量失败，请重试！'));
 		return;
 	}
 	
@@ -717,7 +717,7 @@ function transfer()
 	$post = $row1["Credits"] + $actualamount;
 	$res3 = mysql_query("update Credit set Credits='$post' where UserId='$receiver'");
 	if (!$res3) {
-		echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'收款人增加蜜券失败！'));
+		echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'收款人增加线上云量失败！'));
 		return;		
 	}
 	

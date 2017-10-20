@@ -281,7 +281,7 @@ function acceptBonus($userId)
 							VALUES('$userId', '$toCredit', '$credit', '$now', '$now', '$codeDivident')");
 		}
 						
-		// 添加采蜜券记录
+		// 添加线下云量记录
 		if ($toPnts) {
 			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 					VALUES('$userId', '$toPnts', '$pnts', '$now', '$now', '$code2Divident')");
@@ -372,7 +372,7 @@ function acceptDBonus($userid)
 // 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 // 						VALUES('$userid', '$toCredit', '$credit', '$now', '$now', '$codeDynDivident')");
 						
-		// 添加采蜜券记录
+		// 添加线下云量记录
 		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 				VALUES('$userid', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
 		

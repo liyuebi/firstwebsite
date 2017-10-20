@@ -1,14 +1,14 @@
 <?php 
 	$group3StartLvl = 9;		// 第三组开始的等级
 	
-// 	$dyNewUserVault = 1200;		// 给新用户的动态返还蜜券总额
-	$dyNewAccountVault = 1000;	// 给新用户的静态返还蜜券总额
-	$fengzhiValue = 1000;		// 1蜂值等于多少蜜券值
+// 	$dyNewUserVault = 1200;		// 给新用户的动态返还线上云量总额
+	$dyNewAccountVault = 1000;	// 给新用户的静态返还线上云量总额
+	$fengzhiValue = 1000;		// 1蜂值等于多少线上云量值
 	
 	$rewardRate =0.717;		// 从每日的交易额中取出多少来返还给用户
 	$rewardVal = 15.02;		// 不计算交易额，直接按照值进行分红
 	
-	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采蜜券，剩下的依旧返还成蜜券
+	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采线上云量，剩下的依旧返还成线上云量
 	
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
@@ -22,8 +22,8 @@
 	$withdrawHandleRate = 0.05;	// 提现手续费率
 	$transferHandleRate = 0.05;	// 转账手续费率 
 	
-	$recoBonusTillLevel = 5;	// 几级前有推荐奖励蜜券，包括此级别
-	$recoBonus = 100; 		// 推荐奖励蜜券额度
+	$recoBonusTillLevel = 5;	// 几级前有推荐奖励线上云量，包括此级别
+	$recoBonus = 100; 		// 推荐奖励线上云量额度
 	
 	// credit code
 	$codeBuy = 1;			// 购买积分
@@ -39,13 +39,13 @@
 	$codeCreTradeCancel = 11;//	交易取消，返还积分
 	$codeCreTradeRec = 12;	// 交易成功，买家收款
 	
-	$code2Divident = 1; // 固定分红导致采蜜券变化
-	$code2DynDivident = 2; // 动态分红导致采蜜券变化，
-	$code2TransferTo = 3;	// 向用户转采蜜券
-	$code2TransferFrom = 4;	// 收到其他人转的采蜜券
-	$cdoe2TransferToCredit = 11;   // 采蜜券转到蜜券，目前的一种情形是用户升级奖励，若固定蜂值不够，从采蜜券划拨
-	$code2TransferFromCredit = 12; // 从蜜券转换而来
-	$code2TransferFromVault = 13; // 升到第二级时，固定蜂值余额转到采蜜券
+	$code2Divident = 1; // 固定分红导致采线上云量变化
+	$code2DynDivident = 2; // 动态分红导致采线上云量变化，
+	$code2TransferTo = 3;	// 向用户转采线上云量
+	$code2TransferFrom = 4;	// 收到其他人转的采线上云量
+	$cdoe2TransferToCredit = 11;   // 采线上云量转到线上云量，目前的一种情形是用户升级奖励，若固定蜂值不够，从采线上云量划拨
+	$code2TransferFromCredit = 12; // 从线上云量转换而来
+	$code2TransferFromVault = 13; // 升到第二级时，固定蜂值余额转到采线上云量
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

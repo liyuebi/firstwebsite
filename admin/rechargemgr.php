@@ -56,7 +56,7 @@ $result = getRechargeApplication();
 						document.getElementById("credit_"+data.index).innerHTML = data.credit;
 					}
 					else {
-						alert("获取蜜券失败: " + data.error_msg + " " + data.index);
+						alert("获取线上云量失败: " + data.error_msg + " " + data.index);
 					}
 				}, "json");
 			}
@@ -127,8 +127,8 @@ $result = getRechargeApplication();
 						<th>支付方式</th>
 						<th>账号</th>
 						<th>账号其他信息</th>
-						<th>查询蜜券</th>
-						<th>目前蜜券</th>
+						<th>查询线上云量</th>
+						<th>目前线上云量</th>
 						<th>申请状态</th>
 						<th>确认订单</th>
 						<th>取消订单</th>

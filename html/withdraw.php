@@ -134,7 +134,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
-					alert("每次提取至少" + least + "蜜券,请重新输入！");
+					alert("每次提取至少" + least + "线上云量,请重新输入！");
 					document.getElementById("autual_count").innerHTML = "0";
 					document.getElementById("amount").value = "";
 					document.getElementById("amount").focus();
@@ -143,7 +143,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var most = <?php echo $mostCredit; ?>;
 				if (amount > most) {
-					alert("今天剩余的提现申请额度为" + most + "蜜券，请重新输入！");
+					alert("今天剩余的提现申请额度为" + most + "线上云量，请重新输入！");
 					document.getElementById("autual_count").innerHTML = "0";
 					document.getElementById("amount").value = "";
 					document.getElementById("amount").focus();
@@ -185,7 +185,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
-					alert("每次提取至少" + least + "蜜券！");
+					alert("每次提取至少" + least + "线上云量！");
 					document.getElementById("autual_count").innerHTML = "0";
 					return;
 				}
@@ -291,10 +291,10 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
         <hr>
         
         <div name="display">
-	        <p>您现在拥有蜜券：<?php echo $mycredit;?></p>
-	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>蜜券，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>蜜券。</p>
+	        <p>您现在拥有线上云量：<?php echo $mycredit;?></p>
+	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>线上云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线上云量。</p>
 	        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
-			<p>您实际将提取出的蜜券数量是：<span id="autual_count">0</span></p>
+			<p>您实际将提取出的线上云量数量是：<span id="autual_count">0</span></p>
 	        <input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        <br>
 	        <input type="button" value="提交" onclick="onConfirm()" />

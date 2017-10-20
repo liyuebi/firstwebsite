@@ -309,8 +309,8 @@ if (!checkLoginOrJump()) {
 						<th>身份证号</th>
 						<th>等级</th>
 						<th>注册券</th>
-						<th>蜜券</th>
-						<th>采蜜券</th>
+						<th>线上云量</th>
+						<th>线下云量</th>
 						<th>固定蜂值</th>
 <!-- 						<th>动态蜂值</th> -->
 						<th>推荐人数</th>
