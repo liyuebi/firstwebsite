@@ -242,12 +242,12 @@ table.t2 td {
 
 .btn_box ul li .icon_btn1 {
     background: url('../img/sys/sysIcon1.png') center 10px no-repeat;
-    background-size: 46px;
+    background-size: 40px;
 }
 
 .btn_box ul li .icon_btn2 {
     background: url('../img/sys/sysIcon2.png') center 10px no-repeat;
-    background-size: 46px;
+    background-size: 40px;
 }
 
 .btn_box ul li .icon_btn3 {
@@ -256,13 +256,13 @@ table.t2 td {
 }
 
 .btn_box ul li .icon_btn4 {
-    background: url('../img/sys/sysIcon4.png') center 10px no-repeat;
-    background-size: 46px;
+    background: url('../img/sys/sysIcon5.png') center 10px no-repeat;
+    background-size: 36px;
 }
 
 .btn_box ul li .icon_btn5 {
-    background: url('../img/sys/sysIcon5.png') center 10px no-repeat;
-    background-size: 46px;
+    background: url('../img/sys/sysIcon15.png') center 10px no-repeat;
+    background-size: 30px;
 }
 
 .btn_box ul li .icon_btn6 {
@@ -271,13 +271,13 @@ table.t2 td {
 }
 
 .btn_box ul li .icon_btn7 {
-    background: url('../img/sys/sysIcon15.png') center 10px no-repeat;
-    background-size: 36px;
+    background: url('../img/sys/sysIcon4.png') center 6px no-repeat;
+    background-size: 50px;
 }
 
 .btn_box ul li .icon_btn8 {
-    background: url('../Images/SysMemberPhoneImages/syIconBtn8.png') center 10px no-repeat;
-    background-size: 46px;
+    background: url('../img/sys/sysIcon12.png') center 10px no-repeat;
+    background-size: 42px;
 }
 
 .btn_box ul li .icon_btn9 {
@@ -297,7 +297,7 @@ table.t2 td {
 
 .btn_box ul li .icon_btn12 {
     background: url('../img/sys/sysIcon13.png') center 10px no-repeat;
-    background-size: 40px;
+    background-size: 36px;
 }
 
 .btn_box ul li .icon_btn13 {

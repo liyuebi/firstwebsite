@@ -267,15 +267,15 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			<ul>
 				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">分享粉丝</a></li>
 <!-- 				<li><a class="icon_btn1" href="products.html">蜂值倍增</a></li> -->
-				<li><a class="icon_btn3" href="#">自由集市</a></li>
+				<li><a class="icon_btn2" href="#">自由集市</a></li>
 <!-- 				<li><a class="icon_btn13" href="products.php">商城</a></li> -->
-				<li><a class="icon_btn2" href="virtuelife.php">虚拟生活</a></li>
+				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn6" href="exchange.php">交易所</a></li>
 				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li>
 <!-- 				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li> -->
 				<li><a class="icon_btn7" href="#">会员创业</a></li>
 				<li><a class="icon_btn4" href="#">直播购</a></li>
-				<li><a class="icon_btn12" href="#">粉丝传媒</a></li>
+				<li><a class="icon_btn8" href="#">粉丝传媒</a></li>
 				<li><a class="icon_btn12" href="#">云量商城</a></li>
 			</ul>
 		</div>
