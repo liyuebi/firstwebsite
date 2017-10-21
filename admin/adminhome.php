@@ -49,14 +49,14 @@
 		</script>
 	</head>
 	<body class="hold-transition skin-blue">
-		<div style="padding: 10px 10px 0 5px; height: 100%; display:inline; float: left; border-right: 1px solid black; display: none;">
+		<div style="padding: 10px 10px 0 5px; height: 100%; float: left; border-right: 1px solid black; display: none;">
 			<ul style="list-style: none; padding: 0">
 <!-- 				<li><a href="companymgr.html">企业管理</a></li> -->
-				<li><a href="productmgr.php">产品管理</a></li>
+<!-- 				<li><a href="productmgr.php">产品管理</a></li> -->
 				<li><a href="usermgr.php">用户管理</a></li>
 				<li><a href="ordermgr.php">订单管理</a></li>
-				<li><a href="rechargemgr.php">充值管理</a></li>
-				<li><a href="withdrawmgr.php">取现管理</a></li>
+<!-- 				<li><a href="rechargemgr.php">充值管理</a></li> -->
+<!-- 				<li><a href="withdrawmgr.php">取现管理</a></li> -->
 				<li><a href="configmgr.php">配置管理</a></li>
 				<li><a href="statistics.php">统计数据</a></li>
 <!-- 				<li><a href="configRwdRate.php">配置动态拨比</a></li> -->
@@ -71,18 +71,6 @@
 		<aside class="main-sidebar" style="overflow-y:auto;">
 			<section class="sidebar">
 				<ul class="sidebar-menu" data-widget="tree">
-					<li> <!-- class="treeview"> -->
-		        	    <a href="productmgr.php" target='rightContent'>
-				            <i class="fa fa-home"></i><span>产品管理</span><i class="fa fa-angle-left pull-right"></i>
-			            </a>
-<!--
-			            <ul class="treeview-menu">
-		            		<li onclick="makecss(this)" data-id="index_Product">
-		            			<a href='productmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>产片查询</a>
-							</li>	            
-		            	</ul>
--->
-					</li>
 					<li class="treeview">
 		        	    <a href="javascript:void(0)">
 				            <i class="fa fa-home"></i><span>用户管理</span><i class="fa fa-angle-left pull-right"></i>
@@ -114,30 +102,6 @@
 		            			<a href='ordermgr2.php' target='rightContent'><i class="fa fa-circle-o"></i>订单查询</a>
 							</li>	            
 		            	</ul>
-					</li>
-					<li> <!-- class="treeview"> -->
-		        	    <a href="rechargemgr.php" target="rightContent">
-				            <i class="fa fa-home"></i><span>充值管理</span><i class="fa fa-angle-left pull-right"></i>
-			            </a>
-<!--
-			            <ul class="treeview-menu">
-		            		<li onclick="makecss(this)" data-id="index_Charge">
-		            			<a href='rechargemgr.php' target='rightContent'><i class="fa fa-circle-o"></i>订单查询</a>
-							</li>	            
-		            	</ul>
--->
-					</li>
-					<li> <!-- class="treeview"> -->
-		        	    <a href="withdrawmgr.php" target="rightContent">
-				            <i class="fa fa-home"></i><span>取现管理</span><i class="fa fa-angle-left pull-right"></i>
-			            </a>
-<!--
-			            <ul class="treeview-menu">
-		            		<li onclick="makecss(this)" data-id="index_Withdraw">
-		            			<a href='withdrawmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>订单查询</a>
-							</li>	            
-		            	</ul>
--->
 					</li>
 					<li class="treeview">
 		        	    <a href="javascript:void(0)">
