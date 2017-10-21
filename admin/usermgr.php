@@ -93,39 +93,20 @@ if (!checkLoginOrJump()) {
 						d3.innerHTML = data.phone;
 						trow.appendChild(d3);
 						var d4 = document.createElement("td");
-						d4.innerHTML = data.name;
+						d4.innerHTML = data.credit;
 						trow.appendChild(d4);
 						var d5 = document.createElement("td");
-						d5.innerHTML = data.IDNum;
+						d5.innerHTML = data.pnt;
 						trow.appendChild(d5);
 						var d6 = document.createElement("td");
-						d6.innerHTML = data.lvl;
+						d6.innerHTML = data.vault;
 						trow.appendChild(d6);
-						var d21 = document.createElement("td");
-						d21.innerHTML = data.regi;
-						trow.appendChild(d21);
-						var d7 = document.createElement("td");
-						d7.innerHTML = data.credit;
+						var d7 = document.createElement("td");	
+						d7.innerHTML = data.RecoCnt;
 						trow.appendChild(d7);
-						var d20 = document.createElement("td");
-						d20.innerHTML = data.pnt;
-						trow.appendChild(d20);
-						var d8 = document.createElement("td");
-						d8.innerHTML = data.vault;
+						var d8 = document.createElement("td");	
+						d8.innerHTML = data.ChildCnt;
 						trow.appendChild(d8);
-						var d11 = document.createElement("td");	
-						d11.innerHTML = data.RecoCnt;
-						trow.appendChild(d11);
-						var d14 = document.createElement("td");	
-						d14.innerHTML = data.bpCnt;
-						trow.appendChild(d14);
-						var d15 = document.createElement("td");	
-						d15.innerHTML = data.charge;
-						trow.appendChild(d15);
-						var d16 = document.createElement("td");	
-						d16.innerHTML = data.withdraw;
-						trow.appendChild(d16);
-
 						
 						var d10 = document.createElement("td");	
 						trow.appendChild(d10);
@@ -151,100 +132,13 @@ if (!checkLoginOrJump()) {
 							input2.attachEvent('onclick', resetPayPwd);
 						}
 						d10.appendChild(input2);
-// 						input3.type = "button";
-// 						input3.value = "清空支付密码";
-// 						d10.appendChild(input3);
 					}
 					else {
 						alert("查询失败: " + data.error_msg);
 					}
 				}, "json");
 			}
-			
-			function queryUserByCond()
-			{
-				var lvl = document.getElementById("input_lvl").value;
-				var recoLow = document.getElementById("input_recoLow").value;
-				var recoHigh = document.getElementById("input_recoHigh").value;
-				
-				lvl = $.trim(lvl);
-				recoLow = $.trim(recoLow);
-				recoHigh = $.trim(recoHigh);
-				
-				if (lvl == "" && recoLow == "" && recoHigh == "") {
-					alert("条件不能都为空！");
-					return;
-				}
-				
-				$.post("../php/usrMgr.php", {"func":"qubd","lvl":lvl,"rlow":recoLow,"rhigh":recoHigh}, function(data){
-					
-					var container = document.getElementById("user_tbl1");
-				    var rowNum = container.rows.length;
-				    for (i=1;i<rowNum;++i)
-				    {
-				        container.deleteRow(i);
-				        rowNum=rowNum-1;
-				        i=i-1;
-				    }
-					if (data.error == "false") {
-						document.getElementById("span_res").innerHTML = "查询到符合条件的用户共" + data.cnt + "人！";
 						
-						var list = data.list;
-						for (var key in list) {
-							var trow = document.createElement("tr");
-							container.appendChild(trow);
-							
-							var d1 = document.createElement("td");
-							d1.innerHTML = key;
-							trow.appendChild(d1);
-							var d2 = document.createElement("td");
-							d2.innerHTML = list[key].nickname;
-							trow.appendChild(d2);
-							var d3 = document.createElement("td");
-							d3.innerHTML = list[key].phone;
-							trow.appendChild(d3);
-							var d4 = document.createElement("td");
-							d4.innerHTML = list[key].name;
-							trow.appendChild(d4);
-							var d5 = document.createElement("td");
-							d5.innerHTML = list[key].IDNum;
-							trow.appendChild(d5);
-							var d6 = document.createElement("td");
-							d6.innerHTML = list[key].lvl;
-							trow.appendChild(d6);
-							var d21 = document.createElement("td");
-							d21.innerHTML = list[key].regi;
-							trow.appendChild(d21);
-							var d7 = document.createElement("td");
-							d7.innerHTML = list[key].credit;
-							trow.appendChild(d7);
-							var d20 = document.createElement("td");
-							d20.innerHTML = list[key].pnt;
-							trow.appendChild(d20);
-							var d8 = document.createElement("td");
-							d8.innerHTML = list[key].vault;
-							trow.appendChild(d8);
-							var d11 = document.createElement("td");	
-							d11.innerHTML = list[key].RecoCnt;
-							trow.appendChild(d11);
-							var d14 = document.createElement("td");	
-							d14.innerHTML = list[key].bpCnt;
-							trow.appendChild(d14);
-							var d15 = document.createElement("td");	
-							d15.innerHTML = list[key].charge;
-							trow.appendChild(d15);
-							var d16 = document.createElement("td");	
-							d16.innerHTML = list[key].withdraw;
-							trow.appendChild(d16);
-						}
-					}
-					else {
-						document.getElementById("span_res").innerHTML = "查询失败！";
-						alert("查询失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
 			function resetLoginPwd(e)
 			{
 				if (!confirm("你确定要重置用户" + e.target.id + "的登录密码吗？")) {
@@ -282,10 +176,6 @@ if (!checkLoginOrJump()) {
 		        <h3>用户管理</h3>
 	        </div>
 <!--
-	        <input type="button" value="添加新用户" onclick="showAddBlk()" />
- 	        <input type="button" value="账户查询" onclick="showQueryBlk()" />
- 	        <input type="button" value="条件查询" onclick="showCondQueryBlk()" />
--->
 	        <div id="blk_add">
 		        <input type="hidden" name='func' value="addNew" />
 		        电话: <input type="text" name="phonenum" id="phonenum" placeholder="请填写用户手机号！" onkeypress="return onlyNumber(event)"/>
@@ -295,6 +185,7 @@ if (!checkLoginOrJump()) {
 				推荐人: <input type="texxt" name="referer" id="referer" placeholder="请填写推荐人" />
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
+-->
 	        <hr>
 			<div id="blk_chk" style="display: block;">
 				<input id="id_input" type="text" placeholder="请输入用户id" />
@@ -305,18 +196,12 @@ if (!checkLoginOrJump()) {
 						<th>用户id</th>
 						<th>昵称</th>
 						<th>电话号码</th>
-						<th>姓名</th>
-						<th>身份证号</th>
-						<th>等级</th>
-						<th>注册券</th>
-						<th>蜜券</th>
-						<th>采蜜券</th>
-						<th>固定蜂值</th>
-<!-- 						<th>动态蜂值</th> -->
+						<th>线上云量</th>
+						<th>线下云量</th>
+						<th>财富云量</th>
 						<th>推荐人数</th>
-						<th>购物总数</th>
-						<th>充值</th>
-						<th>取现</th>
+						<th>队友人数</th>
+<!-- 						<th>购物总数</th> -->
 						<th>操作</th>
 					</tr>
 				</table>

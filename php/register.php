@@ -199,7 +199,7 @@ else
 	}
 	else {
 		$row = mysql_fetch_assoc($result);
-		$count = $row["RecoCnt"];
+		$count = $row["RecoCnt"] + 1;
 		mysql_query("update ClientTable set RecoCnt='$count' where UserId='$userid'");
 	}
 	

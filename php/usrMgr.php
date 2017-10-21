@@ -166,29 +166,22 @@ function queryUser()
 	$credit = 0;
 	$pnts = 0;
 	$vault = 0;
-	$bpCnt = 0;
-	$charge = 0;
-	$withdraw = 0;
 	$res1 = mysql_query("select * from Credit where UserId='$userid'");
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		$row1 = mysql_fetch_assoc($res1);
 		$credit = $row1["Credits"];
 		$pnts = $row1["Pnts"];
 		$vault = $row1["Vault"];
-		$bpCnt = $row1["BPCnt"];
-		$charge = $row1["TotalRecharge"];
-		$withdraw = $row1["TotalWithdraw"];
 	}
 	
 	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"],'id'=>$row["UserId"],
-				'phone'=>$row["PhoneNum"],'name'=>$row["Name"],'IDNum'=>$row["IDNum"],
-				'lvl'=>$row["Lvl"],'RecoCnt'=>$row['RecoCnt'],
-				'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault,'bpCnt'=>$bpCnt,'charge'=>$charge,'withdraw'=>$withdraw));
+				'phone'=>$row["PhoneNum"],'RecoCnt'=>$row['RecoCnt'],'ChildCnt'=>$row['ChildCnt'],
+				'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault));
 }
 
 function queryUserByCondition()
 {
-	$lvl = trim(htmlspecialchars($_POST["lvl"]));
+// 	$lvl = trim(htmlspecialchars($_POST["lvl"]));
 	$recoLow = trim(htmlspecialchars($_POST["rlow"]));
 	$recoHigh = trim(htmlspecialchars($_POST["rhigh"]));
 	
@@ -201,10 +194,12 @@ function queryUserByCondition()
 	
 	$sql = "select * from ClientTable where ";
 	$cond = 0;
+/*
 	if ($lvl != "") {
 		$sql = $sql . "Lvl = " . $lvl;
 		++$cond;
 	}
+*/
 	if ($recoLow != "") {
 		if ($cond > 0) {
 			$sql = $sql . " and ";
@@ -238,9 +233,8 @@ function queryUserByCondition()
 		$arr1["nickname"] = $row["NickName"];
 		$arr1["phone"] = $row["PhoneNum"];
 		$arr1["name"] = $row["Name"];
-		$arr1["IDNum"] = $row["IDNum"];
-		$arr1["lvl"] = $row["Lvl"];
 		$arr1["RecoCnt"] = $row["RecoCnt"];
+		$arr1["ChildCnt"] = $row["ChildCnt"];
 		
 		$userid = $row['UserId'];
 		$res1 = mysql_query("select * from Credit where UserId='$userid'");
@@ -249,9 +243,6 @@ function queryUserByCondition()
 			$arr1["credit"] = $row1["Credits"];
 			$arr1["pnt"] = $row1["Pnts"];
 			$arr1["vault"] = $row1["Vault"];
-			$arr1["bpCnt"] = $row1["BPCnt"];
-			$arr1['charge'] = $row1["TotalRecharge"];
-			$arr1['withdraw'] = $row1["TotalWithdraw"];
 		}
 		
 		$arr[$userid] = $arr1;

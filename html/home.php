@@ -116,7 +116,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				
 // 				var feng = <?php echo $vault; ?>;
 // 				if (bonus > feng) {
-// 					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "蜜券，是否继续？")) {
+// 					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "线上云量，是否继续？")) {
 // 						return;
 // 					}
 // 					bonus = feng;
@@ -211,8 +211,8 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none">
 				<tr>
 					<td width="49" align="left"><?php echo $_SESSION['nickname'] . "(" . $_SESSION["userId"] . ")"; ?></td>
-					<td width="25%">总蜜券</td>
-					<td width="25%">当日蜜券</td>
+					<td width="25%">总线上云量</td>
+					<td width="25%">当日线上云量</td>
 				</tr>
 				<tr>
 					<td align="left"><?php echo $levelName[$_SESSION['lvl'] - 1]; ?></td>
@@ -242,9 +242,9 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<?php if ($bonus > 0) { ?>
 				<tr>
 					<?php if ($bonusPnts > 0) { ?>
-					<td style="width: 60%;"><p>分润 <b><?php echo ($bonus - $bonusPnts); ?></b> 蜜券，<b><?php echo $bonusPnts; ?></b>采蜜券！</p></td>
+					<td style="width: 60%;"><p>分润 <b><?php echo ($bonus - $bonusPnts); ?></b> 线上云量，<b><?php echo $bonusPnts; ?></b>采线上云量！</p></td>
 					<?php } else { ?>
-					<td style="width: 60%;"><p>分润 <b><?php echo $bonus; ?></b> 蜜券！</p></td>
+					<td style="width: 60%;"><p>分润 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
 					<?php } ?>
 					<td style="width: 36%;">
 						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
@@ -254,7 +254,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<?php } ?>
 <!--
 				<?php if ($dBonus > 0) { ?>
-					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 采蜜券！</p></td>
+					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 采线上云量！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
 						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
@@ -272,7 +272,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn6" href="exchange.php">交易所</a></li>
 				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li>
-<!-- 				<li><a class="icon_btn11" href="transfer.php">蜜券互转</a></li> -->
+<!-- 				<li><a class="icon_btn11" href="transfer.php">线上云量互转</a></li> -->
 				<li><a class="icon_btn7" href="#">会员创业</a></li>
 				<li><a class="icon_btn4" href="#">直播购</a></li>
 				<li><a class="icon_btn8" href="#">粉丝传媒</a></li>

@@ -20,163 +20,23 @@ if (!checkLoginOrJump()) {
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
-			function showAddBlk()
-			{
-				document.getElementById("blk_add").style.display = "block"; 
-				document.getElementById("blk_chk").style.display = "none";
-				document.getElementById("blk_condQuery").style.display = "none";
-			}
-			
-			function showQueryBlk()
-			{
-				document.getElementById("blk_chk").style.display = "block";
-				document.getElementById("blk_condQuery").style.display = "none";
-				document.getElementById("blk_add").style.display = "none";
-			}
-			
-			function showCondQueryBlk()
-			{
-				document.getElementById("blk_chk").style.display = "none";
-				document.getElementById("blk_condQuery").style.display = "block";
-				document.getElementById("blk_add").style.display = "none";				
-			}
-			
-			function addUser()
-			{
-				var phonenum = document.getElementById("phonenum").value;
-				var name = document.getElementById("name").value;
-				if (!isPhoneNumValid(phonenum)) {
-					alert("无效的电话号码！");
-					return;
-				}
-				if (name == "") {
-					alert("没有输入姓名！");
-					return;
-				}
-				
-				$.post("../php/usrMgr.php", {"func":"addUser","phone":phonenum,"name":name}, function(data){
-					
-					if (data.error == "false") {
-						alert("设置成功！");	
-						document.getElementById("phonenum").value = "";
-						document.getElementById("name").value = "";						
-					}
-					else {
-						alert("设置失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function queryUser()
-			{
-				var uid = document.getElementById("id_input").value;
-
-				if (uid.length <= 0) {
-					return;
-				}
-				
-				$.post("../php/usrMgr.php", {"func":"queryUser","uid":uid}, function(data){
-					
-					if (data.error == "false") {
-					
-						var container = document.getElementById("user_tbl");
-						var trow = document.createElement("tr");
-						container.appendChild(trow);
-						
-						var d1 = document.createElement("td");
-						d1.innerHTML = data.id;
-						trow.appendChild(d1);
-						var d2 = document.createElement("td");
-						d2.innerHTML = data.nickname;
-						trow.appendChild(d2);
-						var d3 = document.createElement("td");
-						d3.innerHTML = data.phone;
-						trow.appendChild(d3);
-						var d4 = document.createElement("td");
-						d4.innerHTML = data.name;
-						trow.appendChild(d4);
-						var d5 = document.createElement("td");
-						d5.innerHTML = data.IDNum;
-						trow.appendChild(d5);
-						var d6 = document.createElement("td");
-						d6.innerHTML = data.lvl;
-						trow.appendChild(d6);
-						var d21 = document.createElement("td");
-						d21.innerHTML = data.regi;
-						trow.appendChild(d21);
-						var d7 = document.createElement("td");
-						d7.innerHTML = data.credit;
-						trow.appendChild(d7);
-						var d20 = document.createElement("td");
-						d20.innerHTML = data.pnt;
-						trow.appendChild(d20);
-						var d8 = document.createElement("td");
-						d8.innerHTML = data.vault;
-						trow.appendChild(d8);
-						var d11 = document.createElement("td");	
-						d11.innerHTML = data.RecoCnt;
-						trow.appendChild(d11);
-						var d14 = document.createElement("td");	
-						d14.innerHTML = data.bpCnt;
-						trow.appendChild(d14);
-						var d15 = document.createElement("td");	
-						d15.innerHTML = data.charge;
-						trow.appendChild(d15);
-						var d16 = document.createElement("td");	
-						d16.innerHTML = data.withdraw;
-						trow.appendChild(d16);
-
-						
-						var d10 = document.createElement("td");	
-						trow.appendChild(d10);
-						var input1 = document.createElement("input");
-						input1.type = "button";
-						input1.value = "重置登录密码";
-						input1.id = data.id;
-						if (input1.addEventListener) {
-							input1.addEventListener('click', resetLoginPwd, false);
-						}
-						else if (input1.attachEvent) {
-							input1.attachEvent('onclick', resetLoginPwd);
-						}
-						d10.appendChild(input1);
-						var input2 = document.createElement("input");
-						input2.type = "button";
-						input2.value = "清空支付密码";
-						input2.id = data.id;
-						if (input2.addEventListener) {
-							input2.addEventListener('click', resetPayPwd, false);
-						}
-						else if (input2.attachEvent) {
-							input2.attachEvent('onclick', resetPayPwd);
-						}
-						d10.appendChild(input2);
-// 						input3.type = "button";
-// 						input3.value = "清空支付密码";
-// 						d10.appendChild(input3);
-					}
-					else {
-						alert("查询失败: " + data.error_msg);
-					}
-				}, "json");
-			}
 			
 			function queryUserByCond()
 			{
-				var lvl = document.getElementById("input_lvl").value;
+// 				var lvl = document.getElementById("input_lvl").value;
 				var recoLow = document.getElementById("input_recoLow").value;
 				var recoHigh = document.getElementById("input_recoHigh").value;
 				
-				lvl = $.trim(lvl);
+// 				lvl = $.trim(lvl);
 				recoLow = $.trim(recoLow);
 				recoHigh = $.trim(recoHigh);
 				
-				if (lvl == "" && recoLow == "" && recoHigh == "") {
+				if (recoLow == "" && recoHigh == "") {
 					alert("条件不能都为空！");
 					return;
 				}
 				
-				$.post("../php/usrMgr.php", {"func":"qubd","lvl":lvl,"rlow":recoLow,"rhigh":recoHigh}, function(data){
+				$.post("../php/usrMgr.php", {"func":"qubd","rlow":recoLow,"rhigh":recoHigh}, function(data){
 					
 					var container = document.getElementById("user_tbl1");
 				    var rowNum = container.rows.length;
@@ -204,38 +64,20 @@ if (!checkLoginOrJump()) {
 							d3.innerHTML = list[key].phone;
 							trow.appendChild(d3);
 							var d4 = document.createElement("td");
-							d4.innerHTML = list[key].name;
+							d4.innerHTML = list[key].credit;
 							trow.appendChild(d4);
 							var d5 = document.createElement("td");
-							d5.innerHTML = list[key].IDNum;
+							d5.innerHTML = list[key].pnt;
 							trow.appendChild(d5);
 							var d6 = document.createElement("td");
-							d6.innerHTML = list[key].lvl;
+							d6.innerHTML = list[key].vault;
 							trow.appendChild(d6);
-							var d21 = document.createElement("td");
-							d21.innerHTML = list[key].regi;
-							trow.appendChild(d21);
 							var d7 = document.createElement("td");
-							d7.innerHTML = list[key].credit;
+							d7.innerHTML = list[key].RecoCnt;
 							trow.appendChild(d7);
-							var d20 = document.createElement("td");
-							d20.innerHTML = list[key].pnt;
-							trow.appendChild(d20);
 							var d8 = document.createElement("td");
-							d8.innerHTML = list[key].vault;
+							d8.innerHTML = list[key].ChildCnt;
 							trow.appendChild(d8);
-							var d11 = document.createElement("td");	
-							d11.innerHTML = list[key].RecoCnt;
-							trow.appendChild(d11);
-							var d14 = document.createElement("td");	
-							d14.innerHTML = list[key].bpCnt;
-							trow.appendChild(d14);
-							var d15 = document.createElement("td");	
-							d15.innerHTML = list[key].charge;
-							trow.appendChild(d15);
-							var d16 = document.createElement("td");	
-							d16.innerHTML = list[key].withdraw;
-							trow.appendChild(d16);
 						}
 					}
 					else {
@@ -295,7 +137,7 @@ if (!checkLoginOrJump()) {
 	        </div>
 -->
 			<div id="blk_condQuery">
-				等级<input type="text" id="input_lvl" placeholder="请输入等级" />
+<!-- 				等级<input type="text" id="input_lvl" placeholder="请输入等级" /> -->
 				推荐人数<input type="text" id="input_recoLow" /> ~ <input type="text" id="input_recoHigh" />
 				<input type="button" value="查询" onclick="queryUserByCond()" />
 				<br>
@@ -305,18 +147,11 @@ if (!checkLoginOrJump()) {
 						<th>用户id</th>
 						<th>昵称</th>
 						<th>电话号码</th>
-						<th>姓名</th>
-						<th>身份证号</th>
-						<th>等级</th>
-						<th>注册券</th>
 						<th>线上云量</th>
 						<th>线下云量</th>
-						<th>固定蜂值</th>
-<!-- 						<th>动态蜂值</th> -->
+						<th>财富云量</th>
 						<th>推荐人数</th>
-						<th>购物总数</th>
-						<th>充值</th>
-						<th>取现</th>
+						<th>队友人数</th>
 					</tr>
 				</table>
 
