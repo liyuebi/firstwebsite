@@ -44,7 +44,7 @@ if ($paypwd != "") {
 			
 			function onBtnPayPwdClicked()
 			{
-				var value = document.getElementById("btnPayPwd").value;
+				var value = document.getElementById("btnPayPwd").innerHTML;
 				if (value == "修改支付密码") {
 					location.href = "changeBuyPwd.html";
 				}	

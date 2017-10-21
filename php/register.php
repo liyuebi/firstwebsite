@@ -49,7 +49,10 @@ else
 	
 	$userid = $_SESSION["userId"];
 	$res1 = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$res1) {
+	$row = false;
+	if (!$res1 || mysql_num_rows($res1) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'查询云量信息出错！','sql_error'=>mysql_error())); 
+		return;		
 	}
 	else {
 		$row = mysql_fetch_assoc($res1);
@@ -70,7 +73,7 @@ else
 	}
 	
 	if ($row["Credits"] < $quantity) {
-		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的蜜券不足，不能推荐用户！'));
+		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线上云量不足，不能推荐用户！'));
 		return;		
 	}
 	
@@ -127,16 +130,16 @@ else
 				}
 				else {
 // 					echo "Register success<br />";
+
+					// insert credit bank 
+					$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
+										values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now')");
+					if (!$res4) {
+						// !!! log error
+					}
 				}
 			}					
 			else {
-				// !!! log error
-			}
-			
-			// insert credit bank 
-			$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
-								values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now')");
-			if (!$res4) {
 				// !!! log error
 			}
 		}
@@ -155,14 +158,12 @@ else
 	$res3 = mysql_query("select * from Credit where UserId='$userid'");
 	$vault = 0;
 	$credit = 0;
-	$pnts = 0;
 	if (!$res3) {
 	}
 	else {
 		$row3 = mysql_fetch_assoc($res3);
 		$vault = $row3["Vault"];
 		$credit = $row3["Credits"];	
-		$pnts = $row3["Pnts"];
 	}
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果

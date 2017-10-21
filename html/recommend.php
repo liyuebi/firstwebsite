@@ -72,7 +72,7 @@ if ($con) {
 					if (data.error == "false") {
 						alert("注册成功！\n新用户的ids是" + data.new_user_id);	
 						document.getElementById("phonenum").value = "";
-// 						document.getElementById("Captcha").value = "";
+						document.getElementById("investnum").value = "";
 						document.getElementById("paypwd").value = "";
 					}
 					else {
@@ -93,7 +93,7 @@ if ($con) {
 			
 			function goCharge()
 			{
-				location.href = "charge.php";
+				location.href = "exchange.php";
 			}
 			
 			function goback()
@@ -127,7 +127,7 @@ if ($con) {
 				else if ($neededcredit > $mycredit) {
 			?>
 			<p>您的注册券余额不足</p>
-			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="去充值" onclick="goCharge()" />
+			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="去交易所" onclick="goCharge()" />
 			<?php
 				}
 				else {

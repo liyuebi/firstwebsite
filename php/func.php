@@ -193,15 +193,34 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, &$newUserId, &$err
 	$now = time();
 	$pwd = md5('000000');
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res4 = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
+	$res = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
 							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$now')");
-	if (!$res4) {
+	if (!$res) {
 		$error_code = '51';
 		$error_msg = '插入用户失败，请稍后重试';
 		$sql_error = mysql_error();
 		return false;
 	}
 	$newUserId = mysql_insert_id();	
+	
+	// update ChildCnt of all ancestors
+	while ($userid != 0) {
+		$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
+		if (!$res1 || mysql_num_rows($res1) <= 0) {
+			// !!! log error
+			break;
+		}	
+		
+		$row = mysql_fetch_assoc($res1);
+		$childcnt = $row["ChildCnt"] + 1;
+		$res2 = mysql_query("update ClientTable set ChildCnt='$childcnt' where UserId='$userid'");
+		if (!$res2) {
+			// !!! log error
+		}
+		
+		$userid = $row["ParentId"];
+	}
+	
 	return true;
 }
 
