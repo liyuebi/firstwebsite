@@ -12,20 +12,29 @@ if (!$con) {
 
 session_start();
 $userid = $_SESSION["userId"];
+$numTeam = 0;
+$numRefAccount = 0;
 
 $result = mysql_query("select * from ClientTable where UserId='$userid'");
-if ($result) {
-	$row = mysql_fetch_assoc($result);
+if (!$result || mysql_num_rows($result) <= 0) {
+	// !!! log error
 }
-
-$numAssoAccount = 0;
-$numRefAccount = 0;
+else {
+	$row = mysql_fetch_assoc($result);
+	$numTeam = $row["ChildCnt"];
+	$numRefAccount = $row["RecoCnt"];	
+}
 
 $res1 = false;
 $res2 = mysql_query("select * from ClientTable where ReferreeId='$userid'");
 
 if ($res2) {
-	$numRefAccount = mysql_num_rows($res2);
+	
+	$cnt = mysql_num_rows($res2);
+	if ($cnt != $numRefAccount) {
+		// !!! log error
+	}
+	$numRefAccount = $cnt;
 }
 ?>
 
@@ -98,9 +107,9 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
-		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; line-height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
+		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; line-height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
 		
-		<p>队友人数： <?php echo 0; ?>人</p>
+		<p>队友人数： <?php echo $numTeam; ?>人</p>
 		<p>分享人数： <?php echo $numRefAccount; ?>人</p>
 		
 <!--

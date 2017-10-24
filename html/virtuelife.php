@@ -123,9 +123,12 @@ if ($con) {
 		</script>
 	</head>
 	<body>
-		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
-			<h2 style="display: inline">虚拟生活</h2>
-			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-4 col-md-4"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-4 col-md-4"><h2 style="display: table-cell; text-align: center; color: white">虚拟生活</h2></div>
+				<div class="col-xs-4 col-md-4"></div>
+			</div>
 		</div>
 		
 		<a class="link_forward" href="bank.php">

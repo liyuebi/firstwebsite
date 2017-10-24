@@ -42,6 +42,7 @@ if ($con) {
 		<meta name="author" content="">
 		
 		<!-- CSS -->
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" href="../css/mystyle.css">
 		<link rel="stylesheet" href="../css/buttons.css">
 	
@@ -104,12 +105,15 @@ if ($con) {
 		</script>
 	</head>
 	<body>
-		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
-			<h2 style="display: inline">推荐新用户</h2>
-			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">推荐新用户</h3></div>
+				<div class="col-xs-3 col-md-3"></div>
+			</div>
 		</div>
 		
-        <div>    
+        <div style="margin-top: 5px;">    
             <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
             <br>
             <p style="margin-bottom: 0;">注册用户可投入线上云量<b> 300～9000（必须是100的倍数） </b>，您的余额为 <strong><?php echo $mycredit; ?></strong></p>

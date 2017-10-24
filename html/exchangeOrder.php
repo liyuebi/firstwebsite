@@ -37,6 +37,7 @@ if ($con) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" href="../css/buttons.css">
 		
@@ -172,9 +173,12 @@ if ($con) {
 		</script>
 	</head>
 	<body>
-		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
-			<h2 style="display: inline">交易所订单</h2>
-			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">交易所订单</h3></div>
+				<div class="col-xs-3 col-md-3"></div>
+			</div>
 		</div>
 		
 		<hr>

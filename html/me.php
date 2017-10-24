@@ -75,6 +75,16 @@ include "../php/constant.php";
         
         <hr>
         
+		<a class="link_forward" href="#">
+ 			<span>订单管理</span>
+		</a>
+		
+		<a class="link_forward" href="#" style="border-bottom: 0">
+ 			<span>云量记录</span>
+		</a>		
+				
+        <hr>        
+        
         <p style="padding-left: 20px;">客服微信：fslqt01</p>
         
         <hr>

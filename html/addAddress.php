@@ -16,6 +16,7 @@ if (isset($_GET['new'])) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
@@ -130,13 +131,20 @@ if (isset($_GET['new'])) {
 				}, "json");
 			}
 
+
+			function goback() 
+			{
+				location.href = "address.html";
+			}
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>连物网</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-4 col-md-4"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-4 col-md-4"><h2 style="display: table-cell; text-align: center; color: white">添加地址</h2></div>
+				<div class="col-xs-4 col-md-4"></div>
+			</div>
 		</div>
 		
         <div>
