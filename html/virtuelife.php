@@ -53,69 +53,6 @@ if ($con) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
-			function onConfirm()
-			{
-				var amount = document.getElementById("amount").value;
-				
-				var amountReg = /^[1-9]\d*$/;
-				var val = amountReg.test(amount);
-				if (!amountReg.test(amount)) {
-					alert("无效的金额，请重新输入！");
-					document.getElementById("amount").value = "";
-					document.getElementById("amount").focus();
-					return;
-				}
-
-				var method = "0";				
-// 				var method = $("input[name='method']:checked").val();
-// 				if (method != "1" && method != "2" && method != "3") {
-// 					alert("还没有选择支付方式！");
-// 					return;
-// 				}
-				
-				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
-					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
-					return;
-				}
-				
-				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
-					
-					if (data.error == "false") {
-						alert("申请成功！");	
-						location.href = "home.php";
-					}
-					else {
-						alert("申请失败: " + data.error_msg);
-						document.getElementById("amount").value = "";
-					}
-				}, "json");
-			}
-			
-			function goToPayment()
-			{
-				location.href = "payment.php";
-			}
-			
-			$(function() {
-				$(":radio").click(function(){
-					var val = $(this).val();
-					if (val == "1") {
-						document.getElementById("wechat_block").style.display = "block";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "2") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "block";
-// 						document.getElementById("bank_block").style.display = "none";
-					}
-					else if (val == "3") {
-						document.getElementById("wechat_block").style.display = "none";
-						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
-					}
-				});
-			});
 			function goback() 
 			{
 				location.href = "home.php";
@@ -126,10 +63,11 @@ if ($con) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-4 col-md-4"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-4 col-md-4"><h2 style="display: table-cell; text-align: center; color: white">虚拟生活</h2></div>
+				<div class="col-xs-4 col-md-4"><h3 style="display: table-cell; text-align: center; color: white">虚拟生活</h3></div>
 				<div class="col-xs-4 col-md-4"></div>
 			</div>
-		</div>
+		</div>.
+
 		
 		<a class="link_forward" href="bank.php">
  			<span>存储财富</span>

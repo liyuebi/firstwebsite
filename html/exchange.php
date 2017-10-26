@@ -109,7 +109,7 @@ if ($con) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-4 col-md-4"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-4 col-md-4"><h2 style="display: table-cell; text-align: center; color: white">交易所</h2></div>
+				<div class="col-xs-4 col-md-4"><h2 style="display: table-cell; text-align: center; color: white">云量交易</h2></div>
 				<div class="col-xs-4 col-md-4"></div>
 			</div>
 		</div>

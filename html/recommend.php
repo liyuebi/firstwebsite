@@ -108,7 +108,7 @@ if ($con) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">推荐新用户</h3></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">分享云粉</h3></div>
 				<div class="col-xs-3 col-md-3"></div>
 			</div>
 		</div>
@@ -146,7 +146,7 @@ if ($con) {
         <div>
 	        <h4 style="margin-bottom: 0;">注意事项：</h5>
 		    <p style="margin: 0;">1. 用户默认登录密码被设置为000000，请用户登录后及时修改成新密码</p>
-		    <p style="margin: 0;">2. 请用户登录后完善信息，并确认订单</p>
+		    <p style="margin: 0;">2. 请用户登录后完善信息</p>
         </div>
     </body>
     <div style="text-align:center;">

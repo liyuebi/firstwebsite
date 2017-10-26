@@ -32,6 +32,7 @@ if ($idx > 0) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" href="../css/buttons.css">
 		
@@ -45,14 +46,23 @@ if ($idx > 0) {
 					return;
 				}
 			})
+			
+			function goback()
+			{
+				location.href = "posters.php";
+			}
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-4 col-md-4"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-4 col-md-4"><h3 style="display: table-cell; text-align: center; color: white">公告内容</h3></div>
+				<div class="col-xs-4 col-md-4"></div>
+			</div>
 		</div>
+		
+		<hr>
 		
         <div align="center">
             <h3><?php echo $row["Title"]; ?></h3>
