@@ -380,11 +380,11 @@ function editProfile()
 
 	$userid = $_SESSION["userId"];
 	$oriNickName = $_SESSION["nickname"];
-	$oriName = $_SESSION["name"];
-	$oriIdNum = $_SESSION["idnum"];
+// 	$oriName = $_SESSION["name"];
+// 	$oriIdNum = $_SESSION["idnum"];
 	
-	$name = trim(htmlspecialchars($_POST['name']));
-	$idNum = trim(htmlspecialchars($_POST['idnum']));
+// 	$name = trim(htmlspecialchars($_POST['name']));
+// 	$idNum = trim(htmlspecialchars($_POST['idnum']));
 	$nickname = trim(htmlspecialchars($_POST['nickname']));
 	
 	include 'regtest.php';
@@ -393,6 +393,7 @@ function editProfile()
 		return;		
 	}
 	
+/*
 	if ($name == "") {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'姓名不能为空，请重新填写！'));
 		return;
@@ -406,9 +407,10 @@ function editProfile()
 		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'输入的身份证号不能为空！'));
 		return;				
 	}
+*/
 	
 	// 如果未做修改，认为正确，直接返回
-	if ($name == $oriName && $idNum == $oriIdNum && $nickname == $oriNickName) {
+	if (/* $name == $oriName && $idNum == $oriIdNum && */ $nickname == $oriNickName) {
 		echo json_encode(array('error'=>'false'));
 		return;						
 	}
@@ -431,15 +433,15 @@ function editProfile()
 			return;			
 		}
 				
-		$result = mysql_query("update ClientTable set NickName='$nickname', Name='$name', IDNum='$idNum' where UserId='$userid'");
+		$result = mysql_query("update ClientTable set NickName='$nickname' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
 			return;
 		}
 		
 		$_SESSION['nickname'] = $nickname;
-		$_SESSION["name"] = $name;
-		$_SESSION["idnum"] = $idNum;
+// 		$_SESSION["name"] = $name;
+// 		$_SESSION["idnum"] = $idNum;
 	}
 	
 	// 如果是新用户修改信息，可能会让他同时添加地址，确认地址信息的对错

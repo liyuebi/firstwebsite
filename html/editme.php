@@ -58,8 +58,8 @@ if ($new) {
 			function onSubmit()
 			{
 				var nickname = document.getElementById("nickname").value;
-				var name = document.getElementById("name").value;
-				var idNum = document.getElementById("idNum").value;
+// 				var name = document.getElementById("name").value;
+// 				var idNum = document.getElementById("idNum").value;
 				
 				if (nickname.length < 2) {
 					alert("无效的昵称，请至少使用2个文字或字母或数字！");
@@ -67,6 +67,7 @@ if ($new) {
 					return;					
 				} 				
 				
+/*
 				if (name == "") {
 					alert("姓名不能为空");
 					document.getElementById("name").focus();
@@ -79,23 +80,24 @@ if ($new) {
 					document.getElementById("idNum").focus();
 					return;
 				}
+*/
 				
 				var oriNickName = document.getElementById("oriNickName").value;
-				var oriName = document.getElementById("oriName").value;
-				var oriIdNum = document.getElementById("oriIdNum").value;
+// 				var oriName = document.getElementById("oriName").value;
+// 				var oriIdNum = document.getElementById("oriIdNum").value;
 				
 				// 信息没有更改，退出
-				if (nickname == oriNickName && name == oriName && idNum == oriIdNum) {
+				if (nickname == oriNickName /* && name == oriName && idNum == oriIdNum */) {
 					history.back(-1);
 					return;
 				}
 				else {
-					var data = {"func":"editprofile","name":name,"idnum":idNum,"nickname":nickname};
+					var data = {"func":"editprofile",/* "name":name,"idnum":idNum, */"nickname":nickname};
 					if (<?php if($noAddress) echo '1'; else echo '0'; ?>) {
 						var receiver = document.getElementById("receiver").value;
 						var rece_phone = document.getElementById("receiver_phone").value;
 						var rece_add = document.getElementById("receiver_add").value;
-						var data = {"func":"editprofile","name":name,"idnum":idNum,"nickname":nickname,"receiver":receiver,"rece_phone":rece_phone,"rece_add":rece_add};
+						var data = {"func":"editprofile",/* "name":name,"idnum":idNum, */"nickname":nickname,"receiver":receiver,"rece_phone":rece_phone,"rece_add":rece_add};
 					}
 					$.post("../php/login.php", data, function(data){
 						
@@ -155,6 +157,7 @@ if ($new) {
 		            <td style="text-align: right;">昵称</td>
 		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="nickname" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" /></td>
 	            </tr>	            
+<!--
 	            <tr>
 		            <td style="text-align: right;">姓名</td>
 		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="name" value="<?php echo "$name" ?>" /></td>
@@ -163,9 +166,10 @@ if ($new) {
 		            <td style="text-align: right;">身份证号</td>
 		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="idNum" value="<?php echo "$idnum" ?>" /></td>
 	            </tr>
+-->
             </table>
             
-            <input type="hidden" id="oriNickName" value="<?php echo $_SESSION["nickname"]; ?> ">
+            <input type="hidden" id="oriNickName" value="<?php echo $_SESSION["nickname"]; ?>">
             <input type="hidden" id="oriName" value="<?php echo "$name" ?>" />
             <input type="hidden" id="oriIdNum" value="<?php echo "$idnum" ?>" />
         </div>
