@@ -16,7 +16,7 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>物联网</title>
+		<title>连物网</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -88,7 +88,7 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 	</head>
 	
 	<body class='grey_body'>
-		<div class="big_frame" style="padding: 20px;">
+		<div class="big_frame" style="padding: 20px; background: url(img/lian-bg.jpg); height: 600px; background-size: cover">
 <!--
 	        <div width="100%">
 	            <img src="img/gongfang.jpg" width="100%" />
