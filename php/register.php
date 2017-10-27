@@ -58,12 +58,14 @@ else
 		$row = mysql_fetch_assoc($res1);
 	}
 	
-	if ($quantity < 300) {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'投入额度不能小于300，请重新输入！'));
+	if ($quantity < $regiCreditLeast) {
+		$str = '投入额度不能小于' . $regiCreditLeast . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
 		return;
 	}
-	else if ($quantity > 9000) {
-		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'投入额度不能大于9000，请重新输入！'));
+	else if ($quantity > $regiCreditMost) {
+		$str = '投入额度不能大于' . $regiCreditMost . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
 		return;		
 	}
 	
@@ -148,11 +150,11 @@ else
 	echo json_encode(array('error'=>'false', 'new_user_id'=>$newuserid));
 	
 	// 添加初始订单
-/*
-	$res2 = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, OrderTime, Status)
-					VALUES('$newuserid', '1', '$refererConsumePoint', '1', '$now', '$OrderStatusDefault') ");
-	$bInsertOrder = $res2 != false;
-*/
+	$res2 = mysql_query("insert into Transaction (UserId, ProductId, Type, Price, Count, OrderTime, Status)
+					VALUES('$newuserid', '0', '1', '$quantity', '1', '$now', '$OrderStatusDefault') ");
+	if (!$res2) {
+		// !!! log error
+	}
 	
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
 	$res3 = mysql_query("select * from Credit where UserId='$userid'");

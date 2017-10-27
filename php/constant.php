@@ -9,10 +9,12 @@
 	$rewardVal = 15.02;		// 不计算交易额，直接按照值进行分红
 	
 	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采线上云量，剩下的依旧返还成线上云量
-	
+
+	$regiCreditLeast = 300;		// 推荐用户时最少存储积分数
+	$regiCreditMost = 9000;		// 推荐用户时最多存储积分数
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
-	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
-	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
+// 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
+// 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
 	
 	$withdrawFloorAmount =300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
@@ -38,6 +40,8 @@
 	$codeCreTradeSucc = 10;	// 交易成功，卖家退回未购买的积分和手续费
 	$codeCreTradeCancel = 11;//	交易取消，返还积分
 	$codeCreTradeRec = 12;	// 交易成功，买家收款
+	$codeTryChargePhone = 13;// 提交手机充值申请，扣除积分
+	$codeStopChargePhone = 14;// 取消手机充值申请，返还积分
 	
 	$code2Divident = 1; // 固定分红导致采线上云量变化
 	$code2DynDivident = 2; // 动态分红导致采线上云量变化，

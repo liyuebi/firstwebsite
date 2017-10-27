@@ -4,7 +4,14 @@ if (!isset($_POST['func'])) {
 	exit('非法访问！');
 }
 
-if ("changeFloor" == $_POST['func']) {
+if ("changeRCL" == $_POST['func']) {
+	changeRegiCreditL();
+}
+else if ("changeRCM" == $_POST['func']) {
+	changeRegiCreditM();
+}
+/*
+else if ("changeFloor" == $_POST['func']) {
 	changeFloorValue();	
 }
 else if ("changeCeil" == $_POST['func']) {
@@ -31,6 +38,7 @@ else if ("changeWHR" == $_POST['func']) {
 else if ("changeTHR" == $_POST['func']) {
 	changeTransferHandleRate();
 }
+*/
 
 function changeConfig($name, $val, &$err)
 {
@@ -62,6 +70,32 @@ function changeConfig($name, $val, &$err)
 	fwrite($fp2, $str);
 	fclose($fp2);
 	return true;
+}
+
+function changeRegiCreditL()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("regiCreditLeast", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeRegiCreditM()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("regiCreditMost", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
 }
 
 function changeFloorValue()

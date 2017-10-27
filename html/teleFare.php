@@ -36,83 +36,73 @@ if ($con) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
-			
-			function onConfirm()
+						
+			function tryChargeCellphone()
 			{
+				var phonenum = document.getElementById("phonenum").value;
 				var amount = document.getElementById("amount").value;
+				var paypwd = document.getElementById("pwd").value;
 				
-				var amountReg = /^[1-9]\d*$/;
-				var val = amountReg.test(amount);
-				if (!amountReg.test(amount)) {
-					alert("无效的金额，请重新输入！");
-					document.getElementById("amount").value = "";
-					document.getElementById("amount").focus();
+				phonenum=$.trim(phonenum);
+				amount=$.trim(amount);
+				if (!isPhoneNumValid(phonenum)) {
+					alert("无效的电话号码！");
 					return;
 				}
-
-				var method = "0";				
-// 				var method = $("input[name='method']:checked").val();
-// 				if (method != "1" && method != "2" && method != "3") {
-// 					alert("还没有选择支付方式！");
-// 					return;
-// 				}
-				
-				if (amount % <?php echo $refererConsumePoint; ?> != 0) {
-					alert("充值金额必须是" + <?php echo $refererConsumePoint; ?> + "的倍数！");
+				if (amount == "") {
+					alert("无效的金额！");
+					return;
+				}
+				if (paypwd == "") {
+					alert("无效的支付密码！");
 					return;
 				}
 				
-				$.post("../php/credit.php", {"func":"recharge","amount":amount,"method":method}, function(data){
+				var str = "确认为手机号 " + phonenum + " 充值 " + amount + ", 将收取手续费10%"; 
+				if (confirm(str)) {
+					paypwd = md5(paypwd);		
 					
-					if (data.error == "false") {
-						alert("申请成功！");	
-						location.href = "home.php";
-					}
-					else {
-						alert("申请失败: " + data.error_msg);
-						document.getElementById("amount").value = "";
-					}
-				}, "json");
-			}
-			
-			function tryCreateTrade()
-			{
-				location.href = "exchangeCreate.php";
+					$.post("../php/trade.php", {"func":"phoneCharge", "phonenum":phonenum, "amount":amount, "paypwd":paypwd}, function(data){
+					
+						if (data.error == "false") {
+							alert("创建订单成功！");	
+							document.getElementById("phonenum").value = "";
+							document.getElementById("amount").value = "";
+							document.getElementById("pwd").value = "";
+						}
+						else {
+							alert("创建订单失败: " + data.error_msg);
+						}
+					}, "json");
+				}
 			}			
 			
-			function tryStartTrade(btn)
-			{
-				var idx = btn.id;
-// 				var url = "exchageStart.php?h=" + idx;
-				location.href = "exchangeStart.php?h=" + idx;
-			}
-			
-			function gotoCreditOrder()
-			{
-				location.href = "exchangeOrder.php";
-			}
-			
-			function goback() 
+			function goback()
 			{
 				location.href = "virtuelife.php";
 			}
 		</script>
 	</head>
 	<body>
-		<div style="height: 50px; margin-top: 10px; background-color: rgba(255, 255, 255, 0.24)">
-			<h2 style="display: inline">话费充值</h2>
-			<input type="button" style="float: right" value="返回" class="button" onclick="goback()" />
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">话费充值</h3></div>
+				<div class="col-xs-3 col-md-3"></div>
+			</div>
 		</div>
 
+		<input id="phonenum" class="form-control" type="text" placeholder="请输入充值手机号！" onkeypress="return onlyNumber(event)" />
 		<input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
-		<input id="amount" class="form-control" type="text" placeholder="请输入充值手机号！" onkeypress="return onlyNumber(event)" />
-		<input id="amount" class="form-control" type="text" placeholder="请输入支付密码！" />		
-		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="确认充值" onclick="" />
+		<input id="pwd" class="form-control" type="password" placeholder="请输入支付密码！" />		
+		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="确认充值" onclick="tryChargeCellphone()" />
     </body>
 </html>

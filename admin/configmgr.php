@@ -22,10 +22,10 @@ if (!checkLoginOrJump()) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
-			function changeNUFeng()
+			function changeRegiCreditL()
 			{
-				var val = document.getElementById("newUserFeng").value;
-				$.post("../php/changeConfig.php", {"func":"changeNUF","val":val}, function(data){
+				var val = document.getElementById("regiCreditLeast").value;
+				$.post("../php/changeConfig.php", {"func":"changeRCL","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -36,10 +36,10 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
-			function changeNewAntFeng()
+			function changeRegiCreditM()
 			{
-				var val = document.getElementById("newAccntFeng").value;
-				$.post("../php/changeConfig.php", {"func":"changeNAF","val":val}, function(data){
+				var val = document.getElementById("regiCreditMost").value;
+				$.post("../php/changeConfig.php", {"func":"changeRCM","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -154,13 +154,16 @@ if (!checkLoginOrJump()) {
 					</tr>
 -->
 					<tr>
-						<td>复投一单增加固定蜂值</td>
-						<td><input type="text" id="newAccntFeng" value="<?php echo $dyNewAccountVault;  ?>" /></td>
-						<td><input type="button" value="修改" onclick="changeNewAntFeng()" /></td>
+						<td>推荐用户消耗云量下限</td>
+						<td><input type="text" id="regiCreditLeast" value="<?php echo $regiCreditLeast;  ?>" /></td>
+						<td><input type="button" value="修改" onclick="changeRegiCreditL()" /></td>
 					</tr>
 					<tr>
-						<td>推荐用户消耗线上云量</td><td><?php echo $refererConsumePoint;?></td>
+						<td>推荐用户消耗云量上限</td>
+						<td><input type="text" id="regiCreditMost" value="<?php echo $regiCreditMost;  ?>" /></td>
+						<td><input type="button" value="修改" onclick="changeRegiCreditM()" /></td>
 					</tr>
+<!--
 					<tr>
 						<td>每次提现下限</td>
 						<td><input type="text" id="floor" value="<?php echo $withdrawFloorAmount;?>" /></td>
@@ -186,12 +189,6 @@ if (!checkLoginOrJump()) {
 						<td><input type="text" id="transferRate" value="<?php echo $transferHandleRate;?>"</td>
 						<td><input type="button" value="修改" onclick="changeTransferHandleRate()" /></td>
 					</tr>
-<!--
-					<tr>
-						<td>动态分红比例</td>
-						<td><input type="text" id="rwdRate" value="<?php echo $rewardRate;?>" /></td>
-						<td><input type="button" value="修改" onclick="changeRewardRate()" /></td>
-					</tr>					
 -->
 				</table>
 	        </div>

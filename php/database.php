@@ -230,24 +230,41 @@ function createCreditBankTable()
 function createTransactionTable()
 {
 	/*
+	 * Type: 订单类型，1：初始订单，2:充话费，3:充油费，10：自由集市
+	 * ProductId: 产品ID
 	 * AddressId: 添加订单后用户可能修改地址，所以应以记录的地址信息为准。添加原因，发现有订单的地址信息为空，所以添加来防错
+	 * CellNum: 充话费的手机号码，或充油卡时的油卡关联手机号
+	 * CardNum: 充油费的油卡号码
+	 * OrderTime: 下单时间
+	 * ConfirmTime: 卖家确认订单时间
+	 * DeliveryTime: 发货时间
+	 * CompleteTime: 收获／完成时间
+	 * CancelTime: 买家取消时间
+	 * DismissTime: 卖家取消时间
 	 */
 	$sql = "create table if not exists Transaction
 	(
 		OrderId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(OrderId),
 		UserId int NOT NULL,
+		Type int not null,
 		ProductId int NOT NULL,
 		Price decimal(10,2) NOT NULL,
+		HandleFee decimal(10,2) default 0,
 		Count int NOT NULL,
 		AddressId int default 0,
 		Receiver varchar(30) DEFAULT '',
 		PhoneNum varchar(15) DEFAULT '',
 		Address varchar(128) DEFAULT '',
 		ZipCode varchar(12) DEFAULT '',
+		CellNum varchar(15) default '',
+		CardNum varchar(30) default '',
 		OrderTime int NOT NULL,
+		ConfirmTime int default 0,
 		DeliveryTime int DEFAULT 0,
 		CompleteTime int DEFAULT 0,
+		CancelTime int default 0,
+		DismissTime int default 0,
 		CourierNum varchar(24) default '',
 		Status int
 	)";
