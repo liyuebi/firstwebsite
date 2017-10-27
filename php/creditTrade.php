@@ -610,6 +610,18 @@ function saveCredit()
 			// !!! log error
 			return false;
 		}
+		
+		$res4 = mysql_query("select * from ClientTable where UserId='$userid'");
+		if (!$res4 || mysql_num_rows($res4) <= 0) {
+			// !!! log error
+		}
+		else {
+			
+			include "func.php";
+			$row4 = mysql_fetch_assoc($res4);
+			$parentId = $row4['ParentId'];
+			attributeCollisionBonus($parentId, $userid, $amount, 0.08, $codeColliBonusRe);
+		}
 	}
 	
 	echo json_encode(array('error'=>'false'));

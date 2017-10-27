@@ -271,7 +271,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn2" href="#">自由集市</a></li>
 <!-- 				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li> -->
-				<li><a class="icon_btn7" href="#">会员创业</a></li>
+				<li><a class="icon_btn7" href="#">线下商家</a></li>
 				<li><a class="icon_btn4" href="#">直播购</a></li>
 				<li><a class="icon_btn8" href="#">云粉传媒</a></li>
 				<li><a class="icon_btn12" href="#">云量商城</a></li>

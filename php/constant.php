@@ -33,15 +33,16 @@
 	$codeDivident = 3;		// 固定分红导致积分变化
 	$codeReferer = 4; 		// 推荐用户，扣除积分
 	$codeReferBonus = 5;	// 直推奖励
-	$codeColliBonus = 6;	// 碰撞奖励
-	$codeSave = 7;			// 存储金币	
-	$codeDailyBonus = 8;	// 每日分红
-	$codeCreTradeInit = 9;	// 创建交易，扣除积分
-	$codeCreTradeSucc = 10;	// 交易成功，卖家退回未购买的积分和手续费
-	$codeCreTradeCancel = 11;//	交易取消，返还积分
-	$codeCreTradeRec = 12;	// 交易成功，买家收款
-	$codeTryChargePhone = 13;// 提交手机充值申请，扣除积分
-	$codeStopChargePhone = 14;// 取消手机充值申请，返还积分
+	$codeColliBonusNew = 6;	// 碰撞奖励，推荐新用户
+	$codeColliBonusRe = 7;	// 碰撞奖励，用户复投
+	$codeSave = 8;			// 存储金币	
+	$codeDailyBonus = 9;	// 每日分红
+	$codeCreTradeInit = 10;	// 创建交易，扣除积分
+	$codeCreTradeSucc = 11;	// 交易成功，卖家退回未购买的积分和手续费
+	$codeCreTradeCancel = 12;//	交易取消，返还积分
+	$codeCreTradeRec = 13;	// 交易成功，买家收款
+	$codeTryChargePhone = 14;// 提交手机充值申请，扣除积分
+	$codeStopChargePhone = 15;// 取消手机充值申请，返还积分
 	
 	$code2Divident = 1; // 固定分红导致采线上云量变化
 	$code2DynDivident = 2; // 动态分红导致采线上云量变化，

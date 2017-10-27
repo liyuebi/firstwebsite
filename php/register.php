@@ -192,7 +192,7 @@ else
 	}
 	else {
 		// 分发推荐奖励
-		attributeCollisionBonus($userid, $newuserid, $quantity);
+		attributeCollisionBonus($userid, $newuserid, $quantity, 0.1, $codeColliBonusNew);
 	}
 								
 	// 更新推荐人的推荐人数，若失败不影响返回结果

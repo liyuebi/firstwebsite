@@ -32,9 +32,11 @@ function setSession($row)
 
 /*
  * 分发直推奖励，先从蜂值里扣，若蜂值不够，则从采蜜券里扣，若依然不够，仍给足用户推荐奖励
- * $collisionVal: 新用户支线的碰撞值
+ * $userid: 第一个享受碰撞的父节点，如果是注册，即推荐人；如果是复投，即复投人的父节点
+ * $newuserid: 被注册人／复投人
+ * $collisionVal: 新用户支线的碰撞值／复投额度
  */
-function attributeCollisionBonus($userid, $newuserid, $collisionVal)
+function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate, $recordCode)
 {
 	include "constant.php";
 	include_once "database.php";
@@ -80,7 +82,7 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal)
 				$currCollVal = $collVal2;
 			}
 			
-			$addedCredit = $currCollVal * 0.1;
+			$addedCredit = $currCollVal * $bonusRate;
 			if ($addedCredit > $vault) {
 				$addedCredit = $vault;
 			}
@@ -95,7 +97,7 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal)
 		else {
 			if ($addedCredit != 0) {
 				mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-									VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $codeColliBonus)");
+									VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $recordCode)");
 			}
 		}
 		
