@@ -230,27 +230,21 @@ if ($res3) {
 	        </div>
 	    </div>
         
-<!--
         <div name="bank">
 	        <hr>
 	        <h4>银行账户</h4>
 	        <div id='bank_unset' style="display: <?php if ($isBankSet) echo "none"; else echo "inline"; ?>" >
 		        <p>请输入您的银行卡信息，推荐使用建设银行账户</p>
-		        <input id='bank_user' type="text" placeholder="请输入您的账户姓名" />
-		        <br>
-		        <input id='bank_account' type="text" placeholder="请输入您的银行账号" />
-		        <br>
-		        <input id='bank_name' type="text" placeholder="请输入您的银行名，如建设银行／中国银行" />
-		        <br>
-		        <input id='bank_branch' type="text" placeholder="请输入您的开户支行" />
-		        <br>
-		        <input type="button" value="确认" onclick="setBankAccount()" />
+		        <input id='bank_user' type="text" placeholder="请输入您的账户姓名" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input id='bank_account' type="text" placeholder="请输入您的银行账号" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input id='bank_name' type="text" placeholder="请输入您的银行名，如建设银行／中国银行" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input id='bank_branch' type="text" placeholder="请输入您的开户支行" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input type="button" value="确认" onclick="setBankAccount()" class="button-rounded" style="width: 28%; height: 30px;" />
 	        </div>
 	        <div id='bank_set' style="display: <?php if (!$isBankSet) echo "none"; else echo "inline"; ?>" >
 		        <p id='bank_acc'><?php echo $bankAcc; ?></p>
 	        </div>
         </div>
--->
     </body>
     <div style="text-align:center;">
     </div>

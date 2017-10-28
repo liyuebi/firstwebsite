@@ -246,9 +246,9 @@ if ($con) {
 							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
 							<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeReserved) { ?>
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo()" />
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo()" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeAbandoned) { ?>
 								<p>放弃买入</p>

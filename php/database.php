@@ -454,7 +454,7 @@ function createBankAccountTable()
 		BankAcc varchar(32) NOT NULL,
 		AccName varchar(16) NOT NULL,
 		BankName varchar(16) NOT NULL,
-		BankBranch varchar(32) NOT NULL
+		BankBranch varchar(32) default ''
 	)";	
 	$result = mysql_query($sql);
 	if (!$result) {
