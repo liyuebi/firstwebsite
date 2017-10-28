@@ -32,10 +32,82 @@ function setSession($row)
 }
 
 /*
+ * 从财富云量中分发积分，包括直推奖励和对碰奖励，还有每日分红。
+ * $userid: 第一个享受碰撞的父节点，如果是注册，即推荐人；如果是复投，即复投人的父节点
+ * relateUserId: 积分纪录中的相关账号
+ * $recordCode: 积分记录码
+ */
+function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserId, $recordCode)
+{
+	if ($addedCredit <= 0) {
+		return;
+	}
+	
+	$res = mysql_query("select * from CreditBank where UserId='$userid' and Balance>0 order by SaveTime desc");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		// !!! log error
+		return;
+	}
+	
+	$now = time();
+	$actualAdded = 0;
+	while ($addedCredit > 0 && $row = mysql_fetch_array($res)) {
+		
+		$idxId = $row["IdxId"];
+		$balance = $row["Balance"];
+		if ($balance >= $addedCredit) {
+			
+			$actualAdded += $addedCredit;
+			$balance -= $addedCredit;
+			$addedCredit = 0;
+			
+			$res1 = mysql_query("update CreditBank set Balance='$balance', LastChangeT='$now' where IdxId='$idxId'");
+			if (!$res1) {
+				// !!! log error
+			}
+		}
+		else {
+			
+			$actualAdded += $balance;
+			$addedCredit -= $balance;
+			$balance = 0;
+			
+			$res1 = mysql_query("update CreditBank set Balance='$balance', LastChangeT='$now', EmptyTime='$now' where IdxId='$idxId'");
+			if (!$res1) {
+				// !!! log error
+			}
+		}
+	}
+	
+	if ($actualAdded > 0) {
+		
+		$credit += $actualAdded;
+		$vault -= $actualAdded;
+		if ($vault < 0) {
+			// !!! log error 实际增加的值比财富云量大，说明财富云量和存储云量的总余额不一致了
+			$vault = 0;
+		}
+		
+		$res2 = mysql_query("update Credit set Credits='$credit', Vault='$vault' where UserId='$userid'");
+		if (!$res2) {
+			// !!! log error
+		}
+		else {
+			$res3 =	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+										VALUES($userid, $actualAdded, $credit, $now, $now, $relateUserId, $recordCode)");
+			if (!$res3) {
+				// !!! log error
+			}
+		}
+	}
+}
+
+/*
  * 分发直推奖励，先从蜂值里扣，若蜂值不够，则从采蜜券里扣，若依然不够，仍给足用户推荐奖励
  * $userid: 第一个享受碰撞的父节点，如果是注册，即推荐人；如果是复投，即复投人的父节点
  * $newuserid: 被注册人／复投人
  * $collisionVal: 新用户支线的碰撞值／复投额度
+ * $recordCode: 积分记录码
  */
 function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate, $recordCode)
 {
@@ -84,24 +156,14 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate,
 			}
 			
 			$addedCredit = $currCollVal * $bonusRate;
-			if ($addedCredit > $vault) {
-				$addedCredit = $vault;
-			}
-			$vault -= $addedCredit;
-			$credit += $addedCredit;
+			addCreditFromVault($userid, $vault, $credit, $addedCredit, $newuserid, $recordCode);
 		}
 		
-		$res1 = mysql_query("update Credit set Credits='$credit', Vault='$vault', CollChild='$newCollChild', CollVal='$newCollVal' where UserId='$userid'");
+		$res1 = mysql_query("update Credit set CollChild='$newCollChild', CollVal='$newCollVal' where UserId='$userid'");
 		if (!$res1) {
 			// !!! log error
 		}
-		else {
-			if ($addedCredit != 0) {
-				mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-									VALUES($userid, $addedCredit, $credit, $now, $now, $newuserid, $recordCode)");
-			}
-		}
-		
+				
 		// 取得下一个进行碰撞的父节点
 		$res2 = mysql_query("select * from ClientTable where UserId='$userid'");
 		if (!$res2) {

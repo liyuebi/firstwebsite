@@ -176,26 +176,11 @@ else
 								VALUES($userid, $quantity, $leftCredit, $now, $now, $newuserid, $codeReferer)");
 								
 	$addedCredit = $quantity * 0.1;
-	if ($addedCredit > $vault) {
-		$addedCredit = $vault;
-	}
-	$vault -= $addedCredit;
-	$leftCredit = $leftCredit + $addedCredit;
-	
-	// 修改用户的积分纪录，增加直推奖励，若失败不影响返回结果
-	if ($addedCredit > 0) {
-		$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-									VALUES($userid, $addedCredit, $leftCredit, $now, $now, $newuserid, $codeReferBonus)");
-	}
+
+	addCreditFromVault($userid, $vault, $leftCredit, $addedCredit, $newuserid, $codeReferBonus);
 								
-	$result = mysql_query("update Credit set Credits='$leftCredit', Vault='$vault' where UserId='$userid'");
-	if (!$result) {
-		// !!! log error
-	}
-	else {
-		// 分发推荐奖励
-		attributeCollisionBonus($userid, $newuserid, $quantity, 0.1, $codeColliBonusNew);
-	}
+	// 分发碰撞奖励
+	attributeCollisionBonus($userid, $newuserid, $quantity, 0.1, $codeColliBonusNew);
 								
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from ClientTable where UserId='$userid'");

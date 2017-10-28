@@ -117,7 +117,7 @@ if ($con) {
             <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
             <br>
             <p style="margin-bottom: 0;">注册用户可存储线上云量资产（必须是100的倍数）</b>，您的剩余线上云量为 <strong><?php echo $mycredit; ?></strong></p>
-            <input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入投入数额" onkeypress="return onlyNumber(event)" />
+            <input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
 <!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
 <!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
 <!-- 			<br> -->

@@ -199,7 +199,7 @@ function createCreditBankTable()
 	* Quantity: 总存储额（玩家能拿回的总返还额度），设计时为投资额的3倍减去分到线下资产和慈善金中的部分
 	* Invest: 买家投资额
 	* Balance: 余额
-	* Divident: 实际分红值，总存储额中分红额占的部分
+	* Divident: 实际分红值，目前分红额占的部分
 	* DiviCnt: 每日分红值，根据比例计算得到
 	* SaveTime: 存储的时间
 	* LastDiviT: 上次获取分红的时间
