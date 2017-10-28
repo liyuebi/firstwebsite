@@ -533,6 +533,7 @@ function initAccount()
 {
 	include 'regtest.php';
 	include 'func.php';
+	include "constant.php";
 		
 	$nickname = trim(htmlspecialchars($_POST["nickname"]));
 	$loginPwd = trim(htmlspecialchars($_POST["pwd"]));
@@ -567,10 +568,21 @@ function initAccount()
 	
 	$userid = $_SESSION["userId"];
 	
+	$result = mysql_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
+		return;
+	}
+	else if (mysql_num_rows($result) > 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysql_error()));	
+		return;			
+	}
+
+	
 	$newAddressId = 0;
     $ret = addOneAddress($con, $userid, $receiver, $phonenum, $address, false, $newAddressId, $msg);
     if (!$ret) {
-	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>$msg));
+	    echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>$msg));
 	    return;
     }	
 
@@ -579,7 +591,7 @@ function initAccount()
 	$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
 	$res = mysql_query("update ClientTable set NickName='$nickname', Password='$loginPwd', PayPwd='$paypwd', DefaultAddressId='$newAddressId', AccInited='1', LastPwdModiTime='$time', LastPPwdModiTime='$time' where UserId='$userid'");
 	if (!$res) {
-	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'初始化账号出错！'));
+	    echo json_encode(array('error'=>'true','error_code'=>'34','error_msg'=>'初始化账号出错！'));
 	    return;	
 	}
 	
