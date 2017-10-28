@@ -183,8 +183,10 @@ else
 	$leftCredit = $leftCredit + $addedCredit;
 	
 	// 修改用户的积分纪录，增加直推奖励，若失败不影响返回结果
-	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $addedCredit, $leftCredit, $now, $now, $newuserid, $codeReferBonus)");
+	if ($addedCredit > 0) {
+		$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+									VALUES($userid, $addedCredit, $leftCredit, $now, $now, $newuserid, $codeReferBonus)");
+	}
 								
 	$result = mysql_query("update Credit set Credits='$leftCredit', Vault='$vault' where UserId='$userid'");
 	if (!$result) {
