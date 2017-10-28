@@ -46,7 +46,8 @@ function createClientTable()
 		LastLoginTime int DEFAULT 0,
 		LastPwdModiTime int DEFAULT 0,
 		LastPPwdModiTime int DEFAULT 0,
-		DefaultAddressId int DEFAULT 0
+		DefaultAddressId int DEFAULT 0,
+		AccInited int default 0
 	) ENGINE=MEMORY AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -139,7 +140,7 @@ function createAddressTable()
 	(
 		AddressId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(AddressId),
-		UserId int,
+		UserId int not null,
 		Receiver varchar(30) NOT NULL,
 		PhoneNum varchar(15) NOT NULL,
 		Address varchar(128) NOT NULL,

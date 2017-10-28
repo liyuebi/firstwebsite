@@ -23,15 +23,13 @@ $userid = $_SESSION["userId"];
 $new = 0;
 
 // 如果是新用户，推他去修改个人信息
-if ($_SESSION['pwdModiT'] == 0
-	&& $_SESSION["name"] == '') {
-		
-	$new = 1;
+if ($_SESSION['accInited'] <= 0) {
+	$home_url = 'initAcc.php';
+	header('Location: ' . $home_url);
+	exit();	
 }
 
 $vault = 0;
-$feng = 0;
-$dfeng = 0;
 $row = false;
 $bonus = 0;
 $dBonus = 0;
@@ -65,7 +63,6 @@ if ($con) {
 
 // $monConsumption = getMonthConsumption($userid);
 $dayObtained = getDayObtained($userid);
-$feng = ceil($vault / $fengzhiValue);
 
 $hasBonus = ($bonus + $dBonus) > 0;
 $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
@@ -231,8 +228,6 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id=""><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
 					<td id="pnts"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
-<!-- 					<td id="bonuspool"><?php echo $vault; ?></td> -->
-<!-- 					<td id="dbonuspool"><?php echo $dfeng; ?></td> -->
 				</tr>
 			</table>
 		</div>

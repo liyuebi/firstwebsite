@@ -114,7 +114,8 @@ function addAddress()
 	
 	$bDefault = $isdefault != '0';
 	
-    $ret = addOneAddress($con, $userId, $receiver, $phonenum, $address, $bDefault, $msg);
+	$newAddressId = 0;
+    $ret = addOneAddress($con, $userId, $receiver, $phonenum, $address, $bDefault, $newAddressId, $msg);
     if (!$ret) {
 	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>$msg));
 	    return;

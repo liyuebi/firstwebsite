@@ -35,6 +35,9 @@ else if ("changePayPwd" == $_POST['func']) {
 else if ("changeLoginPwd" == $_POST['func']) {
 	changeLoginPwd();
 }
+else if ("initacc" == $_POST['func']) {
+	initAccount();
+}
 else if ("editprofile" == $_POST['func']) {
 	editProfile();
 }
@@ -460,7 +463,8 @@ function editProfile()
 				return;
 			}
 	
-			$ret = addOneAddress($con, $userid, $rece, $rece_phone, $rece_add, true, $str);
+			$newAddressId = 0;
+			$ret = addOneAddress($con, $userid, $rece, $rece_phone, $rece_add, true, $newAddressId, $str);
 			if (!$ret) {
 				echo json_encode(array('error'=>'false','add_address'=>'failed','error_msg'=>'2'));
 			}
@@ -523,6 +527,83 @@ function getProfile()
 	
 	echo json_encode(array('error'=>'false','found'=>'false'));
 	return;
+}
+
+function initAccount()
+{
+	include 'regtest.php';
+	include 'func.php';
+		
+	$nickname = trim(htmlspecialchars($_POST["nickname"]));
+	$loginPwd = trim(htmlspecialchars($_POST["pwd"]));
+	$paypwd = trim(htmlspecialchars($_POST["ppwd"]));
+	$receiver = trim(htmlspecialchars($_POST["receiver"]));
+	$phonenum = trim(htmlspecialchars($_POST["phonenum"]));
+	$address = trim(htmlspecialchars($_POST["address"]));
+
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	if (strlen($nickname) < 2) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的昵称格式，请重新填写！'));
+		return;		
+	}
+	
+	$msg = '';
+	if (!isValidAddress($receiver, $phonenum, $address, $msg)) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	
+	$userid = $_SESSION["userId"];
+	
+	$newAddressId = 0;
+    $ret = addOneAddress($con, $userid, $receiver, $phonenum, $address, false, $newAddressId, $msg);
+    if (!$ret) {
+	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>$msg));
+	    return;
+    }	
+
+	$time = time();
+	$loginPwd = password_hash($loginPwd, PASSWORD_DEFAULT);
+	$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
+	$res = mysql_query("update ClientTable set NickName='$nickname', Password='$loginPwd', PayPwd='$paypwd', DefaultAddressId='$newAddressId', AccInited='1', LastPwdModiTime='$time', LastPPwdModiTime='$time' where UserId='$userid'");
+	if (!$res) {
+	    echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'初始化账号出错！'));
+	    return;	
+	}
+	
+	$_SESSION['nickname'] = $nickname;
+	$_SESSION['password'] = $loginPwd;
+	$_SESSION['buypwd'] = $paypwd;
+	$_SESSION['pwdModiT'] = $time;
+	$_SESSION['ppwdModiT'] = $time;
+	$_SESSION['accInited'] = 1;
+	
+	$res1 = mysql_query("select * from Transaction where UserId='$userid' and Type='1' and Status='$OrderStatusDefault'");
+	if (!$res1 || mysql_num_rows($res1) <= 0) {
+		// !!! log error
+	}
+	else {
+		$row1 = mysql_fetch_assoc($res1);
+		$orderId = $row1["OrderId"];
+		$res2 = mysql_query("update Transaction set AddressId='$newAddressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', ConfirmTime='$time' where OrderId='$orderId'");
+		if (!$res2) {
+			// !!! log error
+		}
+	}
+	
+	echo json_encode(array('error'=>'false'));
 }
 
 function switchAccount()

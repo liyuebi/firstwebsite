@@ -26,6 +26,7 @@ function setSession($row)
 	$_SESSION['isLogin'] = true;
 	$_SESSION['pwdModiT'] = $row["LastPwdModiTime"];
 	$_SESSION['ppwdModiT'] = $row["LastPPwdModiTime"];
+	$_SESSION['accInited'] = $row["AccInited"];
 	
 	setUserCookie($row['NickName'], $row['UserId']);
 }
@@ -355,8 +356,9 @@ function isValidAddress($receiver, $phone, $address, &$error_str)
 	return true;
 }
 
-function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &$error_str)
+function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &$newAddressId, &$error_str)
 {	
+	$newAddressId = 0;
 	$result = createAddressTable();
 	if (!$result) {
 		$error_str = "创建地址表失败，请稍后重试！";
@@ -370,9 +372,9 @@ function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &
 			return false;
 		}
 		else {
+			$newAddressId = mysql_insert_id();
 			// 更新默认地址,出错了不做处理
 			if ($isDefault) {
-				$addId = mysql_insert_id();
 				mysql_query("update ClientTable set DefaultAddressId='$addId' where UserId='$userid'");
 			}
 		}
