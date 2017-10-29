@@ -173,6 +173,7 @@ function createCreditTradeTable()
 		TradeId varchar(18) not null,
 		SellerId int not null,
 		SellNickN varchar(16) default '',
+		SellPhoneNum varchar(15) default '',
 		Quantity int NOT NULL,
 		HanderRate decimal(10,2) not null,
 		BuyerId int default 0,

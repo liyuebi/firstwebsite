@@ -75,11 +75,14 @@ if (!$isAlipaySet && !$isWechatSet && !$isBankSet) {
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
 			
 			function tryCreateTrade()
 			{
 				var amount = document.getElementById("cnt").value;
+				var paypwd = document.getElementById("paypwd").value;
+				
 				var amountReg = /^[1-9]\d*$/;
 				var val = amountReg.test(amount);
 				if (!amountReg.test(amount)) {
@@ -88,8 +91,13 @@ if (!$isAlipaySet && !$isWechatSet && !$isBankSet) {
 					document.getElementById("cnt").focus();
 					return;
 				}
+				if (paypwd == "") {
+					alert("无效的支付密码！");
+					return;
+				}
 				
-				$.post("../php/creditTrade.php", {"func":"createTrade","amount":amount}, function(data){
+				paypwd = md5(paypwd);
+				$.post("../php/creditTrade.php", {"func":"createTrade","amount":amount,"paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {
 						alert("创建成功！");	
@@ -98,6 +106,7 @@ if (!$isAlipaySet && !$isWechatSet && !$isBankSet) {
 					else {
 						alert("创建失败: " + data.error_msg);
 						document.getElementById("cnt").value = "";
+						document.getElementById("paypwd").value = "";
 						document.getElementById("cnt").focus();
 						
 						return;
@@ -120,9 +129,10 @@ if (!$isAlipaySet && !$isWechatSet && !$isBankSet) {
 			</div>
 		</div>
 
-		<p>交易额为100的整数倍，手续费为10%</p>
-		<input type="text" id="cnt" style="width: 100%; height: 30px; margin-bottom: 10px" value="" placeholder="请输入交易数额" />
-		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
+		<h4 style="margin-top: 10px;">交易额为100的整数倍，手续费为10%</h4>
+		<input type="text" id="cnt" class="form-control" style="margin-bottom: 10px" value="" placeholder="请输入交易数额" />
+		<input type="password" class="form-control" id="paypwd" style="margin-bottom: 10px" name="paypwd" placeholder="请输入您的支付密码！" />
+		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
     </body>
 </html>
 

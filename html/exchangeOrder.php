@@ -148,7 +148,7 @@ if ($con) {
 			function abandonPayment(btn)
 			{
 				var idx = btn.id;
-				if (confirm("确认要放弃交易支付？")) {
+				if (confirm("确认要放弃买入线上云量？")) {
 
 					$.post("../php/creditTrade.php", {"func":"abandonPayment","idx":idx}, function(data){
 						
@@ -199,11 +199,11 @@ if ($con) {
 						<hr>
 						<div>
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
-							<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
-							<p>总交易额：<?php echo $row["Quantity"] ?></p>
-							<p>交易创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-							<p>交易过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
+							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
+							<p>交易额度：<?php if ($row["BuyCnt"] <= 0) {echo $row["Quantity"];} else {echo $row["BuyCnt"] . '/' . $row["Quantity"];} ?></p>
+							<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] < 60 * 60 * 24) { ?>
+								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeCancelled) { ?>
@@ -213,9 +213,11 @@ if ($con) {
 								<p>已过期</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeReserved) { ?>
+								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
 								<p>等待支付</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradePayed) { ?>
+								<p>自动到账时间：<?php echo date("Y-m-d H:i:s", $row["PayTime"] + 60 * 60 * 24); ?></p>
 								<p>买家已支付,请确认</p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="确认收款" onclick="tryConfirmReceive(this)" />
 							<?php 	} 
@@ -241,11 +243,11 @@ if ($con) {
 						<hr>
 						<div>
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
-							<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
-							<p>总交易额：<?php echo $row["Quantity"] ?></p>
+							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
+							<p>买入额度：<?php echo $row["BuyCnt"]; ?></p>
 							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
-							<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeReserved) { ?>
+								<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo()" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
@@ -255,6 +257,7 @@ if ($con) {
 							<?php
 									}
 									else if ($row["Status"] == $creditTradePayed) { ?>
+								<p>自动到账时间：<?php echo date("Y-m-d H:i:s", $row["PayTime"] + 60 * 60 * 24); ?></p>
 								<p>已付款，等待买家确认</p>
 							<?php
 									}
@@ -263,7 +266,7 @@ if ($con) {
 							<?php
 									}
 									else if ($row["Status"] == $creditTradeConfirmed || $row["Status"] == $creditTradeAutoConfirmed) { ?>
-							
+								<p>交易完成</p>
 							<?php	} ?>
 						</div>
 						<hr>

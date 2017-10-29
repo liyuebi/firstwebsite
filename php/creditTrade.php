@@ -40,6 +40,7 @@ function createTradeOrder()
 	}
 	
 	$amount = trim(htmlspecialchars($_POST["amount"]));
+	$paypwd = trim(htmlspecialchars($_POST['paypwd']));
 	
 	if (!isValidMoneyAmount($amount)) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的金额无效，请重新输入！'));
@@ -57,6 +58,16 @@ function createTradeOrder()
 	if ($amount < 100) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'金额不能小于100，请重新输入！'));
 		return;		
+	}
+	
+	if ($amount % 100 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'金额必须为100的整数倍，请重新输入！'));
+		return;				
+	}
+	
+	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'支付密码出错，请重试！'));
+		return;
 	}	
 	
 	$con = connectToDB();
@@ -80,7 +91,7 @@ function createTradeOrder()
 		$handlefee = $amount * 0.1;
 		$neededAmount = $amount + $handlefee;
 		if ($neededAmount > $credit) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'您输入的金额超过您的余额，请重新输入！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'您输入的金额超过您的余额，请重新输入！'));	
 			return;
 		}
 				
@@ -128,7 +139,7 @@ function createTradeOrder()
 		}
 		
 		if (!$isTradeIdSet) {
-			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'生成交易号出错，请稍后重试！'));
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'生成交易号出错，请稍后重试！'));
 			return;
 		}
 		
@@ -141,7 +152,7 @@ function createTradeOrder()
 		}
 		
 		$credit = $credit - $neededAmount;
-		$result = mysql_query("update Credit set Credits='$credit'");
+		$result = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$result) {
 			// !!! log error
 		}

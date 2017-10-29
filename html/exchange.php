@@ -90,11 +90,11 @@ if ($con) {
 						<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
 						<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="购买" onclick="tryStartTrade(this)" />
 					</div>
-					<hr>
 		<?php
 				}
 			}
 		?>
+		<hr>
 		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
 		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="交易订单" onclick="gotoCreditOrder()" />
     </body>

@@ -159,11 +159,13 @@ if ($res3) {
 					return;
 				}
 				branch = $.trim(branch);
+/*
 				if (branch.length <= 0) {
 					alert("开户支行不能为空，请重新输入！");
 					document.getElementById("bank_branch").focus();
 					return;
 				}
+*/
 				
 				if (!confirm("一旦设置，将不能手动修改，请确认您填写的内容正确，是否继续设置银行账号？")) {
 					return;
@@ -240,7 +242,7 @@ if ($res3) {
 		        <input id='bank_user' type="text" placeholder="请输入您的账户姓名" class="form-control" style="width: 70%; display: inline-block;" />
 		        <input id='bank_account' type="text" placeholder="请输入您的银行账号" class="form-control" style="width: 70%; display: inline-block;" />
 		        <input id='bank_name' type="text" placeholder="请输入您的银行名，如建设银行／中国银行" class="form-control" style="width: 70%; display: inline-block;" />
-		        <input id='bank_branch' type="text" placeholder="请输入您的开户支行" class="form-control" style="width: 70%; display: inline-block;" />
+		        <input id='bank_branch' type="text" placeholder="请输入您的开户支行（选填）" class="form-control" style="width: 70%; display: inline-block;" />
 		        <br>
 		        <input type="button" value="确认" onclick="setBankAccount()" class="button-rounded" style="width: 28%; height: 30px;" />
 	        </div>

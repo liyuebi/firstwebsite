@@ -127,7 +127,7 @@ function setBank()
 	$acc = trim(htmlspecialchars($_POST["acc"]));
 	$bank = trim(htmlspecialchars($_POST["bank"]));
 	$branch = trim(htmlspecialchars($_POST["bra"]));
-	if (strlen($name) <= 0 || strlen($acc) <= 0 || strlen($bank) <= 0 || strlen($branch) <= 0) {
+	if (strlen($name) <= 0 || strlen($acc) <= 0 || strlen($bank) <= 0 /* || strlen($branch) <= 0 */) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'您有未填写的项目，请重新输入！'));
 		return;
 	}
