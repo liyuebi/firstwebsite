@@ -31,11 +31,9 @@ if ($_SESSION['accInited'] <= 0) {
 
 $vault = 0;
 $row = false;
+$hasBonus = false;
 $bonus = 0;
-$dBonus = 0;
 $lastCBTime = 0;
-
-// $res = false;
 
 $con = connectToDB();
 if ($con) {
@@ -48,24 +46,28 @@ if ($con) {
 		$row = mysql_fetch_assoc($result);
 		
 		$vault = $row["Vault"];
-		$bonus = $row["CurrBonus"];
 		$lastCBTime = $row["LastCBTime"];
 		
 		$now = time();
-		// 每日固定分红只能收获一次
-		if (isInTheSameDay($lastCBTime, $now)) {
-			$bonus = 0;	
+		// 利息每日只能收获一次
+		if (!isInTheSameDay($lastCBTime, $now)) {
+			
+			date_default_timezone_set('PRC');
+			$hour = intval(date("H", $now));
+			// 6点以后才可以领取利息
+			if ($hour >= 6) {
+			
+				include "../php/bonus.php";
+				$bonus = getDayBonus($userid);
+				if ($bonus > 0) {
+					$hasBonus = true;
+				}
+			}
 		}
 	}
 	
 // 	$res = mysql_query("select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
 }
-
-// $monConsumption = getMonthConsumption($userid);
-$dayObtained = getDayObtained($userid);
-
-$hasBonus = ($bonus + $dBonus) > 0;
-$bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 
 ?>
 
@@ -103,22 +105,9 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				location.href = 'me.php';
 			}
 			
-			function acceptBonus()
+			function acceptBonus(btn)
 			{
-				var bonus = <?php echo $bonus; ?>;
-				if (bonus <= 0) {
-					alert("出错了！");
-					location.href = 'home.php';
-				}
-				
-// 				var feng = <?php echo $vault; ?>;
-// 				if (bonus > feng) {
-// 					if (!confirm("固定蜂值余额不足了，如果继续，只能领取" + feng + "线上云量，是否继续？")) {
-// 						return;
-// 					}
-// 					bonus = feng;
-// 				}
-				
+								
 				$.post("../php/credit.php", {"func":"acceptBonus"}, function(data){
 					
 					if (data.error == "false") {
@@ -130,46 +119,15 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 						}
 						document.getElementById("accept_btn").style.display = "none";
 						document.getElementById("accept_logo").style.display = "block";
-						document.getElementById("todayobtain").innerHTML = data.DayObtained;
+						document.getElementById("point").innerHTML = data.credit;
 						document.getElementById("bonuspool").innerHTML = data.vault;
-						document.getElementById("point").innerHTML = data.credit;
-						document.getElementById("pnts").innerHTML=data.pnts;
 					}
 					else {
 						alert("领取失败：" + data.error_msg);
 					}
 				}, "json");
 			}
-			
-			function acceptDBonus()
-			{
-				var dBonus = <?php echo $dBonus; ?>;
-				if (dBonus <= 0) {
-					alert("出错了！");
-					location.href = 'home.php';
-				}
-				
-				$.post("../php/credit.php", {"func":"acceptDBonus"}, function(data){
-					
-					if (data.error == "false") {
 						
-						if (data.not_enough == "true") {
-							alert(data.error_msg);
-						}
-						else {
-						}
-						document.getElementById("accept_btn1").style.display = "none";
-						document.getElementById("accept_logo1").style.display = "block";
-						document.getElementById("todayobtain").innerHTML = data.DayObtained;
-						document.getElementById("point").innerHTML = data.credit;
-						document.getElementById("pnts").innerHTML=data.pnts;
-					}
-					else {
-						alert("领取失败：" + data.error_msg);
-					}
-				}, "json");
-			}
-			
 			function goToRecommend()
 			{
 /*
@@ -204,20 +162,6 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
         </div>
 	        
 		<div>
-<!--
-			<table class="t1" border="1" align="center" style="margin-bottom: 0;" rules="none">
-				<tr>
-					<td width="49" align="left"><?php echo $_SESSION['nickname'] . "(" . $_SESSION["userId"] . ")"; ?></td>
-					<td width="25%">总线上云量</td>
-					<td width="25%">当日线上云量</td>
-				</tr>
-				<tr>
-					<td align="left"><?php echo $levelName[$_SESSION['lvl'] - 1]; ?></td>
-					<td id="totalexpense"><?php if ($row) echo $row["TotalConsumption"]; else echo '0'; ?></td>
-					<td id="todayobtain"><?php if ($row) echo $dayObtained; else echo '0'; ?></td>
-				</tr>
-			</table>
--->
 			<table class="t1" border="1" align="center" style="margin-top: 5px; border: 1px solid #e7e7e7;" rules="none">
 				<tr>
 					<td width="33%">线上云量</td>
@@ -227,34 +171,20 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id=""><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
-					<td id="pnts"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
+					<td id="bonuspool"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
 				</tr>
 			</table>
 		</div>
 
-		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>;">
+		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>; margin: 5px 0; border: 1px solid #e7e7e7;">
 			<table width="100%">
-				<?php if ($bonus > 0) { ?>
 				<tr>
-					<?php if ($bonusPnts > 0) { ?>
-					<td style="width: 60%;"><p>分润 <b><?php echo ($bonus - $bonusPnts); ?></b> 线上云量，<b><?php echo $bonusPnts; ?></b>采线上云量！</p></td>
-					<?php } else { ?>
-					<td style="width: 60%;"><p>分润 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
-					<?php } ?>
+					<td style="width: 60%;"><p>今日返利 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
 					<td style="width: 36%;">
-						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus()" />
+						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus(this)" />
 						<p id="accept_logo" style="color: red; display: none;">已领取</p>
 					</td>		
 				</tr>
-				<?php } ?>
-<!--
-				<?php if ($dBonus > 0) { ?>
-					<td style="width: 60%;"><p>动态分润 <b><?php echo $dBonus; ?></b> 采线上云量！</p></td>
-					<td style="width: 36%;">
-						<input id="accept_btn1" type="button" value="领取" style="width: 100%;" onclick="acceptDBonus()" />
-						<p id="accept_logo1" style="color: red; display: none;">已领取</p>
-				<?php } ?>
--->
 			</table>
 		</div>
 		

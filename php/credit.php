@@ -38,17 +38,6 @@ else if ("acceptBonus" == $_POST['func']) {
 	$userid = $_SESSION['userId'];
 	acceptBonus($userid);
 }
-else if ("acceptDBonus" == $_POST['func']) {
-	include "bonus.php";
-	
-	session_start();
-	if (!$_SESSION["isLogin"]) {
-		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
-		return;
-	}
-	$userid = $_SESSION['userId'];
-	acceptDBonus($userid);	
-}
 else if ("getCredit" == $_POST['func']) {
 	queryCredit();
 }

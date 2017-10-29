@@ -121,7 +121,7 @@ else
 				$vault1 = $quantity * 3;
 				$charity = floor($vault1 * 0.05 * 100) / 100;
 				$pnts = floor($vault1 * 0.15 * 100) / 100;
-				$diviCnt = floor($vault1 * 0.005 * 100) / 100;
+				$diviCnt = floor($quantity * $dayBonusRate * 100) / 100;
 				$vault1 = $vault1 - $charity - $pnts;
 				$result = mysql_query("insert into Credit (UserId, Vault, Pnts, Charity)
 					VALUES('$newuserid', '$vault1', '$pnts', '$charity')");

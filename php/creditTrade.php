@@ -634,7 +634,7 @@ function saveCredit()
 		$quantity = $amount * 3;
 		$charity = floor($quantity * 0.05 * 100) / 100;
 		$pnts = floor($quantity * 0.15 * 100) / 100;	
-		$diviCnt = floor($quantity * 0.005 * 100) / 100;
+		$diviCnt = floor($amount * $dayBonusRate * 100) / 100;
 		$quantity = $quantity - $charity - $pnts;
 		$now = time();
 		

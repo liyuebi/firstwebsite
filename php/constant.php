@@ -15,6 +15,7 @@
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 // 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 // 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
+	$dayBonusRate = 0.008;		// 每笔存储每日返还的额度
 	
 	$withdrawFloorAmount =300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
