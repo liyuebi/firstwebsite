@@ -19,6 +19,11 @@ else if ($_GET["source"] == '3') {
 	$pagename = "支付密码设置页面";
 	$page = "setBuyPwd.php";
 }
+else if ($_GET["source"] == '4') { 
+	$reason = "请先设置收款账号";
+	$pagename = "支付管理页面";
+	$page = "payment.php";
+}
 
 ?>
 

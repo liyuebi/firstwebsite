@@ -157,7 +157,7 @@ function createCreditTradeTable()
 {
 	/*
 	* IdxId: 订单序号，按顺序生成
-	* TradeId: 交易订单编号，与时间相关的一个数字
+	* TradeId: 交易订单编号，与时间相关的一个字串，后三位随机生成
 	* Quantity: 卖家需交易的总数量
 	* BuyCnt: 买家准备购买的数量
 	* CreateTime: 卖家创建订单时间
@@ -170,7 +170,7 @@ function createCreditTradeTable()
 	(	
 		IdxId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IdxId),
-		TradeId int not null,
+		TradeId varchar(18) not null,
 		SellerId int not null,
 		SellNickN varchar(16) default '',
 		Quantity int NOT NULL,

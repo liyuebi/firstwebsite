@@ -71,7 +71,7 @@ if ($con) {
 				$.post("../php/register.php", {"phonenum":phonenum, "quantity":num, "paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {
-						alert("注册成功！\n新用户的ids是" + data.new_user_id);	
+						alert("注册成功！");// \n新用户的ids是" + data.new_user_id);	
 						document.getElementById("phonenum").value = "";
 						document.getElementById("investnum").value = "";
 						document.getElementById("paypwd").value = "";

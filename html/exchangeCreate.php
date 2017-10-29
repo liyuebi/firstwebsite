@@ -13,7 +13,6 @@ else {
 	exit();
 }
 
-$mycredit = 0;
 $weAcc = '';
 $isWechatSet = false;
 $aliAcc = '';
@@ -26,13 +25,7 @@ include "../php/constant.php";
 $con = connectToDB();
 if ($con) {
 	
-	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
-		$mycredit = 0;
-	}
-	
+	$userid = $_SESSION["userId"];	
 	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
 	if ($res1) {
 		if (mysql_num_rows($res1) > 0) {
@@ -49,7 +42,6 @@ if ($con) {
 			$isAlipaySet = true;
 		}
 	}
-/*
 	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
 	if ($res3) {
 		if (mysql_num_rows($res3) > 0) {
@@ -58,7 +50,12 @@ if ($con) {
 			$isBankSet = true;
 		}
 	}
-*/
+}
+
+if (!$isAlipaySet && !$isWechatSet && !$isBankSet) {
+	$url = 'jump.php?source=4';
+	header('Location: ' . $url);
+	exit;
 }
 
 ?>
@@ -105,8 +102,7 @@ if ($con) {
 						
 						return;
 					}
-				}, "json");			
-					
+				}, "json");				
 			}		
 			
 			function goback()

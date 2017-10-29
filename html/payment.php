@@ -58,7 +58,7 @@ if ($res3) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>支付方式管理</title>
+		<title>支付管理</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -195,11 +195,12 @@ if ($res3) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">支付方式管理</h3></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">支付管理</h3></div>
 				<div class="col-xs-3 col-md-3"></div>
 			</div>
 		</div>
 		
+<!--
         <div>
             <p>请选择您要使用的支付方式填写</p>
         </div>
@@ -229,6 +230,7 @@ if ($res3) {
 		        <p>您的支付宝账号： <b id='alipay_acc'><?php echo $aliAcc; ?></b></p>
 	        </div>
 	    </div>
+-->
         
         <div name="bank">
 	        <hr>
@@ -239,6 +241,7 @@ if ($res3) {
 		        <input id='bank_account' type="text" placeholder="请输入您的银行账号" class="form-control" style="width: 70%; display: inline-block;" />
 		        <input id='bank_name' type="text" placeholder="请输入您的银行名，如建设银行／中国银行" class="form-control" style="width: 70%; display: inline-block;" />
 		        <input id='bank_branch' type="text" placeholder="请输入您的开户支行" class="form-control" style="width: 70%; display: inline-block;" />
+		        <br>
 		        <input type="button" value="确认" onclick="setBankAccount()" class="button-rounded" style="width: 28%; height: 30px;" />
 	        </div>
 	        <div id='bank_set' style="display: <?php if (!$isBankSet) echo "none"; else echo "inline"; ?>" >

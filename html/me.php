@@ -70,7 +70,7 @@ include "../php/constant.php";
  			<span>密码管理</span>
 		</a>		
 		<a class="link_forward" href="payment.php" style="border-bottom: 0">
- 			<span>支付方式管理</span>
+ 			<span>支付管理</span>
 		</a>		
         
         <hr>
