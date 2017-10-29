@@ -99,9 +99,19 @@ if ($con) {
 				}
 			}
 			
-			function checkSellerInfo()
+			function checkSellerInfo(btn)
 			{
+				var idx = btn.id;
+				var infoNode = document.getElementById("info_" + idx);
+				if (infoNode) {
+					var info = infoNode.value;
+					if (info.length > 0) {
+						alert(info);
+						return;
+					}
+				}
 				
+				alert("没有支付信息！");
 			}
 			
 			function tryConfirmReceive(btn)
@@ -246,11 +256,22 @@ if ($con) {
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>买入额度：<?php echo $row["BuyCnt"]; ?></p>
 							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
-							<?php 	if ($row["Status"] == $creditTradeReserved) { ?>
+							<?php 	if ($row["Status"] == $creditTradeReserved) { 
+								
+								$info = '';
+								$str = "select * from BankAccount where UserId=" . $row['SellerId'];
+								$res3 = mysql_query($str);
+								if ($res3 && mysql_num_rows($res3) > 0) {
+									$row3 = mysql_fetch_assoc($res3);
+									$info = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
+								}
+								
+							?>
 								<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo()" />
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
+								<input type='hidden' id="info_<?php echo $row["IdxId"]; ?>" value="<?php echo $info; ?>" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeAbandoned) { ?>
 								<p>放弃买入</p>
