@@ -28,23 +28,31 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>资金纪录</title>
+		<title>云量纪录</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
+			
+			function goback()
+			{
+				location.href = "me.php";
+			}	
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">云量纪录</h3></div>
+				<div class="col-xs-3 col-md-3"></div>
+			</div>
 		</div>
 		
         <div>
@@ -54,72 +62,57 @@ if ($con) {
 		        while ($row = mysql_fetch_array($result)) {
 			?>  	
 			<div>
-				    <p><?php 
+				    <p style="margin: 10px 5px;"><?php 
 					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
 					    echo "<br>";
-					    if ($row["Type"] == $codeRecharge) {
-							echo "您购买了" . $row["Amount"] . "蜜券。"; 				    
+					    if ($row["Type"] == $codeBuy) {
+// 							echo "您通过云量交易获得" . $row["Amount"] . "线上云量。"; 				    
 				    	}
-				    	else if ($row["Type"] == $codeWithdraw) {
-					    	echo "您申请赎回" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
+				    	else if ($row["Type"] == $codeSell) {
+// 					    	echo "您申请赎回" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeDivident) {					    	
-					    	echo "您固定分红得到" . $row["Amount"] . "蜜券。";
+					    	echo "您固定分红得到" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeBonus) {
-					    	echo "用户" . $row["WithUserId"] . "购物，您收获了" . $row["Amount"] . "蜜券。"; 
+				    	else if ($row["Type"] == $codeReferer) {
+					    	echo "推荐新用户，使用了" . $row["Amount"] . "线上云量。"; 
 				    	}
-				    	else if ($row["Type"] == $codeConsume) {
-					    	echo "您购物使用了" . $row["Amount"] . "蜜券。";
+				    	else if ($row["Type"] == $codeReferBonus) {
+					    	echo "推荐新用户获得直推奖励" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeCancelPurchase) {
-					    	echo "您取消订单，返还了" . $row["Amount"] . "蜜券。";
+				    	else if ($row["Type"] == $codeColliBonusNew) {
+					    	echo "推荐新用户获得对碰奖励" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeRecommend) {
-					    	echo "您推荐新用户" . $row["WithUserId"] . "，使用了" . $row["Amount"] . "蜜券。";
+				    	else if ($row["Type"] == $codeColliBonusRe) {
+					    	echo "您的队友进行财富存储，您获得了对碰奖励" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeTransferTo) {
-					    	echo "您向用户" . $row["WithUserId"] . "转账了" . $row["Amount"] . "蜜券，收取手续费" . $row["HandleFee"] . "蜜券。";
+				    	else if ($row["Type"] == $codeSave) {
+					    	echo "您进行财富存储，存储了" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeTransferFrom) {
-					    	$actual = $row["Amount"] - $row["HandleFee"];
-					    	echo "您收到用户" . $row["WithUserId"] . "的转账" . $row["Amount"] . "蜜券，扣除手续费实际获得" . $actual . "蜜券。";
+				    	else if ($row["Type"] == $codeCreTradeInit) {
+					    	echo "您在云量交易挂卖" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeDynDivident) {					    	
-					    	echo "您动态分红得到" . $row["Amount"] . "蜜券。";
+				    	else if ($row["Type"] == $codeCreTradeSucc) {					    	
+					    	echo "云量交易完成，退回未交易部分的" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeWithdrawCancelled) {					    	
-					    	echo "您的取现申请取消，退回" . $row["Amount"] . "蜜券到账。";
+				    	else if ($row["Type"] == $codeCreTradeCancel) {					    	
+					    	echo "云量交易取消，退回" . $row["Amount"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeTransferToPnts) {
-					    	echo "您的" . $row["Amount"] . "蜜券转换成采蜜券。";
+				    	else if ($row["Type"] == $codeCreTradeRec) {
+					    	echo "您通过云量交易购买成功，" . $row["Amount"] . "线上云量到账。";
 				    	}
-				    	else if ($row["Type"] == $codeLevelupBonus) {
-					    	echo "获得升级奖励，得到蜜券" . $row["Amount"] ; 
+				    	else if ($row["Type"] == $codeTryChargePhone) {
+					    	echo "您申请话费充值，使用" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
-				    	else if ($row["Type"] == $codeTransferFromPnts) {
-					    	echo "您的" . $row["Amount"] . "采蜜券转到蜜券。";
-				    	}
-				    	else if ($row["Type"] == $codeRecoBonus) {
-					    	echo "您直推用户" . $row["WithUserId"] . "获得了推荐奖励" . $row["Amount"] . "蜜券。";
-				    	}
-				    	else if ($row["Type"] == $codeChargeRegiToken) {
-					    	echo "您充值了" . $row["Amount"] . "注册券。";
-				    	}
-				    	else if ($row["Type"] == $codeRecoRegiToken) {
-					    	echo "您推荐新用户" . $row["WithUserId"] . "，使用了" . $row["Amount"] . "注册券。";	
+				    	else if ($row["Type"] == $codeStopChargePhone) {
+					    	echo "您话费充值取消，退回" . $row["Amount"] . "线上云量。";
 				    	}
 				    	
-					    echo "<br>";
-					    if ($row["Type"] == $codeChargeRegiToken
-					    	|| $row["Type"] == $codeRecoRegiToken) {
-						    echo "当前剩余注册券" . $row["CurrAmount"] . "。";
-					    }
-					    else {
-						    echo "当前剩余蜜券" . $row["CurrAmount"] . "。";
-					    }
+				    	echo "<br>";
+				    	echo "当前线上云量" . $row["CurrAmount"] . "。";
 					    ?>
 					</p>
+					<hr>
 			</div>
 			<?php       	
 		       	}

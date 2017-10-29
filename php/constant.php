@@ -37,7 +37,7 @@
 	$codeColliBonusNew = 6;	// 碰撞奖励，推荐新用户
 	$codeColliBonusRe = 7;	// 碰撞奖励，用户复投
 	$codeSave = 8;			// 存储金币	
-	$codeDailyBonus = 9;	// 每日分红
+// 	$codeDailyBonus = 9;	// 每日分红
 	$codeCreTradeInit = 10;	// 创建交易，扣除积分
 	$codeCreTradeSucc = 11;	// 交易成功，卖家退回未购买的积分和手续费
 	$codeCreTradeCancel = 12;//	交易取消，返还积分

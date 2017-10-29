@@ -79,7 +79,7 @@ include "../php/constant.php";
  			<span>订单管理</span>
 		</a>
 		
-		<a class="link_forward" href="#" style="border-bottom: 0">
+		<a class="link_forward" href="record.php" style="border-bottom: 0">
  			<span>云量记录</span>
 		</a>		
 				
