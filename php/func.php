@@ -532,6 +532,46 @@ function insertExchangeCreateStatistics($amount)
 	}
 }
 
+function insertExchangeSuccessStatistics($amount, $fee)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$total = $row["ExchangeSuccQuan"] + $amount;
+			$cnt = $row["ExchangeSuccCnt"] + 1;
+			$handleFee = $row["ExchangeFee"] + $fee;
+			mysql_query("update Statistics set ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, ExchangeSuccQuan, ExchangeSuccCnt, ExchangeFee)
+					VALUES('$year', '$month', '$day', '$amount', '1', '$fee')");
+		}
+	}
+	
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);;
+		$total = $row1["ExchangeSuccQuan"] + $amount;
+		$cnt = $row1["ExchangeSuccCnt"] + 1;
+		$handleFee = $row1["ExchangeFee"] + $fee;
+		
+		mysql_query("update TotalStatis set ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where IndexId=1");
+	}
+}
+
+
 function insertWithdrawStatistics($amount, $fee)
 {
 	$now = time();

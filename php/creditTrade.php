@@ -555,6 +555,7 @@ function confirmReceiveMoney()
 			}
 		}
 		
+		$actualHandleFee = $handleFee;
 		if ($buyCnt != $quantity) {
 			$res3 = mysql_query("select * from Credit where UserId='$userid'");
 			if (!$res3 || mysql_num_rows($res3) <= 0) {
@@ -581,6 +582,9 @@ function confirmReceiveMoney()
 				}
 			}
 		}
+		
+		include_once "func.php";
+		insertExchangeSuccessStatistics($buyCnt, $actualHandleFee);
 	}	
 	
 	echo json_encode(array('error'=>'false'));
