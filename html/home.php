@@ -130,21 +130,18 @@ if ($con) {
 						
 			function goToRecommend()
 			{
-/*
-				var regiToken = document.getElementById("regiToken").innerHTML;
-				regiToken = $.trim(regiToken);
-				regiToken = parseFloat(regiToken);
+				var credit = document.getElementById("point").innerHTML;
+				credit = $.trim(credit);
+				credit = parseFloat(credit);
 				
-				if (regiToken < <?php echo $refererConsumePoint; ?>) {
-					if (confirm("您的注册券不足，需要先充值才能进入注册页面，是否前去？")) {
-						location.href = "charge.php";
+				if (credit <= 0) {
+					if (confirm("您的线上云量为0，是否前去云量交易获取？")) {
+						location.href = "exchange.php";
 					}
 				}
 				else {
 					location.href = "recommend.php";
 				}
-*/
-				location.href = "recommend.php";
 			}
 		</script>
 	</head>
@@ -179,7 +176,7 @@ if ($con) {
 		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>; margin: 5px 0; border: 1px solid #e7e7e7;">
 			<table width="100%">
 				<tr>
-					<td style="width: 60%;"><p>今日返利 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
+					<td style="width: 60%;"><p>今日领取 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
 					<td style="width: 36%;">
 						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus(this)" />
 						<p id="accept_logo" style="color: red; display: none;">已领取</p>
@@ -190,7 +187,7 @@ if ($con) {
 		
 		<div class="btn_box" width="auto">
 			<ul>
-				<li><a class="icon_btn1" href="#" onclick="goToRecommend()">分享云粉</a></li>
+				<li><a class="icon_btn1" onclick="goToRecommend()">分享云粉</a></li>
 				<li><a class="icon_btn6" href="exchange.php">云量交易</a></li>
 				<li><a class="icon_btn5" href="posters.php">公告</a></li>
 				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>

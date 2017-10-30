@@ -12,6 +12,8 @@
 
 	$regiCreditLeast = 300;		// 推荐用户时最少存储积分数
 	$regiCreditMost = 9000;		// 推荐用户时最多存储积分数
+	$saveCreditLeast = 300;		// 存储云量时最少存储的云量数
+	$saveCreditMost = 9000;		// 存储云量时最多存储的云量数
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 // 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 // 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号

@@ -368,7 +368,7 @@ function reinvest()
 		}
 		
 		// 统计新用户总数增加
-		insertRecommendStatistics(0, false);
+		insertRecommendStatistics(0);
 	}
 
 	// 修改今天购买个数

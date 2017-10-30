@@ -19,7 +19,7 @@ $userid = $_SESSION["userId"];
 $result = false;
 $con = connectToDB();
 if ($con) {
-	$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc");
+	$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
 }
 	
 ?>
@@ -28,7 +28,7 @@ if ($con) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>云量纪录</title>
+		<title>云量记录</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
@@ -50,7 +50,7 @@ if ($con) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">云量纪录</h3></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">云量记录</h3></div>
 				<div class="col-xs-3 col-md-3"></div>
 			</div>
 		</div>
@@ -72,7 +72,7 @@ if ($con) {
 // 					    	echo "您申请赎回" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeDivident) {					    	
-					    	echo "您固定分红得到" . $row["Amount"] . "线上云量。";
+					    	echo "您今日领到" . $row["Amount"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeReferer) {
 					    	echo "推荐新用户，使用了" . $row["Amount"] . "线上云量。"; 

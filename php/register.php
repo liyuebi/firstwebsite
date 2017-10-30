@@ -171,9 +171,18 @@ else
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
 	$leftCredit = $credit - $quantity;
 	
-	// 修改用户的积分纪录，扣去推荐积分，若失败不影响返回结果
-	$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-								VALUES($userid, $quantity, $leftCredit, $now, $now, $newuserid, $codeReferer)");
+	$res4 = mysql_query("update Credit set Credits='$leftCredit' where UserId='$userid'");
+	if (!$res4) {
+		// !!! log error
+	}
+	else {
+		// 修改用户的积分纪录，扣去推荐积分，若失败不影响返回结果
+		$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+									VALUES($userid, $quantity, $leftCredit, $now, $now, $newuserid, $codeReferer)");
+		if (!$result) {
+			// !!! log error
+		}
+	}
 								
 	$addedCredit = $quantity * 0.1;
 
@@ -194,7 +203,7 @@ else
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 // 	insertOrderStatistics($refererConsumePoint, 1);
-// 	insertRecommendStatistics($refererConsumePoint, true);
+	insertRecommendStatistics($quantity);
 
 	mysql_close($con);
 	return;

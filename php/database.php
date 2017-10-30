@@ -184,7 +184,9 @@ function createCreditTradeTable()
 		ReserveTime int default 0,
 		PayTime int default 0,
 		ConfirmTime int default 0,
-		Status int not null
+		Status int not null,
+		ComplainStatus int default 0,
+		ComplainIdx int default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -517,15 +519,16 @@ function createStatisticsTable()
 	 * Mon
 	 * Day 
 	 * NSCount  - New User Count 新用户总数
-	 * BonusTotal - 每日给用户的固定分红总额
-	 * DBonusTotal - 每日给用户的动态分红总额
- 	 * BonusPntTotal - 每日给用户的固定分红得到的采线上云量总额
-	 * DBonusPntTotal - 每日给用户的动态分红得到的采线上云量总额
-	 * OrderNum - 成交的订单数量
-	 * SPNum	- sell product num 卖出的产品数量，是每笔订单的产品数的总和
-	 * TfTimes  - Transfer Times 转账次数
-	 * TfFee	- Transfer Fee 转账手续费
-	 * TfTotal	- Transfer Total 总的转账额度
+	 * RecommendTotal - 注册新用户投入了云量总数
+	 * ReinventTotal - 存储到银行的云量总数
+	 * BonusTotal - 用户每日领取的存储利息总和
+ 	 * ExchangeNewQuan - 每日挂单的云量总额
+ 	 * ExchangeNewCnt - 每日挂单单数
+	 * ExchangeSuccQuan - 每日成功交易的云量总额
+	 * ExchangeSuccCnt - 每日成功交易单数
+	 * ExchangeFee - 每日成功交易收取的手续费
+	 * WithdrawTotal - 每日使用云量在现实中的实际数额，相当于用户取现，如话费充值，油卡充值
+	 * WithdrawFee - 每日使用云量在实际生活中的手续费
 	*/
 	$sql = "create table if not exists Statistics
 	(
@@ -534,21 +537,17 @@ function createStatisticsTable()
 		Ye int NOT NULL,
 		Mon int NOT NULL,
 		Day int NOT NULL,
-		RechargeTotal int DEFAULT 0,
-		WithdrawTotal int DEFAULT 0,
 		NSCount int DEFAULT 0,
-		BonusTotal decimal(10,2) DEFAULT 0,
-		DBonusTotal decimal(10,2) DEFAULT 0,
-		BonusPntTotal decimal(10,2) DEFAULT 0,
-		DBonusPntTotal decimal(10,2) DEFAULt 0,
-		RecommendFee decimal(10,2) DEFAULT 0,
-		WithdrawFee decimal(10,2) DEFAULT 0,
-		OrderGross decimal(10,2) DEFAULT 0,
-		OrderNum int DEFAULT 0,
-		SPNum int DEFAULT 0,
-		TfTimes int DEFAULT 0,
-		TfFee decimal(10,2) DEFAULT 0,
-		TfTotal int DEFAULT 0
+		RecommendTotal decimal(10,2) DEFAULT 0,
+		ReinventTotal decimal(10,2) default 0,
+		BonusTotal decimal(10,2) default 0,
+		ExchangeNewQuan decimal(10,2) default 0,
+		ExchangeNewCnt int default 0,
+		ExchangeSuccQuan decimal(10,2) default 0,
+		ExchangeSuccCnt int default 0,
+		ExchangeFee	decimal(10,2) default 0,
+		WithdrawTotal decimal(10,2) default 0,
+		WithdrawFee	decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -560,37 +559,34 @@ function createStatisticsTable()
 function createTotalStatisTable()
 {
 	/*
-	 * BonusTotal: 		固定分红得到的线上云量总额
-	 * DBonusTotal: 	动态分红得到的线上云量总额
-	 * BonusPntTotal: 	固定分红得到的采线上云量总额
-	 * DBonusPntTotal:  动态分红得到的采线上云量总额
+	 * UserCount - 用户总数
+	 * RecommendTotal - 注册新用户投入了云量总数
+	 * ReinventTotal - 存储到银行的云量总数
+	 * BonusTotal - 领取的存储利息总和
+ 	 * ExchangeNewQuan - 挂单的云量总额
+ 	 * ExchangeNewCnt - 挂单总单数
+	 * ExchangeSuccQuan - 成功交易的云量总额
+	 * ExchangeSuccCnt - 成功交易总单数
+	 * ExchangeFee - 成功交易收取的手续费
+	 * WithdrawTotal - 使用云量在现实中的实际数额，相当于用户取现，如话费充值，油卡充值等
+	 * WithdrawFee - 使用云量在实际生活中的手续费
 	 */
 	$sql = "create table if not exists TotalStatis
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IndexId),
-		CreditsPool	decimal(10,2) DEFAULT 50000000,
+		CreditsPool	decimal(10,2) DEFAULT 10000000,
 		UserCount int DEFAULT 0,
-		BannedUserCount int DEFAULT 0,
-		AccountCount int DEFAULT 0,
-		FengTotal int DEFAULT 0,
-		DFengTotal int DEFAULT 0,
-		RechargeTotal int DEFAULT 0,
-		WithdrawTotal int DEFAULT 0,
-		TransferTotal int DEFAULT 0,
-		WithdrawFee decimal(10,2) DEFAULT 0,
-		TransferFee decimal(10,2) DEFAULT 0,
-		RechargeTimes int DEFAULT 0,
-		WithdrawTimes int DEFAULT 0,
-		TransferTimes int DEFAULT 0,
-		RecommendTotal int DEFAULT 0,
-		BonusTotal decimal(10,2) DEFAULT 0,
-		DBonusTotal decimal(10,2) DEFAULt 0,
-		BonusPntTotal decimal(10,2) DEFAULT 0,
-		DBonusPntTotal decimal(10,2) DEFAULt 0,
-		OrderGross decimal(10,2) DEFAULT 0,
-		OrderNum int DEFAULT 0,
-		SPNum int DEFAULT 0
+		RecommendTotal decimal(10,2) DEFAULT 0,
+		ReinventTotal decimal(10,2) default 0,
+		BonusTotal decimal(10,2) default 0,
+		ExchangeNewQuan decimal(10,2) default 0,
+		ExchangeNewCnt int default 0,
+		ExchangeSuccQuan decimal(10,2) default 0,
+		ExchangeSuccCnt int default 0,
+		ExchangeFee	decimal(10,2) default 0,
+		WithdrawTotal decimal(10,2) default 0,
+		WithdrawFee	decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -955,7 +951,7 @@ function initGeneralStatisTable()
 				// inited
 			}
 			else {
-				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('50000000')");
+				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('10000000')");
 				if (!$res1) {
 					echo "insert into general statis error: " . mysql_error() . "<br>";
 				}
@@ -963,6 +959,7 @@ function initGeneralStatisTable()
 		}
 	}
 	
+/*
 	$result = createShortStatisTable();
 	if ($result) {
 		$res = mysql_query("select * from ShortStatis");
@@ -981,6 +978,7 @@ function initGeneralStatisTable()
 			}
 		}
 	}
+*/
 }
 
 

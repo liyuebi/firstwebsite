@@ -144,8 +144,9 @@ function createTradeOrder()
 		}
 		
 		$nickname= $_SESSION['nickname'];
-		$result = mysql_query("insert into CreditTrade (TradeId, SellerId, SellNickN, Quantity, HanderRate, CreateTime, Status)
-						VALUES('$tradeId', '$userid', '$nickname', '$amount', '0.1', '$time', '$creditTradeInited')");
+		$phonenum= $_SESSION['phonenum'];
+		$result = mysql_query("insert into CreditTrade (TradeId, SellerId, SellNickN, SellPhoneNum, Quantity, HanderRate, CreateTime, Status)
+						VALUES('$tradeId', '$userid', '$nickname', '$phonenum', '$amount', '0.1', '$time', '$creditTradeInited')");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'创建交易失败，请稍后重试！','sql_error'=>mysql_error()));
 			return;
@@ -160,6 +161,10 @@ function createTradeOrder()
 		// 修改用户的积分纪录，增加直推奖励，若失败不影响返回结果
 		$result = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 								VALUES($userid, $amount, $handlefee, $credit, $time, $time, 0, $codeCreTradeInit)");
+								
+		// 添加交易创建记录
+		include_once "func.php";
+		insertExchangeCreateStatistics($amount);
 		
 		echo json_encode(array('error'=>'false'));
 	}
@@ -598,10 +603,21 @@ function saveCredit()
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的金额无效，请重新输入！'));
 		return;		
 	}	
-	if ($amount % 100 != 0 || $amount < 100) {
+	if ($amount % 100 != 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'交易金额必须是100的倍数，请重新输入！'));
 		return;		
 	}	
+	if ($amount < $saveCreditLeast) {
+		$str = '存储额度不能小于' . $saveCreditLeast . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
+		return;
+	}
+	else if ($amount > $saveCreditMost) {
+		$str = '存储额度不能大于' . $saveCreditMost . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
+		return;		
+	}
+
 	
 	$con = connectToDB();
 	if (!$con)
@@ -621,7 +637,7 @@ function saveCredit()
 		$row1 = mysql_fetch_assoc($res1);
 		$credit = $row1["Credits"];
 		if ($amount > $credit) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'存储金额大于您持有的金额，请重新输入！'));
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'存储金额大于您持有的金额，请重新输入！'));
 			return;	
 		}
 		
@@ -641,7 +657,7 @@ function saveCredit()
 		$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
 								values('$userid', '$quantity', '$amount', '$quantity', '$diviCnt', '$now')");
 		if (!$res) {
-			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'存储线上资产失败，请稍后重试！'));
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'存储线上资产失败，请稍后重试！'));
 			return;	
 		}
 		
@@ -652,7 +668,7 @@ function saveCredit()
 		
 		$res2 = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$newPnts', Charity='$newCharity' where UserId='$userid'");
 		if (!$res2) {
-			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新数据失败，请稍后重试！'));
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'更新数据失败，请稍后重试！'));
 			return;	
 		}
 

@@ -495,7 +495,7 @@ function findNextAvailablePos($con, $idx)
 }
 
 /////////////////////////// insert statistics function begin ///////////////////////////
-function insertRechargeStatistics($amount)
+function insertExchangeCreateStatistics($amount)
 {
 	$now = time();
 	
@@ -510,12 +510,13 @@ function insertRechargeStatistics($amount)
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$rechargeTotal = $row["RechargeTotal"] + $amount;
-			mysql_query("update Statistics set RechargeTotal='$rechargeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
+			$total = $row["ExchangeNewQuan"] + $amount;
+			$cnt = $row["ExchangeNewCnt"] + 1;
+			mysql_query("update Statistics set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, RechargeTotal)
-					VALUES('$year', '$month', '$day', '$amount')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, ExchangeNewQuan, ExchangeNewCnt)
+					VALUES('$year', '$month', '$day', '$amount', '1')");
 		}
 	}
 	
@@ -523,24 +524,11 @@ function insertRechargeStatistics($amount)
 	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
-		$credits = $row1["CreditsPool"];
-		$rechargeTotal = $row1["RechargeTotal"];
-		$rechargeTimes = $row1["RechargeTimes"];
+		$row1 = mysql_fetch_assoc($res1);;
+		$total = $row1["ExchangeNewQuan"] + $amount;
+		$cnt = $row1["ExchangeNewCnt"] + 1;
 		
-		$credits -= $amount;
-		$rechargeTotal += $amount;
-		$rechargeTimes += 1;
-		
-		mysql_query("update TotalStatis set CreditsPool='$credits', RechargeTotal='$rechargeTotal', RechargeTimes='$rechargeTimes' where IndexId=1");
-	}
-	
-	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		$row2 = mysql_fetch_assoc($res2);
-		$recharge = $row2["Recharge"] + $amount;
-		mysql_query("update ShortStatis set Recharge='$recharge' where IndexId=1");
+		mysql_query("update TotalStatis set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where IndexId=1");
 	}
 }
 
@@ -702,7 +690,7 @@ function insertOrderStatistics($totalPrice, $count)
 	}
 }
 
-function insertRecommendStatistics($referFee, $isNewUser)
+function insertRecommendStatistics($referFee)
 {
 	$now = time();
 	
@@ -717,16 +705,13 @@ function insertRecommendStatistics($referFee, $isNewUser)
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$newUserCount = $row["NSCount"];
-			if ($isNewUser) {
-				$newUserCount += 1;
-			}
-			$fee = $row["RecommendFee"] + $referFee;
+			$newUserCount = $row["NSCount"] + 1;
+			$fee = $row["RecommendTotal"] + $referFee;
 
-			mysql_query("update Statistics set NSCount='$newUserCount', RecommendFee='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysql_query("update Statistics set NSCount='$newUserCount', RecommendTotal='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendFee)
+			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendTotal)
 					VALUES('$year', '$month', '$day', '1', '$referFee')");
 		}
 	}
@@ -736,13 +721,9 @@ function insertRecommendStatistics($referFee, $isNewUser)
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
 		$row1 = mysql_fetch_assoc($res1);
-		$userCnt = $row1["UserCount"];
-		if ($isNewUser) {
-			$userCnt += 1;
-		}
-		$accCnt = $row1["AccountCount"] + 1;
+		$userCnt = $row1["UserCount"] + 1;
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
-		mysql_query("update TotalStatis set UserCount='$userCnt', AccountCount='$accCnt', RecommendTotal='$recomTotal' where IndexId=1");
+		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
