@@ -7,6 +7,18 @@ $name = $_SESSION["name"];
 $idnum = $_SESSION["idnum"]; 
 
 include "../php/constant.php";
+include "../php/database.php";
+
+$charity = 0;
+$con = connectToDB();
+if ($con) {
+	$res = mysql_query("select * from Credit where UserId='$userId'");
+	if ($res && mysql_num_rows($res) > 0) {
+		$row = mysql_fetch_assoc($res);
+		$charity = $row["Charity"];
+	}
+}
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -84,6 +96,10 @@ include "../php/constant.php";
 		</a>		
 				
         <hr>        
+        
+        <p style="padding-left: 20px;">个人慈善投入：<b> <?php echo $charity; ?> </b>线上云量</p>
+        
+        <hr>
         
         <p style="padding-left: 20px;">客服微信：fslqt01</p>
         
