@@ -353,8 +353,8 @@ function acceptBonus($userId)
 							VALUES('$userId', '$bonus', '$credit', '$now', '$now', '$codeDivident')");
 		}
 				
-// 		// 统计分红信息
-// 		insertBonusStatistics($toCredit, $toPnts);
+ 		// 统计分红信息
+ 		insertBonusStatistics($bonus);
 	}
 }
 
@@ -443,7 +443,7 @@ function acceptDBonus($userid)
 				VALUES('$userid', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
 		
 		// 统计分红信息
-		insertDynBonusStatistics($toCredit, $toPnts);
+// 		insertDynBonusStatistics($toCredit, $toPnts);
 	}
 }
 

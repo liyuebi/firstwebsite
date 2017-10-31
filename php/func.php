@@ -771,7 +771,7 @@ function insertRecommendStatistics($referFee)
 }
 
 // 静态分红统计
-function insertBonusStatistics($bonus, $bonusPnts)
+function insertBonusStatistics($bonus)
 {
 	$now = time();
 	
@@ -788,12 +788,11 @@ function insertBonusStatistics($bonus, $bonusPnts)
 			$row = mysql_fetch_assoc($result);
 			
 			$total = $row["BonusTotal"] + $bonus;
-			$total1 = $row["BonusPntTotal"] + $bonusPnts;
-			mysql_query("update Statistics set BonusTotal='$total', BonusPntTotal='$total1' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysql_query("update Statistics set BonusTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, BonusTotal, BonusPntTotal)
-					VALUES('$year', '$month', '$day', '$bonus', '$bonusPnts')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, BonusTotal)
+					VALUES('$year', '$month', '$day', '$bonus')");
 		}
 	}
 
@@ -803,29 +802,13 @@ function insertBonusStatistics($bonus, $bonusPnts)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$total = $row1["BonusTotal"] + $bonus;
-		$total1 = $row["BonusPntTotal"] + $bonusPnts;
 		
-		mysql_query("update TotalStatis set BonusTotal='$total', BonusPntTotal='$total1' where IndexId=1");
+		mysql_query("update TotalStatis set BonusTotal='$total' where IndexId=1");
 	}
-	
-	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		
-		$row2 = mysql_fetch_assoc($res2);
-		$left = $row2["BonusLeft"];
-		if ($left < $bonus) {
-			// record error
-		}
-		
-		$left -= ($bonus + $bonusPnts);
-		mysql_query("update ShortStatis set BonusLeft='$left' where IndexId=1");
-	}
-
 }
 
-// 动态分红统计
-function insertDynBonusStatistics($dBonus, $dBonusPnts)
+// 云量存储统计
+function insertReinventStatistics($value)
 {
 	$now = time();
 	
@@ -841,13 +824,12 @@ function insertDynBonusStatistics($dBonus, $dBonusPnts)
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
 			
-			$total = $row["DBonusTotal"] + $dBonus;
-			$total1 = $row["DBonusPntTotal"] + $dBonusPnts;
-			mysql_query("update Statistics set DBonusTotal='$total', DBonusPntTotal='$total1' where Ye='$year' and Mon='$month' and Day='$day'");
+			$total = $row["ReinventTotal"] + $value;
+			mysql_query("update Statistics set ReinventTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, DBonusTotal, DBonusPntTotal)
-					VALUES('$year', '$month', '$day', '$dBonus', '$dBonusPnts')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, ReinventTotal)
+					VALUES('$year', '$month', '$day', '$value')");
 		}
 	}
 
@@ -856,26 +838,10 @@ function insertDynBonusStatistics($dBonus, $dBonusPnts)
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
 		$row1 = mysql_fetch_assoc($res1);
-		$total = $row1["DBonusTotal"] + $dBonus;
-		$total1 = $row1["DBonusPntTotal"] + $dBonusPnts;
+		$total = $row1["ReinventTotal"] + $value;
 		
-		mysql_query("update TotalStatis set DBonusTotal='$total', DBonusPntTotal='$total1' where IndexId=1");
+		mysql_query("update TotalStatis set ReinventTotal='$total' where IndexId=1");
 	}
-	
-	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		
-		$row2 = mysql_fetch_assoc($res2);
-		$left = $row2["DBonusLeft"];
-		if ($left < $dBonus) {
-			// record error
-		}
-		
-		$left -= ($dBonus + $dBonusPnts);
-		mysql_query("update ShortStatis set DBonusLeft='$left' where IndexId=1");
-	}
-
 }
 
 /////////////////////////// insert statistics function begin ///////////////////////////
