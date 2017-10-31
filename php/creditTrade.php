@@ -55,18 +55,24 @@ function createTradeOrder()
 	}
 */
 
-	if ($amount < 100) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'金额不能小于100，请重新输入！'));
+	if ($amount < $exchangeLeast) {
+ 		$str = '金额不能小于' . $exchangeLeast . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$str));
+		return;		
+	}
+	if ($amount > $exchangeMost) {
+ 		$str = '金额不能大于' . $exchangeMost . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
 		return;		
 	}
 	
 	if ($amount % 100 != 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'金额必须为100的整数倍，请重新输入！'));
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'金额必须为100的整数倍，请重新输入！'));
 		return;				
 	}
 	
 	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
-		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'支付密码出错，请重试！'));
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'支付密码出错，请重试！'));
 		return;
 	}	
 	
@@ -91,7 +97,7 @@ function createTradeOrder()
 		$handlefee = $amount * 0.1;
 		$neededAmount = $amount + $handlefee;
 		if ($neededAmount > $credit) {
-			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'您输入的金额超过您的余额，请重新输入！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您输入的金额超过您的余额，请重新输入！'));	
 			return;
 		}
 				
@@ -139,7 +145,7 @@ function createTradeOrder()
 		}
 		
 		if (!$isTradeIdSet) {
-			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'生成交易号出错，请稍后重试！'));
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'生成交易号出错，请稍后重试！'));
 			return;
 		}
 		
@@ -575,7 +581,7 @@ function confirmReceiveMoney()
 				}
 				else {
 					$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-						VALUES($buyerId, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
+						VALUES($userid, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
 					if (!$res5) {
 						// !!! log error
 					}

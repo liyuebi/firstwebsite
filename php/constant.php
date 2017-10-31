@@ -14,10 +14,16 @@
 	$regiCreditMost = 9000;		// 推荐用户时最多存储积分数
 	$saveCreditLeast = 300;		// 存储云量时最少存储的云量数
 	$saveCreditMost = 9000;		// 存储云量时最多存储的云量数
+	$exchangeLeast = 100;		// 挂单最小额度
+	$exchangeMost = 500;		// 挂单最大额度
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 // 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 // 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
 	$dayBonusRate = 0.008;		// 每笔存储每日返还的额度
+	
+	$exchangeBuyHours = 24;		// 云量交易挂单的有效期，单位为小时
+	$exchangePayHours = 1;		// 云量交易下单后支付的有效期，单位为小时
+	$exchangeDeliveryHours = 2;	// 云量交易付款后确认收款的有效期，单位为小时
 	
 	$withdrawFloorAmount =300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
