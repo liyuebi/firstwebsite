@@ -28,8 +28,8 @@ $res = mysql_query("select * from AdminTable where Name!='admin'");
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/css/bootstrap-theme.css" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap-theme.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
