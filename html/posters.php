@@ -2,6 +2,7 @@
 	
 $res = false;
 
+include "../php/constant.php";
 include "../php/database.php";
 $con = connectToDB();
 if ($con) {
