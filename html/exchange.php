@@ -87,7 +87,7 @@ if ($con) {
 						<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
 						<p>总交易额：<?php echo $row["Quantity"] ?></p>
 						<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-						<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
+						<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
 						<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="购买" onclick="tryStartTrade(this)" />
 					</div>
 		<?php

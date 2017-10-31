@@ -293,7 +293,7 @@ function startTradeOrder()
 		
 		$now = time();
 		$createTime = $row["CreateTime"];
-		if ($now - $createTime >= 60 * 60 * 24) {
+		if ($now - $createTime >= 60 * 60 * $exchangeBuyHours) {
 			
 			// 修改交易状态
 			mysql_query("update CreditTrade set Status='$creditTradeExpired' where IdxId='$idx'");

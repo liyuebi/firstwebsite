@@ -212,18 +212,18 @@ if ($con) {
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>交易额度：<?php if ($row["BuyCnt"] <= 0) {echo $row["Quantity"];} else {echo $row["BuyCnt"] . '/' . $row["Quantity"];} ?></p>
 							<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-							<?php 	if ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] < 60 * 60 * 24) { ?>
-								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * 24); ?></p>
+							<?php 	if ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] < 60 * 60 * $exchangeBuyHours) { ?>
+								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeCancelled) { ?>
 								<p>已撤单</p>
 							<?php 	} 
-									else if ($row["Status"] == $creditTradeExpired || ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] >= 60 * 60 * 24)) { ?>
+									else if ($row["Status"] == $creditTradeExpired || ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] >= 60 * 60 * $exchangeBuyHours)) { ?>
 								<p>已过期</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeReserved) { ?>
-								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
+								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
 								<p>等待支付</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradePayed) { ?>
@@ -257,16 +257,20 @@ if ($con) {
 							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeReserved) { 
 								
-								$info = '';
+								$info = "卖家手机号：" . $row["SellPhoneNum"] . "\n";
 								$str = "select * from BankAccount where UserId=" . $row['SellerId'];
 								$res3 = mysql_query($str);
 								if ($res3 && mysql_num_rows($res3) > 0) {
 									$row3 = mysql_fetch_assoc($res3);
-									$info = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
+									$info = $info . "卖家账户：" . $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"] . "\n";
 								}
+								else {
+									$info = $info . "没有支付信息。\n";
+								}
+								$info = $info . "请在下单后" . $exchangePayHours . "小时内完成支付，并点击支付完成按钮。";
 								
 							?>
-								<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * 24); ?></p>
+								<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />

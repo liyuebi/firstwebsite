@@ -63,7 +63,7 @@ if ($con) {
 				$.post("../php/creditTrade.php", {"func":"startTrade","amount":amount,"idx":idx}, function(data){
 					
 					if (data.error == "false") {
-						alert("下单成功！");	
+						alert("下单成功！\n请在 " + <?php echo $exchangePayHours; ?> + " 小时内完成支付，并点击支付完成按钮！");	
 						location.href = "exchangeOrder.php";
 					}
 					else {
