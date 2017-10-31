@@ -21,6 +21,8 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
 		<link rel="stylesheet" type="text/css" href="css/mystyle.css" />
 		<link rel="stylesheet" type="text/css" href="css/buttons.css" />
 		

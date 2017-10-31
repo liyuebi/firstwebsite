@@ -80,6 +80,8 @@ if ($con) {
 		<meta name="keywords" content="" />				<!-- ????? 便于搜索 -->
 		<meta name="description" content="" />
 		
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 <!-- 		<link rel="stylesheet" type="text/css" href="../css/luara.left.css"/> -->
