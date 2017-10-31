@@ -9,6 +9,13 @@ if (!isset($_POST['func'])) {
 	exit('非法访问！');
 }
 
+include_once "admin_func.php";
+session_start();
+if (!isAdminLogin()) {
+	echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+	return;
+}
+
 if ("addUser" == $_POST['func']) {
 	addUser();
 }
@@ -26,6 +33,12 @@ else if ("rlp" == $_POST['func']) {
 }
 else if ("rpp" == $_POST['func']) {
 	resetPayPwd();
+}
+else if ("cuc" == $_POST['func']) {
+	changeUserCredit();
+}
+else if ("cup" == $_POST['func']) {
+	changeUserPnts();
 }
 
 // admin login
@@ -141,7 +154,8 @@ function addUser()
 
 function queryUser()
 {
-	$userid = trim(htmlspecialchars($_POST['uid']));	
+	$val = trim(htmlspecialchars($_POST['uid']));		// val值可为id／电话号码／用户昵称
+	
 	$con = connectToDB();
 	if (!$con)
 	{
@@ -149,34 +163,52 @@ function queryUser()
 		return;
 	}
 
-
-	$res = mysql_query("select * from ClientTable where UserId='$userid'");
-	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败，请稍后重试！','sql_error'=>mysql_error()));
-		return;
+	// find user first by ID, then by phone num, then by nickname
+	$res = mysql_query("select * from ClientTable where UserId='$val'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		
+		// find by id failed
+		$res = mysql_query("select * from ClientTable where PhoneNum='$val'");		
+		if (!$res || mysql_num_rows($res) <= 0) {
+			
+			$res = mysql_query("select * from ClientTable where NickName='$val'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+			
+				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到您输入的用户，请重新输入！','sql_error'=>mysql_error()));
+				return;	
+			}
+		}	
 	}
 	
-	if (mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'查找不到您输入的用户，请重新输入！','sql_error'=>mysql_error()));
-		return;		
+	$arr = array();
+	while ($row = mysql_fetch_array($res)) {
+	
+		$arr1 = array();
+		
+		$arr1["nickname"] = $row["NickName"];
+		$arr1["phone"] = $row["PhoneNum"];
+		$arr1["name"] = $row["Name"];
+		$arr1["RecoCnt"] = $row["RecoCnt"];
+		$arr1["ChildCnt"] = $row["ChildCnt"];
+		
+		$userid = $row['UserId'];
+		$res1 = mysql_query("select * from Credit where UserId='$userid'");
+		if ($res1 && mysql_num_rows($res1) > 0) {
+			$row1 = mysql_fetch_assoc($res1);
+			$arr1["credit"] = $row1["Credits"];
+			$arr1["pnt"] = $row1["Pnts"];
+			$arr1["vault"] = $row1["Vault"];
+		}
+		
+		$arr[$userid] = $arr1;
 	}
 	
-	$row = mysql_fetch_assoc($res);
-	
-	$credit = 0;
-	$pnts = 0;
-	$vault = 0;
-	$res1 = mysql_query("select * from Credit where UserId='$userid'");
-	if ($res1 && mysql_num_rows($res1) > 0) {
-		$row1 = mysql_fetch_assoc($res1);
-		$credit = $row1["Credits"];
-		$pnts = $row1["Pnts"];
-		$vault = $row1["Vault"];
-	}
-	
+/*
 	echo json_encode(array('error'=>'false','nickname'=>$row["NickName"],'id'=>$row["UserId"],
 				'phone'=>$row["PhoneNum"],'RecoCnt'=>$row['RecoCnt'],'ChildCnt'=>$row['ChildCnt'],
 				'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault));
+*/
+	echo json_encode(array('error'=>'false','cnt'=>mysql_num_rows($res),'list'=>$arr));
 }
 
 function queryUserByCondition()
@@ -318,6 +350,51 @@ function resetPayPwd()
 	$res2 = mysql_query("update ClientTable set PayPwd='' where UserId='$userid'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserCredit()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("update Credit set Credits='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserPnts()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("update Credit set Pnts='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
 		return;				
 	}
 	

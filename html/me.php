@@ -97,7 +97,7 @@ if ($con) {
 				
         <hr>        
         
-        <p style="padding-left: 20px;">个人慈善投入：<b> <?php echo $charity; ?> </b>线上云量</p>
+        <p style="padding-left: 20px;">云粉慈善：献出爱心<b> <?php echo $charity; ?> </b>线上云量</p>
         
         <hr>
         

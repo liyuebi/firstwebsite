@@ -80,63 +80,88 @@ if (!checkLoginOrJump()) {
 					if (data.error == "false") {
 					
 						var container = document.getElementById("user_tbl");
-						var trow = document.createElement("tr");
-						container.appendChild(trow);
 						
-						var d1 = document.createElement("td");
-						d1.innerHTML = data.id;
-						trow.appendChild(d1);
-						var d2 = document.createElement("td");
-						d2.innerHTML = data.nickname;
-						trow.appendChild(d2);
-						var d3 = document.createElement("td");
-						d3.innerHTML = data.phone;
-						trow.appendChild(d3);
-						var d4 = document.createElement("td");
-						d4.innerHTML = data.credit;
-						trow.appendChild(d4);
-						var d5 = document.createElement("td");
-						d5.innerHTML = data.pnt;
-						trow.appendChild(d5);
-						var d6 = document.createElement("td");
-						d6.innerHTML = data.vault;
-						trow.appendChild(d6);
-						var d7 = document.createElement("td");	
-						d7.innerHTML = data.RecoCnt;
-						trow.appendChild(d7);
-						var d8 = document.createElement("td");	
-						d8.innerHTML = data.ChildCnt;
-						trow.appendChild(d8);
-						
-						var d10 = document.createElement("td");	
-						trow.appendChild(d10);
-						var input1 = document.createElement("input");
-						input1.type = "button";
-						input1.value = "重置登录密码";
-						input1.id = data.id;
-						if (input1.addEventListener) {
-							input1.addEventListener('click', resetLoginPwd, false);
+						var list = data.list;
+						for (var key in list) {
+							
+							var trow = document.createElement("tr");
+							container.appendChild(trow);
+							
+							var d1 = document.createElement("td");
+							d1.innerHTML = key;
+							trow.appendChild(d1);
+							var d2 = document.createElement("td");
+							d2.innerHTML = list[key].nickname;
+							trow.appendChild(d2);
+							var d3 = document.createElement("td");
+							d3.innerHTML = list[key].phone;
+							trow.appendChild(d3);
+							var d4 = document.createElement("td");
+							d4.innerHTML = list[key].credit;
+							trow.appendChild(d4);
+							var d5 = document.createElement("td");
+							d5.innerHTML = list[key].pnt;
+							trow.appendChild(d5);
+							var d6 = document.createElement("td");
+							d6.innerHTML = list[key].vault;
+							trow.appendChild(d6);
+							var d7 = document.createElement("td");	
+							d7.innerHTML = list[key].RecoCnt;
+							trow.appendChild(d7);
+							var d8 = document.createElement("td");	
+							d8.innerHTML = list[key].ChildCnt;
+							trow.appendChild(d8);
+							
+							var d10 = document.createElement("td");	
+							trow.appendChild(d10);
+							var input1 = document.createElement("input");
+							input1.type = "button";
+							input1.value = "更改用户信息";
+							input1.id = key;
+							if (input1.addEventListener) {
+								input1.addEventListener('click', changeUserInfo, false);
+							}
+							else if (input1.attachEvent) {
+								input1.attachEvent('onclick', changeUserInfo);
+							}
+							d10.appendChild(input1);
+/*
+							var d10 = document.createElement("td");	
+							trow.appendChild(d10);
+							var input1 = document.createElement("input");
+							input1.type = "button";
+							input1.value = "重置登录密码";
+							input1.id = key;
+							if (input1.addEventListener) {
+								input1.addEventListener('click', resetLoginPwd, false);
+							}
+							else if (input1.attachEvent) {
+								input1.attachEvent('onclick', resetLoginPwd);
+							}
+							d10.appendChild(input1);
+							var input2 = document.createElement("input");
+							input2.type = "button";
+							input2.value = "清空支付密码";
+							input2.id = key;
+							if (input2.addEventListener) {
+								input2.addEventListener('click', resetPayPwd, false);
+							}
+							else if (input2.attachEvent) {
+								input2.attachEvent('onclick', resetPayPwd);
+							}
+							d10.appendChild(input2);
+*/
 						}
-						else if (input1.attachEvent) {
-							input1.attachEvent('onclick', resetLoginPwd);
-						}
-						d10.appendChild(input1);
-						var input2 = document.createElement("input");
-						input2.type = "button";
-						input2.value = "清空支付密码";
-						input2.id = data.id;
-						if (input2.addEventListener) {
-							input2.addEventListener('click', resetPayPwd, false);
-						}
-						else if (input2.attachEvent) {
-							input2.attachEvent('onclick', resetPayPwd);
-						}
-						d10.appendChild(input2);
 					}
 					else {
 						alert("查询失败: " + data.error_msg);
 					}
 				}, "json");
+			}
+			
+			function changeUserInfo(e)
+			{
+				location.href = "editUserInfo.php?idx=" + e.target.id;
 			}
 						
 			function resetLoginPwd(e)
@@ -188,7 +213,7 @@ if (!checkLoginOrJump()) {
 -->
 	        <hr>
 			<div id="blk_chk" style="display: block;">
-				<input id="id_input" type="text" placeholder="请输入用户id" />
+				<input id="id_input" type="text" placeholder="请输入用户 ID/手机号／昵称" />
 				<input type="button" value="查找" onclick="queryUser()" />
 				
 				<table id="user_tbl" border="1">
