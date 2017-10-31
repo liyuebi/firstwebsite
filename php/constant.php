@@ -16,6 +16,10 @@
 	$saveCreditMost = 9000;		// 存储云量时最多存储的云量数
 	$exchangeLeast = 100;		// 挂单最小额度
 	$exchangeMost = 500;		// 挂单最大额度
+	$phoneChargeLeast = 10;		// 话费充值最小额度
+	$phoneChargeMost = 100;		// 话费充值最大额度
+	$oilChargeLeast = 10;		// 油费充值最小额度
+	$oilChargeMost = 500;		// 油费充值最大额度
 // 	$refererBonusLevel = 13;	// 推荐奖有效层次
 // 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 // 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号

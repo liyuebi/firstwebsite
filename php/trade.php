@@ -60,9 +60,20 @@ function createChargePhoneOrder()
 		return;
 	}
 	
-	if ($amount <= 0) {
-		echo json_encode(array("error"=>"true","error_code"=>'2',"error_msg"=>"选择的数量无效！"));			
+	if ($amount < $phoneChargeLeast) {
+		$str = '充值额度不能小于' . $phoneChargeLeast . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$str));
 		return;
+	}
+	else if ($amount > $phoneChargeMost) {
+		$str = '充值额度不能大于' . $phoneChargeMost . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
+		return;		
+	}
+
+	if ($amount % 10 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'充值额度须为10的整数倍！'));
+		return;		
 	}
 	
 	session_start();
