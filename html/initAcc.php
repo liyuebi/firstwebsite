@@ -158,7 +158,7 @@ if ($_SESSION['accInited'] > 0) {
 			<hr>
 			
 	        <div>
-		        <h4>地址信息：（注册新会员所赠产品将按该地址寄送）</h4>
+		        <h4>默认地址信息：</h4>
 	           <table width="100%" align="center">
 		            <tr>
 			            <td width="20%" style="text-align: right;">收件人</td>

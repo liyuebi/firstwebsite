@@ -86,7 +86,7 @@ if ($con) {
 		</div>
 
 		<div>
-			<p>添加新存储：</p>
+			<h4>添加新存储：</h4>
 			<input id="amount" class="form-control" type="text" placeholder="请输入存储数量，必须是100的倍数！" onkeypress="return onlyNumber(event)" /> 
 			<input type="button" class="button button-border button-rounded button-primary" style="width: 80%;" value="确认" onclick="trySave()" />
 		</div>
@@ -94,7 +94,7 @@ if ($con) {
 		<hr>
 		
 		<div>
-			<p>已有存储：</p>
+			<h4>已有存储：</h4>
 			<?php
 				if ($result) {
 					date_default_timezone_set('PRC');

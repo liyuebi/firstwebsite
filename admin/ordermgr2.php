@@ -26,9 +26,8 @@ if ($res) {
 }
 
 include "../php/constant.php";
-$result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy'");
+$result = mysql_query("select * from Transaction where Type=3");
 // 	$result = mysql_query("select * from Transaction");
-$res1 = mysql_query("select * from Transaction  where Status='$OrderStatusDefault'");
 
 ?>
 

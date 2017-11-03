@@ -90,17 +90,19 @@
 			            </a>
 			            <ul class="treeview-menu">
 		            		<li onclick="makecss(this)" data-id="index_Order">
-		            			<a href='ordermgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待发货订单</a>
+		            			<a href='ordermgr.php' target='rightContent'><i class="fa fa-circle-o"></i>新用户订单</a>
 							</li>
 		            		<li onclick="makecss(this)" data-id="index_Order3">
-		            			<a href='orderExported.php' target='rightContent'><i class="fa fa-circle-o"></i>已导出订单</a>
+		            			<a href='ordermgr1.php' target='rightContent'><i class="fa fa-circle-o"></i>话费订单</a>
 							</li>
 		            		<li onclick="makecss(this)" data-id="index_Order1">
-		            			<a href='ordermgr1.php' target='rightContent'><i class="fa fa-circle-o"></i>待确认订单</a>
+		            			<a href='ordermgr2.php' target='rightContent'><i class="fa fa-circle-o"></i>油费订单</a>
 							</li>
+<!--
 		            		<li onclick="makecss(this)" data-id="index_Order2">
 		            			<a href='ordermgr2.php' target='rightContent'><i class="fa fa-circle-o"></i>订单查询</a>
 							</li>	            
+-->
 		            	</ul>
 					</li>
 					<li class="treeview">
@@ -111,9 +113,11 @@
 		            		<li onclick="makecss(this)" data-id="index_Config">
 		            			<a href='configmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>全局配置</a>
 							</li>	            
+<!--
 		            		<li onclick="makecss(this)" data-id="index_Config">
 		            			<a href='lvl_configmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>等级配置</a>
 							</li>	            
+-->
 		            	</ul>
 					</li>
 					<li class="treeview">

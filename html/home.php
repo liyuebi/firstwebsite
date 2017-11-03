@@ -17,7 +17,7 @@ else {
 }
 
 include "../php/func.php";
-setUserCookie($_SESSION['name'], $_SESSION["userId"], 'true');
+setUserCookie($_SESSION['nickname'], $_SESSION["userId"], 'true');
 
 $userid = $_SESSION["userId"];
 $new = 0;

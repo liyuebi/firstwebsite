@@ -71,13 +71,11 @@ $result = mysql_query("select * from Statistics");
 						<th>月</th>
 						<th>日</th>
 						<th>新用户数</th>
-						<th>总充值额</th>
-						<th>总提现额</th>
-						<th>提现手续费</th>
-						<th>总转账额</th>
-						<th>转账手续费</th>
-						<th>订单总收入</th>
-						<th>订单件数</th>
+						<th>推荐额</th>
+						<th>复投额</th>
+						<th>分红额</th>
+						<th>交易成交额</th>
+						<th>交易手续费</th>
 	<!-- 					<th>拒绝</th> -->
 					</tr>
 					<?php
@@ -88,13 +86,11 @@ $result = mysql_query("select * from Statistics");
 								<th><?php echo $row["Mon"]; ?></th>
 								<th><?php echo $row["Day"]; ?></th>
 								<th><?php echo $row["NSCount"] ?></th>
-								<th><?php echo $row["RechargeTotal"]; ?></th>
-								<th><?php echo $row["WithdrawTotal"]; ?></th>
-								<th><?php echo $row["WithdrawFee"]; ?></th>
-								<th><?php echo $row["TfTotal"]; ?></th>
-								<th><?php echo $row["TfFee"]; ?></th>
-								<th><?php echo $row["OrderGross"]; ?></th>
-								<th><?php echo $row["SPNum"]; ?></th>
+								<th><?php echo $row["RecommendTotal"]; ?></th>
+								<th><?php echo $row["ReinventTotal"]; ?></th>
+								<th><?php echo $row["BonusTotal"]; ?></th>
+								<th><?php echo $row["ExchangeSuccQuan"]; ?></th>
+								<th><?php echo $row["ExchangeFee"]; ?></th>
 	<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
 	<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
 							</tr>

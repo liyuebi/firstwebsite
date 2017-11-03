@@ -3,8 +3,6 @@
 session_start();
 $userId = $_SESSION["userId"];
 $phone = $_SESSION["phonenum"];
-$name = $_SESSION["name"];
-$idnum = $_SESSION["idnum"]; 
 
 include "../php/constant.php";
 include "../php/database.php";

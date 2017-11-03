@@ -94,18 +94,20 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		        <p>总统计</p>
 		        <table border="1">
 			        <tr>
-				        <th>积分池</th><th>用户数</th><th>账户数</th><th>总盒数</th><th>总充值</th><th>总提现</th>
+<!-- 				        <th>积分池</th> --><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th>
 			        </tr>
 			        <tr>
-				        <td><?php echo $row["CreditsPool"]; ?></td>
+<!-- 				        <td><?php echo $row["CreditsPool"]; ?></td> -->
 				        <td><?php echo $row["UserCount"]; ?></td>
-				        <td><?php echo $row["AccountCount"]; ?></td>
-				        <td><?php echo $row["SPNum"]; ?></td>
-				        <td><?php echo $row["RechargeTotal"]; ?></td>
-				        <td><?php echo $row["WithdrawTotal"]; ?></td>
+				        <td><?php echo $row["RecommendTotal"]; ?></td>
+				        <td><?php echo $row["ReinventTotal"]; ?></td>
+				        <td><?php echo $row["BonusTotal"]; ?></td>
+				        <td><?php echo $row["ExchangeSuccQuan"]; ?></td>
+				        <td><?php echo $row["ExchangeFee"]; ?></td>
 			        </tr>
 		        </table>
 	        </div>
+<!--
 	        <div>
 		        <p>即时统计</p>
 		        <table border="1">
@@ -121,27 +123,7 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 			        </tr>
 		        </table>
 	        </div>
-	        <div>
-		        <p>级别人数统计</p>
-		        <table border="1">
-			        <tr>
-				        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>总人数</th>
-			        </tr>
-					<tr>
-						<?php
-							$cnt = count($userCnt);
-							$j = 1;
-							while ($j <= $cnt) {		
-						?>
-								<td><?php echo $userCnt[$j]; ?></td>
-						<?php		
-								++$j;
-							}
-						?>
- 						<td><?php echo $totalCnt; ?></td>
-					</tr>
-		        </table>
-	        </div>
+-->
 		</div>
     </body>
     <div style="text-align:center;">

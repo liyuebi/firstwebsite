@@ -212,14 +212,22 @@ if ($con) {
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>交易额度：<?php if ($row["BuyCnt"] <= 0) {echo $row["Quantity"];} else {echo $row["BuyCnt"] . '/' . $row["Quantity"];} ?></p>
 							<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
-							<?php 	if ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] < 60 * 60 * $exchangeBuyHours) { ?>
+							<?php 	if ($row["Status"] == $creditTradeInited) {
+										if (time() - $row["CreateTime"] < 60 * 60 * $exchangeBuyHours) {
+							?>
 								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
-								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />
-							<?php 	} 
+								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />				
+							<?php		}
+										else {
+							?>
+								<p>已过期</p>
+							<?php
+										}
+							 	} 
 									else if ($row["Status"] == $creditTradeCancelled) { ?>
 								<p>已撤单</p>
 							<?php 	} 
-									else if ($row["Status"] == $creditTradeExpired || ($row["Status"] == $creditTradeInited && time() - $row["CreateTime"] >= 60 * 60 * $exchangeBuyHours)) { ?>
+									else if ($row["Status"] == $creditTradeExpired) { ?>
 								<p>已过期</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeReserved) { ?>

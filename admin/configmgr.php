@@ -120,10 +120,10 @@ if (!checkLoginOrJump()) {
 				}, "json");				
 			}
 			
-			function changeTransferHandleRate()
+			function changeDBonusR()
 			{
-				var val = document.getElementById("transferRate").value;
-				$.post("../php/changeConfig.php", {"func":"changeTHR","val":val}, function(data){
+				var val = document.getElementById("dBonusR").value;
+				$.post("../php/changeConfig.php", {"func":"changeDBR","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -142,17 +142,6 @@ if (!checkLoginOrJump()) {
 					<tr>
 						<th align="center">参数名</th><th>值</th><th>操作</th>
 					</tr>
-<!--
-					<tr>
-						<td>一蜂值</td>
-						<td><?php echo $fengzhiValue; ?></td>
-					</tr>
-					<tr>
-						<td>新用户初始动态蜂值</td>
-						<td><input type="text" id="newUserFeng" value="" /></td>
-						<td><input type="button" value="修改" onclick="changeNUFeng()" /></td>
-					</tr>
--->
 					<tr>
 						<td>推荐用户消耗云量下限</td>
 						<td><input type="text" id="regiCreditLeast" value="<?php echo $regiCreditLeast;  ?>" /></td>
@@ -163,33 +152,51 @@ if (!checkLoginOrJump()) {
 						<td><input type="text" id="regiCreditMost" value="<?php echo $regiCreditMost;  ?>" /></td>
 						<td><input type="button" value="修改" onclick="changeRegiCreditM()" /></td>
 					</tr>
-<!--
 					<tr>
-						<td>每次提现下限</td>
-						<td><input type="text" id="floor" value="<?php echo $withdrawFloorAmount;?>" /></td>
-						<td><input type="button" value="修改" onclick="changeFloor()" /></td>
+						<td>存储云量下限</td>
+						<td><input type="text" id="sCreditL" value="<?php echo $saveCreditLeast;  ?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeRegiCreditM()" /> --></td>
 					</tr>
 					<tr>
-						<td>每日提现上限</td>
-						<td><input type="text" id="ceil" value="<?php echo $withdrawCeilAmountOneDay;?>" /></td>
-						<td><input type="button" value="修改" onclick="changeCeil()" /></td>
+						<td>存储云量上限</td>
+						<td><input type="text" id="sCreditM" value="<?php echo $saveCreditMost; ?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeNUFeng()" /> --></td>
 					</tr>
 					<tr>
-						<td>单笔转账下限</td>
-						<td><input type="text" id="transferFloor" value="<?php echo $transferFloorAmount;?>" /></td>
-						<td><input type="button" value="修改" onclick="changeTransferFloor()" /></td>
+						<td>挂单最小额度</td>
+						<td><input type="text" id="exL" value="<?php echo $exchangeLeast;?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeFloor()" /> --></td>
 					</tr>
 					<tr>
-						<td>提现手续费</td>
-						<td><input type="text" id="withdrawRate" value="<?php echo $withdrawHandleRate;?>"</td>
-						<td><input type="button" value="修改" onclick="changeWithdrawHandleRate()" /></td>
+						<td>挂单最大额度</td>
+						<td><input type="text" id="exM" value="<?php echo $exchangeMost;?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeCeil()" /> --></td>
 					</tr>
 					<tr>
-						<td>转账手续费</td>
-						<td><input type="text" id="transferRate" value="<?php echo $transferHandleRate;?>"</td>
-						<td><input type="button" value="修改" onclick="changeTransferHandleRate()" /></td>
+						<td>话费充值下限</td>
+						<td><input type="text" id="$pChargeL" value="<?php echo $phoneChargeLeast;?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeTransferFloor()" /> --></td>
 					</tr>
--->
+					<tr>
+						<td>话费充值上限</td>
+						<td><input type="text" id="pChargeM" value="<?php echo $phoneChargeMost;?>"</td>
+						<td><!-- <input type="button" value="修改" onclick="changeWithdrawHandleRate()" /> --></td>
+					</tr>
+					<tr>
+						<td>油费充值下限</td>
+						<td><input type="text" id="$oChargeL" value="<?php echo $oilChargeLeast;?>" /></td>
+						<td><!-- <input type="button" value="修改" onclick="changeTransferFloor()" /> --></td>
+					</tr>
+					<tr>
+						<td>油费充值上限</td>
+						<td><input type="text" id="oChargeM" value="<?php echo $oilChargeMost;?>"</td>
+						<td><!-- <input type="button" value="修改" onclick="changeWithdrawHandleRate()" /> --></td>
+					</tr>
+					<tr>
+						<td>存储云量日利率</td>
+						<td><input type="text" id="dBonusR" value="<?php echo $dayBonusRate;?>"</td>
+						<td><input type="button" value="修改" onclick="changeDBonusR()" /></td>
+					</tr>
 				</table>
 	        </div>
 		</div>

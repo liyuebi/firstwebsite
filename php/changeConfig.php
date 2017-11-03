@@ -35,10 +35,11 @@ else if ("changeNAF" == $_POST['func']) {
 else if ("changeWHR" == $_POST['func']) {
 	changeWithdrawHandleRate();
 }
-else if ("changeTHR" == $_POST['func']) {
-	changeTransferHandleRate();
-}
 */
+else if ("changeDBR" == $_POST['func']) {
+	changeDayBonusRate();
+}
+
 
 function changeConfig($name, $val, &$err)
 {
@@ -202,13 +203,13 @@ function changeWithdrawHandleRate()
 	echo json_encode(array('error'=>'false'));
 }
 
-function changeTransferHandleRate()
+function changeDayBonusRate()
 {
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = floatval($val);
 	
 	$err_msg = '';
-	if (!changeConfig("transferHandleRate", $val, $err_msg)) {
+	if (!changeConfig("dayBonusRate", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
