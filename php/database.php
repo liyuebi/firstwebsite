@@ -165,6 +165,8 @@ function createCreditTradeTable()
 	* PayTime: 买家确认支付时间
 	* ConfirmTime: 卖家确认支付时间
 	* CancelTime: 卖家取消订单时间
+	* ApplyDelayTime: 申请延迟时间
+	* ApplyDelayIdx: 申请延迟次数
 	*/
 	$sql = "create table if not exists CreditTrade
 	(	
@@ -183,6 +185,8 @@ function createCreditTradeTable()
 		CancelTime int default 0,
 		ReserveTime int default 0,
 		PayTime int default 0,
+		ApplyDelayTime int default 0,
+		ApplyDelayIdx int default 0,
 		ConfirmTime int default 0,
 		Status int not null,
 		ComplainStatus int default 0,

@@ -40,25 +40,17 @@ $res1 = mysql_query("select * from Transaction where Type=2");
 			
 			function onConfirm(btn)
 			{
-/*
-				var courier = document.getElementById("courierNum_" + btn.id).value;
-				courier = $.trim(courier);
-				if (courier.length == 0) {
-					alert("请输入快递单号！");
-					return;
-				}
 				document.getElementById(btn.id).disabled = true;
-				$.post("../php/trade.php", {"func":"delivery","index":btn.id,"courier":courier}, function(data){
+				$.post("../php/trade.php", {"func":"deliveryPhone","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
-						alert("发货状态修改成功！");
-						document.getElementById("status_" + data.index).innerHTML = "已发货";	
+						alert("修改充值状态完成！");
+						document.getElementById("status_" + data.index).innerHTML = "完成";	
 					}
 					else {
-						alert("发货状态修改失败: " + data.error_msg);
+						alert("修改充值状态失败: " + data.error_msg);
 					}
 				}, "json");
-*/
 			}
 			
 			function onDeny(btn)
@@ -254,6 +246,7 @@ $res1 = mysql_query("select * from Transaction where Type=2");
 <!-- 						<th>产品信息</th> -->
 <!-- 						<th>数量</th> -->
 						<th>充值号码</th>
+						<th>金额</th>
 						<th>状态</th>
 						<th>确认充值</th>
 					</tr>
@@ -268,6 +261,7 @@ $res1 = mysql_query("select * from Transaction where Type=2");
 <!-- 								<td><?php echo $productList[$row['ProductId']]; ?></td> -->
 <!-- 								<td><?php echo $row["Count"]; ?></td> -->
 								<td><?php echo $row["CellNum"]; ?></td>
+								<td><?php echo $row["Price"]; ?></td>
 								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待充值"; else if ($OrderStatusDefault == $row["Status"]) echo "等待确认"; else if ($OrderStatusDelivery == $row["Status"]) echo "已充值"; else if ($OrderStatusAccept == $row["Status"]) echo "完成"; ?></td>
 <!--  								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td> -->
 								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>

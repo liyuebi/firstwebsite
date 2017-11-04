@@ -13,8 +13,11 @@ else {
 	exit();
 }
 
-include "../php/database.php";
+include_once "../php/database.php";
 include "../php/constant.php";
+include "../php/creditTrade.php";
+updateUserExchangeOrder();
+
 $con = connectToDB();
 
 $userid = $_SESSION["userId"];
@@ -211,11 +214,11 @@ if ($con) {
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>交易额度：<?php if ($row["BuyCnt"] <= 0) {echo $row["Quantity"];} else {echo $row["BuyCnt"] . '/' . $row["Quantity"];} ?></p>
-							<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
+							<p>创建时间：<?php echo date("Y-m-d H:i" ,$row["CreateTime"]); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeInited) {
 										if (time() - $row["CreateTime"] < 60 * 60 * $exchangeBuyHours) {
 							?>
-								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
+								<p>过期时间：<?php echo date("Y-m-d H:i", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="取消挂单" onclick="tryCancel(this)" />				
 							<?php		}
 										else {
@@ -231,19 +234,25 @@ if ($con) {
 								<p>已过期</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeReserved) { ?>
-								<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
+								<p>过期时间：<?php echo date("Y-m-d H:i", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
 								<p>等待支付</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradePayed) { ?>
-								<p>自动到账时间：<?php echo date("Y-m-d H:i:s", $row["PayTime"] + 60 * 60 * 24); ?></p>
+								<p>自动到账时间：<?php echo date("Y-m-d H:i", $row["PayTime"] + 60 * 60 * 24); ?></p>
 								<p>买家已支付,请确认</p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button button-border button-rounded" style="width: 50%;" value="确认收款" onclick="tryConfirmReceive(this)" />
+							<?php 	} 
+									else if ($row["Status"] == $creditTradeNotPayed) { ?>
+								<p>超时未支付</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeAbandoned) { ?>
 								<p>买家弃购</p>
 							<?php 	} 
 									else if ($row["Status"] == $creditTradeConfirmed) { ?>
-								<p>交易已完成</p>
+								<p>交易完成</p>
+							<?php 	} 
+									else if ($row["Status"] == $creditTradeAutoConfirmed) { ?>
+								<p>交易完成</p>
 							<?php	} ?>
 						</div>
 			<?php
@@ -262,7 +271,7 @@ if ($con) {
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>买入额度：<?php echo $row["BuyCnt"]; ?></p>
-							<p>下单时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"]); ?></p>
+							<p>下单时间：<?php echo date("Y-m-d H:i", $row["ReserveTime"]); ?></p>
 							<?php 	if ($row["Status"] == $creditTradeReserved) { 
 								
 								$info = "卖家手机号：" . $row["SellPhoneNum"] . "\n";
@@ -278,7 +287,7 @@ if ($con) {
 								$info = $info . "请在下单后" . $exchangePayHours . "小时内完成支付，并点击支付完成按钮。";
 								
 							?>
-								<p>支付截止时间：<?php echo date("Y-m-d H:i:s", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
+								<p>支付截止时间：<?php echo date("Y-m-d H:i", $row["ReserveTime"] + 60 * 60 * $exchangePayHours); ?></p>
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="查看卖家信息" onclick="checkSellerInfo(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="支付完成" onclick="tryConfirmPayment(this)" />
 								<input type="button" id="<?php echo $row["IdxId"]; ?>" class="button-rounded" style="width: 32%;" value="放弃买入" onclick="abandonPayment(this)" />
@@ -289,7 +298,7 @@ if ($con) {
 							<?php
 									}
 									else if ($row["Status"] == $creditTradePayed) { ?>
-								<p>自动到账时间：<?php echo date("Y-m-d H:i:s", $row["PayTime"] + 60 * 60 * 24); ?></p>
+								<p>自动到账时间：<?php echo date("Y-m-d H:i", $row["PayTime"] + 60 * 60 * 24); ?></p>
 								<p>已付款，等待买家确认</p>
 							<?php
 									}

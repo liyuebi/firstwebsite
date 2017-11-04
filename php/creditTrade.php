@@ -1,31 +1,30 @@
 <?php
 
-include 'database.php';
+include_once 'database.php';
 
-if (!isset($_POST['func'])) {
-	exit('非法访问！');
-}
-
-if ("createTrade" == $_POST['func']) {
-	createTradeOrder();
-}
-else if ("cancelTrade" == $_POST['func']) {
-	cancelTradeOrder();
-}
-else if ("startTrade" == $_POST['func']) {
-	startTradeOrder();
-}
-else if ("saveCredit" == $_POST['func']) {
-	saveCredit();
-}
-else if ("confirmPayment" == $_POST['func']) {
-	confirmTradeOrderPay();
-}
-else if ("abandonPayment" == $_POST['func']) {
-	abandonTradeOrderPay();
-}
-else if ("confirmReceive" == $_POST['func']) {
-	confirmReceiveMoney();
+if (isset($_POST['func'])) {
+	
+	if ("createTrade" == $_POST['func']) {
+		createTradeOrder();
+	}
+	else if ("cancelTrade" == $_POST['func']) {
+		cancelTradeOrder();
+	}
+	else if ("startTrade" == $_POST['func']) {
+		startTradeOrder();
+	}
+	else if ("saveCredit" == $_POST['func']) {
+		saveCredit();
+	}
+	else if ("confirmPayment" == $_POST['func']) {
+		confirmTradeOrderPay();
+	}
+	else if ("abandonPayment" == $_POST['func']) {
+		abandonTradeOrderPay();
+	}
+	else if ("confirmReceive" == $_POST['func']) {
+		confirmReceiveMoney();
+	}
 }
 
 function createTradeOrder()
@@ -352,6 +351,74 @@ function refundSeller($sellid, $quantity, $handleFee)
 	return true;
 }
 
+function buyerRecieveMoney($idx, $status, $buyerId, $sellId, $quantity, $handleRate, $buyCnt, &$error_msg)
+{
+	include 'constant.php';
+	$now = time();
+	
+	$res1 = mysql_query("update CreditTrade set ConfirmTime='$now', Status='$status' where IdxId='$idx'");
+	if (!$res1) {
+		$error_msg = '确定收货失败，请稍后重试!';	
+		return false;			
+	}
+	
+	$res3 = mysql_query("select * from Credit where UserId='$buyerId'");
+	if (!$res3 || mysql_num_rows($res3) <= 0) {
+		// !!! log error
+	}
+	else {
+		
+		$row3 = mysql_fetch_assoc($res3);
+		$credit = $row3["Credits"];
+		$credit += $buyCnt;
+		
+		$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$buyerId'");
+		if (!$res4) {
+			// !!! log error
+		}
+		else {
+			$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+				VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $codeCreTradeRec)");		
+			if (!$res5) {
+				// !!! log error
+			}
+		}
+	}
+	
+	$handleFee = $quantity * $handleRate;
+	$actualHandleFee = $handleFee;
+	if ($buyCnt != $quantity) {
+		$res3 = mysql_query("select * from Credit where UserId='$sellId'");
+		if (!$res3 || mysql_num_rows($res3) <= 0) {
+			// !!! log error
+		}
+		else {
+			$actualHandleFee = $buyCnt * $handleRate;
+			$refund = $quantity - $buyCnt + $handleFee - $actualHandleFee;
+			
+			$row3 = mysql_fetch_assoc($res3);
+			$credit = $row3["Credits"];
+			$credit += $refund;
+			
+			$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$sellId'");
+			if (!$res4) {
+				// !!! log error
+			}
+			else {
+				$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+					VALUES($sellId, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
+				if (!$res5) {
+					// !!! log error
+				}
+			}
+		}
+	}
+	
+	include_once "func.php";
+	insertExchangeSuccessStatistics($buyCnt, $actualHandleFee);
+	return true;
+}
+
 function confirmTradeOrderPay()
 {
 	include 'regtest.php';
@@ -396,7 +463,7 @@ function confirmTradeOrderPay()
 
 		$now = time();
 		$reserveTime = $row["ReserveTime"];
-		if ($now - $reserveTime >= 60 * 60 * 24) {
+		if ($now - $reserveTime >= 60 * 60 * $exchangePayHours) {
 			
 			// 修改订单状态
 			mysql_query("update CreditTrade set Status='$creditTradeNotPayed' where IdxId='$idx'");
@@ -528,69 +595,13 @@ function confirmReceiveMoney()
 		$buyerId = $row["BuyerId"];
 		$buyCnt = $row["BuyCnt"];
 		$quantity = $row["Quantity"];
-		$handleFee = $quantity * $row["HanderRate"];		
+		$handleRate = $row["HanderRate"];
+		$error_msg = '';
 
-		$now = time();
-		
-		$res1 = mysql_query("update CreditTrade set ConfirmTime='$now', Status='$creditTradeConfirmed' where IdxId='$idx'");
-		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'确定收货失败，请稍后重试!'));	
+		if (!buyerRecieveMoney($idx, $creditTradeConfirmed, $buyerId, $userid, $quantity, $handleRate, $buyCnt, $error_msg)) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>$error_msg));	
 			return;			
 		}
-		
-		$res3 = mysql_query("select * from Credit where UserId='$buyerId'");
-		if (!$res3 || mysql_num_rows($res3) <= 0) {
-			// !!! log error
-		}
-		else {
-			
-			$row3 = mysql_fetch_assoc($res3);
-			$credit = $row3["Credits"];
-			$credit += $buyCnt;
-			
-			$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$buyerId'");
-			if (!$res4) {
-				// !!! log error
-			}
-			else {
-				$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-					VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $codeCreTradeRec)");		
-				if (!$res5) {
-					// !!! log error
-				}
-			}
-		}
-		
-		$actualHandleFee = $handleFee;
-		if ($buyCnt != $quantity) {
-			$res3 = mysql_query("select * from Credit where UserId='$userid'");
-			if (!$res3 || mysql_num_rows($res3) <= 0) {
-				// !!! log error
-			}
-			else {
-				$actualHandleFee = $buyCnt * $row["HanderRate"];
-				$refund = $quantity - $buyCnt + $handleFee - $actualHandleFee;
-				
-				$row3 = mysql_fetch_assoc($res3);
-				$credit = $row3["Credits"];
-				$credit += $refund;
-				
-				$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
-				if (!$res4) {
-					// !!! log error
-				}
-				else {
-					$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-						VALUES($userid, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
-					if (!$res5) {
-						// !!! log error
-					}
-				}
-			}
-		}
-		
-		include_once "func.php";
-		insertExchangeSuccessStatistics($buyCnt, $actualHandleFee);
 	}	
 	
 	echo json_encode(array('error'=>'false'));
@@ -705,6 +716,142 @@ function saveCredit()
 	}
 	
 	echo json_encode(array('error'=>'false'));
+}
+
+function updateUserExchangeOrder()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+// 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+// 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	$userid = $_SESSION['userId'];
+
+	updateUserExchangeBuy($userid);
+	updateUserExchangeSell($userid);
+}
+
+/*
+ * 更新作为买家的交易订单
+ */
+function updateUserExchangeBuy($userid)
+{
+	include "constant.php";
+	
+	$res = mysql_query("select * from CreditTrade where BuyerId='$userid'");
+	$now = time();
+	
+	while ($row = mysql_fetch_array($res)) {
+				
+		$status = $row["Status"];
+		$idx = $row["IdxId"];
+		if ($creditTradeReserved == $status) {
+			
+			$reserveTime = $row["ReserveTime"];
+			if ($now - $reserveTime >= 60 * 60 * $exchangePayHours) {
+				
+				$res2 = mysql_query("update CreditTrade set Status='$creditTradeNotPayed' where IdxId='$idx'");	
+				if ($res2) {
+					
+					$sellId = $row["SellerId"];
+					$quantity = $row["Quantity"];
+					$handleFee = $quantity * $row["HanderRate"];
+					refundSeller($sellId, $quantity, $handleFee);
+				}
+			}
+		}
+		else if ($creditTradePayed == $status) {
+			
+			$payedTime = $row["PayTime"];
+			if ($now - $payedTime >= 60 * 60 * $exchangeDeliveryHours) {
+				
+				$res2 = mysql_query("update CreditTrade set Status='$creditTradeAutoConfirmed' where IdxId='$idx'");
+				if ($res2) {
+				
+					$buyerId = $row["BuyerId"];
+					$sellId = $row["SellerId"];
+					$buyCnt = $row["BuyCnt"];
+					$quantity = $row["Quantity"];
+					$handleRate = $row["HanderRate"];
+					$error_msg = '';
+					buyerRecieveMoney($idx, $creditTradeAutoConfirmed, $buyerId, $sellId, $quantity, $handleRate, $buyCnt, $error_msg);
+				}
+			}
+		}
+	}
+}
+
+/*
+ * 更新作为卖家的交易订单
+ */
+function updateUserExchangeSell($userid)
+{
+	include "constant.php";
+	
+	$res = mysql_query("select * from CreditTrade where SellerId='$userid'");
+	$now = time();
+	
+	while ($row = mysql_fetch_array($res)) {
+		
+		$status = $row["Status"];
+		$idx = $row["IdxId"];
+		if ($creditTradeInited == $status) {
+			
+			$createTime = $row["CreateTime"];
+			if ($now - $createTime >= 60 * 60 * $exchangeBuyHours) {
+				
+				$res2 = mysql_query("update CreditTrade set Status='$creditTradeExpired' where IdxId='$idx'");
+				if ($res2) {
+					
+					$sellId = $row["SellerId"];
+					$quantity = $row["Quantity"];
+					$handleFee = $quantity * $row["HanderRate"];
+					refundSeller($sellId, $quantity, $handleFee);
+				}
+			}
+		}
+		else if ($creditTradeReserved == $status) {
+			
+			$reserveTime = $row["ReserveTime"];
+			if ($now - $reserveTime >= 60 * 60 * $exchangePayHours) {
+				
+				$res2 = mysql_query("update CreditTrade set Status='$creditTradeNotPayed' where IdxId='$idx'");	
+				if ($res2) {
+					
+					$sellId = $row["SellerId"];
+					$quantity = $row["Quantity"];
+					$handleFee = $quantity * $row["HanderRate"];
+					refundSeller($sellId, $quantity, $handleFee);
+				}
+			}
+		}
+		else if ($creditTradePayed == $status) {
+			
+			$payedTime = $row["PayTime"];
+			if ($now - $payedTime >= 60 * 60 * $exchangeDeliveryHours) {
+				
+				$res2 = mysql_query("update CreditTrade set Status='$creditTradeAutoConfirmed' where IdxId='$idx'");
+				if ($res2) {
+					
+					$buyerId = $row["BuyerId"];
+					$sellId = $row["SellerId"];
+					$buyCnt = $row["BuyCnt"];
+					$quantity = $row["Quantity"];
+					$handleRate = $row["HanderRate"];
+					$error_msg = '';
+					buyerRecieveMoney($idx, $creditTradeAutoConfirmed, $buyerId, $sellId, $quantity, $handleRate, $buyCnt, $error_msg);
+				}
+			}
+		}		
+	}
 }
 	
 ?>

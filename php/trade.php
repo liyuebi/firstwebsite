@@ -18,6 +18,9 @@ else if ("purchase" == $_POST['func']) {
 else if ("delivery" == $_POST['func']) {
 	deliveryProduct();
 }
+else if ("deliveryPhone" == $_POST['func']) {
+	deliveryPhoneFare();
+}
 else if ("markExported" == $_POST['func']) {
 	markProductExported();
 }
@@ -131,8 +134,8 @@ function createChargePhoneOrder()
 			/// !! log error
 		}
 		else {
-			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, Type)
-									values($userid, $amount, $credit, $handleFee, $now, $codeTryChargePhone)");
+			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
+									values($userid, $amount, $credit, $handleFee, $now, $now, $codeTryChargePhone)");
 			if (!$res2) {
 				/// !! log error
 			}	
@@ -260,6 +263,7 @@ function reinvest()
 	$receiver = '';
 	$phonenum = '';
 	if ($productId != 2) {
+		
 		$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
 		if (!$result || mysql_num_rows($result) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
@@ -662,8 +666,6 @@ function confirmOrder()
 
 function deliveryProduct()
 {
-	// 权限判断 ！！！！！！！！！！！！！！
-	
 	include 'constant.php';
 	include_once 'admin_func.php';
 	
@@ -706,6 +708,56 @@ function deliveryProduct()
 	$result = mysql_query("update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time', CourierNum='$courier' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
+		return;		
+	}
+		
+	echo json_encode(array('error'=>'false','index'=>$TransactionId));
+	return;
+}
+
+function deliveryPhoneFare()
+{
+	include 'constant.php';
+	include_once 'admin_func.php';
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
+		return;		
+	}
+	
+	$row = mysql_fetch_assoc($result);	
+	$status = $row['Status'];
+	
+	if ($status != $OrderStatusBuy) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不是等待发货的状态，请重新检查！'));
+		return;
+	}
+	
+	if ($row["Type"] != 2) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'订单类型错误！'));
+		return;
+	}
+	
+	$time = time();
+	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
 	}
 		

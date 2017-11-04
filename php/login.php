@@ -11,7 +11,7 @@ echo(PHP_OS);
 echo "<p>";
 */
 
-include 'database.php';
+include_once 'database.php';
 
 if (!isset($_POST['func'])) {
 	exit('非法访问！');
@@ -107,6 +107,9 @@ function login()
 				mysql_query("update ClientTable set LastLoginTime='$now' where UserId='$userid'");
 			}
 		}
+		
+		include "creditTrade.php";
+		updateUserExchangeOrder();
 	}
 	
 	echo json_encode(array('error'=>'false'));
