@@ -54,11 +54,16 @@ if ($con) {
         <div style="margin-top: 5px;">
 			<?php 
 				if ($res) {
+					date_default_timezone_set('PRC');
 					while ($row = mysql_fetch_array($res)) {
 			?>
-					<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>">
-						<p><?php echo $row["Title"]; ?></p>
-					</a>
+					<div>
+						<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>">
+							<p style="display: inline-block; font-size: 18px; margin-left: 5px;"><?php echo $row["Title"]; ?></p>
+							<p style="display: inline-block; font-size: 18px; float: right; margin-right: 5px;"><?php echo date("Y-m-d" , $row["OnlineTime"]); ?></p>
+						</a>
+						<div style="height: 5px; width: 100%; clear: both"></div>
+					</div>
 			<?php
 					}
 				}
