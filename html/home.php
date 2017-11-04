@@ -146,6 +146,17 @@ if ($con) {
 					location.href = "recommend.php";
 				}
 			}
+			
+			function willOpen()
+			{
+				document.getElementById("willshow").style.display = "block";
+				window.setTimeout(hideTipPanel,2000);
+			}
+			
+			function hideTipPanel()
+			{
+				document.getElementById("willshow").style.display = "none";	
+			}
 		</script>
 	</head>
 	
@@ -229,12 +240,12 @@ if ($con) {
 				<li><a class="icon_btn6" href="exchange.php">云量交易</a></li>
 				<li><a class="icon_btn5" href="posters.php">公告</a></li>
 				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>
-				<li><a class="icon_btn2" href="#">自由集市</a></li>
+				<li><a class="icon_btn2" onclick="willOpen()">自由集市</a></li>
 <!-- 				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li> -->
-				<li><a class="icon_btn7" href="#">线下商家</a></li>
-				<li><a class="icon_btn4" href="#">直播购</a></li>
-				<li><a class="icon_btn8" href="#">云粉传媒</a></li>
-				<li><a class="icon_btn12" href="#">云量商城</a></li>
+				<li><a class="icon_btn7" onclick="willOpen()">线下商家</a></li>
+				<li><a class="icon_btn4" onclick="willOpen()">直播购</a></li>
+				<li><a class="icon_btn8" onclick="willOpen()">云粉传媒</a></li>
+				<li><a class="icon_btn12" onclick="willOpen()">云量商城</a></li>
 			</ul>
 		</div>
 		
@@ -262,6 +273,10 @@ if ($con) {
 					<li style="display:table-cell; width:1%; float: none"><a href="me.php" style="text-align: center">个人中心</a></li>
 				</ul>
 			</div>
+		</div>
+		
+		<div id="willshow" style="position: absolute; left: 50%; top: 400px;  width: 160px; margin-left: -80px; height: 60px; background: rgba(138, 129, 129, 0.8); border-radius: 5px; display: none;">
+			<p style="margin: auto; text-align: center; line-height: 60px; font-size: 30px; color: white">即将开放</p>
 		</div>
 	</body>
 </html>
