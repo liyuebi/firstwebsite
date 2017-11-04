@@ -24,6 +24,8 @@
 // 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
 // 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
 	$dayBonusRate = 0.008;		// 每笔存储每日返还的额度
+	$phoneChargeRate = 0.1;		// 手机充值手续费
+	$oilChargeRate = 0.1;		// 加油卡充值手续费
 	
 	$exchangeBuyHours = 24;		// 云量交易挂单的有效期，单位为小时
 	$exchangePayHours = 1;		// 云量交易下单后支付的有效期，单位为小时
@@ -56,6 +58,8 @@
 	$codeCreTradeRec = 13;	// 交易成功，买家收款
 	$codeTryChargePhone = 14;// 提交手机充值申请，扣除积分
 	$codeStopChargePhone = 15;// 取消手机充值申请，返还积分
+	$codeTryChargeOil = 16;	// 提交加油卡充值申请，扣除积分
+	$codeStopChargeOil = 17;// 取消加油卡充值申请，返还积分
 	
 	$code2Divident = 1; // 固定分红导致采线上云量变化
 	$code2DynDivident = 2; // 动态分红导致采线上云量变化，

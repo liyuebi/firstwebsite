@@ -85,7 +85,7 @@ if ($con) {
         
         <hr>
         
-		<a class="link_forward" href="#">
+		<a class="link_forward" href="order.php">
  			<span>订单管理</span>
 		</a>
 		

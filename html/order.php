@@ -24,26 +24,9 @@ if (!$con)
 
 include "./../php/constant.php";
 $userid = $_SESSION["userId"];
-$result = mysql_query("select * from Transaction where UserId='$userid' and Status!='$OrderStatusAccept'");
+$result = mysql_query("select * from Transaction where UserId='$userid' and Type!=1 order by OrderTime desc");
 if (!$result) {
 	return;	
-}
-
-$res1 = mysql_query("select * from Transaction where UserId='$userid' and Status='$OrderStatusAccept' order by OrderTime desc");
-
-$prodcutName = '';
-$prodcutName1 = '';
-
-$res2 = mysql_query("select * from Product where ProductId=1");
-if ($res2) {
-	$row2 = mysql_fetch_assoc($res2);
-	$prodcutName = $row2["ProductName"];
-}
-
-$res3 = mysql_query("select * from Product where ProductId=2");
-if ($res3) {
-	$row3 = mysql_fetch_assoc($res3);
-	$prodcutName1 = $row3["ProductName"];
 }
 
 ?>
@@ -57,6 +40,7 @@ if ($res3) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
@@ -97,37 +81,84 @@ if ($res3) {
 			}
 			
 			$(document).ready(function(){		
-				
-				document.getElementById("1").style.color = "red";
-				document.getElementById("1").style.borderBottomColor = "red";
-				
-				$('table#tag_table td').click(function(){
-					$(this).css('color','red');//点击的设置字色为红色
-					$(this).css('borderBottomColor','red');//点击的设置为绿色
-					var value = $(this).css("border-bottom");//点击的设置字色为红色
-					$('#tag_table td').not(this).css('color','black');//其他的全部设置为黑色
-					$('#tag_table td').not(this).css("borderBottomColor","rgba(0, 0, 0, 0)");//其他的全部设置为黑色
-
-					if ($(this).attr("id") == "1" ) {
-						switchToUnfinished();
-					}
-					else {
-						switchToFinished();
-					}
-				});
 			})
+			
+			function goback()
+			{
+				location.href = "me.php";
+			}
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">我的订单</h3></div>
+				<div class="col-xs-3 col-md-3"></div>
+			</div>
 		</div>
 		
 		<div class="big_frame">
-<!-- 			<h3 align="center">我的订单</h3> -->
+	        <div>
+		        <?php
+			        date_default_timezone_set('PRC');
+			        while($row = mysql_fetch_array($result)) {
+				        if (2 == $row["Type"]) {
+		        ?>
+		        		<ul class="order_block" style="background: white; margin-top: 3%;">
+			        		<li>话费充值</li>
+			        		<li class="right_ele"><?php echo date("Y-m-d H:i" ,$row["OrderTime"]); ?></li>
+			        		<br>
+			        		<li>充值号码:<?php echo $row["CellNum"]; ?></li>
+			        		<li class="right_ele">金额: <?php echo $row["Price"]; ?></li>
+			        		<br>
+			        		<?php
+				        		if ($OrderStatusBuy == $row["Status"]) {
+					        ?>		
+					        	<li>等待充值</li>
+					        <?php
+				        		}
+				        		else if ($OrderStatusAccept == $row["Status"]) {
+							?>
+								<li>已充值</li>
+							<?php					        		
+				        		}
+				        	?>
+		        		</ul>
+		        <?php
+			        	}
+			        	else if (3 == $row["Type"]) {
+				?>
+		        		<ul class="order_block" style="background: white; margin-top: 3%;">
+			        		<li>加油卡充值</li>
+			        		<li class="right_ele"><?php echo date("Y-m-d H:i" ,$row["OrderTime"]); ?></li>
+			        		<br>
+			        		<li>加油卡号:<?php echo $row["CardNum"]; ?></li>
+			        		<br>
+			        		<li>联系手机号:<?php echo $row["CellNum"]; ?></li>
+			        		<li class="right_ele">金额: <?php echo $row["Price"]; ?></li>
+			        		<br>
+			        		<?php
+				        		if ($OrderStatusBuy == $row["Status"]) {
+					        ?>		
+					        	<li>等待充值</li>
+					        <?php
+				        		}
+				        		else if ($OrderStatusAccept == $row["Status"]) {
+							?>
+								<li>已充值</li>
+							<?php					        		
+				        		}
+				        	?>
+		        		</ul>
+				<?php
+			        	}
+			        }
+		        ?>
+	        </div>
+
 	
+<!--
 			<table id="tag_table" class="t2">
 				<tr>
 					<td id="1" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 10%; margin-right: 5%;" >未完成订单</td>
@@ -195,6 +226,7 @@ if ($res3) {
 			        }
 		        ?>
 	        </div>
+-->
         </div>
     </body>
     <div style="text-align:center;">

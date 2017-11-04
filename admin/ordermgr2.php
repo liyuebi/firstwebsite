@@ -9,8 +9,6 @@ if (!checkLoginOrJump()) {
 include "../php/database.php";
 
 $result = false;
-$res1 = false;
-$productList = array();
 
 $con = connectToDB();
 if (!$con)
@@ -18,16 +16,17 @@ if (!$con)
 	return false;
 }
 
+/*
 $res = mysql_query("select * from Product");
 if ($res) {
 	while($row = mysql_fetch_array($res)) {
 		$productList[$row['ProductId']] = $row['ProductName'];
 	}	
 }
+*/
 
 include "../php/constant.php";
 $result = mysql_query("select * from Transaction where Type=3");
-// 	$result = mysql_query("select * from Transaction");
 
 ?>
 
@@ -46,24 +45,17 @@ $result = mysql_query("select * from Transaction where Type=3");
 			
 			function onConfirm(btn)
 			{
-				var courier = document.getElementById("courierNum_" + btn.id).value;
-				courier = $.trim(courier);
-				if (courier.length == 0) {
-					alert("请输入快递单号！");
-					return;
-				}
 				document.getElementById(btn.id).disabled = true;
-				$.post("../php/trade.php", {"func":"delivery","index":btn.id,"courier":courier}, function(data){
+				$.post("../php/trade.php", {"func":"deliveryOil","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
-						alert("发货状态修改成功！");
-						document.getElementById("status_" + data.index).innerHTML = "已发货";	
+						alert("修改充值状态完成！");
+						document.getElementById("status_" + data.index).innerHTML = "完成";	
 					}
 					else {
-						alert("发货状态修改失败: " + data.error_msg);
+						alert("修改充值状态失败: " + data.error_msg);
 					}
-				}, "json");
-			}
+				}, "json");			}
 			
 			function onDeny(btn)
 			{
@@ -261,21 +253,38 @@ $result = mysql_query("select * from Transaction where Type=3");
 		<div style="padding: 10px 0 0 10px;" >
 				<div id="blk_tbl2">
 					<table id="tbl2" border="1">
+<!--
 						<input id="input_userid" type="text" placeholder="请输入用户Id" />
 						<input type="button" value="查询用户订单" onclick="queryUserOrders()" />
 						<p id="quert_result"></p>
+-->
 						<tr>
 							<th>下单时间</th>
 							<th>用户id</th>
-							<th>产品信息</th>
-							<th>数量</th>
-							<th>收件人</th>
-							<th>收货人手机</th>
-							<th>收货地址</th>
+							<th>加油卡号</th>
+							<th>手机号</th>
+							<th>充值金额</th>
 							<th>状态</th>
-							<th>快递单号</th>
 							<th>操作</th>
 						</tr>
+					<?php
+						include "../php/constant.php";
+						date_default_timezone_set('PRC');
+						while($row = mysql_fetch_array($result)) {
+					?>
+							<tr>
+								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
+								<td><?php echo $row["UserId"]; ?></td>
+								<td><?php echo $row["CardNum"]; ?></td>
+								<td><?php echo $row["CellNum"]; ?></td>
+								<td><?php echo $row["Price"]; ?></td>
+								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待充值"; else if ($OrderStatusDefault == $row["Status"]) echo "等待确认"; else if ($OrderStatusDelivery == $row["Status"]) echo "已充值"; else if ($OrderStatusAccept == $row["Status"]) echo "完成"; ?></td>
+<!--  								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td> -->
+								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
+							</tr>
+					<?php
+						}
+					?>
 					</table>
 				</div>
 	        </div>

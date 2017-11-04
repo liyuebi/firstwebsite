@@ -38,25 +38,38 @@ if ($con) {
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
-		<link rel="stylesheet" href="../css/buttons.css">
+<!-- 		<link rel="stylesheet" href="../css/buttons.css"> -->
 		
-		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/jquery-3.2.1.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/bootstrap-3.3.7/bootstrap.min.js"></script>
+		<script src="../js/md5.js"></script>
 		<script type="text/javascript">
 						
 			function tryChargeOilCard()
 			{
-				alert("此功能尚未开放！");
-/*
+				var company = $('#company input:radio:checked').val();
+				if (company != 1 && company != 2) {
+					alert("请选择油卡所属公司!");
+					return;	
+				}
+				
+				var card = document.getElementById("card").value;
 				var phonenum = document.getElementById("phonenum").value;
 				var amount = document.getElementById("amount").value;
 				var paypwd = document.getElementById("pwd").value;
 				
+				card = $.trim(card);
 				phonenum=$.trim(phonenum);
 				amount=$.trim(amount);
+				paypwd = $.trim(paypwd);
 				if (!isPhoneNumValid(phonenum)) {
 					alert("无效的电话号码！");
 					return;
+				}
+				if (card == "") {
+					alert("无效的油卡号！");
+					return;					
 				}
 				if (amount == "") {
 					alert("无效的金额！");
@@ -67,14 +80,23 @@ if ($con) {
 					return;
 				}
 				
-				var str = "确认为手机号 " + phonenum + " 充值 " + amount + ", 将收取手续费10%"; 
+				var str = "确定为";
+				if (company == 1) {
+					str += "中石油";
+				}
+				else if (company == 2) {
+					str += "中石化";
+				}
+				str = str + "油卡号 " + card + " 充值" + amount + ", 将收取手续费10%"; 
 				if (confirm(str)) {
 					paypwd = md5(paypwd);		
 					
-					$.post("../php/trade.php", {"func":"phoneCharge", "phonenum":phonenum, "amount":amount, "paypwd":paypwd}, function(data){
+					$.post("../php/trade.php", {"func":"fuelCharge", "phonenum":phonenum, "amount":amount,"card":card,"paypwd":paypwd}, function(data){
 					
 						if (data.error == "false") {
 							alert("创建订单成功！");	
+							
+							document.getElementById("card").value = "";
 							document.getElementById("phonenum").value = "";
 							document.getElementById("amount").value = "";
 							document.getElementById("pwd").value = "";
@@ -84,13 +106,13 @@ if ($con) {
 						}
 					}, "json");
 				}
-*/
 			}			
 			
 			function goback() 
 			{
 				location.href = "virtuelife.php";
 			}
+			
 		</script>
 	</head>
 	<body>
@@ -102,10 +124,22 @@ if ($con) {
 			</div>
 		</div>
 
-<!-- 		<input id="amount" class="form-control" type="text" placeholder="中石油／中石化" />  -->
-		<input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
-		<input id="amount" class="form-control" type="text" placeholder="请输入油卡关联手机号！" onkeypress="return onlyNumber(event)" />
-		<input id="amount" class="form-control" type="text" placeholder="请输入支付密码！" />
-		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="确认" onclick="tryChargeOilCard()" />
+		<div style="margin: 5px 5px 0 5px;">
+			
+			<div class="btn-group" id="company" data-toggle="buttons">
+				<label class="btn btn-info">
+			    	<input type="radio" name="options" id="option1" autocomplete="off" value="1">中石油
+				</label>
+				<label class="btn btn-info">
+			    	<input type="radio" name="options" id="option2" autocomplete="off" value="2">中石化
+				</label>
+			</div>
+			
+			<input id="card" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入加油卡号！" /> 
+			<input id="phonenum" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入油卡关联手机号！" onkeypress="return onlyNumber(event)" />
+			<input id="amount" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
+			<input id="pwd" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入支付密码！" />
+			<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="tryChargeOilCard()" />
+		</div>
     </body>
 </html>
