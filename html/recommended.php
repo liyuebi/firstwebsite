@@ -107,94 +107,58 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
-		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; line-height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
+		<div class="big_frame">
+			<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; line-height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
 		
-		<p>队友人数： <?php echo $numTeam; ?>人</p>
-		<p>分享人数： <?php echo $numRefAccount; ?>人</p>
-		
-<!--
-		<table id="tag_table" class="t2">
-			<tr>
-				<td id="1" width="50%" >关联账户</th>
-				<td id="2" width="50%" >我的蜜粉</th>
-			</tr>
-		</table>
-        
-        <div id="blk_asso">
-	        <?php
-	        if ($res1) {
-		        if ($numAssoAccount > 0) {        
-	        ?>
-        	        <table style="width: 100%; text-align: center;">
+			<div class="container-fluid" style="margin-top: 5px;">
+				<div class="row">
+					<div class="col-xs-6 col-md-6"><h4>队友人数： <?php echo $numTeam; ?></h4></div>
+					<div class="col-xs-6 col-md-6"><h4>分享人数： <?php echo $numRefAccount; ?></h4></div>
+				</div>
+			</div>
+			
+	        <div id="blk_fans" style="display: block; margin-top: 5px;">
+		        <?php
+				if ($res2) {
+					if ($numRefAccount > 0) {
+		        ?>
+			        <table id="list" class="table table-striped" style="width: 100%; text-align: center;">
 				        <tr>
-					        <th style="width: 33%;">用户id</th>
-					        <th style="width: 33%;">昵称</th>
-					        <th style="width: 33%;">切换账号</th>
+	<!-- 				        <th style="width: 33%;">用户id</th> -->
+					        <th style="width: 50%; text-align: center;">昵称</th>
+					        <th style="width: 50%; text-align: center;">手机号</th>
 				        </tr>
-			<?php
-			        while ($row1 = mysql_fetch_array($res1)) {   
-	        ?>
-	        			<tr>
-					        <td ><?php echo $row1["UserId"]; ?></td>
-					        <td ><?php echo $row1["NickName"]; ?></td>
-					        <td ><input type="button" value="切换" id=<?php echo $row1["UserId"]; ?>  onclick="switchUser(this)" /></td>
-	        			</tr>
-	        <?php
-		        	}
-		    ?>
-		        	</table>
- 		    <?php
+				<?php
+					while ($row2 = mysql_fetch_array($res2)) {
+				?>
+						<tr>
+	<!--  						<td><?php echo $row2["UserId"]; ?></td> -->
+							<td><?php if ($row2["NickName"] != "") echo $row2["NickName"]; else echo "没有设置"; ?></td>
+							<td><?php echo $row2["PhoneNum"]; ?></td>
+						</tr>
+				<?php
+					}
+				?>
+			        </table>
+		        <?php
+			        }
+			        else {
+			    ?>
+				    	<p>您现在还没有分享。</p>
+			    <?php   
+			        }
 		        }
-		        else {
-		    ?>
-		    	<p>您现在还没有关联账户。</p>
-		    <?php
-		        }   
-	        }
-	        ?>
-        </div>
--->
-        <div id="blk_fans" style="display: block;">
-	        <?php
-			if ($res2) {
-				if ($numRefAccount > 0) {
-	        ?>
-		        <table id="list" style="width: 100%; text-align: center;">
-			        <tr>
-<!-- 				        <th style="width: 33%;">用户id</th> -->
-				        <th style="width: 50%;">昵称</th>
-				        <th style="width: 50%;">手机号</th>
-			        </tr>
-			<?php
-				while ($row2 = mysql_fetch_array($res2)) {
-			?>
-					<tr>
-<!--  						<td><?php echo $row2["UserId"]; ?></td> -->
-						<td><?php if ($row2["NickName"] != "") echo $row2["NickName"]; else echo "没有设置"; ?></td>
-						<td><?php echo $row2["PhoneNum"]; ?></td>
-					</tr>
-			<?php
-				}
-			?>
-		        </table>
-	        <?php
-		        }
-		        else {
-		    ?>
-			    	<p>您现在还没有分享。</p>
-		    <?php   
-		        }
-	        }
-	        ?>
-        </div>
-        
-		<div class="footer"> 
-			<div>
-				<ul class="nav nav-pills" >
-					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
-					<li style="display:table-cell; width:1%; float: none" class="active"><a style="text-align: center;" href="#">朋友</a></li>
-					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="me.php">个人中心</a></li>
-				</ul>
+		        ?>
+	        </div>
+	        
+			<div class="footer"> 
+				<div>
+					<ul class="nav nav-pills" >
+						<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
+						<li style="display:table-cell; width:1%; float: none" class="active"><a style="text-align: center;" href="#">朋友</a></li>
+						<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="me.php">个人中心</a></li>
+					</ul>
+				</div>
 			</div>
 		</div>
     </body>
