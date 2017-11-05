@@ -10,34 +10,41 @@ if ("changeRCL" == $_POST['func']) {
 else if ("changeRCM" == $_POST['func']) {
 	changeRegiCreditM();
 }
-/*
-else if ("changeFloor" == $_POST['func']) {
-	changeFloorValue();	
+else if ("changeSCL" == $_POST['func']) {
+	changeSaveCreditL();	
 }
-else if ("changeCeil" == $_POST['func']) {
-	changeCeilValue();
+else if ("changeSCM" == $_POST['func']) {
+	changeSaveCreditM();
 }
-else if ("changeRwdRate" == $_POST['func']) {
-	changeRwdRateValue();
+else if ("changeEL" == $_POST['func']) {
+	changeExL();
 }
-else if ("changeRwdVal" == $_POST['func']) {
-	changeRwdValValue();
+else if ("changeEM" == $_POST['func']) {
+	changeExM();
 }
-else if ("changeTransferFloor" == $_POST['func']) {
-	changeTransferFloorValue();
+else if ("changePCL" == $_POST['func']) {
+	changePhoneChargeL();
 }
-else if ("changeNUF" == $_POST['func']) {
-	changeNewUserVault();
+else if ("changePCM" == $_POST['func']) {
+	changePhoneChargeM();
 }
-else if ("changeNAF" == $_POST['func']) {
-	changeNewAccountVault();	
+else if ("changeOCL" == $_POST['func']) {
+	changeOilCHargeL();	
 }
-else if ("changeWHR" == $_POST['func']) {
-	changeWithdrawHandleRate();
+else if ("changeOCM" == $_POST['func']) {
+	changeOilCHargeM();
 }
-*/
 else if ("changeDBR" == $_POST['func']) {
 	changeDayBonusRate();
+}
+else if ("changeRBR" == $_POST['func']) {
+	changeReferBonusRate();
+}
+else if ("changeCRR1" == $_POST['func']) {
+	changeCollBonusRateRef();
+}
+else if ("changeCRR2" == $_POST['func']) {
+	changeCollBonusRateRei();
 }
 
 
@@ -99,104 +106,104 @@ function changeRegiCreditM()
 	echo json_encode(array('error'=>'false'));
 }
 
-function changeFloorValue()
+function changeSaveCreditL()
 {
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = intval($val);
 	
 	$err_msg = '';
-	if (!changeConfig("withdrawFloorAmount", $val, $err_msg)) {
+	if (!changeConfig("saveCreditLeast", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
 }
 
-function changeCeilValue()
+function changeSaveCreditM()
 {
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = intval($val);
 	
 	$err_msg = '';
-	if (!changeConfig("withdrawCeilAmountOneDay", $val, $err_msg)) {
+	if (!changeConfig("saveCreditMost", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
 	echo json_encode(array('error'=>'false'));
 }
 
-function changeRwdRateValue()
+function changeExL()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("exchangeLeast", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeExM()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("exchangeMost", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changePhoneChargeL()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("phoneChargeLeast", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changePhoneChargeM()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("phoneChargeMost", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeOilCHargeL()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("oilChargeLeast", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeOilCHargeM()
 {
 	$val = trim(htmlspecialchars($_POST['val']));
 	$val = floatval($val);
 	
 	$err_msg = '';
-	if (!changeConfig("rewardRate", $val, $err_msg)) {
-		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
-		return;
-	}
-	echo json_encode(array('error'=>'false'));
-}
-
-function changeRwdValValue()
-{
-	$val = trim(htmlspecialchars($_POST['val']));
-	$val = floatval($val);
-	
-	$err_msg = '';
-	if (!changeConfig("rewardVal", $val, $err_msg)) {
-		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
-		return;
-	}
-	echo json_encode(array('error'=>'false'));
-}
-
-function changeTransferFloorValue()
-{
-	$val = trim(htmlspecialchars($_POST['val']));
-	$val = intval($val);
-	
-	$err_msg = '';
-	if (!changeConfig("transferFloorAmount", $val, $err_msg)) {
-		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
-		return;
-	}
-	echo json_encode(array('error'=>'false'));
-}
-
-function changeNewUserVault()
-{
-	$val = trim(htmlspecialchars($_POST['val']));
-	$val = intval($val);
-	
-	$err_msg = '';
-	if (!changeConfig("dyNewUserVault", $val, $err_msg)) {
-		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
-		return;
-	}
-	echo json_encode(array('error'=>'false'));
-}
-
-function changeNewAccountVault()
-{
-	$val = trim(htmlspecialchars($_POST['val']));
-	$val = intval($val);
-	
-	$err_msg = '';
-	if (!changeConfig("dyNewAccountVault", $val, $err_msg)) {
-		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
-		return;
-	}
-	echo json_encode(array('error'=>'false'));
-}
-
-function changeWithdrawHandleRate()
-{
-	$val = trim(htmlspecialchars($_POST['val']));
-	$val = floatval($val);
-	
-	$err_msg = '';
-	if (!changeConfig("withdrawHandleRate", $val, $err_msg)) {
+	if (!changeConfig("oilChargeMost", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
 	}
@@ -215,5 +222,51 @@ function changeDayBonusRate()
 	}
 	echo json_encode(array('error'=>'false'));
 }
+
+function changeReferBonusRate()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("referBonusRate", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+/*
+ * 修改直推碰撞奖励比例
+ */ 
+function changeCollBonusRateRef()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("colliBonusRateRefer", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+/*
+ * 修改复投碰撞奖励比例
+ */ 
+function changeCollBonusRateRei()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("colliBonusRateReinv", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
 
 ?>

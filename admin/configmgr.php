@@ -18,6 +18,8 @@ if (!checkLoginOrJump()) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
@@ -50,10 +52,10 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
-			function changeFloor()
+			function changeSCreditL()
 			{
-				var val = document.getElementById("floor").value;
-				$.post("../php/changeConfig.php", {"func":"changeFloor","val":val}, function(data){
+				var val = document.getElementById("sCreditL").value;
+				$.post("../php/changeConfig.php", {"func":"changeSCL","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -64,10 +66,10 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
-			function changeCeil()
+			function changeSCreditM()
 			{
-				var val = document.getElementById("ceil").value;
-				$.post("../php/changeConfig.php", {"func":"changeCeil","val":val}, function(data){
+				var val = document.getElementById("sCreditM").value;
+				$.post("../php/changeConfig.php", {"func":"changeSCM","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -78,10 +80,10 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
-			function changeTransferFloor()
+			function changeEL()
 			{
-				var val = document.getElementById("transferFloor").value;
-				$.post("../php/changeConfig.php", {"func":"changeTransferFloor","val":val}, function(data){
+				var val = document.getElementById("exL").value;
+				$.post("../php/changeConfig.php", {"func":"changeEL","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -92,10 +94,10 @@ if (!checkLoginOrJump()) {
 				}, "json");	
 			}
 			
-			function changeRewardRate()
+			function changeEM()
 			{
-				var val = document.getElementById("rwdRate").value;
-				$.post("../php/changeConfig.php", {"func":"changeRwdRate","val":val}, function(data){
+				var val = document.getElementById("exM").value;
+				$.post("../php/changeConfig.php", {"func":"changeEM","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -106,10 +108,10 @@ if (!checkLoginOrJump()) {
 				}, "json");
 			}
 			
-			function changeWithdrawHandleRate()
+			function changePChargeL()
 			{
-				var val = document.getElementById("withdrawRate").value;
-				$.post("../php/changeConfig.php", {"func":"changeWHR","val":val}, function(data){
+				var val = document.getElementById("pChargeL").value;
+				$.post("../php/changeConfig.php", {"func":"changePCL","val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -120,6 +122,90 @@ if (!checkLoginOrJump()) {
 				}, "json");				
 			}
 			
+			function changePChargeM()
+			{
+				var val = document.getElementById("pChargeM").value;
+				$.post("../php/changeConfig.php", {"func":"changePCM","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}
+			
+			function changeOChargeL()
+			{
+				var val = document.getElementById("oChargeL").value;
+				$.post("../php/changeConfig.php", {"func":"changeOCL","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");				
+			}
+			
+			function changeOChargeM()
+			{
+				var val = document.getElementById("oChargeM").value;
+				$.post("../php/changeConfig.php", {"func":"changeOCM","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}
+
+			function changeRBonusR()
+			{
+				var val = document.getElementById("referR").value;
+				$.post("../php/changeConfig.php", {"func":"changeRBR","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}			
+			
+			function changeCBonusRRefer()
+			{
+				var val = document.getElementById("cRRefer").value;
+				$.post("../php/changeConfig.php", {"func":"changeCRR1","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}			
+		
+			function changeCBonusReinv()
+			{
+				var val = document.getElementById("cRReinv").value;
+				$.post("../php/changeConfig.php", {"func":"changeCRR2","val":val}, function(data){
+					
+					if (data.error == "false") {
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");		
+			}	
+					
 			function changeDBonusR()
 			{
 				var val = document.getElementById("dBonusR").value;
@@ -138,64 +224,79 @@ if (!checkLoginOrJump()) {
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
-				<table border="1">
+				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
 					<tr>
 						<th align="center">参数名</th><th>值</th><th>操作</th>
 					</tr>
 					<tr>
-						<td>推荐用户消耗云量下限</td>
-						<td><input type="text" id="regiCreditLeast" value="<?php echo $regiCreditLeast;  ?>" /></td>
-						<td><input type="button" value="修改" onclick="changeRegiCreditL()" /></td>
+						<td>推荐奖比例</td>
+						<td><input type="text" id="referR" value="<?php echo $referBonusRate;?>"</td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeRBonusR()" /></td>
 					</tr>
 					<tr>
-						<td>推荐用户消耗云量上限</td>
-						<td><input type="text" id="regiCreditMost" value="<?php echo $regiCreditMost;  ?>" /></td>
-						<td><input type="button" value="修改" onclick="changeRegiCreditM()" /></td>
+						<td>直推对碰奖比例</td>
+						<td><input type="text" id="cRRefer" value="<?php echo $colliBonusRateRefer;?>"</td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeCBonusRRefer()" /></td>
 					</tr>
 					<tr>
-						<td>存储云量下限</td>
-						<td><input type="text" id="sCreditL" value="<?php echo $saveCreditLeast;  ?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeRegiCreditM()" /> --></td>
-					</tr>
-					<tr>
-						<td>存储云量上限</td>
-						<td><input type="text" id="sCreditM" value="<?php echo $saveCreditMost; ?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeNUFeng()" /> --></td>
-					</tr>
-					<tr>
-						<td>挂单最小额度</td>
-						<td><input type="text" id="exL" value="<?php echo $exchangeLeast;?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeFloor()" /> --></td>
-					</tr>
-					<tr>
-						<td>挂单最大额度</td>
-						<td><input type="text" id="exM" value="<?php echo $exchangeMost;?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeCeil()" /> --></td>
-					</tr>
-					<tr>
-						<td>话费充值下限</td>
-						<td><input type="text" id="$pChargeL" value="<?php echo $phoneChargeLeast;?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeTransferFloor()" /> --></td>
-					</tr>
-					<tr>
-						<td>话费充值上限</td>
-						<td><input type="text" id="pChargeM" value="<?php echo $phoneChargeMost;?>"</td>
-						<td><!-- <input type="button" value="修改" onclick="changeWithdrawHandleRate()" /> --></td>
-					</tr>
-					<tr>
-						<td>油费充值下限</td>
-						<td><input type="text" id="$oChargeL" value="<?php echo $oilChargeLeast;?>" /></td>
-						<td><!-- <input type="button" value="修改" onclick="changeTransferFloor()" /> --></td>
-					</tr>
-					<tr>
-						<td>油费充值上限</td>
-						<td><input type="text" id="oChargeM" value="<?php echo $oilChargeMost;?>"</td>
-						<td><!-- <input type="button" value="修改" onclick="changeWithdrawHandleRate()" /> --></td>
+						<td>复投对碰奖比例</td>
+						<td><input type="text" id="cRReinv" value="<?php echo $colliBonusRateReinv;?>"</td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeCBonusReinv()" /></td>
 					</tr>
 					<tr>
 						<td>存储云量日利率</td>
 						<td><input type="text" id="dBonusR" value="<?php echo $dayBonusRate;?>"</td>
-						<td><input type="button" value="修改" onclick="changeDBonusR()" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeDBonusR()" /></td>
+					</tr>
+					<tr>
+						<td>推荐用户消耗云量下限</td>
+						<td><input type="text" id="regiCreditLeast" value="<?php echo $regiCreditLeast;  ?>" /></td>
+						<td><input type="button" class="btn btn-default btn-samll" value="修改" onclick="changeRegiCreditL()" /></td>
+					</tr>
+					<tr>
+						<td>推荐用户消耗云量上限</td>
+						<td><input type="text" id="regiCreditMost" value="<?php echo $regiCreditMost;  ?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeRegiCreditM()" /></td>
+					</tr>
+					<tr>
+						<td>存储云量下限</td>
+						<td><input type="text" id="sCreditL" value="<?php echo $saveCreditLeast;  ?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeSCreditL()" /></td>
+					</tr>
+					<tr>
+						<td>存储云量上限</td>
+						<td><input type="text" id="sCreditM" value="<?php echo $saveCreditMost; ?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeSCreditM()" /></td>
+					</tr>
+					<tr>
+						<td>挂单最小额度</td>
+						<td><input type="text" id="exL" value="<?php echo $exchangeLeast;?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeEL()" /></td>
+					</tr>
+					<tr>
+						<td>挂单最大额度</td>
+						<td><input type="text" id="exM" value="<?php echo $exchangeMost;?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeEM()" /></td>
+					</tr>
+					<tr>
+						<td>话费充值下限</td>
+						<td><input type="text" id="pChargeL" value="<?php echo $phoneChargeLeast;?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changePChargeL()" /></td>
+					</tr>
+					<tr>
+						<td>话费充值上限</td>
+						<td><input type="text" id="pChargeM" value="<?php echo $phoneChargeMost;?>"</td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changePChargeM()" /></td>
+					</tr>
+					<tr>
+						<td>油费充值下限</td>
+						<td><input type="text" id="oChargeL" value="<?php echo $oilChargeLeast;?>" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeOChargeL()" /></td>
+					</tr>
+					<tr>
+						<td>油费充值上限</td>
+						<td><input type="text" id="oChargeM" value="<?php echo $oilChargeMost;?>"</td>
+						<td><input type="button" class="btn btn-default" value="修改" onclick="changeOChargeM()" /></td>
 					</tr>
 				</table>
 	        </div>

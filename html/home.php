@@ -84,7 +84,7 @@ if ($con) {
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
-<!-- 		<link rel="stylesheet" type="text/css" href="../css/luara.left.css"/> -->
+		<link rel="stylesheet" type="text/css" href="../css/buttons.css"/>
 		
 		<script src="../js/jquery-3.2.1.min.js"></script>
 		<script src="../js/jquery.luara.0.0.1.min.js"></script>
@@ -222,13 +222,13 @@ if ($con) {
 			</table>
 		</div>
 
-		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>; margin: 5px 0; border: 1px solid #e7e7e7;">
-			<table width="100%">
+		<div style="display: <?php if ($hasBonus > 0) echo "block"; else echo "none"; ?>; margin: 5px 0; padding: 0 3px; border: 1px solid #e7e7e7; background: rgba(135, 129, 129, 0.2)">
+			<table width="100%" style="vertical-align: middle;">
 				<tr>
-					<td style="width: 60%;"><p>今日领取 <b><?php echo $bonus; ?></b> 线上云量！</p></td>
+					<td style="width: 60%;"><span>今日领取 <b><?php echo $bonus; ?></b> 线上云量！</span></td>
 					<td style="width: 36%;">
-						<input id="accept_btn" type="button" value="领取" style="width: 100%;" onclick="acceptBonus(this)" />
-						<p id="accept_logo" style="color: red; display: none;">已领取</p>
+						<input id="accept_btn" type="button" class="button-raised button-rounded button-small" value="领取" style="width: 100%;" onclick="acceptBonus(this)" />
+						<span id="accept_logo" style="color: red; display: none;"><b>已领取</b></span>
 					</td>		
 				</tr>
 			</table>

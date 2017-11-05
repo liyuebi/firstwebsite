@@ -708,7 +708,7 @@ function saveCredit()
 			
 			$row4 = mysql_fetch_assoc($res4);
 			$parentId = $row4['ParentId'];
-			attributeCollisionBonus($parentId, $userid, $amount, 0.08, $codeColliBonusRe);
+			attributeCollisionBonus($parentId, $userid, $amount, $colliBonusRateReinv, $codeColliBonusRe);
 		}
 		
 		// 添加复投数据统计

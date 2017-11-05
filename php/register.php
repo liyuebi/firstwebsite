@@ -188,12 +188,12 @@ else
 		}
 	}
 								
-	$addedCredit = $quantity * 0.1;
+	$addedCredit = $quantity * $referBonusRate;
 
 	addCreditFromVault($userid, $vault, $leftCredit, $addedCredit, $newuserid, $codeReferBonus);
 								
 	// 分发碰撞奖励
-	attributeCollisionBonus($userid, $newuserid, $quantity, 0.1, $codeColliBonusNew);
+	attributeCollisionBonus($userid, $newuserid, $quantity, $colliBonusRateRefer, $codeColliBonusNew);
 								
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysql_query("select * from ClientTable where UserId='$userid'");

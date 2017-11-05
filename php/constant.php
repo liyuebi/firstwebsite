@@ -10,22 +10,23 @@
 	
 	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采线上云量，剩下的依旧返还成线上云量
 
-	$regiCreditLeast = 300;		// 推荐用户时最少存储积分数
-	$regiCreditMost = 9000;		// 推荐用户时最多存储积分数
-	$saveCreditLeast = 300;		// 存储云量时最少存储的云量数
-	$saveCreditMost = 9000;		// 存储云量时最多存储的云量数
-	$exchangeLeast = 100;		// 挂单最小额度
-	$exchangeMost = 500;		// 挂单最大额度
-	$phoneChargeLeast = 10;		// 话费充值最小额度
-	$phoneChargeMost = 100;		// 话费充值最大额度
-	$oilChargeLeast = 10;		// 油费充值最小额度
-	$oilChargeMost = 500;		// 油费充值最大额度
-// 	$refererBonusLevel = 13;	// 推荐奖有效层次
-// 	$refererConsumePoint = 300;	// 推荐新用户时需从推荐人账户中减去300积分 
-// 	$rewardBPCnt = 1;			// 购买产生奖品需要的产品盒数，目前奖励的就是产生一个关联账号
-	$dayBonusRate = 0.008;		// 每笔存储每日返还的额度
-	$phoneChargeRate = 0.1;		// 手机充值手续费
-	$oilChargeRate = 0.1;		// 加油卡充值手续费
+	$regiCreditLeast =300;		// 推荐用户时最少存储积分数
+	$regiCreditMost =9000;		// 推荐用户时最多存储积分数
+	$saveCreditLeast =300;		// 存储云量时最少存储的云量数
+	$saveCreditMost =9000;		// 存储云量时最多存储的云量数
+	$exchangeLeast =100;		// 挂单最小额度
+	$exchangeMost =500;		// 挂单最大额度
+	$phoneChargeLeast =10;		// 话费充值最小额度
+	$phoneChargeMost =100;		// 话费充值最大额度
+	$oilChargeLeast =10;		// 油费充值最小额度
+	$oilChargeMost =500;		// 油费充值最大额度
+
+	$referBonusRate =0.1;		// 直推奖励比例
+	$colliBonusRateRefer =0.1;	// 推荐碰撞奖励比例
+	$colliBonusRateReinv =0.08; // 复投碰撞奖励比例
+	$dayBonusRate =0.008;		// 每笔存储每日返还的额度
+	$phoneChargeRate =0.1;		// 手机充值手续费
+	$oilChargeRate =0.1;		// 加油卡充值手续费
 	
 	$exchangeBuyHours = 24;		// 云量交易挂单的有效期，单位为小时
 	$exchangePayHours = 1;		// 云量交易下单后支付的有效期，单位为小时
