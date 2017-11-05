@@ -71,8 +71,8 @@ if ($con) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-6 col-md-6"><h3 style="display: table-cell; text-align: center; color: white">云量交易</h3></div>
-				<div class="col-xs-3 col-md-3"></div>
+				<div class="col-xs-6 col-md-6"><h3 style="text-align: center; color: white">云量交易</h3></div>
+				<div class="col-xs-3 col-md-3"><input type="button" class="button button-raised button-rounded button-small" style="float: right" value="订单" onclick="gotoCreditOrder()"></div>
 			</div>
 		</div>
 
@@ -96,6 +96,6 @@ if ($con) {
 		?>
 		<hr>
 		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="挂单" onclick="tryCreateTrade()" />
-		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="交易订单" onclick="gotoCreditOrder()" />
+<!-- 		<input type="button" class="button button-border button-rounded button-primary" style="width: 100%;" value="交易订单" onclick="gotoCreditOrder()" /> -->
     </body>
 </html>
