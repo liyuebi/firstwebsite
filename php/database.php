@@ -955,7 +955,7 @@ function initGeneralStatisTable()
 				// inited
 			}
 			else {
-				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('10000000')");
+				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('9999000')");
 				if (!$res1) {
 					echo "insert into general statis error: " . mysql_error() . "<br>";
 				}

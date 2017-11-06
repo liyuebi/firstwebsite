@@ -370,11 +370,22 @@ function changeUserCredit()
 		return;
 	}
 	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	$row = mysql_fetch_assoc($res);
+	$credit = $row["Credits"];
+	
 	$res = mysql_query("update Credit set Credits='$val' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
 		return;				
 	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics($credit - $val);
 	
 	echo json_encode(array('error'=>'false'));
 }
@@ -392,11 +403,23 @@ function changeUserPnts()
 		return;
 	}
 	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	$row = mysql_fetch_assoc($res);
+	$credit = $row["Pnts"];
+
+	
 	$res = mysql_query("update Credit set Pnts='$val' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
 		return;				
 	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics($credit - $val);
 	
 	echo json_encode(array('error'=>'false'));
 }

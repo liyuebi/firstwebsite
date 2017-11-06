@@ -94,10 +94,10 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		        <p>总统计</p>
 		        <table border="1">
 			        <tr>
-<!-- 				        <th>积分池</th> --><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th>
+				        <th>云量池</th><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th>
 			        </tr>
 			        <tr>
-<!-- 				        <td><?php echo $row["CreditsPool"]; ?></td> -->
+				        <td><?php echo $row["CreditsPool"]; ?></td>
 				        <td><?php echo $row["UserCount"]; ?></td>
 				        <td><?php echo $row["RecommendTotal"]; ?></td>
 				        <td><?php echo $row["ReinventTotal"]; ?></td>

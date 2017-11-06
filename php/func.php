@@ -801,9 +801,10 @@ function insertBonusStatistics($bonus)
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
 		$row1 = mysql_fetch_assoc($res1);
+		$pool = $row1["CreditsPool"] - $bonus;
 		$total = $row1["BonusTotal"] + $bonus;
 		
-		mysql_query("update TotalStatis set BonusTotal='$total' where IndexId=1");
+		mysql_query("update TotalStatis set CreditsPool='$pool', BonusTotal='$total' where IndexId=1");
 	}
 }
 
@@ -841,6 +842,23 @@ function insertReinventStatistics($value)
 		$total = $row1["ReinventTotal"] + $value;
 		
 		mysql_query("update TotalStatis set ReinventTotal='$total' where IndexId=1");
+	}
+}
+
+/*
+ * 处理积分池变动
+ * $val: 变动值，直接在加分值上增加对应数值，传入时需注意
+ */
+function updateCreditPoolStatistics($val)
+{
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$pool = $row1["CreditsPool"] + $val;
+		
+		mysql_query("update TotalStatis set CreditsPool='$pool' where IndexId=1");
 	}
 }
 
