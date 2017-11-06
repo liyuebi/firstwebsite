@@ -140,7 +140,7 @@ function addUser()
 		
 		// 更新统计数据
 		include "../php/func.php";
-		insertRecommendStatistics(0);
+// 		insertRecommendStatistics(0, 0, 0);
 		
 		mysql_close($con);
 	/*

@@ -565,9 +565,10 @@ function insertExchangeSuccessStatistics($amount, $fee)
 		$row1 = mysql_fetch_assoc($res1);;
 		$total = $row1["ExchangeSuccQuan"] + $amount;
 		$cnt = $row1["ExchangeSuccCnt"] + 1;
+		$creditPool = $row1["CreditsPool"] + $fee;
 		$handleFee = $row1["ExchangeFee"] + $fee;
 		
-		mysql_query("update TotalStatis set ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where IndexId=1");
+		mysql_query("update TotalStatis set CreditsPool='$creditPool', ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where IndexId=1");
 	}
 }
 
@@ -605,24 +606,12 @@ function insertWithdrawStatistics($amount, $fee)
 		
 		$credits = $row1["CreditsPool"];
 		$withdrawTotal = $row1["WithdrawTotal"];
-		$withdrawTimes = $row1["WithdrawTimes"];
 		$withdrawFee = $row1["WithdrawFee"];
 		
-		$credits += $amount;			// 取现积分数收入积分池，积分数包含手续费
+		$credits += $amount + $fee;			// 取现积分数收入积分池，积分数包含手续费
 		$withdrawTotal += $amount;
-		$withdrawTimes += 1;
 		$withdrawFee += $fee;
-		mysql_query("update TotalStatis set CreditsPool='$credits', WithdrawTotal='$withdrawTotal', WithdrawTimes='$withdrawTimes', WithdrawFee='$withdrawFee' where IndexId=1");
-	}
-	
-	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		$row2 = mysql_fetch_assoc($res2);
-		
-		$withdrawTotal = $row2["Withdraw"] + $amount;
-		$withdrawFee = $row2["WithdrawFee"] + $fee;
-		mysql_query("update ShortStatis set Withdraw='$withdrawTotal', WithdrawFee='$withdrawFee' where IndexId=1");
+		mysql_query("update TotalStatis set CreditsPool='$credits', WithdrawTotal='$withdrawTotal', WithdrawFee='$withdrawFee' where IndexId=1");
 	}
 }
 
@@ -730,7 +719,7 @@ function insertOrderStatistics($totalPrice, $count)
 	}
 }
 
-function insertRecommendStatistics($referFee)
+function insertRecommendStatistics($referFee, $pnts, $charity)
 {
 	$now = time();
 	
@@ -763,7 +752,9 @@ function insertRecommendStatistics($referFee)
 		$row1 = mysql_fetch_assoc($res1);
 		$userCnt = $row1["UserCount"] + 1;
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
-		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal' where IndexId=1");
+		$creditPool = $row1["CreditsPool"] + $referFee - $pnts - $charity;
+		$charityTotal = $row1["CharityPool"] + $charity; 
+		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
@@ -809,7 +800,7 @@ function insertBonusStatistics($bonus)
 }
 
 // 云量存储统计
-function insertReinventStatistics($value)
+function insertReinventStatistics($value, $pnts, $charity)
 {
 	$now = time();
 	
@@ -840,8 +831,10 @@ function insertReinventStatistics($value)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$total = $row1["ReinventTotal"] + $value;
+		$creditPool = $row1["CreditsPool"] + $value - $pnts - $charity;
+		$charityTotal = $row1["CharityPool"] + $charity; 
 		
-		mysql_query("update TotalStatis set ReinventTotal='$total' where IndexId=1");
+		mysql_query("update TotalStatis set ReinventTotal='$total', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
 	}
 }
 

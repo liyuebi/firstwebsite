@@ -669,8 +669,8 @@ function saveCredit()
 		}
 		
 		$quantity = $amount * 3;
-		$charity = floor($quantity * 0.05 * 100) / 100;
-		$pnts = floor($quantity * 0.15 * 100) / 100;	
+		$charity = floor($quantity * $charityRate * 100) / 100;
+		$pnts = floor($quantity * $pntsRate * 100) / 100;	
 		$diviCnt = floor($amount * $dayBonusRate * 100) / 100;
 		$quantity = $quantity - $charity - $pnts;
 		$now = time();
@@ -712,7 +712,7 @@ function saveCredit()
 		}
 		
 		// 添加复投数据统计
-		insertReinventStatistics($amount);
+		insertReinventStatistics($amount, $pnts, $charity);
 	}
 	
 	echo json_encode(array('error'=>'false'));

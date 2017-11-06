@@ -563,6 +563,8 @@ function createStatisticsTable()
 function createTotalStatisTable()
 {
 	/*
+	 * CreditsPool - 系统云量池
+	 * CharityPool - 慈善金池
 	 * UserCount - 用户总数
 	 * RecommendTotal - 注册新用户投入了云量总数
 	 * ReinventTotal - 存储到银行的云量总数
@@ -580,6 +582,7 @@ function createTotalStatisTable()
 		IndexId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IndexId),
 		CreditsPool	decimal(10,2) DEFAULT 10000000,
+		CharityPool decimal(10,2) default 0,
 		UserCount int DEFAULT 0,
 		RecommendTotal decimal(10,2) DEFAULT 0,
 		ReinventTotal decimal(10,2) default 0,

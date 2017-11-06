@@ -264,7 +264,13 @@ $res1 = mysql_query("select * from Transaction where Type=2");
 								<td><?php echo $row["Price"]; ?></td>
 								<td id='status_<?php echo $row["OrderId"]; ?>'><?php if ($OrderStatusBuy == $row["Status"]) echo "等待充值"; else if ($OrderStatusDefault == $row["Status"]) echo "等待确认"; else if ($OrderStatusDelivery == $row["Status"]) echo "已充值"; else if ($OrderStatusAccept == $row["Status"]) echo "完成"; ?></td>
 <!--  								<td><input type="text" id='courierNum_<?php echo $row["OrderId"]; ?>' size='30' placeholder="请输入快递单号！" /></td> -->
+								<?php 
+									if ($OrderStatusBuy == $row["Status"]) {
+								?>
 								<td><input type="button" value="确认" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" /></td>
+								<?php
+									}
+								?>
 							</tr>
 					<?php
 						}

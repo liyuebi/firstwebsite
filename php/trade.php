@@ -483,7 +483,7 @@ function reinvest()
 		}
 		
 		// 统计新用户总数增加
-		insertRecommendStatistics(0);
+// 		insertRecommendStatistics(0, 0, 0);
 	}
 
 	// 修改今天购买个数
@@ -860,6 +860,11 @@ function deliveryPhoneFare()
 		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
 	}
+	
+	include_once "func.php";
+	$amount = $row["Price"];
+	$fee = $row["HandleFee"];
+	insertWithdrawStatistics($amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
@@ -910,6 +915,11 @@ function deliveryOilFare()
 		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
 	}
+	
+	include_once "func.php";
+	$amount = $row["Price"];
+	$fee = $row["HandleFee"];
+	insertWithdrawStatistics($amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;

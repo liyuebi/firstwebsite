@@ -106,7 +106,9 @@ else
 			return;
 		}
 	}
-		
+	
+	$pnts = 0;
+	$charity = 0;
 	if (0 != $newuserid) {
 		$result = mysql_query("select * from Credit where UserId='$newuserid'");
 		if (!$result) {
@@ -119,8 +121,8 @@ else
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
 				$vault1 = $quantity * 3;
-				$charity = floor($vault1 * 0.05 * 100) / 100;
-				$pnts = floor($vault1 * 0.15 * 100) / 100;
+				$charity = floor($vault1 * $charityRate * 100) / 100;
+				$pnts = floor($vault1 * $pntsRate * 100) / 100;
 				$diviCnt = floor($quantity * $dayBonusRate * 100) / 100;
 				$vault1 = $vault1 - $charity - $pnts;
 				$result = mysql_query("insert into Credit (UserId, Vault, Pnts, Charity)
@@ -207,7 +209,7 @@ else
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 // 	insertOrderStatistics($refererConsumePoint, 1);
-	insertRecommendStatistics($quantity);
+	insertRecommendStatistics($quantity, $pnts, $charity);
 
 	mysql_close($con);
 	return;
