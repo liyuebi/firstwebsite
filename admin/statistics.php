@@ -60,6 +60,8 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
@@ -92,11 +94,11 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
 		        <p>总统计</p>
-		        <table border="1">
-			        <tr>
-				        <th>云量池</th><th>慈善金</th><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th>
-			        </tr>
-			        <tr>
+		        <table border="1" class="table table-striped" style="max-width: 1000px; text-align: center">
+			    	<tr>
+				        <th>云量池</th><th>慈善金</th><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th><th>虚拟消耗（话费／油费等）</th><th>虚拟消耗手续费</th>
+					</tr>
+					<tr>
 				        <td><?php echo $row["CreditsPool"]; ?></td>
 				        <td><?php echo $row["CharityPool"]; ?></td>
 				        <td><?php echo $row["UserCount"]; ?></td>
@@ -105,7 +107,9 @@ if ($res3 && mysql_num_rows($res3) > 0) {
 				        <td><?php echo $row["BonusTotal"]; ?></td>
 				        <td><?php echo $row["ExchangeSuccQuan"]; ?></td>
 				        <td><?php echo $row["ExchangeFee"]; ?></td>
-			        </tr>
+						<td><?php echo $row["WithdrawTotal"]; ?></td>
+						<td><?php echo $row["WithdrawFee"]; ?></td>
+			    	</tr>
 		        </table>
 	        </div>
 <!--

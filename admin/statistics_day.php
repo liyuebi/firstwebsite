@@ -33,6 +33,8 @@ $result = mysql_query("select * from Statistics");
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
@@ -65,7 +67,7 @@ $result = mysql_query("select * from Statistics");
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
 <!-- 		        <p>按日统计</p> -->
-				<table border="1">
+				<table border="1" class="table table-striped" style="max-width: 1000px; text-align: center">
 					<tr>
 						<th>年</th>
 						<th>月</th>
@@ -76,21 +78,25 @@ $result = mysql_query("select * from Statistics");
 						<th>分红额</th>
 						<th>交易成交额</th>
 						<th>交易手续费</th>
+						<th>虚拟消耗（话费／油费）</th>
+						<th>虚拟消耗手续费</th>
 	<!-- 					<th>拒绝</th> -->
 					</tr>
 					<?php
 						while($row = mysql_fetch_array($result)) {
 					?>
 							<tr>
-								<th><?php echo $row["Ye"]; ?></th>
-								<th><?php echo $row["Mon"]; ?></th>
-								<th><?php echo $row["Day"]; ?></th>
-								<th><?php echo $row["NSCount"] ?></th>
-								<th><?php echo $row["RecommendTotal"]; ?></th>
-								<th><?php echo $row["ReinventTotal"]; ?></th>
-								<th><?php echo $row["BonusTotal"]; ?></th>
-								<th><?php echo $row["ExchangeSuccQuan"]; ?></th>
-								<th><?php echo $row["ExchangeFee"]; ?></th>
+								<td><?php echo $row["Ye"]; ?></td>
+								<td><?php echo $row["Mon"]; ?></td>
+								<td><?php echo $row["Day"]; ?></td>
+								<td><?php echo $row["NSCount"] ?></td>
+								<td><?php echo $row["RecommendTotal"]; ?></td>
+								<td><?php echo $row["ReinventTotal"]; ?></td>
+								<td><?php echo $row["BonusTotal"]; ?></td>
+								<td><?php echo $row["ExchangeSuccQuan"]; ?></td>
+								<td><?php echo $row["ExchangeFee"]; ?></td>
+								<td><?php echo $row["WithdrawTotal"]; ?></td>
+								<td><?php echo $row["WithdrawFee"]; ?></td>
 	<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
 	<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
 							</tr>

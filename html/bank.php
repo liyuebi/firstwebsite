@@ -88,7 +88,7 @@ if ($con) {
 		<div>
 			<h4>添加新存储：</h4>
 			<input id="amount" class="form-control" type="text" placeholder="请输入存储数量，必须是100的倍数！" onkeypress="return onlyNumber(event)" /> 
-			<input type="button" class="button button-border button-rounded button-primary" style="width: 80%;" value="确认" onclick="trySave()" />
+			<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="trySave()" />
 		</div>
 		
 		<hr>

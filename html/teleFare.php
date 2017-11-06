@@ -100,9 +100,9 @@ if ($con) {
 			</div>
 		</div>
 
-		<input id="phonenum" class="form-control" type="text" placeholder="请输入充值手机号！" onkeypress="return onlyNumber(event)" />
-		<input id="amount" class="form-control" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
-		<input id="pwd" class="form-control" type="password" placeholder="请输入支付密码！" />		
-		<input type="button" class="button button-glow button-border button-rounded button-primary" style="width: 100%;" value="确认充值" onclick="tryChargeCellphone()" />
+		<input id="phonenum" class="form-control" type="text" style="margin-top: 5px" placeholder="请输入充值手机号！" onkeypress="return onlyNumber(event)" />
+		<input id="amount" class="form-control" type="text" style="margin-top: 5px" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
+		<input id="pwd" class="form-control" type="password" style="margin-top: 5px" placeholder="请输入支付密码！" />		
+		<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认充值" onclick="tryChargeCellphone()" />
     </body>
 </html>
