@@ -99,6 +99,8 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 				// !!! log error
 			}
 		}
+		
+		updateCreditPoolStatistics(-$actualAdded);	
 	}
 }
 
