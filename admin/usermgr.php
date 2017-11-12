@@ -97,6 +97,7 @@ if (!checkLoginOrJump()) {
 							d3.innerHTML = list[key].phone;
 							trow.appendChild(d3);
 							var d4 = document.createElement("td");
+							d4.id = "credit_" + key;
 							d4.innerHTML = list[key].credit;
 							trow.appendChild(d4);
 							var d5 = document.createElement("td");
@@ -125,32 +126,39 @@ if (!checkLoginOrJump()) {
 								input1.attachEvent('onclick', changeUserInfo);
 							}
 							d10.appendChild(input1);
-/*
-							var d10 = document.createElement("td");	
-							trow.appendChild(d10);
-							var input1 = document.createElement("input");
-							input1.type = "button";
-							input1.value = "重置登录密码";
-							input1.id = key;
-							if (input1.addEventListener) {
-								input1.addEventListener('click', resetLoginPwd, false);
-							}
-							else if (input1.attachEvent) {
-								input1.attachEvent('onclick', resetLoginPwd);
-							}
-							d10.appendChild(input1);
+
+							var d11 = document.createElement("td");	
+							trow.appendChild(d11);
 							var input2 = document.createElement("input");
-							input2.type = "button";
-							input2.value = "清空支付密码";
-							input2.id = key;
-							if (input2.addEventListener) {
-								input2.addEventListener('click', resetPayPwd, false);
+							input2.type = "text";
+							input2.placeholder = "变动数量";
+							input2.id = "amt_" + key;
+							d11.appendChild(input2);
+
+							var d12 = document.createElement("td");	
+							trow.appendChild(d12);
+							var input3 = document.createElement("input");
+							input3.type = "button";
+							input3.value = "增加";
+							input3.id = key;
+							if (input3.addEventListener) {
+								input3.addEventListener('click', addCredit, false);
 							}
-							else if (input2.attachEvent) {
-								input2.attachEvent('onclick', resetPayPwd);
+							else if (input3.attachEvent) {
+								input3.attachEvent('onclick', addCredit);
 							}
-							d10.appendChild(input2);
-*/
+							d12.appendChild(input3);
+							var input4 = document.createElement("input");
+							input4.type = "button";
+							input4.value = "减少";
+							input4.id = key;
+							if (input4.addEventListener) {
+								input4.addEventListener('click', decreaseCredit, false);
+							}
+							else if (input4.attachEvent) {
+								input4.attachEvent('onclick', decreaseCredit);
+							}
+							d12.appendChild(input4);
 						}
 					}
 					else {
@@ -162,6 +170,41 @@ if (!checkLoginOrJump()) {
 			function changeUserInfo(e)
 			{
 				location.href = "editUserInfo.php?idx=" + e.target.id;
+			}
+			
+			function addCredit(e)
+			{
+				var key = "amt_" + e.target.id;
+				var amount = document.getElementById(key).value;
+
+				$.post("../php/usrMgr.php", {"func":"auc","uid":e.target.id,"val":amount}, function(data){
+					if (data.error == "false") {
+						alert("增加线上云量成功！");
+						document.getElementById(key).value = "";
+						document.getElementById("credit_" + e.target.id).innerHTML = data.credit;
+						document.getElementById("credit_" + e.target.id).style.color = "red";
+					}
+					else {
+						alert("增加线上云量失败：" + data.error_msg);
+					}
+				}, "json");
+			}
+			
+			function decreaseCredit(e)
+			{
+				var key = "amt_" + e.target.id;
+				var amount = document.getElementById(key).value;
+				$.post("../php/usrMgr.php", {"func":"duc","uid":e.target.id,"val":amount}, function(data){
+					if (data.error == "false") {
+						alert("减少线上云量成功！");
+						document.getElementById(key).value = "";
+						document.getElementById("credit_" + e.target.id).innerHTML = data.credit;
+						document.getElementById("credit_" + e.target.id).style.color = "red";
+					}
+					else {
+						alert("减少线上云量失败：" + data.error_msg);
+					}
+				}, "json");
 			}
 						
 			function resetLoginPwd(e)
@@ -216,7 +259,7 @@ if (!checkLoginOrJump()) {
 				<input id="id_input" type="text" placeholder="请输入用户 ID/手机号／昵称" />
 				<input type="button" value="查找" onclick="queryUser()" />
 				
-				<table id="user_tbl" border="1">
+				<table id="user_tbl" border="1" style="text-align: center">
 					<tr>
 						<th>用户id</th>
 						<th>昵称</th>
@@ -228,6 +271,8 @@ if (!checkLoginOrJump()) {
 						<th>队友人数</th>
 <!-- 						<th>购物总数</th> -->
 						<th>操作</th>
+						<th>线上云量变动</th>
+						<th>变动操作</th>
 					</tr>
 				</table>
 			</div>

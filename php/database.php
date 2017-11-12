@@ -460,7 +460,7 @@ function createBankAccountTable()
 		UserId int NOT NULL,
 		BankAcc varchar(32) NOT NULL,
 		AccName varchar(16) NOT NULL,
-		BankName varchar(16) NOT NULL,
+		BankName varchar(24) NOT NULL,
 		BankBranch varchar(32) default ''
 	)";	
 	$result = mysql_query($sql);
@@ -512,6 +512,54 @@ function createPntsRecordTable()
 	$result = mysql_query($sql);
 	if (!$result) {
 		echo "create PntsRecord table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createComplaintTable()
+{
+	/*
+	 * 投诉信息表
+	 * Type - 投诉类型
+	 * RelatedIdx - 投诉对应问题的序列号
+	 * RelatedIssueId - 投诉对应问题的可见编号（如交易所交易的交易编号）
+	 * ComplainantId - 投诉人ID
+	 * CompNickname - 投诉人昵称
+	 * CompPhoneNum - 投诉人手机号
+	 * RespondentId - 被投诉人ID
+	 * RespNickname - 被投诉人昵称
+	 * RespPhoneNum - 被投诉人手机号
+	 * IssueDesc - 投诉详情描述
+	 * IssueTime - 发起投诉时间
+	 * RespTime - 被投诉人反馈时间
+	 * RespCloseTime - 被投诉人关闭反馈时间
+	 * CompCloseTime - 投诉人关闭投诉时间
+	 * Status - 投诉状态
+	 */
+	$sql = "create table if not exists Complaint
+	(
+		IndexId int not null AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		CompId varchar(16) not null,
+		Type int not null,
+		RelatedIdx int default 0,
+		RelatedIssueId varchar(24) not null,
+		ComplainantId int not null,
+		CompNickname varchar(16) default '',
+		CompPhoneNum varchar(15) not null,
+		RespondentId int not null,
+		RespNickname varchar(16) default '',
+		RespPhoneNum varchar(15) not null,		
+		IssueDesc varchar(256) default '',		
+		IssueTime int not null,
+		RespTime int default 0,
+		CompCloseTime int default 0,
+		RespCloseTime int default 0,
+		Status int not null
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create Complaint table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }

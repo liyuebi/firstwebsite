@@ -142,7 +142,7 @@ if ($new) {
 		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
-				<div class="col-xs-6 col-md-6"><h3 style="text-align: center; color: white">更新个人资料</h3></div>
+				<div class="col-xs-6 col-md-6"><h4 style="text-align: center; color: white">更新个人资料</h4></div>
 				<div class="col-xs-3 col-md-3"></div>
 			</div>
 		</div>

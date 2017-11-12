@@ -33,6 +33,7 @@
 	$exchangeBuyHours = 24;		// 云量交易挂单的有效期，单位为小时
 	$exchangePayHours = 1;		// 云量交易下单后支付的有效期，单位为小时
 	$exchangeDeliveryHours = 2;	// 云量交易付款后确认收款的有效期，单位为小时
+	$exchangeComplainHours = 24;// 云量交易自动完成后，卖家的投诉时间
 	
 	$withdrawFloorAmount =300;	// 提现最少的积分额度
 	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
@@ -83,7 +84,7 @@
 	$creditTradeAutoConfirmed = 8;	// 卖家超时未确认支付，交易自动完成
 	$creditTradeExpired = 9;	// 卖家创建交易指定时间无人购买，过期
 	
-	
+	// 订单状态
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
@@ -96,6 +97,15 @@
 	$paymentWechat = 1;
 	$paymentAlipay = 2;
 	$paymentBank = 3;
+	
+	// 投诉类型
+	$complainTCreditTrade = 1; // 投诉交易问题
+
+	// 投诉状态
+	$complainSOPen = 1;		// 投诉人发起投诉
+	$complainBOpen = 2;		// 投诉人发起投诉，被投诉人反诉
+	$complainROpen = 3;		// 投诉人撤诉，但被投诉人依然在反诉
+	$complainClose = 4;		// 投诉解决，以关闭
 	
 	// team 1 people count needed according to level
 	$team1Cnt = array(0, 0, 6, 20, 40, 75, 150, 250, 375, 350, 700, 1400, 2100, 2800);

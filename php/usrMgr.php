@@ -37,6 +37,12 @@ else if ("rpp" == $_POST['func']) {
 else if ("cuc" == $_POST['func']) {
 	changeUserCredit();
 }
+else if ("auc" == $_POST['func']) {
+	addUserCredit();
+}
+else if ("duc" == $_POST['func']) {
+	decreaseUserCredit();
+}
 else if ("cup" == $_POST['func']) {
 	changeUserPnts();
 }
@@ -388,6 +394,82 @@ function changeUserCredit()
 	updateCreditPoolStatistics($credit - $val);
 	
 	echo json_encode(array('error'=>'false'));
+}
+
+function addUserCredit()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	$row = mysql_fetch_assoc($res);
+	$credit = $row["Credits"];
+	$credit += $val;
+	
+	$res = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics(-$val);
+	
+	echo json_encode(array('error'=>'false', 'credit'=>$credit));
+}
+
+function decreaseUserCredit()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	$row = mysql_fetch_assoc($res);
+	$credit = $row["Credits"];
+	if ($credit < $val) {
+		$msg = '用户线上云量不足' . $val . '!';
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg,'sql_error'=>mysql_error()));
+		return;		
+	}
+	
+	$credit -= $val;
+	
+	$res = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics($val);
+	
+	echo json_encode(array('error'=>'false', 'credit'=>$credit));
 }
 
 function changeUserPnts()

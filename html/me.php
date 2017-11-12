@@ -99,7 +99,7 @@ if ($con) {
         
         <hr>
         
-        <p style="padding-left: 20px;">客服微信：lww1555</p>
+        <p style="padding-left: 20px;">客服微信：Lww1555</p>
         
         <hr>
         

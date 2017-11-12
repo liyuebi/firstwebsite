@@ -72,14 +72,14 @@ if ($con) {
 			
 			function switchToSell()
 			{
-				document.getElementById("block_sell").style.display = "inline";
+				document.getElementById("block_sell").style.display = "block";
 				document.getElementById("block_buy").style.display = "none";
 			}
 			
 			function switchToBuy()
 			{
 				document.getElementById("block_sell").style.display = "none";
-				document.getElementById("block_buy").style.display = "inline";				
+				document.getElementById("block_buy").style.display = "block";				
 			}
 			
 			function tryCancel(btn)
@@ -178,6 +178,11 @@ if ($con) {
 				}
 			}
 			
+			function fireComplaint(btn)
+			{
+				location.href = 'complS.php?t=' + <?php echo $complainTCreditTrade;?> + '&i=' + btn.id; 
+			}
+			
 			function goback() 
 			{
 				location.href = "exchange.php";
@@ -203,14 +208,14 @@ if ($con) {
 				<td id="2" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 5%; margin-right: 10%;">买入</td>
 			</tr>
 		</table>
-		<div id="block_sell" style="display: inline; margin-top: 3%;">
+		<div id="block_sell" style="display: block; margin-top: 10px;">
 			<?php
 				if ($res) {
 					date_default_timezone_set('PRC');
 					while ($row = mysql_fetch_array($res)) {
 			?>
 						<hr>
-						<div>
+						<div style="margin: 0 5px;">
 							<p>交易编号：<?php echo $row["TradeId"]; ?></p>
 							<p>卖家昵称：<?php echo $row["SellNickN"]; ?></p>
 							<p>交易额度：<?php if ($row["BuyCnt"] <= 0) {echo $row["Quantity"];} else {echo $row["BuyCnt"] . '/' . $row["Quantity"];} ?></p>
@@ -251,9 +256,20 @@ if ($con) {
 									else if ($row["Status"] == $creditTradeConfirmed) { ?>
 								<p>交易完成</p>
 							<?php 	} 
-									else if ($row["Status"] == $creditTradeAutoConfirmed) { ?>
-								<p>交易完成</p>
-							<?php	} ?>
+									else if ($row["Status"] == $creditTradeAutoConfirmed) { 
+										if (time() - $row["ConfirmTime"] >= 60 * 60 * $exchangeComplainHours) {
+							?>
+									<p>交易完成</p>	
+							<?php											
+										}
+										else {
+							?>
+									<p style="display: -webkit-flex; display: flex; align-items: center; justify-content: space-between">
+										<span>交易完成</span>
+										<input type="button" id="<?php echo $row["IdxId"]; ?>" class="btn btn-danger" style="width: 20%" value="投诉" onclick="fireComplaint(this)" />
+									</p>
+							<?php		}
+									} ?>
 						</div>
 			<?php
 					}
