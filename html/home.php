@@ -147,6 +147,18 @@ if ($con) {
 				}
 			}
 			
+			function limitAccessOpen()
+			{
+				if (<?php echo $userid; ?> == '10000'
+					|| <?php echo $userid; ?> == '10001') {
+					
+					location.href = 'olshop.php';
+				}
+				else {
+					willOpen();	
+				}
+			}
+			
 			function willOpen()
 			{
 				document.getElementById("willshow").style.display = "block";
@@ -242,7 +254,7 @@ if ($con) {
 				<li><a class="icon_btn3" href="virtuelife.php">虚拟生活</a></li>
 				<li><a class="icon_btn2" onclick="willOpen()">自由集市</a></li>
 <!-- 				<li><a class="icon_btn5" href="charity.php">会员慈善</a></li> -->
-				<li><a class="icon_btn7" onclick="willOpen()">线下商家</a></li>
+				<li><a class="icon_btn7" onclick="limitAccessOpen()">线下商家</a></li>
 				<li><a class="icon_btn4" onclick="willOpen()">直播购</a></li>
 				<li><a class="icon_btn8" onclick="willOpen()">云粉传媒</a></li>
 				<li><a class="icon_btn12" onclick="willOpen()">云量商城</a></li>

@@ -107,6 +107,9 @@ if ($con) {
 				    	else if ($row["Type"] == $codeStopChargePhone) {
 					    	echo "您话费充值取消，退回" . $row["Amount"] . "线上云量。";
 				    	}
+				    	else if ($row["Type"] == $codeRegiOlShop) {
+					    	echo "您注册了线下商家，使用" . $row["Amount"] . "线上云量。";
+				    	}
 				    	
 				    	echo "<br>";
 				    	echo "当前线上云量" . $row["CurrAmount"] . "。";

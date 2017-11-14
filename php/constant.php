@@ -21,6 +21,8 @@
 	$oilChargeLeast =10;		// 油费充值最小额度
 	$oilChargeMost =500;		// 油费充值最大额度
 
+	$offlineShopRegisterFee =1000;	// 注册线下商店所需线上云量
+
 	$charityRate = 0.05;		// 慈善基金比例
 	$pntsRate = 0.15;			// 线下云量比例
 	$referBonusRate =0.1;		// 直推奖励比例
@@ -64,6 +66,7 @@
 	$codeStopChargePhone = 15;// 取消手机充值申请，返还积分
 	$codeTryChargeOil = 16;	// 提交加油卡充值申请，扣除积分
 	$codeStopChargeOil = 17;// 取消加油卡充值申请，返还积分
+	$codeRegiOlShop = 20;	// 注册线下商店
 	
 	$code2Divident = 1; // 固定分红导致采线上云量变化
 	$code2DynDivident = 2; // 动态分红导致采线上云量变化，
@@ -106,6 +109,14 @@
 	$complainBOpen = 2;		// 投诉人发起投诉，被投诉人反诉
 	$complainROpen = 3;		// 投诉人撤诉，但被投诉人依然在反诉
 	$complainClose = 4;		// 投诉解决，以关闭
+	
+	// 线下商店状体啊
+	$olshopRegistered = 1;	// 已注册
+	$olshopApplied = 2;		// 提交审核
+	$olshopDeclined = 3;	// 审核失败
+	$olshopAccepted = 4;	// 审核通过
+	$olshopClosed = 6;		// 线下商店下线 
+	$olshopSuspended = 8;	// 线下商店被停止
 	
 	// team 1 people count needed according to level
 	$team1Cnt = array(0, 0, 6, 20, 40, 75, 150, 250, 375, 350, 700, 1400, 2100, 2800);

@@ -71,6 +71,7 @@ else {
 
 createCreditRecordTable();
 createCreditBankTable();
+createOfflineShopTable();
 
 createStatisticsTable();
 initGeneralStatisTable();

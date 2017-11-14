@@ -202,17 +202,17 @@ function createCreditTradeTable()
 function createCreditBankTable()
 {
 	/*
-	* IdxId: 存储序号
-	* Quantity: 总存储额（玩家能拿回的总返还额度），设计时为投资额的3倍减去分到线下资产和慈善金中的部分
-	* Invest: 买家投资额
-	* Balance: 余额
-	* Divident: 实际分红值，目前分红额占的部分
-	* DiviCnt: 每日分红值，根据比例计算得到
-	* SaveTime: 存储的时间
-	* LastDiviT: 上次获取分红的时间
-	* LastChangeT: 上次余额变换的时间
-	* EmptyTime: 存储额度全部消耗完的时间
-	*/
+	 * IdxId: 存储序号
+	 * Quantity: 总存储额（玩家能拿回的总返还额度），设计时为投资额的3倍减去分到线下资产和慈善金中的部分
+	 * Invest: 买家投资额
+	 * Balance: 余额
+	 * Divident: 实际分红值，目前分红额占的部分
+	 * DiviCnt: 每日分红值，根据比例计算得到
+	 * SaveTime: 存储的时间
+	 * LastDiviT: 上次获取分红的时间
+	 * LastChangeT: 上次余额变换的时间
+	 * EmptyTime: 存储额度全部消耗完的时间
+	 */
 	$sql = "create table if not exists CreditBank
 	(	
 		IdxId int NOT NULL AUTO_INCREMENT,
@@ -297,6 +297,48 @@ function createCompanyTable()
 	$result = mysql_query($sql);
 	if (!$result) {
 		echo "create Company table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createOfflineShopTable()
+{
+	/*
+	 * ShopId: 线上商店编号
+	 * UserId: 商店所属用户的用户ID
+	 * ShopName: 公司名称
+	 * Contacter: 联系人／法人
+	 * PhoneNum: 联系电话
+	 * Address: 商店地址
+	 * LicencePic: 营业执照照片
+	 * RegisterTime: 注册时间
+	 * ModifiedTime: 更新信息时间
+	 * ReadyForCheckTime: 提交审查时间
+	 * OnlineTime: 上线时间
+	 * DeclineReason: 审核失败原因
+	 * Status: 商店状态
+	 */
+	$sql = "create table if not exists OfflineShop
+	(
+		ShopId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(ShopId),
+		UserId int not null,
+		ShopName varchar(128) default '',
+		Contacter varchar(32) default '',
+		PhoneNum varchar(16) default '',
+		Address varchar(256) default '',
+		LicencePic varchar(32) default '',
+		RegisterTime int not null,
+		ModifiedTime int default 0,
+		ReadyForCheckTime int default 0,
+		OnlineTime int default 0,
+		DeclineReason varchar(256) default '',
+		Status int default 0		
+	) ENGINE=MEMORY AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
+	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create OfflineShop table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }
