@@ -98,9 +98,7 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 			if (!$res3) {
 				// !!! log error
 			}
-		}
-		
-		updateCreditPoolStatistics(-$actualAdded);	
+		}	
 	}
 }
 
@@ -721,7 +719,13 @@ function insertOrderStatistics($totalPrice, $count)
 	}
 }
 
-function insertRecommendStatistics($referFee, $pnts, $charity)
+/*
+ * Statistics for register new user
+ * $referFee - 推荐费，注册人给新用户注册的 
+ * $newUserAsset - 新用户获得的总资产，包括线上云量、线下云量、慈善金、财富云量，目前为推荐费的3倍
+ * $charity - 慈善金，做慈善统计用，也包含在$newUserAsset中
+ */
+function insertRecommendStatistics($referFee, $newUserAsset, $charity)
 {
 	$now = time();
 	
@@ -754,7 +758,7 @@ function insertRecommendStatistics($referFee, $pnts, $charity)
 		$row1 = mysql_fetch_assoc($res1);
 		$userCnt = $row1["UserCount"] + 1;
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
-		$creditPool = $row1["CreditsPool"] + $referFee - $pnts - $charity;
+		$creditPool = $row1["CreditsPool"] + $referFee - $newUserAsset;
 		$charityTotal = $row1["CharityPool"] + $charity; 
 		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
 	}
@@ -794,15 +798,20 @@ function insertBonusStatistics($bonus)
 	if ($res1 && mysql_num_rows($res1) > 0) {
 		
 		$row1 = mysql_fetch_assoc($res1);
-		$pool = $row1["CreditsPool"] - $bonus;
+// 		$pool = $row1["CreditsPool"] - $bonus;
 		$total = $row1["BonusTotal"] + $bonus;
 		
-		mysql_query("update TotalStatis set CreditsPool='$pool', BonusTotal='$total' where IndexId=1");
+		mysql_query("update TotalStatis set BonusTotal='$total' where IndexId=1");
 	}
 }
 
-// 云量存储统计
-function insertReinventStatistics($value, $pnts, $charity)
+/*
+ * 云量存储统计
+ * $referFee - 存储额，用户投入的云量值 
+ * $newUserAsset - 用户新获得的资产值，包括线上云量、线下云量、慈善金、财富云量，目前为存储额的3倍
+ * $charity - 慈善金，做慈善统计用，也包含在$newAsset中
+ */
+function insertReinventStatistics($value, $newAsset, $charity)
 {
 	$now = time();
 	
@@ -833,7 +842,7 @@ function insertReinventStatistics($value, $pnts, $charity)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$total = $row1["ReinventTotal"] + $value;
-		$creditPool = $row1["CreditsPool"] + $value - $pnts - $charity;
+		$creditPool = $row1["CreditsPool"] + $value - $newAsset;
 		$charityTotal = $row1["CharityPool"] + $charity; 
 		
 		mysql_query("update TotalStatis set ReinventTotal='$total', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");

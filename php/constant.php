@@ -23,8 +23,8 @@
 
 	$offlineShopRegisterFee =1000;	// 注册线下商店所需线上云量
 
-	$charityRate = 0.05;		// 慈善基金比例
-	$pntsRate = 0.15;			// 线下云量比例
+	$charityRate =0.05;			// 慈善基金比例
+	$pntsRate =0.45;			// 线下云量比例
 	$referBonusRate =0.1;		// 直推奖励比例
 	$colliBonusRateRefer =0.1;	// 推荐碰撞奖励比例
 	$colliBonusRateReinv =0.08; // 复投碰撞奖励比例

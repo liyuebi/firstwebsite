@@ -668,11 +668,11 @@ function saveCredit()
 			return;
 		}
 		
-		$quantity = $amount * 3;
-		$charity = floor($quantity * $charityRate * 100) / 100;
-		$pnts = floor($quantity * $pntsRate * 100) / 100;	
+		$newAsset = $amount * 3;
+		$charity = floor($newAsset * $charityRate * 100) / 100;
+		$pnts = floor($newAsset * $pntsRate * 100) / 100;	
 		$diviCnt = floor($amount * $dayBonusRate * 100) / 100;
-		$quantity = $quantity - $charity - $pnts;
+		$quantity = $newAsset - $charity - $pnts;
 		$now = time();
 		
 		$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
@@ -712,7 +712,7 @@ function saveCredit()
 		}
 		
 		// 添加复投数据统计
-		insertReinventStatistics($amount, $pnts, $charity);
+		insertReinventStatistics($amount, $newAsset, $charity);
 	}
 	
 	echo json_encode(array('error'=>'false'));

@@ -109,6 +109,7 @@ else
 	
 	$pnts = 0;
 	$charity = 0;
+	$newUserAsset = 0;
 	if (0 != $newuserid) {
 		$result = mysql_query("select * from Credit where UserId='$newuserid'");
 		if (!$result) {
@@ -120,11 +121,11 @@ else
 			$diviCnt = 0;
 			$num = mysql_num_rows($result);
 			if ($num == 0) {
-				$vault1 = $quantity * 3;
-				$charity = floor($vault1 * $charityRate * 100) / 100;
-				$pnts = floor($vault1 * $pntsRate * 100) / 100;
+				$newUserAsset = $quantity * 3;
+				$charity = floor($newUserAsset * $charityRate * 100) / 100;
+				$pnts = floor($newUserAsset * $pntsRate * 100) / 100;
 				$diviCnt = floor($quantity * $dayBonusRate * 100) / 100;
-				$vault1 = $vault1 - $charity - $pnts;
+				$vault1 = $newUserAsset - $charity - $pnts;
 				$result = mysql_query("insert into Credit (UserId, Vault, Pnts, Charity)
 					VALUES('$newuserid', '$vault1', '$pnts', '$charity')");
 				if (!$result) {
@@ -209,7 +210,7 @@ else
 	
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 // 	insertOrderStatistics($refererConsumePoint, 1);
-	insertRecommendStatistics($quantity, $pnts, $charity);
+	insertRecommendStatistics($quantity, $newUserAsset, $charity);
 
 	mysql_close($con);
 	return;
