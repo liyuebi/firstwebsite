@@ -13,6 +13,18 @@ if (isset($_POST['func'])) {
 	else if ("afr" == $_POST['func']) {
 		applyForReview();
 	}
+	else if ("searchShop" == $_POST['func']) {
+		searchForShop();
+	}
+	else if ("pOLS" == $_POST['func']) {
+		payOLShop();
+	}
+	else if ("afo" == $_POST['func']) {
+		approveForOnline();
+	}
+	else if ("dfo" == $_POST['func']) {
+		declineForOnline();
+	}
 }
 
 function createOfflineShopAccount()
@@ -89,7 +101,7 @@ function createOfflineShopAccount()
 		include_once 'func.php';
 		updateCreditPoolStatistics($offlineShopRegisterFee);
 	}
-	return;
+	echo json_encode(array('error'=>'false'));	
 }
 
 function editOLSAcc()
@@ -256,121 +268,19 @@ function applyForReview()
 	echo json_encode(array('error'=>'false'));
 }
 
-function refundSeller($sellid, $quantity, $handleFee)
+function approveForOnline()
 {
-	include 'constant.php';
-	
-	$res = mysql_query("select * from Credit where UserId='$sellid'");
-	if (!$res && mysql_num_rows($res) > 0) {
-		// !!! log error
-		return false;
-	}
-	else {
-		$row = mysql_fetch_assoc($res);
-		$credit = $row["Credits"];
-		
-		$credit = $credit + $quantity + $handleFee;
-		$res1 = mysql_query("update Credit set Credits='$credit' where UserId='$sellid'");
-		if (!$res1) {
-			// !!! log error
-			return false;
-		}
-		else {
-			$amount = $quantity+$handleFee;
-			$now = time();
-			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-							VALUES($sellid, $amount, 0, $credit,  $now, $now, 0, $codeCreTradeCancel)");
-			if (!$res2) {
-				// !!! log error
-				return false;
-			}
-		}
-	}
-	
-	return true;
-}
-
-function buyerRecieveMoney($idx, $status, $buyerId, $sellId, $quantity, $handleRate, $buyCnt, &$error_msg)
-{
-	include 'constant.php';
-	$now = time();
-	
-	$res1 = mysql_query("update CreditTrade set ConfirmTime='$now', Status='$status' where IdxId='$idx'");
-	if (!$res1) {
-		$error_msg = '确定收货失败，请稍后重试!';	
-		return false;			
-	}
-	
-	$res3 = mysql_query("select * from Credit where UserId='$buyerId'");
-	if (!$res3 || mysql_num_rows($res3) <= 0) {
-		// !!! log error
-	}
-	else {
-		
-		$row3 = mysql_fetch_assoc($res3);
-		$credit = $row3["Credits"];
-		$credit += $buyCnt;
-		
-		$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$buyerId'");
-		if (!$res4) {
-			// !!! log error
-		}
-		else {
-			$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-				VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $codeCreTradeRec)");		
-			if (!$res5) {
-				// !!! log error
-			}
-		}
-	}
-	
-	$handleFee = $quantity * $handleRate;
-	$actualHandleFee = $handleFee;
-	if ($buyCnt != $quantity) {
-		$res3 = mysql_query("select * from Credit where UserId='$sellId'");
-		if (!$res3 || mysql_num_rows($res3) <= 0) {
-			// !!! log error
-		}
-		else {
-			$actualHandleFee = $buyCnt * $handleRate;
-			$refund = $quantity - $buyCnt + $handleFee - $actualHandleFee;
-			
-			$row3 = mysql_fetch_assoc($res3);
-			$credit = $row3["Credits"];
-			$credit += $refund;
-			
-			$res4 = mysql_query("update Credit set Credits='$credit' where UserId='$sellId'");
-			if (!$res4) {
-				// !!! log error
-			}
-			else {
-				$res5 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-					VALUES($sellId, $refund, 0, $credit, $now, $now, 0, $codeCreTradeSucc)");		
-				if (!$res5) {
-					// !!! log error
-				}
-			}
-		}
-	}
-	
-	include_once "func.php";
-	insertExchangeSuccessStatistics($buyCnt, $actualHandleFee);
-	return true;
-}
-
-function confirmTradeOrderPay()
-{
-	include 'regtest.php';
-	include 'constant.php';
+	include 'constant.php';	
+	include_once "admin_func.php";
 	
 	session_start();
-	if (!$_SESSION["isLogin"]) {
+	if (!isAdminLogin()) {
 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
 		return;
 	}
 	
-	$idx = trim(htmlspecialchars($_POST["idx"]));
-
+	$shopId = trim(htmlspecialchars($_POST["index"]));
+	
 	$con = connectToDB();
 	if (!$con)
 	{
@@ -379,55 +289,131 @@ function confirmTradeOrderPay()
 	}
 	else 
 	{
-		$userid = $_SESSION['userId'];
-		
-		$res = mysql_query("select * from CreditTrade where IdxId='$idx'");
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
 		if (!$res || mysql_num_rows($res) <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表交易失败，请稍后重试！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		
-		$row = mysql_fetch_assoc($res);
-		$status = $row["Status"];
+		$row = mysql_fetch_assoc($res);	
 
-		if ($userid != $row["BuyerId"]) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查询交易出错，请稍后重试！'));	
-			return;
-		}
+		if ($row["Status"] == $olshopAccepted) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'已经上线，请误重复操作！'));
+			return;	
+		}		
 		
-		if ($status != $creditTradeReserved) {
-			echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'交易状态改变，请稍后重试！'));	
-			return;
-		}
-
-		$now = time();
-		$reserveTime = $row["ReserveTime"];
-		if ($now - $reserveTime >= 60 * 60 * $exchangePayHours) {
-			
-			// 修改订单状态
-			mysql_query("update CreditTrade set Status='$creditTradeNotPayed' where IdxId='$idx'");
-			// 退款
-			$quantity = $row["Quantity"];
-			$handleRate = $row["HanderRate"];
-			$handleFee = $quantity * $handleRate;
-			$sellid = $row["SellerId"];
-			refundSeller($sellid, $quantity, $handleFee);
-						
-			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'该交易已过期，请重新选择其他交易！'));	
+		if ($row["Status"] != $olshopApplied) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'状态出错，请稍后重试！'));
 			return;	
 		}
-	
-		$res1 = mysql_query("update CreditTrade set PayTime='$now', Status='$creditTradePayed' where IdxId='$idx'");
+				
+		$now = time();
+		$res1 = mysql_query("update OfflineShop set OnlineTime='$now', Status='$olshopAccepted' where ShopId='$shopId'");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'确认支付失败，请稍后重试！'));	
-			return;			
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysql_error()));
+			return;
 		}
 	}
 	
 	echo json_encode(array('error'=>'false'));
 }
 
-function abandonTradeOrderPay()
+function declineForOnline()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysql_fetch_assoc($res);	
+
+		if ($row["Status"] == $olshopDeclined) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'已经拒绝请求，请误重复操作！'));
+			return;	
+		}		
+		
+		if ($row["Status"] != $olshopApplied) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'状态出错，请稍后重试！'));
+			return;	
+		}
+				
+		$now = time();
+		$res1 = mysql_query("update OfflineShop set Status='$olshopDeclined' where ShopId='$shopId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysql_error()));
+			return;
+		}
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function searchForShop()
+{
+	include 'constant.php';
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$cond = trim(htmlspecialchars($_POST["cond"]));
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{	
+		$res = mysql_query("select * from OfflineShop where ShopId='$cond' and Status='$olshopAccepted'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			$res = mysql_query("select * from OfflineShop where Status='$olshopAccepted' and ShopName like '%$cond%'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查询到商家！'));	
+				return;
+			}
+		}	
+		
+		$arr = array();
+		while ($row = mysql_fetch_array($res)) {
+			
+			$arr1 = array();
+			
+			$arr1["name"] = $row["ShopName"];
+			$arr1["man"] = $row["Contacter"];
+			$arr1["phone"] = $row["PhoneNum"];
+			$arr1["add"] = $row["Address"];
+			$arr1["pic"] = $row["LicencePic"];
+			
+			$arr[$row["ShopId"]] = $arr1;
+		}
+	}
+	
+	echo json_encode(array('error'=>'false','list'=>$arr));
+}
+
+function payOLShop()
 {
 	include 'regtest.php';
 	include 'constant.php';
@@ -438,7 +424,19 @@ function abandonTradeOrderPay()
 		return;
 	}
 	
-	$idx = trim(htmlspecialchars($_POST["idx"]));
+	$cnt = trim(htmlspecialchars($_POST["cnt"]));
+	$pwd = trim(htmlspecialchars($_POST["paypwd"]));
+	$shopId = trim(htmlspecialchars($_POST["sId"]));
+	
+	if (!isValidMoneyAmount($cnt)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的金额输入，请重新输入！'));
+		return;
+	}
+	
+	if (!password_verify($pwd, $_SESSION["buypwd"])) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码出错，请重试！'));
+		return;
+	}
 	
 	$con = connectToDB();
 	if (!$con)
@@ -450,40 +448,56 @@ function abandonTradeOrderPay()
 	{
 		$userid = $_SESSION['userId'];
 		
-		$res = mysql_query("select * from CreditTrade where IdxId='$idx'");
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId' and Status='$olshopAccepted'");
 		if (!$res || mysql_num_rows($res) <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表交易失败，请稍后重试！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找商家出错，请稍后重试！'));	
 			return;
 		}	
 		
 		$row = mysql_fetch_assoc($res);
-		$status = $row["Status"];
+		$sellid = $row["UserId"];
 
-		if ($userid != $row["BuyerId"]) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查询交易出错，请稍后重试！'));	
+		if ($userid == $sellid) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不能向自己的商店交易，请稍后重试！'));	
 			return;
 		}
 		
-		if ($status != $creditTradeReserved) {
-			echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'交易状态改变，请稍后重试！'));	
-			return;
-		}
+		$res3 = mysql_query("select * from Credit where UserId='$sellid'");
+		if (!$res3 || mysql_num_rows($res3) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查找商家个人账户出错，请稍后重试！'));	
+			return;	
+		} 
+		$row3 = mysql_fetch_assoc($res3);
+		$sellerPnts = $row3["Pnts"];
 
 		$now = time();
 	
-		$res1 = mysql_query("update CreditTrade set Status='$creditTradeAbandoned' where IdxId='$idx'");
-		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'取消订单失败，请稍后重试!'));	
+		$res1 = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res1 || mysql_num_rows($res1) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'账户操作出错，请稍后重试!'));	
+			return;			
+		}
+		$row1 = mysql_fetch_assoc($res1);
+		$pnts = $row1["Pnts"];
+		
+		if ($pnts < $cnt) {
+			$msg = '您的线下云量余额不足,仅剩' . $pnts . "！";
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>$msg));	
+			return;	
+		}
+		
+		$pnts -= $cnt;
+		$res2 = mysql_query("update Credit set Pnts='$pnts' where UserId='$userid'");
+		if (!$res2) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'转账操作失败，请稍后重试!'));	
 			return;			
 		}
 		
-		// 退款	
-		$quantity = $row["Quantity"];
-		$handleRate = $row["HanderRate"];
-		$handleFee = $quantity * $handleRate;
-		$sellid = $row["SellerId"];
-		
-		refundSeller($sellid, $quantity, $handleFee);
+		$sellerPnts += $cnt;
+		$res2 = mysql_query("update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
+		if (!$res2) {
+			// !!! log error
+		}
 	}
 	
 	echo json_encode(array('error'=>'false'));

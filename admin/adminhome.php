@@ -107,6 +107,21 @@
 					</li>
 					<li class="treeview">
 		        	    <a href="javascript:void(0)">
+				            <i class="fa fa-home"></i><span>线下商家</span><i class="fa fa-angle-left pull-right"></i>
+			            </a>
+			            <ul class="treeview-menu">
+<!--
+		            		<li onclick="makecss(this)" data-id="index_Statis">
+		            			<a href='statistics.php' target='rightContent'><i class="fa fa-circle-o"></i>商家管理</a>
+							</li>	            
+-->
+		            		<li onclick="makecss(this)" data-id="index_dayStatis">
+		            			<a href='olsreviewmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待审核商家</a>
+							</li>	            
+		            	</ul>
+					</li>
+					<li class="treeview">
+		        	    <a href="javascript:void(0)">
 				            <i class="fa fa-home"></i><span>配置管理</span><i class="fa fa-angle-left pull-right"></i>
 			            </a>
 			            <ul class="treeview-menu">

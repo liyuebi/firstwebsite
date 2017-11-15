@@ -197,12 +197,17 @@ if ($con) {
 			<?php
 				if ($olshopRegistered == $row["Status"]) {
 			?>
-			<p class="well well-sm text-danger">请填写商家信息，并提交审核！</p>
+			<p class="alert alert-danger">请填写商家信息，并提交审核！</p>
 			<?php
 				}
 				else if ($olshopApplied == $row["Status"]) {
 			?>
-			<p class="well well-sm text-info">您的信息已提交审核，请耐心等待！</p>
+			<p class="alert alert-info">您的信息已提交审核，请耐心等待！</p>
+			<?php
+				}
+				else if ($olshopDeclined == $row["Status"]) {
+			?>
+			<p class="alert alert-danger">您的商家账户未通过审核，请完善信息，并重新提交审核。可联系客服获得详细信息。</p>
 			<?php
 				}
 			?>

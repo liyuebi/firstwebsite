@@ -13,21 +13,6 @@ else {
 	exit();
 }
 
-include "../php/database.php";
-include "../php/constant.php";
-$con = connectToDB();
-$userid = $_SESSION['userId'];
-$row = false;
-
-if ($con) {
-	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
-	if (!$result) {
-	}
-	else if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
-	}
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -46,7 +31,125 @@ if ($con) {
 		<script src="../js/jquery-3.2.1.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script src="../js/jquery.form-3.46.0.js" ></script>
+		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
+						
+			function search()
+			{
+				var cond = document.getElementById("search_cond").value;
+				if (cond.length <= 0) {
+					alert("请输入搜索条件！");
+					return;
+				} 
+				
+				$.post("../php/offlineTrade.php", {"func":"searchShop", "cond":cond}, function(data){
+					
+					var container = document.getElementById("result_block");
+					
+					if (data.error == "false") {
+						
+						var list = data.list;
+						
+						if (null != container && null != list) {
+							
+							$("#result_block").empty();
+							for (var key in list) {
+								
+								var hr = document.createElement("hr");
+								container.appendChild(hr);
+								
+								var div = document.createElement("div");
+								container.appendChild(div);
+								
+								var name = document.createElement("label");
+								name.innerHTML = "商家： " + list[key].name;
+								div.appendChild(name);
+								
+								var br = document.createElement("br");
+								div.appendChild(br);
+								
+								var cnt = document.createElement("input");
+								cnt.className = "form-control";
+								cnt.id = "cnt_" + key;
+								cnt.placeholder = "请输入支付的线下云量金额！";
+								div.appendChild(cnt);
+								
+								var div1 = document.createElement("div");
+								div1.className = "input-group";
+								div.appendChild(div1);
+								
+								var paypwd = document.createElement("input");
+								paypwd.className = "form-control";
+								paypwd.type = "password";
+								paypwd.placeholder = "请输入支付密码！";
+								paypwd.id = "pwd_" + key;
+								div1.appendChild(paypwd);
+								
+								var btn = document.createElement("span");
+								btn.className = "input-group-btn";
+								div1.appendChild(btn);
+								
+								var pay = document.createElement("input");
+								pay.type = "button";
+								pay.className = "btn btn-default";
+								pay.value = "支付";
+								pay.id = key;
+								if (pay.addEventListener) {
+									pay.addEventListener('click', payShop, false);
+								}
+								else if (pay.attachEvent) {
+									pay.attachEvent('onclick', payShop);
+								}
+								btn.appendChild(pay);
+							}
+						}
+					}
+					else {
+						
+						$("#result_block").empty();
+						var name = document.createElement("label");
+						name.innerHTML = "搜索失败: " + data.error_msg;
+						name.className = "text-warning";
+						container.appendChild(name);
+					}
+				}, "json");				
+			}
+			
+			function payShop(e)
+			{
+				var cnt = document.getElementById("cnt_" + e.target.id).value;
+				var pwd = document.getElementById("pwd_" + e.target.id).value;
+				
+				if (cnt.length <= 0) {
+					alert("请输入支付金额！");
+					return;
+				}
+				
+				if (pwd.length <= 0) {
+					alert("请输入支付密码！");
+					return;
+				}
+				
+				pwd = md5(pwd);
+				$.post("../php/offlineTrade.php", {"func":"pOLS", "cnt":cnt, "paypwd":pwd, "sId":e.target.id}, function(data){
+					
+					if (data.error == "false") {
+						alert("支付成功！");	
+						document.getElementById("cnt_" + e.target.id).value = "";
+						document.getElementById("pwd_" + e.target.id).value = "";
+					}
+					else {
+						alert("支付失败：" + data.error_msg);
+						document.getElementById("cnt_" + e.target.id).value = "";
+						document.getElementById("pwd_" + e.target.id).value = "";
+					}
+				}, "json");
+			}
+						
+			function gotoMyShop()
+			{
+				location.href = "myolshop.php";
+			}			
 						
 			function goback() 
 			{
@@ -63,6 +166,19 @@ if ($con) {
 			</div>
 		</div>
 
-				
+		<div style="margin: 10px 3px 0 3px;">
+			<label>搜索线下商家</label>
+			<div class="input-group" >
+     			<input class="form-control" id="search_cond" type="text" placeholder="请输入商家编号／商家名称关键字">
+     			<div class="input-group-btn">
+		 			<button class="btn btn-default" type="button" onclick="search()">搜索</button>
+		 			<button class="btn btn-default" type="button">扫描</button>
+     			</div>
+			</div>
+		</div>	
+		
+		<div id="result_block">
+			
+		</div>
 	</body>
 </html>
