@@ -43,7 +43,7 @@ if ($con) {
 		
 		<!-- CSS -->
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
-		<link rel="stylesheet" href="../css/mystyle.css">
+		<link rel="stylesheet" href="../css/mystyle1.0.1.css">
 		<link rel="stylesheet" href="../css/buttons.css">
 	
 		<script src="../js/jquery-1.8.3.min.js"></script>
@@ -56,6 +56,8 @@ if ($con) {
 				var phonenum = document.getElementById("phonenum").value;
 				var num = document.getElementById("investnum").value;
 				var paypwd = document.getElementById("paypwd").value;
+				var isOlShop = document.getElementById("ols_check").checked;
+				
 				phonenum=$.trim(phonenum);
 				num=$.trim(num);
 				if (!isPhoneNumValid(phonenum)) {
@@ -66,9 +68,19 @@ if ($con) {
 					alert("无效的支付密码！");
 					return;
 				}
+				
+				if (isOlShop && !confirm("确定要推荐为线下商家账号，需要额外使用<?php echo $offlineShopRegisterFee; ?>线上云量？")) {
+					return;
+				}
+				if (isOlShop) {
+					isOlShop = 1;
+				}
+				else {
+					isOlShop = 0;
+				}
 
 				paypwd = md5(paypwd);
-				$.post("../php/register.php", {"phonenum":phonenum, "quantity":num, "paypwd":paypwd}, function(data){
+				$.post("../php/register.php", {"phonenum":phonenum, "quantity":num, "olShop":isOlShop, "paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {
 						alert("注册成功！");// \n新用户的ids是" + data.new_user_id);	
@@ -113,42 +125,60 @@ if ($con) {
 			</div>
 		</div>
 		
-        <div style="margin-top: 5px;">    
-            <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
-            <br>
-            <p style="margin-bottom: 0;">注册用户可存储线上云量资产（必须是100的倍数）</b>，您的剩余线上云量为 <strong><?php echo $mycredit; ?></strong></p>
-            <input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
-<!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
-<!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
-<!-- 			<br> -->
-			<?php
-				if ($paypwd == "") {		
-			?>
-			<p style="margin-bottom: 0;">您的支付密码还没有设置</p>
-			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="设置支付密码！" onclick="goSetPayPwd()" />
-			<?php
-				}
-				else if ($neededcredit > $mycredit) {
-			?>
-			<p>您的注册券余额不足</p>
-			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="前往云量交易" onclick="goCharge()" />
-			<?php
-				}
-				else {
-			?>
-			<input type="password" class="form-control" id="paypwd" name="paypwd" placeholder="请输入您的支付密码！" />
-			<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="注册" onclick="onRegister()" />
-			<?php
-				}
-			?>
-        </div>
-        
-        <div>
-	        <h4 style="margin-bottom: 0;">注意事项：</h5>
-		    <p style="margin: 0;">1. 用户默认登录密码被设置为000000，请用户登录后及时修改成新密码</p>
-		    <p style="margin: 0;">2. 请用户登录后完善信息</p>
+        <div style="margin: 10px 3px 0 3px;"> 
+	        <div>
+		        <h4 class="text-warning" style="">推荐</h4>
+		        <p>   
+		            <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
+		        </p>
+		        
+	            <p>
+	            	<input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
+	            	<span class="help-block">注册用户可存储线上云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的线上云量为 <strong><?php echo $mycredit; ?></strong></span>
+	            </p>
+	<!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
+	<!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
+	<!-- 			<br> -->
+				<p>
+					
+				<p class="checkbox">
+				    <label>
+				    	<input type="checkbox" id="ols_check"> 注册为线下商家账号
+				    </label>
+				    <span class="help-block">注册线下商家账号需要额外使用线上云量<strong><?php echo $offlineShopRegisterFee; ?></strong></span>
+				</p>
+					<?php
+						if ($paypwd == "") {		
+					?>
+					<p class="text-danger" style="margin-bottom: 0;">您的支付密码还没有设置</p>
+					<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="设置支付密码！" onclick="goSetPayPwd()" />
+		<!--
+					<?php
+						}
+						else if ($neededcredit > $mycredit) {
+					?>
+					<p>您的注册券余额不足</p>
+					<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="前往云量交易" onclick="goCharge()" />
+		-->
+					<?php
+						}
+						else {
+					?>
+					<input type="password" class="form-control" id="paypwd" name="paypwd" placeholder="请输入您的支付密码！" />
+					<input type="button" class="btn btn-primary btn-block" style="margin: 10px 0;" name="submit" value="注册" onclick="onRegister()" />
+					<?php
+						}
+					?>
+				</p>
+			</div>
+			
+	        <div>
+		        <hr>
+		        <h4 class="text-warning" style="">注意事项</h4>
+			    <p style="margin: 0;">1. 用户默认登录密码被设置为000000，请用户登录后及时修改成新密码</p>
+			    <p style="margin: 0;">2. 请用户登录后完善信息</p>
+			    <p style="margin: 0;">3. 注册为线下商家账号后，请去 <strong>线下商家->我的商家</strong> 完善商家信息。</p>
+	        </div>
         </div>
     </body>
-    <div style="text-align:center;">
-    </div>
 </html>

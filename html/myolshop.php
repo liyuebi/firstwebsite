@@ -174,6 +174,7 @@ if ($con) {
 			</div>
 		</div>
 		
+<!--	// 关闭自己注册线下商家账号的功能，必须由推荐时注册
 		<div style="margin: 10px 3px 0 3px; display: <?php if ($row) echo "none"; else echo "block"; ?>">
 			<div>
 				<label>注册线下商家账号</label>
@@ -191,6 +192,7 @@ if ($con) {
 				</ol>
 			</div>
 		</div>
+-->
 		
 		<div style="margin: 10px 3px 0 3px; display: <?php if ($row) echo "block"; else echo "none"; ?>">
 			

@@ -615,7 +615,11 @@ function insertWithdrawStatistics($amount, $fee)
 	}
 }
 
-function insertTransferStatistics($amount, $fee)
+/*
+ * 添加开放线下商定的数据
+ * $fee - 申请线下商店的费用
+ */
+function insertOfflineShopOpen($fee)
 {
 	$now = time();
 	
@@ -630,14 +634,13 @@ function insertTransferStatistics($amount, $fee)
 		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
 		if ($result && mysql_num_rows($result) > 0) {
 			$row = mysql_fetch_assoc($result);
-			$tfTotal = $row["TfTotal"] + $amount;
-			$feeTotal = $row["TfFee"] + $fee;
-			$times = $row["TfTimes"] + 1;
-			mysql_query("update Statistics set TfTotal='$tfTotal', TfFee='$feeTotal', TfTimes='$times' where Ye='$year' and Mon='$month' and Day='$day'");
+			$shopCnt = $row["OlShopCnt"] + 1;
+			$regiFee = $row["OlShopRegiFee"] + $fee;
+			mysql_query("update Statistics set OlShopCnt='$shopCnt', OlShopRegiFee='$regiFee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, TfTotal, TfFee, TfTimes)
-					VALUES('$year', '$month', '$day', '$amount', '$fee', '1')");
+			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopCnt, OlShopRegiFee)
+					VALUES('$year', '$month', '$day', '1', '$fee')");
 		}
 	}
 
@@ -647,25 +650,12 @@ function insertTransferStatistics($amount, $fee)
 		
 		$row1 = mysql_fetch_assoc($res1);
 		$credits = $row1["CreditsPool"];
-		$transferTotal = $row1["TransferTotal"];
-		$transferTimes = $row1["TransferTimes"];
-		$transferFee = $row1["TransferFee"];
+		$regiFee = $row1["OlShopRegiFee"];
 		
 		$credits += $fee;			// 转账手续费收入积分池
-		$transferTotal += $amount;
-		$transferTimes += 1;
-		$transferFee += $fee;
+		$regiFee += $fee;
 		
-		mysql_query("update TotalStatis set CreditsPool='$credits', TransferTotal='$transferTotal', TransferTimes='$transferTimes', TransferFee='$transferFee' where IndexId=1");
-	}
-	
-	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		$row2 = mysql_fetch_assoc($res2);
-		$transfer = $row2["Transfer"] + $amount;
-		$transFee = $row2["TransferFee"] + $fee;
-		mysql_query("update ShortStatis set Transfer='$transfer', TransferFee='$transFee' where IndexId=1");
+		mysql_query("update TotalStatis set CreditsPool='$credits', OlShopRegiFee='$regiFee' where IndexId=1");
 	}
 }
 	

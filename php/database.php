@@ -316,6 +316,10 @@ function createOfflineShopTable()
 	 * ReadyForCheckTime: 提交审查时间
 	 * OnlineTime: 上线时间
 	 * DeclineReason: 审核失败原因
+	 * TradeTimes: 收款次数
+	 * TradeAmount: 收款总额
+	 * TradeIncome: 实际收入，从首款总额中减去手续费及给推荐人的分红
+	 * TradeFee: 手续费，为平台收入
 	 * Status: 商店状态
 	 */
 	$sql = "create table if not exists OfflineShop
@@ -333,6 +337,10 @@ function createOfflineShopTable()
 		ReadyForCheckTime int default 0,
 		OnlineTime int default 0,
 		DeclineReason varchar(256) default '',
+		TradeTimes int default 0,
+		TradeAmount int default 0,
+		TradeIncome int default 0,
+		TradeFee int default 0,
 		Status int default 0		
 	) ENGINE=MEMORY AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	
@@ -623,6 +631,8 @@ function createStatisticsTable()
 	 * ExchangeFee - 每日成功交易收取的手续费
 	 * WithdrawTotal - 每日使用云量在现实中的实际数额，相当于用户取现，如话费充值，油卡充值
 	 * WithdrawFee - 每日使用云量在实际生活中的手续费
+	 * OlShopCnt - 每日注册的线下商家数量
+	 * OlShopRegiFee - 每日注册的线下商家使用的注册费
 	*/
 	$sql = "create table if not exists Statistics
 	(
@@ -641,7 +651,11 @@ function createStatisticsTable()
 		ExchangeSuccCnt int default 0,
 		ExchangeFee	decimal(10,2) default 0,
 		WithdrawTotal decimal(10,2) default 0,
-		WithdrawFee	decimal(10,2) default 0
+		WithdrawFee	decimal(10,2) default 0,
+		OlShopCnt int default 0,
+		OlShopRegiFee decimal(10,2) default 0,
+		OlShopTradeCnt int default 0,
+		OlShopTradeFee decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -666,6 +680,7 @@ function createTotalStatisTable()
 	 * ExchangeFee - 成功交易收取的手续费
 	 * WithdrawTotal - 使用云量在现实中的实际数额，相当于用户取现，如话费充值，油卡充值等
 	 * WithdrawFee - 使用云量在实际生活中的手续费
+	 * OlShopRegiFee - 注册的线下商家使用的注册费总额
 	 */
 	$sql = "create table if not exists TotalStatis
 	(
@@ -683,7 +698,8 @@ function createTotalStatisTable()
 		ExchangeSuccCnt int default 0,
 		ExchangeFee	decimal(10,2) default 0,
 		WithdrawTotal decimal(10,2) default 0,
-		WithdrawFee	decimal(10,2) default 0
+		WithdrawFee	decimal(10,2) default 0,
+		OlShopRegiFee decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

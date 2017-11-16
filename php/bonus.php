@@ -258,7 +258,7 @@ function acceptBonus($userId)
 		}
 			
 		$bonus = 0;
-		$res = mysql_query("select * from CreditBank where UserId='$userId' and Balance>0 order by SaveTime desc");
+		$res = mysql_query("select * from CreditBank where UserId='$userId' and Balance>0 order by SaveTime");
 		if ($res) {
 			
 			$now = time();

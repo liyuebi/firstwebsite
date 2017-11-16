@@ -8,7 +8,15 @@ include_once "func.php";
 $phonenum = trim(htmlspecialchars($_POST['phonenum']));
 $paypwd = trim(htmlspecialchars($_POST['paypwd']));
 $quantity = trim(htmlspecialchars($_POST['quantity']));
+$isOlShop = trim(htmlspecialchars($_POST['olShop']));
 // $username = htmlspecialchars($_POST['username']);
+
+if ("1" == $isOlShop) {
+	$isOlShop = true;
+}
+else {
+	$isOlShop = false; 
+}
 
 // 验证电话号码
 if (!isValidCellPhoneNum($phonenum)) {
@@ -25,6 +33,22 @@ if (!$_SESSION["isLogin"]) {
 
 if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 	echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'支付密码出错，请重试！'));
+	return;
+}
+
+if ($quantity < $regiCreditLeast) {
+	$str = '投入额度不能小于' . $regiCreditLeast . '，请重新输入！';
+	echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
+	return;
+}
+else if ($quantity > $regiCreditMost) {
+	$str = '投入额度不能大于' . $regiCreditMost . '，请重新输入！';
+	echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
+	return;		
+}
+
+if ($quantity % 100 != 0) {
+	echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'投入额度必须是100的整数倍，请重新输入！'));
 	return;
 }
 
@@ -58,24 +82,14 @@ else
 		$row = mysql_fetch_assoc($res1);
 	}
 	
-	if ($quantity < $regiCreditLeast) {
-		$str = '投入额度不能小于' . $regiCreditLeast . '，请重新输入！';
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
-		return;
-	}
-	else if ($quantity > $regiCreditMost) {
-		$str = '投入额度不能大于' . $regiCreditMost . '，请重新输入！';
-		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
-		return;		
-	}
-	
-	if ($quantity % 100 != 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'投入额度必须是100的整数倍，请重新输入！'));
-		return;
-	}
-	
 	if ($row["Credits"] < $quantity) {
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线上云量不足，不能推荐用户！'));
+		return;		
+	}
+	if ($isOlShop && 
+		$row["Credits"] < $quantity + $offlineShopRegisterFee) {
+		
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的线上云量不足，不能推荐线下商家用户！'));
 		return;		
 	}
 	
@@ -84,7 +98,7 @@ else
 	$result = mysql_query($sql, $con);
 	$newuserid = 0;
 	if (!$result) {
-		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'账号查询出错，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'账号查询出错，请稍后重试！','sql_error'=>mysql_error()));
 		return;
 	}
 	else {
@@ -102,7 +116,7 @@ else
 			}
 		}
 		else {
-			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'该手机号已经注册过了！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'该手机号已经注册过了！','sql_error'=>mysql_error()));
 			return;
 		}
 	}
@@ -177,6 +191,9 @@ else
 	
 	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
 	$leftCredit = $credit - $quantity;
+	if ($isOlShop) {
+		$leftCredit -= $offlineShopRegisterFee;
+	}
 	
 	$res4 = mysql_query("update Credit set Credits='$leftCredit' where UserId='$userid'");
 	if (!$res4) {
@@ -184,8 +201,12 @@ else
 	}
 	else {
 		// 修改用户的积分纪录，扣去推荐积分，若失败不影响返回结果
+		$usedCredit = $quantity;
+		if ($isOlShop) {
+			$usedCredit += $offlineShopRegisterFee;
+		}
 		$result = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-									VALUES($userid, $quantity, $leftCredit, $now, $now, $newuserid, $codeReferer)");
+									VALUES($userid, $usedCredit, $leftCredit, $now, $now, $newuserid, $codeReferer)");
 		if (!$result) {
 			// !!! log error
 		}
@@ -211,6 +232,16 @@ else
 	// 更新统计数据,在订单统计里返还积分到积分池，而在推荐统计里不做不回积分池，只增加推荐消耗积分总额及用户人数
 // 	insertOrderStatistics($refererConsumePoint, 1);
 	insertRecommendStatistics($quantity, $newUserAsset, $charity);
+	
+	// open offline shop for new user
+	if ($isOlShop) {
+		
+		include_once "offlineTrade.php";
+		$error_msg = '';
+		if (!openOfflineShop($newuserid, $error_msg)) {
+			// !!! log error
+		}
+	}
 
 	mysql_close($con);
 	return;

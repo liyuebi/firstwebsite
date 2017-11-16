@@ -27,6 +27,41 @@ if (isset($_POST['func'])) {
 	}
 }
 
+function openOfflineShop($userid, &$error_msg)
+{
+	include 'constant.php';
+	
+	$result = createOfflineShopTable();
+	if (!$result) {
+		$error_msg = '查表失败，请稍后重试！';
+		return false;
+	}
+	
+	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
+	if (!$result) {
+		$error_msg = '查询线下商店，请稍后重试！';
+		return false;
+	}
+	else if (mysql_num_rows($result) > 0) {
+		$error_msg = '一个用户只能申请一个线下商家账户！';
+		return false;	
+	}
+	
+	$now = time();
+	$res1 = mysql_query("insert into OfflineShop (UserId, RegisterTime, Status)
+							values($userid, $now, $olshopRegistered)");
+	if (!$res1) {
+		$error_msg = '申请线下商店失败，请稍后重试！';
+		return false;
+	}
+	
+	// statistics
+	include_once 'func.php';
+	insertOfflineShopOpen($offlineShopRegisterFee);
+	
+	return true;
+}
+
 function createOfflineShopAccount()
 {	
 	include 'constant.php';
@@ -47,22 +82,6 @@ function createOfflineShopAccount()
 	{
 		$userid = $_SESSION['userId'];
 		$now = time();
-						
-		$result = createOfflineShopTable();
-		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查表失败，请稍后重试！'));	
-			return;
-		}	
-		
-		$result = mysql_query("select * from OfflineShop where UserId='$userid'");
-		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'查表失败，请稍后重试！'));	
-			return;
-		}
-		else if (mysql_num_rows($result) > 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'一个用户只能申请一个线下商家账户！'));	
-			return;	
-		}
 		
 		$res = mysql_query("select * from Credit where UserId='$userid'");
 		if (!$res || mysql_num_rows($res) <= 0) {
@@ -77,13 +96,13 @@ function createOfflineShopAccount()
 			return;
 		}
 
-		$res1 = mysql_query("insert into OfflineShop (UserId, RegisterTime, Status)
-								values($userid, $now, $olshopRegistered)");
-		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'申请线下商店失败，请稍后重试！'));	
+		$error_msg = '';
+		if (!openOfflineShop($userid, $error_msg))
+		{
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$error_msg));	
 			return;
 		}
-		
+				
 		$credit = $credit - $offlineShopRegisterFee;
 		$res2 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$res2) {
@@ -95,11 +114,6 @@ function createOfflineShopAccount()
 		if (!$res3) {
 			// !!! log error
 		}
-		
-		// statistics
-		// statics for shop info
-		include_once 'func.php';
-		updateCreditPoolStatistics($offlineShopRegisterFee);
 	}
 	echo json_encode(array('error'=>'false'));	
 }
