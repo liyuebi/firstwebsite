@@ -15,11 +15,17 @@ else {
 	exit();
 }
 
+$showTab2 = false;
+if (isset($_GET['t']) && 1 == $_GET['t']) {
+	$showTab2 = true;
+}
+
 $userid = $_SESSION["userId"];
 $result = false;
 $con = connectToDB();
 if ($con) {
 	$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
+	$res = mysql_query("select * from PntsRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
 }
 	
 ?>
@@ -36,8 +42,9 @@ if ($con) {
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
 		
-		<script src="../js/jquery-1.8.3.min.js" ></script>
+		<script src="../js/jquery-3.2.1.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
+		<script src="../js/bootstrap-3.3.7/bootstrap.min.js" ></script>
 		<script type="text/javascript">
 			
 			function goback()
@@ -55,21 +62,26 @@ if ($con) {
 			</div>
 		</div>
 		
-        <div>
-	    	<?php
-		    	include "../php/constant.php";
-		    	date_default_timezone_set('PRC');
-		        while ($row = mysql_fetch_array($result)) {
-			?>  	
-			<div>
-				    <p style="margin: 10px 5px;"><?php 
+        <div class="tabbable" style="margin: 10px 3px;">
+	        <ul class="nav nav-tabs">
+				<li class="<?php if (!$showTab2) echo 'active'; ?>"><a href="#tab1" data-toggle="tab">线上云量记录</a></li>
+				<li class="<?php if ($showTab2) echo 'active'; ?>"><a href="#tab2" data-toggle="tab">线下云量记录</a></li>
+			</ul>
+			<div class="tab-content">
+		        <div class="tab-pane <?php if (!$showTab2) echo 'active'; ?>" id="tab1">
+		    	<?php
+			    	include "../php/constant.php";
+			    	date_default_timezone_set('PRC');
+			        while ($row = mysql_fetch_array($result)) {
+				?>  	
+				    <p style="margin: 5px 3px;"><?php 
 					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
 					    echo "<br>";
 					    if ($row["Type"] == $codeBuy) {
-// 							echo "您通过云量交易获得" . $row["Amount"] . "线上云量。"; 				    
+	// 							echo "您通过云量交易获得" . $row["Amount"] . "线上云量。"; 				    
 				    	}
 				    	else if ($row["Type"] == $codeSell) {
-// 					    	echo "您申请赎回" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
+	// 					    	echo "您申请赎回" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeDivident) {					    	
 					    	echo "您今日领到" . $row["Amount"] . "线上云量。";
@@ -116,11 +128,48 @@ if ($con) {
 					    ?>
 					</p>
 					<hr>
+				<?php       	
+			    	}
+		       	?>
+		       	</div>
+		       	
+		       	<div class="tab-pane <?php if ($showTab2) echo 'active'; ?>" id="tab2">
+			    <?php
+				    include "../php/constant.php";
+					date_default_timezone_set('PRC');
+			        while ($row = mysql_fetch_array($res)) {
+				?>  	
+			    	<p style="margin: 5px 3px;">
+			    	<?php
+					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
+					    echo "<br>";
+					    
+					    if ($row["Type"] == $code2Save) {
+							echo "您进行云量存储，获得" . $row["Amount"] . "线下云量。"; 				    
+				    	}
+				    	else if ($row["Type"] == $code2OlShopPay) {
+					    	echo "您在线下商家消费，支付" . $row["Amount"] . "线下云量。";
+				    	}
+				    	else if ($row["Type"] == $code2OlShopReceive) {					    	
+					    	echo "收到用户支付的" . $row["RelatedAmount"] . "线下云量。";
+					    	echo "<br>";
+					    	echo "实际获得" . $row["Amount"] . "线下云量。";
+				    	}
+				    	else if ($row["Type"] == $code2OlShopBonus) {
+					    	echo "推荐的商家收款，您获得奖励" . $row["Amount"] . "线下云量。"; 
+				    	}
+				    				    	
+				    	echo "<br>";
+				    	echo "当前线下云量" . $row["CurrAmount"] . "。";
+					?>
+			    	</p>
+					<hr>
+				<?php       	
+			    	}
+		    	?>
+		    	</div>
 			</div>
-			<?php       	
-		       	}
-	       	?>
-		</div>
+        </div>
     </body>
     <div style="text-align:center;">
     </div>

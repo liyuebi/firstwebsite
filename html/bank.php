@@ -85,32 +85,34 @@ if ($con) {
 			</div>
 		</div>
 
-		<div>
-			<h4>添加新存储：</h4>
-			<input id="amount" class="form-control" type="text" placeholder="请输入存储数量，必须是100的倍数！" onkeypress="return onlyNumber(event)" /> 
-			<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="trySave()" />
-		</div>
-		
-		<hr>
-		
-		<div>
-			<h4>已有存储：</h4>
-			<?php
-				if ($result) {
-					date_default_timezone_set('PRC');
-					while ($row = mysql_fetch_array($result)) {
-			?>
-						<div>
-							<p>总额度：<?php echo $row["Quantity"]; ?></p>
-							<p>存储时间：<?php echo date("Y-m-d H:i:s", $row["SaveTime"]); ?></p>
-							<p>剩余额度：<?php echo $row["Balance"]; ?></p>
-<!-- 							<p>交易过期时间：<?php echo 0; ?></p> -->
-						</div>
-						<hr>
-			<?php
+		<div style="margin: 10px 3px;">
+			<div>
+				<h4 class="text-info">添加新存储：</h4>
+				<input id="amount" class="form-control" type="text" placeholder="请输入存储数量，必须是100的倍数！" onkeypress="return onlyNumber(event)" /> 
+				<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="trySave()" />
+			</div>
+			
+			<hr>
+			
+			<div>
+				<h4 class="text-info">已有存储：</h4>
+				<?php
+					if ($result) {
+						date_default_timezone_set('PRC');
+						while ($row = mysql_fetch_array($result)) {
+				?>
+							<div class="bg-info" style="padding: 5px;">
+								<p>总额度：<?php echo $row["Quantity"]; ?></p>
+								<p>存储时间：<?php echo date("Y-m-d H:i:s", $row["SaveTime"]); ?></p>
+								<p>剩余额度：<?php echo $row["Balance"]; ?></p>
+	<!-- 							<p>交易过期时间：<?php echo 0; ?></p> -->
+							</div>
+							<hr>
+				<?php
+						}
 					}
-				}
-			?>
+				?>
+			</div>
 		</div>
     </body>
 </html>

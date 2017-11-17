@@ -506,6 +506,14 @@ function payOLShop()
 			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'转账操作失败，请稍后重试!'));	
 			return;			
 		}
+		else {
+			// insert pay pnts record
+			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+								values('$userid', '$cnt', '$pnts', '$now', '$shopId', '$sellid', '$code2OlShopPay')");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
 		
 		$fee = floor($cnt * $offlineTradeRate * 100) / 100;
 		$bonusUpstream = 0;
@@ -530,6 +538,14 @@ function payOLShop()
 				if (!$res6) {
 					// !!! log error
 				}
+				else {
+					// insert pnts bonus record
+					$res6 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+										values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
+					if (!$res6) {
+						// !!! log error
+					}
+				}
 			}
 		}
 		
@@ -539,6 +555,14 @@ function payOLShop()
 		$res2 = mysql_query("update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
 		if (!$res2) {
 			// !!! log error
+		}
+		else {
+			// insert receive pnts record
+			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
+								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code2OlShopReceive')");
+			if (!$res2) {
+				// !!! log error
+			}
 		}
 		
 		// 更新线下商家个人统计数据

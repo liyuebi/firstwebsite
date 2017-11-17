@@ -150,8 +150,10 @@ if ($con) {
 					
 					if (data.error == "false") {
 						alert("支付成功！");	
-						document.getElementById("cnt_" + e.target.id).value = "";
-						document.getElementById("pwd_" + e.target.id).value = "";
+// 						document.getElementById("cnt_" + e.target.id).value = "";
+// 						document.getElementById("pwd_" + e.target.id).value = "";
+
+						location.href = "record.php?t=1";
 					}
 					else {
 						alert("支付失败：" + data.error_msg);
