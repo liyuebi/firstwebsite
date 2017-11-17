@@ -20,7 +20,7 @@ if (!$con)
 	return false;
 }
 	
-$result = mysql_query("select * from Statistics");
+$result = mysql_query("select * from Statistics order by IndexId desc");
 
 ?>
 
@@ -80,7 +80,7 @@ $result = mysql_query("select * from Statistics");
 						<th>交易手续费</th>
 						<th>虚拟消耗（话费／油费）</th>
 						<th>虚拟消耗手续费</th>
-	<!-- 					<th>拒绝</th> -->
+						<th>线下交易手续费</th>
 					</tr>
 					<?php
 						while($row = mysql_fetch_array($result)) {
@@ -97,6 +97,7 @@ $result = mysql_query("select * from Statistics");
 								<td><?php echo $row["ExchangeFee"]; ?></td>
 								<td><?php echo $row["WithdrawTotal"]; ?></td>
 								<td><?php echo $row["WithdrawFee"]; ?></td>
+								<td><?php echo $row["OlShopTradeFee"]; ?></td>
 	<!-- 							<th><input type="button" value="确认" id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></th> -->
 	<!-- 							<th><input type="button" value="拒绝" id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></th> -->
 							</tr>
