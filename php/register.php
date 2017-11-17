@@ -249,7 +249,7 @@ else
 		
 		include_once "offlineTrade.php";
 		$error_msg = '';
-		if (!openOfflineShop($newuserid, $error_msg)) {
+		if (!openOfflineShop($newuserid, $userid, $error_msg)) {
 			// !!! log error
 		}
 	}

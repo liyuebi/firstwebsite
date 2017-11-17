@@ -32,7 +32,7 @@ if ($_SESSION['accInited'] > 0) {
 		<meta name="author" content="">
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle1.0.1.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -129,16 +129,16 @@ if ($_SESSION['accInited'] > 0) {
 	</head>
 	<body>
 		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; line-height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">完善个人信息</h3>
-		<div style="margin: 0 5px;">
+		<div style="margin: 0 3px;">
 			<div>
-				<h4>个人信息：</h4>
+				<h4 class="text-info">个人信息：</h4>
 				<input type="text" class="form-control" style="width: 70%;" id="nickname" placeholder="请输入昵称！" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" />
 			</div>
 			
 			<hr>
 			
 			<div>
-				<h4>修改登录密码：</h4>
+				<h4 class="text-info">修改登录密码：</h4>
 				<p>请使用6-12位字母和数字作为密码</p>
 		        <input type="password" id="pwd2" name="" class="form-control" style="width: 70%;" placeholder="请输入新的登录密码！" onkeypress="return onlyCharAndNum(event)"/>
 		        <br>
@@ -148,7 +148,7 @@ if ($_SESSION['accInited'] > 0) {
 			<hr>
 			
 			<div>
-				<h4>设置支付密码：</h4>
+				<h4 class="text-info">设置支付密码：</h4>
 		        <p>请使用6-18位字母和数字作为密码</p>
 		        <input id="ppwd1" type="password" class="form-control" style="width: 70%;" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 		        <br>
@@ -158,25 +158,33 @@ if ($_SESSION['accInited'] > 0) {
 			<hr>
 			
 	        <div>
-		        <h4>默认地址信息：</h4>
-	           <table width="100%" align="center">
-		            <tr>
-			            <td width="20%" style="text-align: right;">收件人</td>
-			            <td width="80%" style="text-align: left;"><input type="text" class="form-control" style="width: 50%;" id="receiver" value="" placeholder="请填入收件人姓名！" /></td>
-		            </tr>
-		            <tr>
-			            <td style="text-align: right;">收件人电话</td>
-			            <td width="80%" style="text-align: left;"><input type="text" class="form-control" style="width: 50%;" id="phonenum" value="" placeholder="请填入收件人电话！" onkeypress="return onlyNumber(event)" /></td>
-		            </tr>
-		            <tr>
-			            <td style="text-align: right;">收件人地址</td>
-			            <td width="80%" style="text-align: left;"><input type="text" class="form-control" style="width: 50%;" id="address" value="" placeholder="请填入收件人地址！" /></td>
-		            </tr>
-	            </table>
+		        <h4 class="text-info">默认地址信息：</h4>
+	            <div class="form-horizontal">
+		            <div class="form-group">
+						<label for="receiver" class="col-sm-2 control-label">收件人</label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" id="receiver" placeholder="请填入收件人姓名">
+    					</div>
+					</div>
+		            <div class="form-group">
+						<label for="phonenum" class="col-sm-2 control-label">收件人电话</label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" id="phonenum" placeholder="请填入收件人电话" onkeypress="return onlyNumber(event)">
+    					</div>
+					</div>
+		            <div class="form-group">
+						<label for="address" class="col-sm-2 control-label">收件人地址</label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" id="address" placeholder="请填入收件人地址">
+    					</div>
+					</div>
+	            </div>
+	            
+	            
 	        </div>
 	        
 	         <hr>
-	         <input type="button" value="保存" class="button-rounded" style="width: 48%; height: 30px; float: left; margin-bottom: 10px;" onclick="onSubmit()" />
+	         <input type="button" value="保存" class="btn btn-success btn-block" style="margin-bottom: 10px;" onclick="onSubmit()" />
 <!-- 	        <input id="btnSave" type="button" name="submit" value="保存" onclick="submitAddress()"/> -->
 		</div>
     </body>

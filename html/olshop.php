@@ -18,14 +18,8 @@ include "../php/constant.php";
 $con = connectToDB();
 $userid = $_SESSION['userId'];
 
-$hasOlShop = false;
 if ($con) {
 	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
-	if (!$result) {
-	}
-	else if (mysql_num_rows($result) > 0) {
-		$hasOlShop = true;
-	}
 }
 
 ?>
@@ -179,11 +173,7 @@ if ($con) {
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
 				<div class="col-xs-6 col-md-6"><h3 style="text-align: center; color: white">线下商家</h3></div>
-				<div class="col-xs-3 col-md-3">
-					<?php if ($hasOlShop) { ?>
-					<input type="button" class="button button-raised button-rounded button-small" style="float: right" value="我的商家" onclick="gotoMyShop()">
-					<?php } ?>
-				</div>
+				<div class="col-xs-3 col-md-3"><input type="button" class="button button-raised button-rounded button-small" style="float: right" value="我的商家" onclick="gotoMyShop()"></div>
 			</div>
 		</div>
 

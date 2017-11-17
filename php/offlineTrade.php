@@ -27,7 +27,7 @@ if (isset($_POST['func'])) {
 	}
 }
 
-function openOfflineShop($userid, &$error_msg)
+function openOfflineShop($userid, $refererId, &$error_msg)
 {
 	include 'constant.php';
 	
@@ -48,8 +48,8 @@ function openOfflineShop($userid, &$error_msg)
 	}
 	
 	$now = time();
-	$res1 = mysql_query("insert into OfflineShop (UserId, RegisterTime, Status)
-							values($userid, $now, $olshopRegistered)");
+	$res1 = mysql_query("insert into OfflineShop (UserId, RefererId, RegisterTime, Status)
+							values($userid, $refererId, $now, $olshopRegistered)");
 	if (!$res1) {
 		$error_msg = '申请线下商店失败，请稍后重试！';
 		return false;
@@ -97,7 +97,7 @@ function createOfflineShopAccount()
 		}
 
 		$error_msg = '';
-		if (!openOfflineShop($userid, $error_msg))
+		if (!openOfflineShop($userid, 0, $error_msg))
 		{
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$error_msg));	
 			return;
@@ -519,12 +519,9 @@ function payOLShop()
 		$bonusUpstream = 0;
 
 		// 分红给线下商家账号的推荐人
-		$res4 = mysql_query("select * from ClientTable where UserId='$sellid'");
-		if ($res4 && mysql_num_rows($res4) > 0) {
-			
-			$row4 = mysql_fetch_assoc($res4);
-			$refererId = $row4["ReferreeId"];
-			
+		$refererId = $row["RefererId"];
+		if (0 != $refererId) {
+						
 			$res5 = mysql_query("select * from Credit where UserId='$refererId'");
 			if ($res5 && mysql_num_rows($res5) > 0) {
 				

@@ -306,6 +306,7 @@ function createOfflineShopTable()
 	/*
 	 * ShopId: 线上商店编号
 	 * UserId: 商店所属用户的用户ID
+	 * RefererId: 推荐人的用户ID
 	 * ShopName: 公司名称
 	 * Contacter: 联系人／法人
 	 * PhoneNum: 联系电话
@@ -327,6 +328,7 @@ function createOfflineShopTable()
 		ShopId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(ShopId),
 		UserId int not null,
+		RefererId int default 0,
 		ShopName varchar(128) default '',
 		Contacter varchar(32) default '',
 		PhoneNum varchar(16) default '',
@@ -649,8 +651,8 @@ function createStatisticsTable()
 	 * RecommendTotal - 注册新用户投入了云量总数
 	 * ReinventTotal - 存储到银行的云量总数
 	 * BonusTotal - 用户每日领取的存储利息总和
- 	 * ExchangeNewQuan - 每日挂单的云量总额
- 	 * ExchangeNewCnt - 每日挂单单数
+	 * ExchangeNewQuan - 每日挂单的云量总额
+	 * ExchangeNewCnt - 每日挂单单数
 	 * ExchangeSuccQuan - 每日成功交易的云量总额
 	 * ExchangeSuccCnt - 每日成功交易单数
 	 * ExchangeFee - 每日成功交易收取的手续费
@@ -658,7 +660,7 @@ function createStatisticsTable()
 	 * WithdrawFee - 每日使用云量在实际生活中的手续费
 	 * OlShopCnt - 每日注册的线下商家数量
 	 * OlShopRegiFee - 每日注册的线下商家使用的注册费
-	*/
+	 */
 	$sql = "create table if not exists Statistics
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,

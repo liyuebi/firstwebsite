@@ -17,6 +17,8 @@ if (!checkLoginOrJump()) {
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
@@ -118,6 +120,7 @@ if (!checkLoginOrJump()) {
 							var input1 = document.createElement("input");
 							input1.type = "button";
 							input1.value = "更改用户信息";
+							input1.className = "btn btn-info btn-sm";
 							input1.id = key;
 							if (input1.addEventListener) {
 								input1.addEventListener('click', changeUserInfo, false);
@@ -140,6 +143,7 @@ if (!checkLoginOrJump()) {
 							var input3 = document.createElement("input");
 							input3.type = "button";
 							input3.value = "增加";
+							input3.className = "btn btn-info btn-sm";
 							input3.id = key;
 							if (input3.addEventListener) {
 								input3.addEventListener('click', addCredit, false);
@@ -151,6 +155,7 @@ if (!checkLoginOrJump()) {
 							var input4 = document.createElement("input");
 							input4.type = "button";
 							input4.value = "减少";
+							input4.className = "btn btn-info btn-sm";
 							input4.id = key;
 							if (input4.addEventListener) {
 								input4.addEventListener('click', decreaseCredit, false);
@@ -240,9 +245,7 @@ if (!checkLoginOrJump()) {
 	</head>
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
-	        <div>
-		        <h3>用户管理</h3>
-	        </div>
+	        <h4>用户管理</h4>
 <!--
 	        <div id="blk_add">
 		        <input type="hidden" name='func' value="addNew" />
@@ -256,8 +259,12 @@ if (!checkLoginOrJump()) {
 -->
 	        <hr>
 			<div id="blk_chk" style="display: block;">
-				<input id="id_input" type="text" placeholder="请输入用户 ID/手机号／昵称" />
-				<input type="button" value="查找" onclick="queryUser()" />
+				<div class="input-group" style="width: 360px; margin-bottom: 10px;">
+					<input type="text" id="id_input" class="form-control" placeholder="请输入用户 ID/手机号／昵称" />
+					<div class="input-group-btn">
+						<input type="button" class="btn btn-default" value="查找" onclick="queryUser()" />
+					</div>
+				</div>
 				
 				<table id="user_tbl" border="1" style="text-align: center">
 					<tr>

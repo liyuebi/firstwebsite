@@ -174,25 +174,23 @@ if ($con) {
 			</div>
 		</div>
 		
-<!--	// 关闭自己注册线下商家账号的功能，必须由推荐时注册
 		<div style="margin: 10px 3px 0 3px; display: <?php if ($row) echo "none"; else echo "block"; ?>">
 			<div>
-				<label>注册线下商家账号</label>
+				<h4 class="text-info">注册线下商家</h4>
 				<input type="button" class="btn btn-block btn-success" value="注册线下商家" aria-describedby="helpBlock" onclick="tryRegisterOlShop()">
 				<span id="helpBlock" class="help-block">注册线下商户需要消耗<?php echo $offlineShopRegisterFee; ?>线上云量。</span>
 			</div>
 			
 			<hr>
 			<div>
-				<label>线下商家账号打开流程</label>
+				<h4 class="text-warning">线下商家打开流程</h4>
 				<ol>
-					<li>支付线上云量获取账号资格</li>
+					<li>支付线上云量获取资格</li>
 					<li>完善商户信息，上传营业执照照片</li>
 					<li>审核通过，开始运营</li>
 				</ol>
 			</div>
 		</div>
--->
 		
 		<div style="margin: 10px 3px 0 3px; display: <?php if ($row) echo "block"; else echo "none"; ?>">
 			
