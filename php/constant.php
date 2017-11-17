@@ -71,13 +71,11 @@
 	$codeStopChargeOil = 17;// 取消加油卡充值申请，返还积分
 	$codeRegiOlShop = 20;	// 注册线下商店
 	
-	$code2Divident = 1; // 固定分红导致采线上云量变化
-	$code2DynDivident = 2; // 动态分红导致采线上云量变化，
-	$code2TransferTo = 3;	// 向用户转采线上云量
-	$code2TransferFrom = 4;	// 收到其他人转的采线上云量
-	$cdoe2TransferToCredit = 11;   // 采线上云量转到线上云量，目前的一种情形是用户升级奖励，若固定蜂值不够，从采线上云量划拨
-	$code2TransferFromCredit = 12; // 从线上云量转换而来
-	$code2TransferFromVault = 13; // 升到第二级时，固定蜂值余额转到采线上云量
+	// pnts code
+	$code2Save = 1; 		// 用户存储云量时直接获得的线下云量（包括注册为新用户时的存储）
+	$code2OlShopPay = 2;	// 向线下商家支付
+	$code2OlShopReceive = 3;// 线下商家收款
+	$code2OlShopBonus = 4;	// 线下商家分红，推荐人收到商家交易额一定比例作为推荐奖励
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

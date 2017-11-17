@@ -151,8 +151,19 @@ else
 // 					echo "Register success<br />";
 
 					// insert credit bank 
+					$newSaveId = 0;
 					$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
 										values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now')");
+					if (!$res4) {
+						// !!! log error
+					}
+					else {
+						$newSaveId = mysql_insert_id();
+					}
+					
+					// insert pnts record 
+					$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, WithUserId, Type)
+										values('$newuserid', '$pnts', '$pnts', '$now', '$newSaveId', '$userid', '$code2Save')");
 					if (!$res4) {
 						// !!! log error
 					}

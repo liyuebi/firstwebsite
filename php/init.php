@@ -70,6 +70,8 @@ else {
 }
 
 createCreditRecordTable();
+createPntsRecordTable();
+
 createCreditBankTable();
 createOfflineShopTable();
 

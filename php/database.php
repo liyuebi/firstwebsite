@@ -522,6 +522,17 @@ function createBankAccountTable()
 
 function createCreditRecordTable()
 {
+	/*
+	 * Amount - 实际变动值
+	 * CurrAmount - 变动后的数值
+	 * RelatedAmount - 相关的数值，如线下商家支付时，为买家支付金额
+	 * HandleFee - 手续费
+	 * ApplyTime - 申请时间，即为变动时间
+	 * ApplyIndexId - 相关数据的记录id
+	 * AcceptTime - 接受时间
+	 * WithUserId - 交易对象的id
+	 * Type - 记录类型
+	 */
 	$sql = "create table if not exists CreditRecord
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
@@ -545,6 +556,18 @@ function createCreditRecordTable()
 
 function createPntsRecordTable()
 {
+	/*
+	 * Amount - 实际变动值
+	 * CurrAmount - 变动后的数值
+	 * RelatedAmount - 相关的数值，如线下商家支付时，为买家支付金额
+	 * HandleFee - 手续费
+	 * ApplyTime - 申请时间，即为变动时间
+	 * ApplyIndexId - 相关数据的记录id
+	 * AcceptTime - 接受时间，暂不使用
+	 * WithStoreId - 交易商店的id
+	 * WithUserId - 交易对象的id
+	 * Type - 记录类型
+	 */
 	$sql = "create table if not exists PntsRecord
 	(
 		IndexId int not null AUTO_INCREMENT,
@@ -552,10 +575,12 @@ function createPntsRecordTable()
 		UserId int not null,
 		Amount decimal(10,2) not null,
 		CurrAmount decimal(10,2) not null,
+		RelatedAmount decimal(10,2) default 0,
 		HandleFee decimal(10,2) default 0,
 		ApplyTime int not null,
 		ApplyIndexId int default 0,
 		AcceptTime int default 0,
+		WithStoreId int default 0,
 		WithUserId int default 0,
 		Type int not null
 	)";	

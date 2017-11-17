@@ -240,7 +240,7 @@ function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastO
 							
 		if ($pntsToCredit > 0) {
 			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-					values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '$cdoe2TransferToCredit')");
+					values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '0')");
 		}
 	}
 	else {
