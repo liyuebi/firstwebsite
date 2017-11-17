@@ -57,7 +57,7 @@ function openOfflineShop($userid, &$error_msg)
 	
 	// statistics
 	include_once 'func.php';
-	insertOfflineShopOpen($offlineShopRegisterFee);
+	insertOfflineShopOpenStatistics($offlineShopRegisterFee);
 	
 	return true;
 }
@@ -507,69 +507,54 @@ function payOLShop()
 			return;			
 		}
 		
-		$sellerPnts += $cnt;
+		$fee = floor($cnt * $offlineTradeRate * 100) / 100;
+		$bonusUpstream = 0;
+
+		// 分红给线下商家账号的推荐人
+		$res4 = mysql_query("select * from ClientTable where UserId='$sellid'");
+		if ($res4 && mysql_num_rows($res4) > 0) {
+			
+			$row4 = mysql_fetch_assoc($res4);
+			$refererId = $row4["ReferreeId"];
+			
+			$res5 = mysql_query("select * from Credit where UserId='$refererId'");
+			if ($res5 && mysql_num_rows($res5) > 0) {
+				
+				$row5 = mysql_fetch_assoc($res5);
+				$refererPnts = $row5["Pnts"];
+				
+				$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
+				$refererPnts += $bonusUpstream;
+				
+				$res6 = mysql_query("update Credit set Pnts='$refererPnts' where UserId='$refererId'");
+				if (!$res6) {
+					// !!! log error
+				}
+			}
+		}
+		
+		$receiveCnt = $cnt - $fee - $bonusUpstream;
+		
+		$sellerPnts += $receiveCnt;
 		$res2 = mysql_query("update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
 		if (!$res2) {
 			// !!! log error
 		}
-	}
-	
-	echo json_encode(array('error'=>'false'));
-}
-
-function confirmReceiveMoney()
-{
-	include 'regtest.php';
-	include 'constant.php';
-	
-	session_start();
-	if (!$_SESSION["isLogin"]) {
-		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
-		return;
-	}
-	
-	$idx = trim(htmlspecialchars($_POST["idx"]));
-	
-	$con = connectToDB();
-	if (!$con)
-	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
-		return;
-	}
-	else 
-	{
-		$userid = $_SESSION['userId'];
 		
-		$res = mysql_query("select * from CreditTrade where IdxId='$idx'");
-		if (!$res || mysql_num_rows($res) <= 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表交易失败，请稍后重试！'));	
-			return;
-		}		
-		
-		$row = mysql_fetch_assoc($res);
-		$status = $row["Status"];
-
-		if ($userid != $row["SellerId"]) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查询交易出错，请稍后重试！'));	
-			return;
-		}
-
-		if ($status != $creditTradePayed) {
-			echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'交易状态改变，请稍后重试！'));	
-			return;
+		// 更新线下商家个人统计数据
+		$tradeCnt = $row["TradeTimes"] + 1;
+		$tradeAmt = $row["TradeAmount"] + $cnt;
+		$tradeIncome = $row["TradeIncome"] + $receiveCnt;
+		$tradeFee = $row["TradeFee"] + $fee;
+		$res2 = mysql_query("update OfflineShop set TradeTimes='$tradeCnt', TradeAmount='$tradeAmt', TradeIncome='$tradeIncome', TradeFee='$tradeFee' where ShopId='$shopId'");
+		if (!$res2) {
+			// !!! log error
 		}
 		
-		$buyerId = $row["BuyerId"];
-		$buyCnt = $row["BuyCnt"];
-		$quantity = $row["Quantity"];
-		$handleRate = $row["HanderRate"];
-		$error_msg = '';
-
-		if (!buyerRecieveMoney($idx, $creditTradeConfirmed, $buyerId, $userid, $quantity, $handleRate, $buyCnt, $error_msg)) {
-			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>$error_msg));	
-			return;			
-		}
-	}	
+		// 添加线下商家交易数据统计
+		include_once "func.php";
+		insertOfflineShopTradeStatistics($fee);
+	}
 	
 	echo json_encode(array('error'=>'false'));
 }

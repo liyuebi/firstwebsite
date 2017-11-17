@@ -32,6 +32,9 @@
 	$phoneChargeRate =0.1;		// 手机充值手续费
 	$oilChargeRate =0.1;		// 加油卡充值手续费
 	
+	$offlineTradeRate =0.1;		// 线下交易手续费
+	$offlineTradeUpDiviRate =0.05;	// 线下交易给推荐人的分红
+	
 	$exchangeBuyHours = 24;		// 云量交易挂单的有效期，单位为小时
 	$exchangePayHours = 1;		// 云量交易下单后支付的有效期，单位为小时
 	$exchangeDeliveryHours = 2;	// 云量交易付款后确认收款的有效期，单位为小时

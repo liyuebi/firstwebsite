@@ -619,7 +619,7 @@ function insertWithdrawStatistics($amount, $fee)
  * 添加开放线下商定的数据
  * $fee - 申请线下商店的费用
  */
-function insertOfflineShopOpen($fee)
+function insertOfflineShopOpenStatistics($fee)
 {
 	$now = time();
 	
@@ -656,6 +656,48 @@ function insertOfflineShopOpen($fee)
 		$regiFee += $fee;
 		
 		mysql_query("update TotalStatis set CreditsPool='$credits', OlShopRegiFee='$regiFee' where IndexId=1");
+	}
+}
+
+/*
+ * 添加开放线下商定的数据
+ * $fee - 申请线下商店的费用
+ */
+function insertOfflineShopTradeStatistics($fee)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$tradeCnt = $row["OlShopTradeCnt"] + 1;
+			$tradeFee = $row["OlShopTradeFee"] + $fee;
+			mysql_query("update Statistics set OlShopTradeCnt='$tradeCnt', OlShopTradeFee='$tradeFee' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopTradeCnt, OlShopTradeFee)
+					VALUES('$year', '$month', '$day', '1', '$fee')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$credits = $row1["CreditsPool"];
+		
+		$credits += $fee;			// 线下交易手续费收入积分池
+		
+		mysql_query("update TotalStatis set CreditsPool='$credits' where IndexId=1");
 	}
 }
 	
