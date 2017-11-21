@@ -76,6 +76,10 @@
 	$code2OlShopPay = 2;	// 向线下商家支付
 	$code2OlShopReceive = 3;// 线下商家收款
 	$code2OlShopBonus = 4;	// 线下商家分红，推荐人收到商家交易额一定比例作为推荐奖励
+	$code2OlShopWdApply = 5;// 线下商家提现申请
+	$code2OlShopWdCancel = 6;	// 线下商家提现撤销
+	$code2OlShopWdAccept = 7;	// 线下商家提现通过
+	$code2OlSHopWdDecline = 8;	// 线下商家提现申请被拒 
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易
@@ -94,9 +98,16 @@
 	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
 	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
 	
+	// 公告状态
 	$postStatusWait = 0;	// 公告状态，新添加后等待发布
 	$postStatusOnline = 1;	// 公告状态，已发布，用户可见
 	$postStatusDown = 2;	// 公告状态，删除公告，用户不可见
+	
+	// 线下积分提取状态
+	$olShopWdApplied = 1;	// 线下积分申请中
+	$olShopWdCancelled = 2; // 线下积分申请取消
+	$olShopWdAccepted = 3;	// 线下积分申请通过
+	$olShopWdDeclined = 4;	// 线下积分申请被拒绝
 	
 	$paymentWechat = 1;
 	$paymentAlipay = 2;

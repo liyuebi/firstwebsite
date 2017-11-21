@@ -572,8 +572,11 @@ function insertExchangeSuccessStatistics($amount, $fee)
 	}
 }
 
-
-function insertWithdrawStatistics($amount, $fee)
+/*
+ * 添加虚拟生活相关的统计数据
+ * $fee - 
+ */
+function insertVLStatistics($amount, $fee)
 {
 	$now = time();
 	
@@ -698,6 +701,50 @@ function insertOfflineShopTradeStatistics($fee)
 		$credits += $fee;			// 线下交易手续费收入积分池
 		
 		mysql_query("update TotalStatis set CreditsPool='$credits' where IndexId=1");
+	}
+}
+
+/*
+ * 添加开放线下商定的数据
+ * $amount - 申请提现的金额，其中包括$fee，实际金额为$amount - $fee
+ * $fee - 提现收取的手续费
+ */
+function insertOfflineShopWithdrawStatistics($amount, $fee)
+{
+	$now = time();
+	
+	// 更新每日统计数据
+	$result = createStatisticsTable();
+	if ($result) {
+		date_default_timezone_set('PRC');
+		$year = date("Y", $now);
+		$month = date("m", $now);
+		$day = date("d", $now);
+		
+		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysql_num_rows($result) > 0) {
+			$row = mysql_fetch_assoc($result);
+			$wdAmt = $row["OlShopWdAmt"] + $amount - $fee;
+			$wdFee = $row["OlShopWdFee"] + $fee;
+			mysql_query("update Statistics set OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where Ye='$year' and Mon='$month' and Day='$day'");
+		}
+		else {
+			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopWdAmt, OlShopWdFee)
+					VALUES('$year', '$month', '$day', '$wdAmt', '$wdFee')");
+		}
+	}
+
+	// 更新总统计数据
+	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
+	if ($res1 && mysql_num_rows($res1) > 0) {
+		
+		$row1 = mysql_fetch_assoc($res1);
+		$credits = $row1["CreditsPool"];
+		$credits += $amount;			// 取出金额（其中含手续费）收入积分池
+		$wdAmt = $row1["OlShopWdAmt"] + $amount - $fee;
+		$wdFee = $row1["OlShopWdFee"] + $fee;
+		
+		mysql_query("update TotalStatis set CreditsPool='$credits', OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where IndexId=1");
 	}
 }
 	

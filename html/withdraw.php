@@ -21,8 +21,13 @@ if ($_SESSION['buypwd'] == '') {
 }
 
 $mycredit = 0;
-$dayWithdraw = 0;
+// $dayWithdraw = 0;
 $applyCount = 0;
+$shopId = 0;
+
+if (isset($_GET["s"])) {
+	$shopId = $_GET["s"];
+}
 
 include "../php/constant.php";
 $leastCredit = $withdrawFloorAmount;
@@ -42,28 +47,30 @@ if ($con) {
 	$result = mysql_query("select * from Credit where UserId='$userid'");
 	if ($result && mysql_num_rows($result) > 0) {
 		$row = mysql_fetch_assoc($result);
-		$mycredit = $row["Credits"];
+		$mycredit = $row["Pnts"];
 		
-		$dayWd = $row["DayWithdraw"];
-		$lastWd = $row["LastWithdrawTime"];
 		$now = time();
-		if (isInTheSameDay($now, $lastWd)) {
-			$dayWithdraw = $dayWd;
-		}
 		
-/*
-		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
+// 		$dayWd = $row["DayWithdraw"];
+// 		$lastWd = $row["LastWithdrawTime"];
+// 		if (isInTheSameDay($now, $lastWd)) {
+// 			$dayWithdraw = $dayWd;
+// 		}
+		
+		$res1 = mysql_query("select * from PntsWdApplication where UserId='$userid' and Status!='$olShopWdDeclined' order by ApplyTime desc");
 		if ($res1) {
 			while ($row1 = mysql_fetch_array($res1)) {
 				if (isInTheSameDay($now, $row1["ApplyTime"])) {
 					$applyCount += $row1["ApplyAmount"];
 				}
+				else {
+					break;
+				}
 			}
 		}
-*/
-		
 	}
 	
+/*
 	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
 	if ($res1) {
 		if (mysql_num_rows($res1) > 0) {
@@ -80,7 +87,7 @@ if ($con) {
 			$isAlipaySet = true;
 		}
 	}
-/*
+*/
 	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
 	if ($res3) {
 		if (mysql_num_rows($res3) > 0) {
@@ -89,10 +96,10 @@ if ($con) {
 			$isBankSet = true;
 		}
 	}
-*/
 }
 
-$mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
+// $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
+$mostCredit = max(0, $mostCredit - $applyCount);
 
 ?>
 
@@ -100,12 +107,13 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>取现</title>
+		<title>提现申请</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
 		
-		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
+		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../css/mystyle1.0.1.css" />
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -117,11 +125,14 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				var amount = document.getElementById("amount").value;
 				var paypwd = document.getElementById("pwd").value;
 				
+/*
 				var method = $("input[name='method']:checked").val();
 				if (method != "1" && method != "2" && method != "3") {
 					alert("还没有选择支付方式！");
 					return;
 				}
+*/
+				var method = "3";
 				
 				var amountReg = /^[1-9]\d*$/;
 				var val = amountReg.test(amount);
@@ -134,7 +145,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
-					alert("每次提取至少" + least + "线上云量,请重新输入！");
+					alert("每次提取至少" + least + "线下云量,请重新输入！");
 					document.getElementById("autual_count").innerHTML = "0";
 					document.getElementById("amount").value = "";
 					document.getElementById("amount").focus();
@@ -143,7 +154,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var most = <?php echo $mostCredit; ?>;
 				if (amount > most) {
-					alert("今天剩余的提现申请额度为" + most + "线上云量，请重新输入！");
+					alert("今天剩余的提现申请额度为" + most + "线下云量，请重新输入！");
 					document.getElementById("autual_count").innerHTML = "0";
 					document.getElementById("amount").value = "";
 					document.getElementById("amount").focus();
@@ -159,7 +170,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				}
 				
 				paypwd = md5(paypwd);
-				$.post("../php/credit.php", {"func":"withdraw","amount":amount,"paypwd":paypwd,"method":method}, function(data){
+				$.post("../php/credit.php", {"func":"wdPnt","amount":amount,"paypwd":paypwd,"method":method,"idx":<?php echo $shopId; ?>}, function(data){
 					
 					if (data.error == "false") {
 						alert("申请提交成功！");	
@@ -185,7 +196,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 				
 				var least = <?php echo $leastCredit; ?>;
 				if (amount < least) {
-					alert("每次提取至少" + least + "线上云量！");
+					alert("每次提取至少" + least + "线下云量！");
 					document.getElementById("autual_count").innerHTML = "0";
 					return;
 				}
@@ -217,27 +228,33 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 					else if (val == "3") {
 						document.getElementById("wechat_block").style.display = "none";
 						document.getElementById("alipay_block").style.display = "none";
-// 						document.getElementById("bank_block").style.display = "block";
+						document.getElementById("bank_block").style.display = "block";
 					}
 				});
 			});
+
+			function goback() 
+			{
+				location.href = "myolshop.php";
+			}
 		</script>
 	</head>
 	<body>
-		<div id="banner_bar" class="banner_info">			
-			<a class="banner_info_home" href='home.php'>蜜蜂工坊</a>
- 			<input class="banner_info_logout" id="btnlogin" type="button" value="退出登录" onclick="logout()"/>
- 			<a class="banner_info_data" href='me.php'>我的资料</a></p>
+		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+			<div class="row" style="position: relative; top: 10px;">
+				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
+				<div class="col-xs-6 col-md-6"><h4 style="text-align: center; color: white">提现申请</h4></div>
+				<div class="col-xs-3 col-md-3"><!-- <input type="button" class="button button-raised button-rounded button-small" style="float: right" value="订单" onclick="gotoCreditOrder()"> --></div>
+			</div>
 		</div>
-		
-        <h3>取现申请</h3>
         
-        <div>
+        <div style="margin: 10px 3px;">
+<!--
 	        <p>您可以选择以下三种提现方式：</p>
 			<div>
 		        <input type="radio" name="method" value="1" /> 微信
 		        <input type="radio" name="method" value="2" /> 支付宝
-<!-- 		        <input type="radio" name="method" value="3" /> 银行转账 -->
+		        <input type="radio" name="method" value="3" /> 银行转账
 			</div>
 			
 	        <div id="wechat_block" style="border: 1px black solid; padding: 5px; display: none;">
@@ -259,7 +276,7 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 		        <?php 
 			        if ($isAlipaySet) {
 				?>
-				<p>您的微信账号： <b><?php echo $aliAcc; ?></b></p>
+				<p>您的支付宝账号： <b><?php echo $aliAcc; ?></b></p>
 				<?php
 					}
 					else {
@@ -269,13 +286,13 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 			        }
 		        ?>
 			</div>
+-->
 	        
-<!--
-			<div id="bank_block" style="border: 1px black solid; padding: 5px; display: none;">
+			<div id="bank_block" style="border: 1px grey solid; padding: 5px; display: block;">
 		        <?php 
 			        if ($isBankSet) {
 				?>
-				<p>您的微信账号： <b><?php echo $bankAcc; ?></b></p>
+				<p>收款银行账号： <b><?php echo $bankAcc; ?></b></p>
 				<?php
 					}
 					else {
@@ -285,20 +302,23 @@ $mostCredit = max(0, $mostCredit - $dayWithdraw - $applyCount);
 			        }
 		        ?>
 			</div>
--->
         </div>
         
         <hr>
         
         <div name="display">
-	        <p>您现在拥有线上云量：<?php echo $mycredit;?></p>
-	        <p>每次提现的最少数量为<?php echo $leastCredit; ?>线上云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线上云量。</p>
-	        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
-			<p>您实际将提取出的线上云量数量是：<span id="autual_count">0</span></p>
-	        <input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
-	        <br>
-	        <input type="button" value="提交" onclick="onConfirm()" />
-	        <input type="button" value="取消" onclick="javascript:history.back(-1);" />
+	        <p>当前线下云量：<b><?php echo $mycredit;?></b></p>
+	        <p>
+		        <label>每次提现的最少数量为<?php echo $leastCredit; ?>线下云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线下云量。</label>
+		        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
+	        </p>
+	        <p>
+				<label class="text-warning">您实际将提取出的线下云量数量是：<span id="autual_count">0</span></label>
+				<input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
+	        </p>
+
+	        <input type="button" class="btn btn-success btn-block" value="提交" onclick="onConfirm()" />
+	        <input type="button" class="btn btn-warning btn-block" value="取消" onclick="javascript:history.back(-1);" />
         </div>
     </body>
     <div style="text-align:center;">

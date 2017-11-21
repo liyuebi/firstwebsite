@@ -864,7 +864,7 @@ function deliveryPhoneFare()
 	include_once "func.php";
 	$amount = $row["Price"];
 	$fee = $row["HandleFee"];
-	insertWithdrawStatistics($amount, $fee);
+	insertVLStatistics($amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
@@ -919,7 +919,7 @@ function deliveryOilFare()
 	include_once "func.php";
 	$amount = $row["Price"];
 	$fee = $row["HandleFee"];
-	insertWithdrawStatistics($amount, $fee);
+	insertVLStatistics($amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;

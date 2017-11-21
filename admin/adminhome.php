@@ -115,8 +115,11 @@
 		            			<a href='statistics.php' target='rightContent'><i class="fa fa-circle-o"></i>商家管理</a>
 							</li>	            
 -->
-		            		<li onclick="makecss(this)" data-id="index_dayStatis">
+		            		<li onclick="makecss(this)" data-id="index_OlShopApply">
 		            			<a href='olsreviewmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待审核商家</a>
+							</li>	            
+		            		<li onclick="makecss(this)" data-id="index_OlShopWithdraw">
+		            			<a href='withdrawmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>提现申请</a>
 							</li>	            
 		            	</ul>
 					</li>

@@ -158,6 +158,12 @@ if ($con) {
 				    	else if ($row["Type"] == $code2OlShopBonus) {
 					    	echo "推荐的商家收款，您获得奖励" . $row["Amount"] . "线下云量。"; 
 				    	}
+				    	else if ($row["Type"] == $code2OlShopWdApply) {
+					    	echo "申请提现线下云量" . $row["RelatedAmount"] . "，收取手续费线下云量" . $row["HandleFee"] . "。";
+				    	}
+				    	else if ($row["Type"] == $code2OlSHopWdDecline) {
+					    	echo "提现线下云量请求管理员拒绝，退回线下云量" . $row["Amount"] . "。";
+				    	}
 				    				    	
 				    	echo "<br>";
 				    	echo "当前线下云量" . $row["CurrAmount"] . "。";

@@ -34,7 +34,7 @@ function createClientTable()
 		PhoneNum varchar(15) NOT NULL,
 		Lvl	int DEFAULT 1,
 		Name varchar(16) DEFAULT '',
-		NickName varchar(16) DEFAULT '',
+		NickName varchar(32) default '',
 		IDNum varchar(18) DEFAULT '',
 		Password varchar(256) NOT NULL,
 		PayPwd varchar(256) DEFAULT '',
@@ -321,6 +321,8 @@ function createOfflineShopTable()
 	 * TradeAmount: 收款总额
 	 * TradeIncome: 实际收入，从首款总额中减去手续费及给推荐人的分红
 	 * TradeFee: 手续费，为平台收入
+	 * WithdrawAmount: 提现总额
+	 * WithdrawFee: 提现手续费
 	 * Status: 商店状态
 	 */
 	$sql = "create table if not exists OfflineShop
@@ -343,6 +345,8 @@ function createOfflineShopTable()
 		TradeAmount int default 0,
 		TradeIncome int default 0,
 		TradeFee int default 0,
+		WithdrawAmount int default 0,
+		WithdrawFee int default 0,
 		Status int default 0		
 	) ENGINE=MEMORY AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	
@@ -426,7 +430,7 @@ function createRechargeTable()
 		Amount int NOT NULL,
 		ApplyTime int NOT NULL,
 		AcceptTime int DEFAULT 0,
-		NickName varchar(16) DEFAULT '',
+		NickName varchar(32) DEFAULT '',
 		PhoneNum varchar(15) NOT NULL,
 		Method int NOT NULL,
 		Account varchar(32) NOT NULL,
@@ -454,7 +458,7 @@ function createWithdrawTable()
 		ActualAmount int NOT NULL,
 		ApplyTime int NOT NULL,
 		AcceptTime int DEFAULT 0,
-		NickName varchar(16) DEFAULT '',
+		NickName varchar(32) DEFAULT '',
 		PhoneNum varchar(15) NOT NULL,
 		Method int NOT NULL,
 		Account varchar(32) NOT NULL,
@@ -467,6 +471,41 @@ function createWithdrawTable()
 	$result = mysql_query($sql);
 	if (!$result) {
 		echo "create WithdrawApplication table error: " . mysql_error() . "<br>";
+	}
+	return $result;
+}
+
+function createPntsWithdrawTable()
+{
+	/*
+	 * 线下云量提取申请表
+	 * ShopId - 申请提现的线上商家的ID
+	 */
+	$sql = "create table if not exists PntsWdApplication
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int not null,
+		ShopId int default 0,
+		ApplyAmount int not null,
+		ActualAmount int not null,
+		ApplyTime int not null,
+		AcceptTime int default 0,
+		NickName varchar(32) default '',
+		PhoneNum varchar(15) not null,
+		Method int not null,
+		AccountId int not null,
+		Account varchar(32) not null,
+		BankUser varchar(16) default '',
+		BankName varchar(16) default '',
+		BankBranch varchar(32) default '',
+		DeclineTime int default 0,
+		AdminId int default 0,
+		Status int default 0
+	)";	
+	$result = mysql_query($sql);
+	if (!$result) {
+		echo "create PntsWdApplication table error: " . mysql_error() . "<br>";
 	}
 	return $result;
 }
@@ -622,10 +661,10 @@ function createComplaintTable()
 		RelatedIdx int default 0,
 		RelatedIssueId varchar(24) not null,
 		ComplainantId int not null,
-		CompNickname varchar(16) default '',
+		CompNickname varchar(32) default '',
 		CompPhoneNum varchar(15) not null,
 		RespondentId int not null,
-		RespNickname varchar(16) default '',
+		RespNickname varchar(32) default '',
 		RespPhoneNum varchar(15) not null,		
 		IssueDesc varchar(256) default '',		
 		IssueTime int not null,
@@ -660,6 +699,8 @@ function createStatisticsTable()
 	 * WithdrawFee - 每日使用云量在实际生活中的手续费
 	 * OlShopCnt - 每日注册的线下商家数量
 	 * OlShopRegiFee - 每日注册的线下商家使用的注册费
+	 * OlShopWdAmt - 每日线下云量提现实际提出金额
+	 * OlShopWdFee - 每日线下云量提现收取的手续费
 	 */
 	$sql = "create table if not exists Statistics
 	(
@@ -682,7 +723,9 @@ function createStatisticsTable()
 		OlShopCnt int default 0,
 		OlShopRegiFee decimal(10,2) default 0,
 		OlShopTradeCnt int default 0,
-		OlShopTradeFee decimal(10,2) default 0
+		OlShopTradeFee decimal(10,2) default 0,
+		OlShopWdAmt decimal(10,2) default 0,
+		OlShopWdFee decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -708,6 +751,8 @@ function createTotalStatisTable()
 	 * WithdrawTotal - 使用云量在现实中的实际数额，相当于用户取现，如话费充值，油卡充值等
 	 * WithdrawFee - 使用云量在实际生活中的手续费
 	 * OlShopRegiFee - 注册的线下商家使用的注册费总额
+ 	 * OlShopWdAmt - 线下云量提现实际提出金额
+	 * OlShopWdFee - 线下云量提现收取的手续费
 	 */
 	$sql = "create table if not exists TotalStatis
 	(
@@ -726,7 +771,9 @@ function createTotalStatisTable()
 		ExchangeFee	decimal(10,2) default 0,
 		WithdrawTotal decimal(10,2) default 0,
 		WithdrawFee	decimal(10,2) default 0,
-		OlShopRegiFee decimal(10,2) default 0
+		OlShopRegiFee decimal(10,2) default 0,
+		OlShopWdAmt decimal(10,2) default 0,
+		OlShopWdFee decimal(10,2) default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {

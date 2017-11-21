@@ -15,6 +15,15 @@ else if ("allowRecharge" == $_POST['func']) {
 else if ("denyRecharge" == $_POST['func']) {
 	denyRecharge();
 }
+else if ("wdPnt" == $_POST['func']) {
+	applyWithdrawPnts();
+}
+else if ("allowWdPnt" == $_POST['func']) {
+	allowWithdrawPnts();
+}
+else if ("denyWdPnt" == $_POST['func']) {
+	denyWithdrawPnts();
+}
 else if ("withdraw" == $_POST['func']) {
 	applyWithdraw();
 }
@@ -40,6 +49,9 @@ else if ("acceptBonus" == $_POST['func']) {
 }
 else if ("getCredit" == $_POST['func']) {
 	queryCredit();
+}
+else if ("getPnts" == $_POST['func']) {
+	queryPnt();
 }
 
 function applyRecharge()
@@ -289,6 +301,332 @@ function denyRecharge()
 	return;
 }
 
+function applyWithdrawPnts()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$amount = trim(htmlspecialchars($_POST["amount"]));
+	$paypwd = trim(htmlspecialchars($_POST["paypwd"]));
+	$method = trim(htmlspecialchars($_POST["method"]));
+	$shopId = trim(htmlspecialchars($_POST["idx"]));
+	
+	include 'regtest.php';
+	if (!isValidMoneyAmount($amount)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的金额无效，请重新输入！'));
+		return;		
+	}
+		
+	include "constant.php";
+	if ($amount < $withdrawFloorAmount) {
+		$msg = '输入的金额小于最低取现额度' . $withdrawFloorAmount . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg));
+		return;				
+	}
+	
+	if ($amount % 100 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'输入的金额不是一百的倍数，请重新输入！'));
+		return;
+	}
+		
+	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'支付密码输入错误，请重新填写！'));
+		return;		
+	}
+	
+	$method = intval($method);
+	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'请选择支付方式！'));
+		return;		
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$userid = $_SESSION['userId'];
+		$time = time();
+		
+		$result = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if (!$result || mysql_num_rows($result) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'用户数据有误，请稍后重试！'));	
+			return;
+		}
+		$row = mysql_fetch_assoc($result);
+		if ($userid != $row["UserId"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户数据有误，请稍后重试！'));	
+			return;
+		}
+		
+		$result = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'找不到对应的用户数据！'));	
+			return;
+		}
+		$row = mysql_fetch_assoc($result);
+		$pnts = $row["Pnts"];
+		
+		if ($pnts < $amount) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'输入的金额大于您的余额，请重新输入！'));	
+			return;			
+		}
+
+		$mostCredit = $withdrawCeilAmountOneDay;
+		$applyCount = 0;
+		$res1 = mysql_query("select * from PntsWdApplication where UserId='$userid' and Status!='$olShopWdDeclined' order by ApplyTime desc");
+		if ($res1) {
+			
+			while ($row1 = mysql_fetch_array($res1)) {
+				
+				if (isInTheSameDay($time, $row1["ApplyTime"])) {
+					$applyCount += $row1["ApplyAmount"];
+				}
+				else {
+					break;
+				}
+			}
+		}
+
+		$mostCredit = max(0, $mostCredit - $applyCount);
+		if ($amount > $mostCredit) {
+			$msg = '输入的金额大于今天剩余可提取的额度' . $mostCredit . '，请重新输入！';
+			echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>$msg));	
+			return;		
+		}
+		
+		$total = $pnts - $amount;
+		$fee = calcHandleFee($amount, $withdrawHandleRate);
+		$actual = $amount - $fee;
+		
+		// 添加交易申请
+		$result = createPntsWithdrawTable();
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查表失败，请稍后重试！'));	
+			return;
+		}
+
+		$accountId = 0;
+		$account = '';
+		$bankUser = '';
+		$bankName = '';
+		$bankBranch = '';
+		if ($method == $paymentWechat) {
+			$res = mysql_query("select * from WechatAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'找不到您的微信账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);	
+			$accountId = $row["IndexId"];
+			$account = $row["WechatAcc"];
+		}
+		else if ($method == $paymentAlipay) {
+			$res = mysql_query("select * from AlipayAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'找不到您的支付宝账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$accountId = $row["IndexId"];
+			$account = $row["AlipayAcc"];
+		}
+		else if ($method == $paymentBank) {
+			$res = mysql_query("select * from BankAccount where UserId='$userid'");
+			if (!$res || mysql_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'找不到您的银行账号！'));	
+				return;
+			}
+			$row = mysql_fetch_assoc($res);
+			$accountId = $row["IndexId"];
+			$account = $row["BankAcc"];
+			$bankUser = $row["AccName"];
+			$bankName = $row["BankName"];
+			$bankBranch = $row["BankBranch"];
+		}
+		
+		$nickname= $_SESSION['nickname'];
+		$phone = $_SESSION['phonenum'];
+		$result = mysql_query("insert into PntsWdApplication (UserId, ShopId, NickName, PhoneNum, ApplyAmount, ActualAmount, ApplyTime, Method, AccountId, Account, BankUser, BankName, BankBranch, Status)
+						VALUES('$userid', '$shopId', '$nickname', '$phone', '$amount', '$actual', '$time', '$method', '$accountId', '$account', '$bankUser', '$bankName', '$bankBranch', '$olShopWdApplied')");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'提现申请失败，请稍后重试！'));
+			return;
+		}
+
+		// 修改credit表
+		$result = mysql_query("update Credit set Pnts='$total' where UserId='$userid'");
+		if (!$result) {
+			// !!! log error
+// 			echo json_encode(array('error'=>'true','error_code'=>'14','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
+// 			return; 				
+		}
+		else {
+			// 添加交易记录
+			$result = createPntsRecordTable();
+			if (!$result) {
+				// !!! log error
+// 				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
+// 				return;
+			}
+			$result = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, ApplyIndexId, WithStoreId, Type)
+							VALUES('$userid', '$actual', '$total', '$amount', '$fee', '$time', '0', '$shopId', '$code2OlShopWdApply')");
+			if (!$result) {
+				// !!! log error
+// 				echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysql_error()));
+// 				return; 				
+			}
+		}
+						
+		echo json_encode(array('error'=>'false'));
+	}
+	return;
+}
+
+function allowWithdrawPnts()
+{
+	include_once 'admin_func.php';
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	else 
+	{
+		$result = mysql_query("select * from PntsWdApplication where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
+			return;			
+		}
+		$row = mysql_fetch_assoc($result);
+		$shopId = $row["ShopId"];
+		$amount = $row["ApplyAmount"];
+		$applyTime = $row["ApplyTime"];
+		$fee = $amount - $row["ActualAmount"];
+		
+		$adminId = $_SESSION['adminUid'];
+		
+		$now = time();
+		$result = mysql_query("update PntsWdApplication set Status='$olShopWdAccepted', AcceptTime='$now', AdminId='$adminId' where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'删除取现申请记录失败，请稍后重试！','index'=>$index));	
+			return;			
+		}
+		
+		$res1 = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if ($res1 && mysql_num_rows($res1) > 0) {
+			
+			$row1 = mysql_fetch_assoc($res1);
+			$withdrawAmt = $row1["WithdrawAmount"] + $amount;
+			$withdrawFee = $row1["WithdrawFee"] + $fee;
+			
+			$res2 = mysql_query("update OfflineShop set WithdrawAmount='$withdrawAmt', WithdrawFee='$withdrawFee' where ShopId='$shopId'");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
+			
+		// 更新统计数据
+		include "func.php";
+		insertOfflineShopWithdrawStatistics($amount, $fee);
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index));
+	return;
+}
+
+function denyWithdrawPnts()
+{
+	include_once 'admin_func.php';
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$result = mysql_query("select * from PntsWdApplication where IndexId='$index'");
+	if (!$result || mysql_num_rows($result) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
+		return;			
+	}
+	
+	$row = mysql_fetch_assoc($result);
+	$userid = $row["UserId"];
+	$shopId = $row["ShopId"];
+	$amount = $row["ApplyAmount"];
+	
+	$res = mysql_query("select * from Credit where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'找不到申请对应的用户，操作中断！','index'=>$index));	
+		return;					
+	}
+	$row1 = mysql_fetch_assoc($res);
+	$pnt = $row1["Pnts"];
+	$pntPost = $pnt + $amount;
+
+	$now = time();
+	$adminId = $_SESSION['adminUid'];
+
+	// 拒绝取现申请
+	$result = mysql_query("update PntsWdApplication set Status='$olShopWdDeclined', AcceptTime='$now', AdminId='$adminId' where IndexId='$index'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'拒绝取现申请失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+	
+	// 更新用户数据
+	$result = mysql_query("update Credit set Pnts='$pntPost' where UserId='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新用户线下云量失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+
+	// 添加交易记录
+	$result = createPntsRecordTable();
+	if (!$result) {
+		// !!! log error
+		// echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
+		// return;
+	}
+	else {
+		$result = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, WithStoreId, Type)
+						VALUES('$userid', '$amount', '$pntPost', '$now', '$index', '$shopId', '$code2OlSHopWdDecline')");
+		if (!$result) {
+			// !!! log error
+			// echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysql_error()));
+			// return; 				
+		}
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$pnt,'post'=>$pntPost));
+}
+
 function applyWithdraw()
 {
 	session_start();
@@ -518,7 +856,7 @@ function allowWithdraw()
 			
 		// 更新统计数据
 		include "func.php";
-		insertWithdrawStatistics($amount, $fee);
+// 		insertWithdrawStatistics($amount, $fee);
 	}
 	
 	echo json_encode(array('error'=>'false','index'=>$index));
@@ -539,7 +877,7 @@ function denyWithdraw()
 	}
 	
 	$result = mysql_query("select * from WithdrawApplication where IndexId='$index'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	if (!$result || mysql_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
 		return;			
 	}
@@ -742,6 +1080,28 @@ function queryCredit()
 	$row = mysql_fetch_assoc($res);
 	$credit = $row["Credits"];
 	echo json_encode(array('error'=>'false','index'=>$index,'credit'=>$credit));
+}
+
+function queryPnt()
+{
+	$index = trim(htmlspecialchars($_POST["index"]));
+	$userId = trim(htmlspecialchars($_POST["user"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$res = mysql_query("select * from Credit where UserId='$userId'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到对应用户！','index'=>$index));
+		return;
+	}
+	$row = mysql_fetch_assoc($res);
+	$pnt = $row["Pnts"];
+	echo json_encode(array('error'=>'false','index'=>$index,'pnt'=>$pnt));
 }
 	
 ?>

@@ -7,20 +7,15 @@ if (!checkLoginOrJump()) {
 }
 
 include "../php/database.php";
+include "../php/constant.php";
+$result = false;
 
-function getWithdrawApplication()
+$con = connectToDB();
+if ($con)
 {
-	$con = connectToDB();
-	if (!$con)
-	{
-		return false;
-	}
-	
-	$result = mysql_query("select * from WithdrawApplication order by ApplyTime");
-	return $result;
+	$result = mysql_query("select * from PntsWdApplication where Status='$olShopWdApplied' order by ApplyTime");
 }
-
-$result = getWithdrawApplication();		
+		
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -50,10 +45,13 @@ $result = getWithdrawApplication();
 			{
 				var userId = btn.name;
 				var idx = btn.id;
-				$.post("../php/credit.php", {"func":"getCredit","index":idx,"user":userId}, function(data){
+				btn.disabled = true;
+				$.post("../php/credit.php", {"func":"getPnts","index":idx,"user":userId}, function(data){
 					
 					if (data.error == "false") {
-						document.getElementById("credit_"+data.index).innerHTML = data.credit;
+						btn.style.display = "none"; 
+						document.getElementById("pnt_"+data.index).innerHTML = data.pnt;
+						document.getElementById("pnt_"+data.index).style.display = "inline";
 					}
 					else {
 						alert("获取线上云量失败: " + data.error_msg + " " + data.index);
@@ -65,7 +63,7 @@ $result = getWithdrawApplication();
 			function onConfirm(btn)
 			{
 				enableBtns(btn.idx, false);
-				$.post("../php/credit.php", {"func":"allowWithdraw","index":btn.id}, function(data){
+				$.post("../php/credit.php", {"func":"allowWdPnt","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
 						alert("通过申请！" + data.index);	
@@ -81,7 +79,7 @@ $result = getWithdrawApplication();
 			function onDeny(btn)
 			{
 				enableBtns(btn.idx, false);
-				$.post("../php/credit.php", {"func":"denyWithdraw","index":btn.id}, function(data){
+				$.post("../php/credit.php", {"func":"denyWdPnt","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
 						alert("拒绝成功！" + data.index);	
@@ -101,19 +99,19 @@ $result = getWithdrawApplication();
 	        <div>
 				<table border="1">
 					<tr>
-						<th>申请编号</th>
+<!-- 						<th>申请编号</th> -->
 						<th>申请时间</th>
+						<th>商家id</th>
 						<th>用户id</th>
 						<th>昵称</th>
 						<th>用户手机号</th>
-						<th>申请金额</th>
+<!-- 						<th>申请金额</th> -->
 						<th>手续费</th>
 						<th style="color: red;">实际金额</th>
 						<th>收款方式</th>
 						<th>账号</th>
 						<th>账号其他信息</th>
-						<th>查询线上云量</th>
-						<th>目前线上云量</th>
+						<th>当前线下云量</th>
 						<th>状态</th>
 						<th>确认提现</th>
 						<th>拒绝</th>
@@ -125,12 +123,13 @@ $result = getWithdrawApplication();
 							while($row = mysql_fetch_array($result)) {
 					?>
 								<tr>
-									<td><?php echo $row["IndexId"]; ?></td>
+<!-- 									<td><?php echo $row["IndexId"]; ?></td> -->
 									<td><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></td>
+									<td><?php echo $row["ShopId"]; ?></td>
 									<td><?php echo $row["UserId"]; ?></td>
 									<td><?php echo $row["NickName"]; ?></td>
 									<td><?php echo $row["PhoneNum"]; ?></td>
-									<td><?php echo $row["ApplyAmount"]; ?></td>
+<!-- 									<td><?php echo $row["ApplyAmount"]; ?></td> -->
 									<td><?php $fee = $row["ApplyAmount"] - $row["ActualAmount"]; echo $fee; ?></td>
 									<td style="color: red;"><?php echo $row["ActualAmount"]; ?></td>
 									<td><?php if ($row["Method"] == 1) echo "微信"; 
@@ -139,8 +138,10 @@ $result = getWithdrawApplication();
 									</td>
 									<td><?php echo $row["Account"]; ?></td>
 									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
-									<td><input type="button" value="查看积分" name=<?php echo $row["UserId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="queryCredit(this)" /></td>
-									<td id="credit_<?php echo $row["IndexId"]; ?>"></td>
+									<td>
+										<input type="button" value="查看线下云量" name=<?php echo $row["UserId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="queryCredit(this)" />
+										<span id="pnt_<?php echo $row["IndexId"]; ?>" style="color: red; display: none;"></span>
+									</td>
 									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>
 									<td><input type="button" value="确认" name=<?php echo $row["IndexId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="onConfirm(this)" /></td>
  									<td><input type="button" value="拒绝" name=<?php echo $row["IndexId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="onDeny(this)" /></td>

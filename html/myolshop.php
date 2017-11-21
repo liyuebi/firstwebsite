@@ -74,32 +74,30 @@ if ($con) {
 				document.getElementById("phone").style.display = "block";
 				document.getElementById("add").style.display = "block";
 				document.getElementById("file_input").style.display = "block";
-				document.getElementById("btns").style.display = "block";
+				document.getElementById("btns_edit").style.display = "block";
 				
 				document.getElementById("ori_name").style.display = "none";
 				document.getElementById("ori_man").style.display = "none";
 				document.getElementById("ori_phone").style.display = "none";
 				document.getElementById("ori_add").style.display = "none";
-				document.getElementById("btn_edit").style.display = "none";
-				document.getElementById("btn_review").style.display = "none";
+				document.getElementById("bnts_oper").style.display = "none";
 				
 			}
 			
 			function finishEdit()
 			{
-				document.getElementById("ori_name").style.display = "block";
-				document.getElementById("ori_man").style.display = "block";
-				document.getElementById("ori_phone").style.display = "block";
-				document.getElementById("ori_add").style.display = "block";
-				document.getElementById("btn_edit").style.display = "block";
-				document.getElementById("btn_review").style.display = "block";
+				document.getElementById("ori_name").style.display = "inline";
+				document.getElementById("ori_man").style.display = "inline";
+				document.getElementById("ori_phone").style.display = "inline";
+				document.getElementById("ori_add").style.display = "inline";
+				document.getElementById("bnts_oper").style.display = "block";
 				
 				document.getElementById("name").style.display = "none";
 				document.getElementById("man").style.display = "none";
 				document.getElementById("phone").style.display = "none";
 				document.getElementById("add").style.display = "none";
 				document.getElementById("file_input").style.display = "none";
-				document.getElementById("btns").style.display = "none";
+				document.getElementById("btns_edit").style.display = "none";
 			}
 			
 			function filechange(event) 
@@ -159,6 +157,12 @@ if ($con) {
 				}, "json");				
 			}
 			
+			function goToWithdraw()
+			{
+				var shopId = <?php if ($row) echo $row["ShopId"]; else echo 0; ?>;
+				location.href='withdraw.php?s=' + shopId;
+			}
+
 			function goback() 
 			{
 				location.href = "olshop.php";
@@ -205,16 +209,21 @@ if ($con) {
 			<p class="alert alert-info">您的信息已提交审核，请耐心等待！</p>
 			<?php
 				}
+				else if ($olshopAccepted == $row["Status"]) {
+			?>
+			<p class="alert alert-success">您已通过审核！</p>
+			<?php
+				}
 				else if ($olshopDeclined == $row["Status"]) {
 			?>
-			<p class="alert alert-danger">您的商家账户未通过审核，请完善信息，并重新提交审核。可联系客服获得详细信息。</p>
+			<p class="alert alert-danger">您的商家账户未通过审核，请完善信息，并重新提交审核。详细信息请联系客服。</p>
 			<?php
 				}
 			?>
 			
 			<form id="post_form" action="../php/offlineTrade.php" enctype="multipart/form-data" method="post" onsubmit="return trySubmit();">
 				<input name='func' type="hidden" value="editInfo" />
-				<input id="idx" name='idx' type="hidden" value='<?php echo $row["ShopId"] ?>' />
+				<input id="idx" name='idx' type="hidden" value='<?php echo $row["ShopId"]; ?>' />
 				<div class="form-group">
 					<label>商家编号：</label>
 				    <span class="span3"><?php echo $row['ShopId']; ?></span>
@@ -254,15 +263,27 @@ if ($con) {
 <!-- 					    <img id="old_img" src="" alt=""> -->
 <!-- 				    <p class="help-block"></p> -->
 				</div>
-				<div id="btns" style="display: none">
+				<div id="btns_edit" style="display: none">
 					<button id="btn_submit" type="submit" class="btn btn-success" >提交</button>
 					<button type="button" class="btn btn-warning" onclick="finishEdit()">取消编辑</button>
 				</div>
 			</form>
 			
-			<input id="btn_edit" type="button" class="btn btn-info btn-block" value="编辑" onclick="startEdit()" />
-			<input id="btn_review" type="button" class="btn btn-success btn-block" value="提交审查" onclick="applyForReview()" />
-			
+			<div id="bnts_oper">
+				<input id="btn_edit" type="button" class="btn btn-info btn-block" value="编辑信息" onclick="startEdit()" />
+				<?php
+					if ($olshopAccepted == $row["Status"]) {
+				?>
+				<input id="btn_withdraw" type="button" class="btn btn-primary btn-block" value="申请提现" onclick="goToWithdraw()" />	
+				<?php
+					}
+					else {
+				?>
+				<input id="btn_review" type="button" class="btn btn-success btn-block" value="提交审查" onclick="applyForReview()" />
+				<?php
+					}
+				?>
+			</div>
 		</div>
 	</body>
 </html>
