@@ -45,7 +45,7 @@
 	
 	$transferFloorAmount =1;// 转账最低的积分额度
 	
-	$withdrawHandleRate = 0.05;	// 提现手续费率
+	$withdrawHandleRate =0;		// 提现手续费率
 	$transferHandleRate = 0.05;	// 转账手续费率 
 	
 	$recoBonusTillLevel = 5;	// 几级前有推荐奖励线上云量，包括此级别

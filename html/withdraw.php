@@ -313,7 +313,7 @@ $mostCredit = max(0, $mostCredit - $applyCount);
 		        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
 	        </p>
 	        <p>
-				<label class="text-warning">您实际将提取出的线下云量数量是：<span id="autual_count">0</span></label>
+				<label class="text-warning" style="<?php if ($handlefee <= 0) echo 'display: none;';?>">您实际将提取出的线下云量数量是：<span id="autual_count">0</span></label>
 				<input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
 	        </p>
 
