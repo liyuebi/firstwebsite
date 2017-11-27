@@ -136,6 +136,12 @@ if ($con) {
 
 			<input id="pwd" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入支付密码！" />
 			<input type="button" class="btn btn-primary btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="tryChargeOilCard()" />
+
+	        <div>
+		        <hr>
+		        <h4 class="text-warning" style="">注意事项</h4>
+			    <p style="margin: 0;">充值完成后请前往附近网点进行圈存。</p>
+	        </div>
 		</div>
     </body>
 </html>
