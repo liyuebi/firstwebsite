@@ -47,16 +47,11 @@ if ($con) {
 		<script type="text/javascript">
 						
 			function tryChargeOilCard()
-			{
-				var company = $('#company input:radio:checked').val();
-				if (company != 1 && company != 2) {
-					alert("请选择油卡所属公司!");
-					return;	
-				}
-				
+			{	
+				var company = 2;
 				var card = document.getElementById("card").value;
 				var phonenum = document.getElementById("phonenum").value;
-				var amount = document.getElementById("amount").value;
+				var amount = $('#amt input:radio:checked').val();
 				var paypwd = document.getElementById("pwd").value;
 				
 				card = $.trim(card);
@@ -71,7 +66,7 @@ if ($con) {
 					alert("无效的油卡号！");
 					return;					
 				}
-				if (amount == "") {
+				if (amount != "1000" && amount != "2000") {
 					alert("无效的金额！");
 					return;
 				}
@@ -81,24 +76,19 @@ if ($con) {
 				}
 				
 				var str = "确定为";
-				if (company == 1) {
-					str += "中石油";
-				}
-				else if (company == 2) {
-					str += "中石化";
-				}
+				str += "中石化";
 				str = str + "油卡号 " + card + " 充值" + amount + ", 将收取手续费10%"; 
 				if (confirm(str)) {
 					paypwd = md5(paypwd);		
 					
-					$.post("../php/trade.php", {"func":"fuelCharge", "phonenum":phonenum, "amount":amount,"card":card,"paypwd":paypwd}, function(data){
+					$.post("../php/trade.php", {"func":"fcla", "phonenum":phonenum, "amount":amount,"card":card,"paypwd":paypwd}, function(data){
 					
 						if (data.error == "false") {
 							alert("创建订单成功！");	
 							
 							document.getElementById("card").value = "";
 							document.getElementById("phonenum").value = "";
-							document.getElementById("amount").value = "";
+// 							document.getElementById("amount").value = "";
 							document.getElementById("pwd").value = "";
 						}
 						else {
@@ -125,21 +115,27 @@ if ($con) {
 		</div>
 
 		<div style="margin: 5px 5px 0 5px;">
-			
-			<div class="btn-group" id="company" data-toggle="buttons">
-				<label class="btn btn-info">
-			    	<input type="radio" name="options" id="option1" autocomplete="off" value="1">中石油
-				</label>
-				<label class="btn btn-info">
-			    	<input type="radio" name="options" id="option2" autocomplete="off" value="2">中石化
-				</label>
-			</div>
-			
+						
 			<input id="card" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入加油卡号！" /> 
+			<span class="help-block">仅支持<b class="text-warning"> 中石化 </b>的油卡充值！</span>
+			
 			<input id="phonenum" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入油卡关联手机号！" onkeypress="return onlyNumber(event)" />
-			<input id="amount" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" /> 
+<!-- 			<input id="amount" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入充值金额！" onkeypress="return onlyNumber(event)" />  -->
+
+			<div style="margin-top: 8px;">
+				<label class="text-info">充值金额</label>
+				<div class="well well-sm" id="amt">
+					<label class="radio-inline">
+						  <input type="radio" name="amtRadios" id="amtRadios1" value="1000" checked> 1000
+					</label>
+					<label class="radio-inline">
+						  <input type="radio" name="amtRadios" id="amtRadios2" value="2000"> 2000
+					</label>
+				</div>
+			</div>
+
 			<input id="pwd" class="form-control" style="margin-top: 5px" type="text" placeholder="请输入支付密码！" />
-			<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="tryChargeOilCard()" />
+			<input type="button" class="btn btn-primary btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="tryChargeOilCard()" />
 		</div>
     </body>
 </html>

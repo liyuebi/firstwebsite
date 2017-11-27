@@ -243,6 +243,7 @@ function createTransactionTable()
 	 * AddressId: 添加订单后用户可能修改地址，所以应以记录的地址信息为准。添加原因，发现有订单的地址信息为空，所以添加来防错
 	 * CellNum: 充话费的手机号码，或充油卡时的油卡关联手机号
 	 * CardNum: 充油费的油卡号码
+	 * CardComp: 油卡所属公司，1:中石油，2:中石化
 	 * OrderTime: 下单时间
 	 * ConfirmTime: 卖家确认订单时间
 	 * DeliveryTime: 发货时间
@@ -266,6 +267,7 @@ function createTransactionTable()
 		Address varchar(128) DEFAULT '',
 		ZipCode varchar(12) DEFAULT '',
 		CellNum varchar(15) default '',
+		CardComp int default 0,
 		CardNum varchar(30) default '',
 		OrderTime int NOT NULL,
 		ConfirmTime int default 0,

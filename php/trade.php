@@ -12,6 +12,9 @@ if ("phoneCharge" == $_POST['func']) {
 else if ("fuelCharge" == $_POST['func']) {
 	createChargeFuelOrder();
 }
+else if ("fcla" == $_POST['func']) {
+	createChargeFuelLAOrder();
+}
 else if ("purchase" == $_POST['func']) {
 	purchaseProduct();
 }
@@ -171,7 +174,7 @@ function createChargeFuelOrder()
 		return;
 	}
 	else if ($amount > $oilChargeMost) {
-		$str = '充值额度不能大于' . $$oilChargeMost . '，请重新输入！';
+		$str = '充值额度不能大于' . $oilChargeMost . '，请重新输入！';
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
 		return;		
 	}
@@ -224,6 +227,94 @@ function createChargeFuelOrder()
 		$now = time();
 		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardNum, CellNum, OrderTime, Status)
 								values($userid, 3, 0, $amount, $handleFee, 1, '$card', $phonenum, $now, $OrderStatusBuy)");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysql_error()));	
+			return;				
+		}
+		
+		$credit = $credit - $handleFee - $amount;
+		$res1 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+		if (!$res1) {
+			/// !! log error
+		}
+		else {
+			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
+									values($userid, $amount, $credit, $handleFee, $now, $now, $codeTryChargePhone)");
+			if (!$res2) {
+				/// !! log error
+			}	
+		}
+	}
+	
+	echo json_encode(array("error"=>"false"));
+}
+
+function createChargeFuelLAOrder()
+{
+	include 'constant.php';
+	include 'regtest.php';
+	
+	$card = trim(htmlspecialchars($_POST['card']));
+	$phonenum = trim(htmlspecialchars($_POST['phonenum']));
+	$amount = trim(htmlspecialchars($_POST['amount']));
+	$paypwd = trim(htmlspecialchars($_POST['paypwd']));
+	
+	// 验证电话号码
+	if (!isValidCellPhoneNum($phonenum)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'电话号码格式不对，请重新填写！'));
+		return;
+	}
+	
+	$amount = intval($amount);
+
+	if ($amount != 1000 && $amount != 2000) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'充值额度无效！'));
+		return;		
+	}
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	if (!password_verify($paypwd, $_SESSION['buypwd'])) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
+		return;
+	}	
+	
+	$con = connectToDB();
+	if (!$con) {
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else {
+		$userid = $_SESSION["userId"];
+		$handleFee = $amount * $oilChargeRate;
+		
+		$res = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
+			return;				
+		}
+		
+		$row = mysql_fetch_assoc($res);
+		$credit = $row["Credits"];
+		
+		if ($credit < $handleFee + $amount) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线上云量余额不足！'));
+			return;					
+		}
+		
+		$result = createTransactionTable();
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'交易创建失败，请稍后重试！'));	
+			return;						
+		}
+		
+		$now = time();
+		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardComp, CardNum, CellNum, OrderTime, Status)
+								values($userid, 3, 0, $amount, $handleFee, 1, 2, '$card', $phonenum, $now, $OrderStatusBuy)");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysql_error()));	
 			return;				

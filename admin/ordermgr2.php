@@ -261,6 +261,7 @@ $result = mysql_query("select * from Transaction where Type=3");
 						<tr>
 							<th>下单时间</th>
 							<th>用户id</th>
+							<th>石油公司</th>
 							<th>加油卡号</th>
 							<th>手机号</th>
 							<th>充值金额</th>
@@ -275,6 +276,7 @@ $result = mysql_query("select * from Transaction where Type=3");
 							<tr>
 								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
 								<td><?php echo $row["UserId"]; ?></td>
+								<td><?php if ($row["CardComp"] == 1) echo "中石油"; else if ($row["CardComp"] == 2) echo "中石化"; ?></td>
 								<td><?php echo $row["CardNum"]; ?></td>
 								<td><?php echo $row["CellNum"]; ?></td>
 								<td><?php echo $row["Price"]; ?></td>
