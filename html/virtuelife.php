@@ -66,7 +66,7 @@ if ($con) {
 				<div class="col-xs-6 col-md-6"><h3 style="text-align: center; color: white">虚拟生活</h3></div>
 				<div class="col-xs-3 col-md-3"></div>
 			</div>
-		</div>.
+		</div>
 		
 		<a class="link_forward" href="bank.php">
  			<span>存储财富</span>
@@ -74,7 +74,7 @@ if ($con) {
 		<a class="link_forward" href="teleFare.php">
 			<span>话费充值</span>
 		</a>
-		<a class="link_forward" href="fuelFare.php">
+		<a class="link_forward" href="fuelFare.php" style="border-bottom: 0">
 			<span>油费充值</span>
 		</a>
     </body>

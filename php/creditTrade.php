@@ -639,7 +639,6 @@ function saveCredit()
 		return;		
 	}
 
-	
 	$con = connectToDB();
 	if (!$con)
 	{
@@ -667,7 +666,27 @@ function saveCredit()
 			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查表失败，请稍后重试！'));
 			return;
 		}
-		
+
+		// 查看现在的总存储额是否超过存储上限
+		$res = mysql_query("select sum(Invest), count(*) from CreditBank where UserId='$userid' and Balance > 0");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'查验存储金额失败，请稍后重试！'));
+			return;	
+		}		
+		$row = mysql_fetch_assoc($res);
+		if ($row["count(*)"] > 0) {
+			$total = $row["sum(Invest)"];
+			if ($total >= $saveCreditMost) {
+				echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的存储额度已满，请等任一存款余额领取结束才能继续存储！'));
+				return;	
+			}
+			else if ($amount > $saveCreditMost - $total) {
+				$msg = "您剩余的存储额度为" . ($saveCreditMost - $total) . "，请重新输入！";
+				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>$msg));
+				return;	
+			}
+		}
+
 		$newAsset = $amount * 3;
 		$charity = floor($newAsset * $charityRate * 100) / 100;
 		$pnts = floor($newAsset * $pntsRate * 100) / 100;	
@@ -678,7 +697,7 @@ function saveCredit()
 		$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
 								values('$userid', '$quantity', '$amount', '$quantity', '$diviCnt', '$now')");
 		if (!$res) {
-			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'存储线上资产失败，请稍后重试！'));
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'存储线上资产失败，请稍后重试！'));
 			return;	
 		}
 		
@@ -689,8 +708,9 @@ function saveCredit()
 		
 		$res2 = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$newPnts', Charity='$newCharity' where UserId='$userid'");
 		if (!$res2) {
-			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'更新数据失败，请稍后重试！'));
-			return;	
+			// echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'更新数据失败，请稍后重试！'));
+			// return;	
+			// !!! log error
 		}
 
 		$res3 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)

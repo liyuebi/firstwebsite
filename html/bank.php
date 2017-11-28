@@ -38,7 +38,6 @@ if ($con) {
 		
 		<link rel="stylesheet" type="text/css" href="../css/bootstrap-3.3.7/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../css/mystyle.css" />
-		<link rel="stylesheet" href="../css/buttons.css">
 		
 		<script src="../js/jquery-1.8.3.min.js" ></script>
 		<script src="../js/scripts.js" ></script>
@@ -87,7 +86,7 @@ if ($con) {
 
 		<div style="margin: 10px 3px;">
 			<div>
-				<h4 class="text-info">添加新存储：</h4>
+				<h4 class="text-info">添加新存储</h4>
 				<input id="amount" class="form-control" type="text" placeholder="请输入存储数量，必须是100的倍数！" onkeypress="return onlyNumber(event)" /> 
 				<input type="button" class="btn btn-info btn-lg btn-block" style="width: 100%; margin-top: 5px" value="确认" onclick="trySave()" />
 			</div>
@@ -95,19 +94,42 @@ if ($con) {
 			<hr>
 			
 			<div>
-				<h4 class="text-info">已有存储：</h4>
+				<h4 class="text-info">已有存储（<?php if ($result) echo mysql_num_rows($result); else echo 0; ?>笔）</h4>
 				<?php
 					if ($result) {
 						date_default_timezone_set('PRC');
 						while ($row = mysql_fetch_array($result)) {
 				?>
-							<div class="bg-info" style="padding: 5px;">
-								<p>总额度：<?php echo $row["Quantity"]; ?></p>
-								<p>存储时间：<?php echo date("Y-m-d H:i:s", $row["SaveTime"]); ?></p>
-								<p>剩余额度：<?php echo $row["Balance"]; ?></p>
-	<!-- 							<p>交易过期时间：<?php echo 0; ?></p> -->
+					<div class="panel panel-success">
+						<div class="panel-heading">
+							<?php echo date("Y-m-d H:i", $row["SaveTime"]); ?>
+						</div>
+						<div class="panel-body">
+							<div class="container-fluid">
+								<div class="row">
+									<div class="col-xs-6"><span>存储：<?php echo $row["Invest"]; ?></span></div>
+									<div class="col-xs-6"><span>总额：<?php echo $row["Quantity"]; ?></span></div>
+								</div>
+								<div class="row">
+									<div class="col-xs-6"><span>余额：<span class="text-danger"><?php echo $row["Balance"]; ?></span></span></div>
+									<div class="col-xs-6">
+										<?php
+											if ($row["Balance"] > 0) {
+										?>
+										<span>每日：<?php echo $row["DiviCnt"]; ?></span>
+										<?php
+											}
+											else {
+										?>
+										<span class="badge" style="background: #ea5151 ">已领完</span>
+										<?php
+											}
+										?>
+									</div>
+								</div>
 							</div>
-							<hr>
+						</div>
+					</div>
 				<?php
 						}
 					}
