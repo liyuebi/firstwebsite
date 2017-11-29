@@ -25,6 +25,9 @@ if (isset($_POST['func'])) {
 	else if ("dfo" == $_POST['func']) {
 		declineForOnline();
 	}
+	else if ("cqrc" == $_POST['func']) {
+		createQRCode();
+	}
 }
 
 function openOfflineShop($userid, $refererId, &$error_msg)
@@ -171,8 +174,16 @@ function editOLSAcc()
 		
 		$imgFileName = $shopId . '_' . $now . $postname;
 		
-		$new_name = dirname(__FILE__) . '/../olLicensePic/' . $imgFileName;
-		move_uploaded_file($imgfile['tmp_name'], $new_name);
+		include_once "func.php";
+
+		$new_path = dirname(__FILE__) . '/../olLicensePic';
+		if (createFolderIfNotExist($new_path)) {
+			$new_name = $new_path . '/' . $imgFileName;
+			move_uploaded_file($imgfile['tmp_name'], $new_name);
+		}
+		else {
+			$imgFileName = '';
+		}
 	}
 	
 	$con = connectToDB();
@@ -578,6 +589,115 @@ function payOLShop()
 	}
 	
 	echo json_encode(array('error'=>'false'));
+}
+
+function createQRCode()
+{
+	include 'constant.php';
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["idx"]));
+	$retUrl = '';
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$userid = $_SESSION['userId'];
+
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysql_fetch_assoc($res);	
+		
+		if ($row["UserId"] != $userid) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'越权操作！'));
+			return;
+		}
+
+		if ($row["Status"] != $olshopAccepted) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'请等候审核通过，再申请二维码！'));
+			return;	
+		}
+
+		include_once "func.php";
+
+		$tmpDir = dirname(__FILE__) . '/../tmp';
+		$finalDir = dirname(__FILE__) . '/../olqrc';
+
+		if (!createFolderIfNotExist($tmpDir) || !createFolderIfNotExist($finalDir)) {
+			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'没有文件访问权限，请稍后重试！'));
+			return;	
+		}
+
+		$url = "http://www.lww1555.com/html/olshop.php?s=" . $shopId;
+		$now = time();
+		$imgFileName = $shopId . '_' . $now . '.png';
+		$tmpFilePath = $tmpDir . '/' . $imgFileName;	
+		$finalPath = $finalDir . '/' . $imgFileName;	
+		$logo = dirname(__FILE__) . '/../img/lian-logo.jpg';
+		
+		include "phpqrcode/qrlib.php";
+		QRcode::png($url, $tmpFilePath, QR_ECLEVEL_M, 4, 4);
+
+		if (!file_exists($tmpFilePath))	{
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'二维码生成失败！'));
+			return;		
+		}
+
+		if (file_exists($logo)) {
+
+		    $QR = imagecreatefromstring(file_get_contents($tmpFilePath));   
+		    $logo = imagecreatefromstring(file_get_contents($logo));   
+		    $QR_width = imagesx($QR);//二维码图片宽度   
+		    $QR_height = imagesy($QR);//二维码图片高度   
+		    $logo_width = imagesx($logo);//logo图片宽度   
+		    $logo_height = imagesy($logo);//logo图片高度   
+		    $logo_qr_width = $QR_width / 5;   
+		    $scale = $logo_width/$logo_qr_width;   
+		    $logo_qr_height = $logo_height/$scale;   
+		    $from_width = ($QR_width - $logo_qr_width) / 2;   
+		    //重新组合图片并调整大小   
+		    imagecopyresampled($QR, $logo, $from_width, $from_width, 0, 0, $logo_qr_width,    
+			    $logo_qr_height, $logo_width, $logo_height);   
+
+			imagepng($QR, $finalPath);
+
+			if (!file_exists($finalPath)) {
+				echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'二维码合成失败！'));
+				return;		
+			}
+
+			unlink($tmpFilePath);
+		}
+		else {
+			if (!rename($tmpFilePath, $finalPath)) {
+				echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'二维码放置失败！'));
+				return;		
+			}
+		}
+
+		$res1 = mysql_query("update OfflineShop set QRCode='$imgFileName' where ShopId='$shopId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'保存二维码失败，请稍后重试！'));
+			return;
+		}	
+
+		$retUrl = '../olqrc/' . $imgFileName;
+	}
+
+	echo json_encode(array('error'=>'false', 'url'=>$retUrl));
 }
 
 ?>

@@ -302,25 +302,24 @@ $mostCredit = max(0, $mostCredit - $applyCount);
 			        }
 		        ?>
 			</div>
-        </div>
-        
-        <hr>
-        
-        <div name="display">
-	        <p>当前线下云量：<b><?php echo $mycredit;?></b></p>
-	        <p>
-		        <label>每次提现的最少数量为<?php echo $leastCredit; ?>线下云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线下云量。</label>
-		        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
-	        </p>
-	        <p>
-				<label class="text-warning" style="<?php if ($handlefee <= 0) echo 'display: none;';?>">您实际将提取出的线下云量数量是：<span id="autual_count">0</span></label>
-				<input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
-	        </p>
 
-	        <input type="button" class="btn btn-success btn-block" value="提交" onclick="onConfirm()" />
-	        <input type="button" class="btn btn-warning btn-block" value="取消" onclick="javascript:history.back(-1);" />
-        </div>
+	        <hr>
+        
+	        <div name="display">
+		        <p>当前线下云量：<b><?php echo $mycredit;?></b></p>
+		        <p>
+			        <label>每次提现的最少数量为<?php echo $leastCredit; ?>线下云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线下云量。</label>
+			        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
+		        </p>
+		        <p>
+					<label class="text-warning" style="<?php if ($handlefee <= 0) echo 'display: none;';?>">您实际将提取出的线下云量数量是：<span id="autual_count">0</span></label>
+					<input id="pwd" type="password" class="form-control" placeholder="请输入支付密码！" onkeypress="return onlyCharAndNum(event)" />
+		        </p>
+
+		        <input type="button" class="btn btn-success btn-block" value="提交" onclick="onConfirm()" />
+		        <input type="button" class="btn btn-warning btn-block" value="取消" onclick="javascript:history.back(-1);" />
+	        </div>
+
+        </div>        
     </body>
-    <div style="text-align:center;">
-    </div>
 </html>

@@ -483,15 +483,21 @@ function findCurrTreeLvl($idx)
 	return $lvl;
 }
 
-function findNextAvailablePos($con, $idx)
+/*
+ * 判断文件夹是否存在，若不存在，创建文件夹。
+ */
+function createFolderIfNotExist($path)
 {
-	$ret = 0;
-	$nextIdx = 0;
-	if ($idx < 0) {
-		$nextIdx = 0;
+	if (is_dir($path)) {
+		return true;
 	}
-	
-// 	$result = mysql_query("select * from User where ")
+	else {
+		if (mkdir($path, 0777)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /////////////////////////// insert statistics function begin ///////////////////////////

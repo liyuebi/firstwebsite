@@ -139,12 +139,14 @@ $result = mysql_query("select * from OfflineShop where Status='$olshopApplied' o
 			<div class="modal-dialog" role="document">
 		    	<div class="modal-content">
 					<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-					<h4 class="modal-title" id="licenceModalLabel">营业执照</h4>
-		    	</div>
-				<div class="modal-body" style="text-align: center;">
-					<img id="licencePic" src="../olLicensePic/101_1510660328.jpg" style="width: 80%; margin: 0 auto"></img>
-		    	</div>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="licenceModalLabel">营业执照</h4>
+			    	</div>
+					<div class="modal-body" style="text-align: center;">
+						<img id="licencePic" src="" style="width: 80%; margin: 0 auto"></img>
+			    	</div>
+			    </div>
 			</div>
 		</div>
     </body>

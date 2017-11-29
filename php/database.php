@@ -314,6 +314,7 @@ function createOfflineShopTable()
 	 * PhoneNum: 联系电话
 	 * Address: 商店地址
 	 * LicencePic: 营业执照照片
+	 * QRCode: 二维码图片
 	 * RegisterTime: 注册时间
 	 * ModifiedTime: 更新信息时间
 	 * ReadyForCheckTime: 提交审查时间
@@ -338,6 +339,7 @@ function createOfflineShopTable()
 		PhoneNum varchar(16) default '',
 		Address varchar(256) default '',
 		LicencePic varchar(32) default '',
+		QRCode varchar(32) default '',
 		RegisterTime int not null,
 		ModifiedTime int default 0,
 		ReadyForCheckTime int default 0,
