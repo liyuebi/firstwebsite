@@ -6,6 +6,9 @@ session_start();
 if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 	&& (isset($_COOKIE['isLogin']) && $_COOKIE['isLogin'])) {
 	$home_url = 'html/home.php';
+	if (isset($_GET['s'])) {
+		$home_url = 'html/olshop.php?s=' . $_GET['s'];
+	}
 	header('Location: ' . $home_url);
 	exit();
 } 
@@ -77,7 +80,19 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 				$.post("php/login.php", {"func":"login", "phonenum":num, "password":pwd}, function(data){
 					
 					if (data.error == "false") {
+						
+						<?php 
+							if (isset($_GET['s'])) {
+						?>
+						location.href = "html/olshop.php?s=" + <?php echo $_GET['s']; ?>;
+						<?php
+							}
+							else {
+						?>
 						location.href = "html/home.php";
+						<?php
+							}
+						?>
 					}
 					else {
 						alert("登录失败: " + data.error_msg);

@@ -9,17 +9,27 @@ if ((isset($_SESSION['isLogin']) && $_SESSION['isLogin'])
 } 
 else {
 	$home_url = '../index.php';
+	if (isset($_GET['s'])) {
+		$home_url = $home_url . '?s=' . $_GET['s'];
+	}
 	header('Location: ' . $home_url);
 	exit();
 }
 
-include "../php/database.php";
 include "../php/constant.php";
-$con = connectToDB();
+
 $userid = $_SESSION['userId'];
 
-if ($con) {
-	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
+$result = false;
+if (isset($_GET['s'])) {
+
+	include "../php/database.php";
+	$con = connectToDB();
+
+	$shopId = $_GET['s'];
+	if ($con) {
+		$result = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+	}
 }
 
 ?>
@@ -189,7 +199,27 @@ if ($con) {
 		</div>	
 		
 		<div id="result_block">
-			
+			<?php
+				if ($result) {
+					while ($row = mysql_fetch_array($result)) {
+			?>
+					<hr>
+					<div>
+						<label>商家：<?php echo $row["ShopName"]; ?></label>
+						<br>
+						<input type="text" class="form-control" id="cnt_<?php echo $row["ShopId"]; ?>" placeholder="请输入支付的线下云量金额！" >
+
+						<div class="input-group">
+							<input type="password" class="form-control" id="pwd_<?php echo $row["ShopId"]; ?>" placeholder="请输入支付密码！" >
+							<span class="input-group-btn">
+								<input type="button" class="btn btn-default" value="支付" id="<?php echo $row["ShopId"]; ?>" onclick="payShop(event)">
+							</span>
+						</div>
+					</div>
+			<?php
+					}				
+				}
+			?>
 		</div>
 	</body>
 </html>
