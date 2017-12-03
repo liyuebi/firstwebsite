@@ -193,7 +193,7 @@ if (isset($_GET['s'])) {
      			<input class="form-control" id="search_cond" type="text" placeholder="请输入商家编号／商家名称关键字">
      			<div class="input-group-btn">
 		 			<button class="btn btn-default" type="button" onclick="search()">搜索</button>
-		 			<button class="btn btn-default" type="button">扫描</button>
+		 			<!-- <button class="btn btn-default" type="button">扫描</button> -->
      			</div>
 			</div>
 		</div>	
