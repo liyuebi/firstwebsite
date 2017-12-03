@@ -43,7 +43,7 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 		return;
 	}
 	
-	$res = mysql_query("select * from CreditBank where UserId='$userid' and Balance>0 order by SaveTime desc");
+	$res = mysql_query("select * from CreditBank where UserId='$userid' and Type='1' and Balance>0 order by SaveTime");
 	if (!$res || mysql_num_rows($res) <= 0) {
 		// !!! log error
 		return;

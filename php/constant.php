@@ -25,10 +25,12 @@
 
 	$charityRate =0.05;			// 慈善基金比例
 	$pntsRate =0.45;			// 线下云量比例
+	$pntsReturnDirRate =0.5;	// 线下云量直接返还的比例，剩下部分分期返还
 	$referBonusRate =0.1;		// 直推奖励比例
 	$colliBonusRateRefer =0.1;	// 推荐碰撞奖励比例
 	$colliBonusRateReinv =0.08; // 复投碰撞奖励比例
 	$dayBonusRate =0.008;		// 每笔存储每日返还的额度
+	$dayPntsBonusRate =0.017;	// 每笔线下云量存储每日返还的额度
 	$phoneChargeRate =0.1;		// 手机充值手续费
 	$oilChargeRate =0.1;		// 加油卡充值手续费
 	

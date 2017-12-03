@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from CreditBank where UserId='$userid' order by SaveTime desc");
+	$result = mysql_query("select * from CreditBank where UserId='$userid' and Type='1' order by SaveTime desc");
 }
 
 ?>

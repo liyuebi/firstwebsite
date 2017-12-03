@@ -87,18 +87,6 @@ function createCreditTable()
 		TotalConsumption decimal(10,2) DEFAULT 0,
 		TotalFee decimal(10,2) DEFAULT 0,
 		TotalBonus decimal(10,2) DEFAULT 0,
-		YearRecharge int DEFAULT 0,
-		YearWithdraw int DEFAULT 0,
-		YearConsumption decimal(10,2) DEFAULT 0,
-		MonthRecharge int DEFAULT 0,
-		MonthWithdraw int DEFAULT 0,
-		MonthConsumption decimal(10,2) DEFAULT 0,
-		DayRecharge int DEFAULT 0,
-		DayWithdraw int DEFAULT 0,
-		DayConsumption decimal(10,2) DEFAULT 0,
-		LastRechargeTime int DEFAULT 0,
-		LastWithdrawTime int DEFAULT 0,
-		LastConsumptionTime int DEFAULT 0,
 		DayObtained decimal(10,2) DEFAULT 0,
 		LastObtainedTime int DEFAULT 0,
 		LastObtainedPntTime int DEFAULT 0,
@@ -107,7 +95,8 @@ function createCreditTable()
 		YearObtainedPnts decimal(10,2) DEFAULT 0,
 		TotalObtainedPnts decimal(10,2) DEFAULT 0,
 		CurrBonus decimal(10,2) DEFAULT 0,
-		LastCBTime int DEFAULT 0
+		LastCBTime int default 0,
+		LastCBPTime int default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -212,6 +201,9 @@ function createCreditBankTable()
 	 * LastDiviT: 上次获取分红的时间
 	 * LastChangeT: 上次余额变换的时间
 	 * EmptyTime: 存储额度全部消耗完的时间
+	 * DiviChangeCnt: 每日分红值改变的次数（策略上4个月要将分红值减半）
+	 * DiviChangeT: 每日分红值改变的时间
+	 * Type: 存储类型。1. 线上云量 2. 线下云量
 	 */
 	$sql = "create table if not exists CreditBank
 	(	
@@ -226,7 +218,10 @@ function createCreditBankTable()
 		SaveTime int not null,
 		LastDiviT int default 0,
 		LastChangeT int default 0,
-		EmptyTime int default 0
+		EmptyTime int default 0,
+		DiviChangeCnt int default 0,
+		DiviChangeT int default 0,
+		Type int default 0
 	)";
 	$result = mysql_query($sql);
 	if (!$result) {
@@ -250,6 +245,8 @@ function createTransactionTable()
 	 * CompleteTime: 收获／完成时间
 	 * CancelTime: 买家取消时间
 	 * DismissTime: 卖家取消时间
+	 * CourierComp: 快递公司
+	 * CourierNum: 快递单号
 	 */
 	$sql = "create table if not exists Transaction
 	(
@@ -275,6 +272,7 @@ function createTransactionTable()
 		CompleteTime int DEFAULT 0,
 		CancelTime int default 0,
 		DismissTime int default 0,
+		CourierComp varchar(32) default '',
 		CourierNum varchar(24) default '',
 		Status int
 	)";

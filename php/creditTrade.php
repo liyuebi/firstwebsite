@@ -690,20 +690,33 @@ function saveCredit()
 		$newAsset = $amount * 3;
 		$charity = floor($newAsset * $charityRate * 100) / 100;
 		$pnts = floor($newAsset * $pntsRate * 100) / 100;	
+		$pntsReturnDirect = floor($pnts * $pntsReturnDirRate * 100) / 100;
+		$pntsInBank = $pnts - $pntsReturnDirect;
 		$diviCnt = floor($amount * $dayBonusRate * 100) / 100;
 		$quantity = $newAsset - $charity - $pnts;
 		$now = time();
 		
-		$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
-								values('$userid', '$quantity', '$amount', '$quantity', '$diviCnt', '$now')");
+		$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
+								values('$userid', '$quantity', '$amount', '$quantity', '$diviCnt', '$now', '1')");
 		if (!$res) {
 			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'存储线上资产失败，请稍后重试！'));
 			return;	
 		}
-		
+		$newSaveId = mysql_insert_id();
+
+		// insert pnts saving into credit bank for return to user
+		if ($pntsInBank > 0) {
+			$pntsDiviCnt = floor($pntsInBank * $dayPntsBonusRate * 100) / 100;
+			$res = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
+								values('$userid', '$pntsInBank', '$amount', '$pntsInBank', '$pntsDiviCnt', '$now', '2')");
+			if (!$res) {
+				// !!! log error
+			}
+		}
+
 		$credit -= $amount;
 		$vault = $row1["Vault"] + $quantity;
-		$newPnts = $row1["Pnts"] + $pnts;
+		$newPnts = $row1["Pnts"] + $pntsReturnDirect;
 		$newCharity = $row1["Charity"] + $charity;
 		
 		$res2 = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$newPnts', Charity='$newCharity' where UserId='$userid'");
@@ -717,6 +730,14 @@ function saveCredit()
 						VALUES($userid, $amount, 0, $credit,  $now, $now, 0, $codeSave)");
 		if (!$res3) {
 			// !!! log error
+		}
+
+		if ($pntsReturnDirect > 0) {
+			$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type)
+								values('$userid', '$pntsReturnDirect', '$pntsReturnDirect', '$now', '$newSaveId', '$code2Save')");
+			if (!$res4) {
+				// !!! log error
+			}
 		}
 		
 		include_once "func.php";

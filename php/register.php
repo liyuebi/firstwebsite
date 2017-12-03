@@ -138,10 +138,12 @@ else
 				$newUserAsset = $quantity * 3;
 				$charity = floor($newUserAsset * $charityRate * 100) / 100;
 				$pnts = floor($newUserAsset * $pntsRate * 100) / 100;
+				$pntsReturnDirect = floor($pnts * $pntsReturnDirRate * 100) / 100;
+				$pntsInBank = $pnts - $pntsReturnDirect;
 				$diviCnt = floor($quantity * $dayBonusRate * 100) / 100;
 				$vault1 = $newUserAsset - $charity - $pnts;
 				$result = mysql_query("insert into Credit (UserId, Vault, Pnts, Charity)
-					VALUES('$newuserid', '$vault1', '$pnts', '$charity')");
+					VALUES('$newuserid', '$vault1', '$pntsReturnDirect', '$charity')");
 				if (!$result) {
 					// !!! log error
 // 					echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'新用户积分表插入失败，请稍后重试！','sql_error'=>mysql_error()));
@@ -152,8 +154,8 @@ else
 
 					// insert credit bank 
 					$newSaveId = 0;
-					$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime)
-										values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now')");
+					$res4 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
+										values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now', '1')");
 					if (!$res4) {
 						// !!! log error
 					}
@@ -161,11 +163,23 @@ else
 						$newSaveId = mysql_insert_id();
 					}
 					
-					// insert pnts record 
-					$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, WithUserId, Type)
-										values('$newuserid', '$pnts', '$pnts', '$now', '$newSaveId', '$userid', '$code2Save')");
-					if (!$res4) {
-						// !!! log error
+					if ($pntsReturnDirect > 0) {
+						// insert pnts record 
+						$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, WithUserId, Type)
+											values('$newuserid', '$pntsReturnDirect', '$pntsReturnDirect', '$now', '$newSaveId', '$userid', '$code2Save')");
+						if (!$res4) {
+							// !!! log error
+						}
+					}
+
+					// insert pnts saving into credit bank for return to user
+					if ($pntsInBank > 0) {
+						$pntsDiviCnt = floor($pntsInBank * $dayPntsBonusRate * 100) / 100;
+						$res5 = mysql_query("insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
+											values('$newuserid', '$pntsInBank', '$quantity', '$pntsInBank', '$pntsDiviCnt', '$now', '2')");
+						if (!$res5) {
+							// !!! log error
+						}
 					}
 				}
 			}					

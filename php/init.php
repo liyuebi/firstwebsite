@@ -68,12 +68,20 @@ else {
 	echo "Error creating default admin: " . mysql_error();
 	echo "<br>";
 }
+$pwd = md5('000000');
+$pwd = password_hash($pwd, PASSWORD_DEFAULT);
+mysql_query("insert into AdminTable (Name, Password, Priority)
+					values('xieshuqian', '$pwd', '1')");
 
 createCreditRecordTable();
 createPntsRecordTable();
 
+createCreditTradeTable();
 createCreditBankTable();
+createTransactionTable();
 createOfflineShopTable();
+
+createComplaintTable();
 
 createStatisticsTable();
 initGeneralStatisTable();

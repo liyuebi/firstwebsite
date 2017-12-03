@@ -17,7 +17,7 @@ function getDayBonus($userId)
 {
 	$ret = 0;
 	
-	$res = mysql_query("select * from CreditBank where UserId='$userId' and Balance>0 order by SaveTime desc");
+	$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime desc");
 	if ($res) {
 		
 		$now = time();
@@ -258,7 +258,7 @@ function acceptBonus($userId)
 		}
 			
 		$bonus = 0;
-		$res = mysql_query("select * from CreditBank where UserId='$userId' and Balance>0 order by SaveTime");
+		$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime");
 		if ($res) {
 			
 			$now = time();
