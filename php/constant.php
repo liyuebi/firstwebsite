@@ -82,6 +82,7 @@
 	$code2OlShopWdCancel = 6;	// 线下商家提现撤销
 	$code2OlShopWdAccept = 7;	// 线下商家提现通过
 	$code2OlSHopWdDecline = 8;	// 线下商家提现申请被拒 
+	$code2Divident = 9;		// 线下积分每日分红导致积分变化
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

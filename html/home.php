@@ -20,7 +20,6 @@ include "../php/func.php";
 setUserCookie($_SESSION['nickname'], $_SESSION["userId"], 'true');
 
 $userid = $_SESSION["userId"];
-$new = 0;
 
 // 如果是新用户，推他去修改个人信息
 if ($_SESSION['accInited'] <= 0) {
@@ -33,7 +32,7 @@ $vault = 0;
 $row = false;
 $hasBonus = false;
 $bonus = 0;
-$lastCBTime = 0;
+$pnts = 0;
 
 $con = connectToDB();
 if ($con) {
@@ -44,24 +43,32 @@ if ($con) {
 	}
 	else {
 		$row = mysql_fetch_assoc($result);
-		
-		$vault = $row["Vault"];
-		$lastCBTime = $row["LastCBTime"];
-		
+		$pnts = $row["Pnts"];
+
 		$now = time();
-		// 利息每日只能收获一次
-		if (!isInTheSameDay($lastCBTime, $now)) {
-			
-			date_default_timezone_set('PRC');
-			$hour = intval(date("H", $now));
-			// 6点以后才可以领取利息
-			if ($hour >= 6) {
-			
-				include "../php/bonus.php";
+		date_default_timezone_set('PRC');
+		$hour = intval(date("H", $now));
+		// 6点以后才可以领取利息
+		if ($hour >= 6) {
+
+			$vault = $row["Vault"];
+			$lastCBTime = $row["LastCBTime"];
+			$lastCBPntsTime = $row["LastCBPTime"];
+
+			include "../php/bonus.php";
+
+			// 利息每日只能收获一次
+			if (!isInTheSameDay($lastCBTime, $now)) {
+				
 				$bonus = getDayBonus($userid);
 				if ($bonus > 0) {
 					$hasBonus = true;
 				}
+			}
+
+			if (!isInTheSameDay($lastCBPntsTime, $now)) {
+
+				acceptPntsBonus($userid, $pnts);
 			}
 		}
 	}
@@ -97,9 +104,6 @@ if ($con) {
 // 				if (isNotLoginAndJump()) {
 // 					return;
 // 				}
-				if (<?php echo $new; ?> > 0) {
-					setTimeout("countDown()", 1000);
-				}
 			});
 			
 			function countDown()
@@ -228,7 +232,7 @@ if ($con) {
 				</tr>
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
-					<td id=""><?php if ($row) echo $row["Pnts"]; else echo '0'; ?></td>
+					<td id=""><?php if ($row) echo $pnts; else echo '0'; ?></td>
 					<td id="bonuspool"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
 				</tr>
 			</table>

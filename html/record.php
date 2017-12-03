@@ -84,7 +84,7 @@ if ($con) {
 	// 					    	echo "您申请赎回" . $row["Amount"] . "线上云量，收取手续费" . $row["HandleFee"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeDivident) {					    	
-					    	echo "您今日领到" . $row["Amount"] . "线上云量。";
+					    	echo "领取" . $row["Amount"] . "线上云量。";
 				    	}
 				    	else if ($row["Type"] == $codeReferer) {
 					    	echo "推荐新用户，使用了" . $row["Amount"] . "线上云量。"; 
@@ -144,6 +144,9 @@ if ($con) {
 					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
 					    echo "<br>";
 					    
+					    if ($row["Type"] == $code2Divident) {
+					    	echo "领取" . $row["Amount"] . "线下云量。";
+					    }
 					    if ($row["Type"] == $code2Save) {
 							echo "您进行云量存储，获得" . $row["Amount"] . "线下云量。"; 				    
 				    	}

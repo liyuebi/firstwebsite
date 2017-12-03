@@ -348,103 +348,139 @@ function acceptBonus($userId)
 		echo json_encode(array('error'=>'false','credit'=>$credit,'vault'=>$vault));
 		
 		// 添加积分记录
-		if ($bonus) {
-			mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-							VALUES('$userId', '$bonus', '$credit', '$now', '$now', '$codeDivident')");
-		}
+		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+						VALUES('$userId', '$bonus', '$credit', '$now', '$now', '$codeDivident')");
 				
  		// 统计分红信息
  		insertBonusStatistics($bonus);
 	}
 }
 
-function acceptDBonus($userid)
+/*
+ * Send user pnts bonus every day.
+ * Check when user login to home page, so need to check more than today to send user pnts.
+ */
+function acceptPntsBonus($userId, &$pnts)
 {
 	include_once "func.php";
 	include "constant.php";
 	
-	$con = connectToDB();
-	if (!$con) {
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
-		return;
-	}
-	
-	$res1 = mysql_query("select * from Credit where UserId='$userid'");
+	$res1 = mysql_query("select * from Credit where UserId='$userId'");
 	if (!$res1 || mysql_num_rows($res1) < 1) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
-		return;
+		// echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
+		return false;
 	}
 	else {
-		$row1 = mysql_fetch_assoc($res1);
-		
-		$dayObtained = $row1["DayObtained"];
-		$lastObtainedtime = $row1["LastObtainedTime"];
-		$lastObtainedPntTime = $row1["LastObtainedPntTime"];
 		
 		$now = time();
-					
-		$toPnts = 0;
-		$toCredit = 0;
 		
-/*
-		$dBonusTotal += $toCredit;
-		if (isInTheSameDay($now, $lastObtainedtime)) {
-			$dayObtained += $toCredit;
-		}
-		else {
-			$dayObtained = $toCredit;
-		}
-*/
-		if (!isInTheSameDay($now, $lastObtainedtime)) {
-			$dayObtained = 0;
-		}
-		
-		$totalPnt = $row1["TotalObtainedPnts"];
-		$yearPnt = $row1["YearObtainedPnts"];
-		$monPnt = $row1["MonObtainedPnts"];
-		$dayPnt = $row1["DayObtainedPnts"];
-		if (isInTheSameDay($now, $lastObtainedPntTime)) {
-			$dayPnt += $toPnts;
-		}
-		else {
-			$dayPnt = $toPnts;
-		}
-		if (isInTheSameMonth($now, $lastObtainedPntTime)) {
-			$monPnt += $toPnts;
-		}
-		else {
-			$monPnt = $toPnts; 
-		}
-		if (isInTheSameYear($now, $lastObtainedPntTime)) {
-			$yearPnt += $toPnts;
-		}
-		else {
-			$yearPnt = $toPnts;
-		}
-		$totalPnt += $toPnts;
+		$row1 = mysql_fetch_assoc($res1);
+		$credit = $row1["Pnts"];
 
-		
-		$credit = $row1["Credits"] + $toCredit;
-		$pnts = $row1["Pnts"] + $toPnts;
-		$res2 = mysql_query("update Credit set Credits='$credit', Pnts='$pnts', DayObtained='$dayObtained', DayObtainedPnts='$dayPnt', MonObtainedPnts='$monPnt', YearObtainedPnts='$yearPnt', TotalObtainedPnts='$totalPnt', LastObtainedPntTime='$now' where UserId='$userid'");
-		if (!$res2) {
- 			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'领取失败，请稍后重试','sql_error'=>mysql_error()));
-			return;
+		$lastCBPntsTime = $row1["LastCBPTime"];
+
+		// 以前领过每日分红，判断今日是否已经领过
+		if ($lastCBPntsTime > 0) {
+			if (isInTheSameDay($now, $lastCBPntsTime)) {
+				// already got for today
+				return false;
+			}
+		}
+		// 从未领过每日分红，获取注册时间，从注册时间开始领取
+		else {
+			$res3 = mysql_query("select * from ClientTable where UserId='$userId'");
+			if (!$res3 || mysql_num_rows($res3) < 1) {
+				return false;
+			}
+			$row3 = mysql_fetch_assoc($res3);
+			$lastCBPntsTime = $row3["RegisterTime"];
+
+			if ($lastCBPntsTime >= $now 
+				|| isInTheSameDay($now, $lastCBPntsTime)) {
+				return false;
+			}
+		}
+			
+		$bonus = 0;
+		if ($lastCBPntsTime < $now) {
+
+			$i = 0; // 计数，一次只累积五天，安全处理，以免无限循环
+			while ($i < 5) {
+
+				$i += 1;
+
+				$oneTime = $lastCBPntsTime + 24 * 60 * 60;
+				$lastCBPntsTime = $oneTime; 
+				if ($oneTime >= $now
+					|| isInTheSameDay($oneTime, $now)) {
+
+					$oneTime = $now;
+					$i = 5;	// break from while after run this time
+				}
+
+				$dayBonus = 0;
+				$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='2' and Balance>0 order by SaveTime");
+				if ($res) {
+					
+					while ($row = mysql_fetch_array($res)) {
+						
+						// 当日存的云量不进行返还
+						$savetime = $row["SaveTime"];
+						
+						if ($savetime >= $oneTime 
+							|| isInTheSameDay($savetime, $oneTime)) {
+							continue;
+						}
+						
+						$balance = $row["Balance"];
+						$diviCnt = $row["DiviCnt"];
+						$emptyTime = 0;
+						if ($diviCnt > $balance) {
+							$diviCnt = $balance;
+							$emptyTime = $oneTime;
+						}
+						$balance -= $diviCnt;
+						$divident = $row["Divident"] + $diviCnt;
+						
+						$dayBonus += $diviCnt;
+						$idx = $row["IdxId"];
+						$res2 = mysql_query("update CreditBank set Balance='$balance', Divident='$divident', LastDiviT='$oneTime', LastChangeT='$oneTime', EmptyTime='$emptyTime' where IdxId=$idx");
+						if (!$res2) {
+							// !!! log error
+						}
+					}
+
+					if ($dayBonus > 0) {
+
+						$bonus += $dayBonus;
+						$credit += $dayBonus;
+
+						// 添加线下云量记录
+						$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, Type)
+										VALUES('$userId', '$dayBonus', '$credit', '$oneTime', '$code2Divident')");
+						if (!$res4) {
+							// !!! log error
+						}
+					}
+				}
+			}
+		}
+							
+		if ($bonus <= 0) {
+			return false;
 		}
 		
-		echo json_encode(array('error'=>'false','not_enough'=>'false','credit'=>$credit,'pnts'=>$pnts,'DayObtained'=>$dayObtained));
+		$res2 = mysql_query("update Credit set Pnts='$credit', LastCBPTime='$now' where UserId='$userId'");
+		if (!$res2) {
+			// !!! log error
+			return false;
+		}
 		
-		// 添加积分记录
-// 		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-// 						VALUES('$userid', '$toCredit', '$credit', '$now', '$now', '$codeDynDivident')");
-						
-		// 添加线下云量记录
-		mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
-				VALUES('$userid', '$toPnts', '$pnts', '$now', '$now', '$code2DynDivident')");
-		
-		// 统计分红信息
-// 		insertDynBonusStatistics($toCredit, $toPnts);
+		$pnts = $credit;
+		// echo json_encode(array('error'=>'false','pnts'=>$credit));		
 	}
+
+	return true;
 }
 
 ?>
