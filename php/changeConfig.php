@@ -46,6 +46,9 @@ else if ("changeCRR1" == $_POST['func']) {
 else if ("changeCRR2" == $_POST['func']) {
 	changeCollBonusRateRei();
 }
+else {
+	tryChangeValue();
+}
 
 
 function changeConfig($name, $val, &$err)
@@ -78,6 +81,35 @@ function changeConfig($name, $val, &$err)
 	fwrite($fp2, $str);
 	fclose($fp2);
 	return true;
+}
+
+function tryChangeValue()
+{
+	$func = trim(htmlspecialchars($_POST['func']));
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = intval($val);
+
+	$paramStr = '';
+	if ("changeOFLRF" == $func) {
+		$paramStr = "offlineShopRegisterFee";
+	}
+	else if ("changeWFA" == $func) {
+		$paramStr = "withdrawFloorAmount";
+	}
+	else if ("changeWCA" == $func) {
+		$paramStr = "withdrawCeilAmountOneDay";
+	}
+	else {
+		echo json_encode(array('error'=>'true', 'error_code'=>'2','error_msg'=>"找不到处理对应参数的接口！"));
+		return;		
+	}
+
+	$err_msg = '';
+	if (!changeConfig($paramStr, $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
 }
 
 function changeRegiCreditL()

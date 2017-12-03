@@ -24,66 +24,13 @@ if (!checkLoginOrJump()) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
-			function changeRegiCreditL()
+			function changeVal(btn)
 			{
-				var val = document.getElementById("regiCreditLeast").value;
-				$.post("../php/changeConfig.php", {"func":"changeRCL","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function changeRegiCreditM()
-			{
-				var val = document.getElementById("regiCreditMost").value;
-				$.post("../php/changeConfig.php", {"func":"changeRCM","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function changeSCreditL()
-			{
-				var val = document.getElementById("sCreditL").value;
-				$.post("../php/changeConfig.php", {"func":"changeSCL","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function changeSCreditM()
-			{
-				var val = document.getElementById("sCreditM").value;
-				$.post("../php/changeConfig.php", {"func":"changeSCM","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function changeEL()
-			{
-				var val = document.getElementById("exL").value;
-				$.post("../php/changeConfig.php", {"func":"changeEL","val":val}, function(data){
+				var inputId = btn.dataset.whatever; 
+				var func = btn.dataset.func;
+
+				var val = document.getElementById(inputId).value;
+				$.post("../php/changeConfig.php", {"func":func,"val":val}, function(data){
 					
 					if (data.error == "false") {
 						alert("修改成功！");	
@@ -93,210 +40,110 @@ if (!checkLoginOrJump()) {
 					}
 				}, "json");	
 			}
-			
-			function changeEM()
-			{
-				var val = document.getElementById("exM").value;
-				$.post("../php/changeConfig.php", {"func":"changeEM","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");
-			}
-			
-			function changePChargeL()
-			{
-				var val = document.getElementById("pChargeL").value;
-				$.post("../php/changeConfig.php", {"func":"changePCL","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");				
-			}
-			
-			function changePChargeM()
-			{
-				var val = document.getElementById("pChargeM").value;
-				$.post("../php/changeConfig.php", {"func":"changePCM","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}
-			
-			function changeOChargeL()
-			{
-				var val = document.getElementById("oChargeL").value;
-				$.post("../php/changeConfig.php", {"func":"changeOCL","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");				
-			}
-			
-			function changeOChargeM()
-			{
-				var val = document.getElementById("oChargeM").value;
-				$.post("../php/changeConfig.php", {"func":"changeOCM","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}
-
-			function changeRBonusR()
-			{
-				var val = document.getElementById("referR").value;
-				$.post("../php/changeConfig.php", {"func":"changeRBR","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}			
-			
-			function changeCBonusRRefer()
-			{
-				var val = document.getElementById("cRRefer").value;
-				$.post("../php/changeConfig.php", {"func":"changeCRR1","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}			
-		
-			function changeCBonusReinv()
-			{
-				var val = document.getElementById("cRReinv").value;
-				$.post("../php/changeConfig.php", {"func":"changeCRR2","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}	
-					
-			function changeDBonusR()
-			{
-				var val = document.getElementById("dBonusR").value;
-				$.post("../php/changeConfig.php", {"func":"changeDBR","val":val}, function(data){
-					
-					if (data.error == "false") {
-						alert("修改成功！");	
-					}
-					else {
-						alert("修改失败: " + data.error_msg);
-					}
-				}, "json");		
-			}
 		</script>
 	</head>
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
+	        	<label class="text-info">推荐奖励相关</label>
 				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
 					<tr>
-						<th align="center">参数名</th><th>值</th><th>操作</th>
+						<th>推荐用户消耗云量下限</th>
+						<th>推荐用户消耗云量上限</th>
+						<th>推荐奖比例</th>
+						<th>直推对碰奖比例</th>
+						<th>复投对碰奖比例</th>
 					</tr>
 					<tr>
-						<td>推荐奖比例</td>
-						<td><input type="text" id="referR" value="<?php echo $referBonusRate;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeRBonusR()" /></td>
-					</tr>
-					<tr>
-						<td>直推对碰奖比例</td>
-						<td><input type="text" id="cRRefer" value="<?php echo $colliBonusRateRefer;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeCBonusRRefer()" /></td>
-					</tr>
-					<tr>
-						<td>复投对碰奖比例</td>
-						<td><input type="text" id="cRReinv" value="<?php echo $colliBonusRateReinv;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeCBonusReinv()" /></td>
-					</tr>
-					<tr>
-						<td>存储云量日利率</td>
-						<td><input type="text" id="dBonusR" value="<?php echo $dayBonusRate;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeDBonusR()" /></td>
-					</tr>
-					<tr>
-						<td>推荐用户消耗云量下限</td>
 						<td><input type="text" id="regiCreditLeast" value="<?php echo $regiCreditLeast;  ?>" /></td>
-						<td><input type="button" class="btn btn-default btn-samll" value="修改" onclick="changeRegiCreditL()" /></td>
-					</tr>
-					<tr>
-						<td>推荐用户消耗云量上限</td>
 						<td><input type="text" id="regiCreditMost" value="<?php echo $regiCreditMost;  ?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeRegiCreditM()" /></td>
+						<td><input type="text" id="referR" value="<?php echo $referBonusRate;?>"</td>
+						<td><input type="text" id="cRRefer" value="<?php echo $colliBonusRateRefer;?>"</td>
+						<td><input type="text" id="cRReinv" value="<?php echo $colliBonusRateReinv;?>"</td>
 					</tr>
 					<tr>
-						<td>存储云量下限</td>
+						<td><input type="button" class="btn btn-default btn-samll" value="修改" data-whatever="regiCreditLeast" data-func='changeRCL' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="regiCreditMost" data-func='changeRCM' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="referR" data-func='changeRBR' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="cRRefer" data-func='changeCRR1' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="cRReinv" data-func='changeCRR2' onclick="changeVal(this)" /></td>
+					</tr>
+				</table>
+				<label class="text-info">存储相关</label>
+				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
+					<tr>
+						<th>存储云量下限</th>
+						<th>存储云量上限</th>
+						<th>存储云量日利率</th>
+					</tr>
+					<tr>
 						<td><input type="text" id="sCreditL" value="<?php echo $saveCreditLeast;  ?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeSCreditL()" /></td>
-					</tr>
-					<tr>
-						<td>存储云量上限</td>
 						<td><input type="text" id="sCreditM" value="<?php echo $saveCreditMost; ?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeSCreditM()" /></td>
+						<td><input type="text" id="dBonusR" value="<?php echo $dayBonusRate;?>"</td>
 					</tr>
 					<tr>
-						<td>挂单最小额度</td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="sCreditL" data-func='changeSCL' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="sCreditM" data-func='changeSCM' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="dBonusR" data-func='changeDBR' onclick="changeVal(this)" /></td>
+					</tr>
+				</table>
+				<label class="text-info">交易所相关</label>
+				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
+					<tr>
+						<th>挂单最小额度</th>
+						<th>挂单最大额度</th>
+					</tr>
+					<tr>
 						<td><input type="text" id="exL" value="<?php echo $exchangeLeast;?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeEL()" /></td>
-					</tr>
-					<tr>
-						<td>挂单最大额度</td>
 						<td><input type="text" id="exM" value="<?php echo $exchangeMost;?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeEM()" /></td>
 					</tr>
 					<tr>
-						<td>话费充值下限</td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="exL" data-func='changeEL' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="exM" data-func='changeEM' onclick="changeVal(this)" /></td>
+					</tr>
+				</table>
+				<label class="text-info">话费油费相关</label>
+				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
+					<tr>
+						<th>话费充值下限</th>
+						<th>话费充值上限</th>
+					</tr>
+					<tr>
 						<td><input type="text" id="pChargeL" value="<?php echo $phoneChargeLeast;?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changePChargeL()" /></td>
+						<td><input type="text" id="pChargeM" value="<?php echo $phoneChargeMost;?>" /></td>
 					</tr>
 					<tr>
-						<td>话费充值上限</td>
-						<td><input type="text" id="pChargeM" value="<?php echo $phoneChargeMost;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changePChargeM()" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="pChargeL" data-func='changePCL' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="pChargeM" data-func='changePCM' onclick="changeVal(this)" /></td>
 					</tr>
-					<tr>
+<!-- 					<tr>
 						<td>油费充值下限</td>
 						<td><input type="text" id="oChargeL" value="<?php echo $oilChargeLeast;?>" /></td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeOChargeL()" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="oChargeL" data-func='changeOCL' onclick="changeVal(this)" /></td>
 					</tr>
 					<tr>
 						<td>油费充值上限</td>
 						<td><input type="text" id="oChargeM" value="<?php echo $oilChargeMost;?>"</td>
-						<td><input type="button" class="btn btn-default" value="修改" onclick="changeOChargeM()" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="oChargeM" data-func='changeOCM' onclick="changeVal(this)" /></td>
+					</tr>
+ -->				
+				</table>
+				<label class="text-info">线下交易相关</label>
+				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
+					<tr>
+						<th>线下商家注册费</th>
+						<th>提现金额下线</th>
+						<th>提现金额每日上限</th>
+					</tr>
+					<tr>
+						<td><input type="text" id="ofsRF" value="<?php echo $offlineShopRegisterFee;  ?>" /></td>
+						<td><input type="text" id="wfa" value="<?php echo $withdrawFloorAmount; ?>" /></td>
+						<td><input type="text" id="wca" value="<?php echo $withdrawCeilAmountOneDay;?>"</td>
+					</tr>
+					<tr>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="ofsRF" data-func='changeOFLRF' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="wfa" data-func='changeWFA' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="wca" data-func='changeWCA' onclick="changeVal(this)" /></td>
 					</tr>
 				</table>
 	        </div>
