@@ -113,11 +113,9 @@
 					            <i class="fa fa-shopping-cart"></i><span>线下商家</span><i class="fa fa-angle-left pull-right"></i>
 				            </a>
 				            <ul class="treeview-menu">
-	<!--
-			            		<li onclick="makecss(this)" data-id="index_Statis">
-			            			<a href='statistics.php' target='rightContent'><i class="fa fa-circle-o"></i>商家管理</a>
+			            		<li onclick="makecss(this)" data-id="index_OLShopSearch">
+			            			<a href='olsmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>商家查询</a>
 								</li>	            
-	-->
 			            		<li onclick="makecss(this)" data-id="index_OlShopApply">
 			            			<a href='olsreviewmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待审核商家</a>
 								</li>	            

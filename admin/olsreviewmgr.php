@@ -93,8 +93,6 @@ $result = mysql_query("select * from OfflineShop where Status='$olshopApplied' o
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
 	        <div>
-<!--  					<input type="button" value="切换到导出界面" onclick="goToExport()"  /> -->
-<!--  					<hr> -->
 				<table id="tbl" border="1">
 					<tr>
 						<th>提审时间</th>

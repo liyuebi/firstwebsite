@@ -28,6 +28,9 @@ if (isset($_POST['func'])) {
 	else if ("cqrc" == $_POST['func']) {
 		createQRCode();
 	}
+	else if ("ssInA" == $_POST['func']) {
+		searchForShopInAdmin();
+	}
 }
 
 function openOfflineShop($userid, $refererId, &$error_msg)
@@ -436,6 +439,77 @@ function searchForShop()
 	}
 	
 	echo json_encode(array('error'=>'false','list'=>$arr));
+}
+
+function searchForShopInAdmin()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["sid"]));
+	$shopName = trim(htmlspecialchars($_POST["sname"]));
+	$ownerId = trim(htmlspecialchars($_POST["oid"]));
+
+	if ("" == $shopId && "" == $shopName && "" == $ownerId) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请填写搜索条件！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$sql = "select * from OfflineShop where ";
+		$condNum = 0;
+		if ("" != $shopId) {
+			$sql = $sql . "ShopId=" . $shopId;
+			$condNum += 1;
+		}
+		if ("" != $shopName) {
+			if ($condNum > 0) {
+				$sql = $sql . " and ";
+			}
+			$sql = $sql . "ShopName like '%" . $shopName . "%'";
+			$condNum += 1;
+		}
+		if ("" != $ownerId) {
+			if ($condNum > 0) {
+				$sql = $sql . " and ";
+			}
+			$sql = $sql . "UserId=" . $ownerId;
+			$condNum += 1;
+		}
+
+		$res = mysql_query($sql);
+		if (!$res) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'搜索失败，请稍后重试！',"sql"=>$sql));
+			return;
+		}
+
+		$arr = array();
+		while ($row = mysql_fetch_array($res, MYSQL_ASSOC)) {
+			
+			$arr1 = array();
+			
+			foreach($row as $key=>$value) {
+
+				$arr1[$key] = $value;
+			}
+			$arr[$row["ShopId"]] = $arr1;
+		}
+
+		echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res),'list'=>$arr));
+	}
 }
 
 function payOLShop()
