@@ -830,7 +830,7 @@ function searchOfflineShopRecord()
 				}
 				array_push($arr, $arr1);
 			}
-			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res1),'list'=>$arr));
+			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res1),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
 		}
 		else if (2 == $recordType) {
 
@@ -856,7 +856,7 @@ function searchOfflineShopRecord()
 				array_push($arr, $arr1);
 			}
 
-			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res2),'list'=>$arr));
+			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res2),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
 		}
 		else {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'参数出错！'));

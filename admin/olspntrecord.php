@@ -10,13 +10,18 @@ include '../php/constant.php';
 
 $sid = "";
 $res = false;
+$row1 = false;
 if (isset($_GET["sid"])) {
 	$sid = $_GET["sid"];
 
 	include "../php/database.php";
 	$con = connectToDB();
-	if ($con)
-	{
+	if ($con)	{
+		$res1 = mysql_query("select * from OfflineShop where ShopId='$sid'");
+		if ($res1 && mysql_num_rows($res1) > 0) {
+			$row1 = mysql_fetch_assoc($res1);
+		}
+
 		$res = mysql_query("select * from PntsRecord where Type='$code2OlShopReceive' and WithStoreId='$sid' order by ApplyTime desc");
 	}
 }
@@ -85,6 +90,9 @@ if (isset($_GET["sid"])) {
 		        	rowNum=rowNum-1;
 		        	i=i-1;
 		    	}
+		    	document.getElementById("amt").innerHTML = 0;
+		    	document.getElementById("act_amt").innerHTML = 0;
+		    	document.getElementById("with_amt").innerHTML = 0;
 
 				$.post("../php/offlineTrade.php", {"func":"sOLSRecord","sid":shopId,"type":recordType}, function(data){
 					
@@ -103,6 +111,10 @@ if (isset($_GET["sid"])) {
 								result.className = "text-warning";
 							}
 						}
+
+				    	document.getElementById("amt").innerHTML = data.amt;
+				    	document.getElementById("act_amt").innerHTML = data.a_amt;
+				    	document.getElementById("with_amt").innerHTML = data.w_amt;
 
 						var list = data.list;
 						for (var key in list) {
@@ -178,6 +190,20 @@ if (isset($_GET["sid"])) {
 			</div>
 			<p>
 				<span id="searchresult"><?php if ($res) echo "记录数为：" . mysql_num_rows($res); ?></span>
+				<div id="stat_blk" class="dl-horizontal">
+					<div style="min-width: 100px; display: inline-block;">
+						<span><b>总交易额：</b></span>
+						<span id="amt" class="text-info"><?php if ($row1) echo $row1["TradeAmount"]; ?></span>
+					</div>
+					<div style="min-width: 100px; display: inline-block;">
+						<span><b>实际收入：</b></span>
+						<span id="act_amt" class="text-info"><?php if ($row1) echo $row1["TradeIncome"]; ?></span>
+					</div>
+					<div style="min-width: 100px; display: inline-block;">
+						<span><b>总提现：</b></span>
+						<span id="with_amt" class="text-info"><?php if ($row1) echo $row1["WithdrawAmount"]; ?></span>
+					</div>
+				</div>
 			</p>
 	        <div id="receive_blk">
 				<table id="tbl" border="1" style="text-align: center;">
