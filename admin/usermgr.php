@@ -245,7 +245,6 @@ if (!checkLoginOrJump()) {
 	</head>
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
-	        <h4>用户管理</h4>
 <!--
 	        <div id="blk_add">
 		        <input type="hidden" name='func' value="addNew" />
@@ -257,7 +256,6 @@ if (!checkLoginOrJump()) {
 				<input type="button" name="submit" value="添加" onclick="addUser()" />
 	        </div>
 -->
-	        <hr>
 			<div id="blk_chk" style="display: block;">
 				<div class="input-group" style="width: 360px; margin-bottom: 10px;">
 					<input type="text" id="id_input" class="form-control" placeholder="请输入用户 ID/手机号／昵称" />

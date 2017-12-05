@@ -31,6 +31,9 @@ if (isset($_POST['func'])) {
 	else if ("ssInA" == $_POST['func']) {
 		searchForShopInAdmin();
 	}
+	else if ("sOLSRecord" == $_POST['func']) {
+		searchOfflineShopRecord();
+	}
 }
 
 function openOfflineShop($userid, $refererId, &$error_msg)
@@ -772,6 +775,94 @@ function createQRCode()
 	}
 
 	echo json_encode(array('error'=>'false', 'url'=>$retUrl));
+}
+
+function searchOfflineShopRecord()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["sid"]));
+	$recordType = trim(htmlspecialchars($_POST["type"]));	// 记录类型：1. 收款记录 2. 取现记录
+
+	if ("" == $shopId) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请输入要搜索的商家id！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysql_fetch_assoc($res);
+		$sellid = $row["UserId"];
+
+		if (1 == $recordType) {
+
+			$res1 = mysql_query("select * from PntsRecord where Type='$code2OlShopReceive' and UserId='$sellid' order by ApplyTime desc");
+			if (!$res1) {
+				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询交易记录出错，请稍后重试！'));
+				return;
+			} 
+
+			$arr = array();
+			while ($row1 = mysql_fetch_array($res1)) {
+				
+				$arr1 = array();
+				foreach($row1 as $key=>$value) {
+
+					$arr1[$key] = $value;
+				}
+				array_push($arr, $arr1);
+			}
+			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res1),'list'=>$arr));
+		}
+		else if (2 == $recordType) {
+
+			if (!createPntsWithdrawTable()) {
+				echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'数据操作失败，请稍后重试！'));
+				return;				
+			}
+
+			$res2 = mysql_query("select * from PntsWdApplication where UserId='$sellid' order by ApplyTime desc");
+			if (!$res2) {
+				echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'查询提现记录出错，请稍后重试！'));
+				return;
+			}
+
+			$arr = array();
+			while ($row2 = mysql_fetch_array($res2)) {
+				
+				$arr1 = array();
+				foreach($row2 as $key=>$value) {
+
+					$arr1[$key] = $value;
+				}
+				array_push($arr, $arr1);
+			}
+
+			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res2),'list'=>$arr));
+		}
+		else {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'参数出错！'));
+			return;
+		}
+	}
 }
 
 ?>

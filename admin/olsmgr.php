@@ -153,7 +153,7 @@ include '../php/constant.php';
 
 			function checkIncomeRecord(e)
 			{
-				alert(e.target.id);
+				location.href = "olspntrecord.php?sid=" + e.target.id;
 			}
 						
 			$(document).ready(function(){

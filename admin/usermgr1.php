@@ -120,9 +120,6 @@ if (!checkLoginOrJump()) {
 	</head>
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
-	        <div>
-		        <h3>用户管理</h3>
-	        </div>
 <!--
 	        <input type="button" value="添加新用户" onclick="showAddBlk()" />
  	        <input type="button" value="账户查询" onclick="showQueryBlk()" />

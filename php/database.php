@@ -437,8 +437,8 @@ function createRechargeTable()
 		Method int NOT NULL,
 		Account varchar(32) NOT NULL,
 		BankUser varchar(16) default '',
-		BankName varchar(16) default '',
-		BankBranch varchar(32) default '',
+		BankName varchar(32) default '',
+		BankBranch varchar(64) default '',
 		DeclineTime int DEFAULT 0,
 		AdminId int DEFAULT 0
 	)";
@@ -465,8 +465,8 @@ function createWithdrawTable()
 		Method int NOT NULL,
 		Account varchar(32) NOT NULL,
 		BankUser varchar(16) default '',
-		BankName varchar(16) default '',
-		BankBranch varchar(32) default '',
+		BankName varchar(32) default '',
+		BankBranch varchar(64) default '',
 		DeclineTime int DEFAULT 0,
 		AdminId int DEFAULT 0
 	)";	
@@ -499,8 +499,8 @@ function createPntsWithdrawTable()
 		AccountId int not null,
 		Account varchar(32) not null,
 		BankUser varchar(16) default '',
-		BankName varchar(16) default '',
-		BankBranch varchar(32) default '',
+		BankName varchar(32) default '',
+		BankBranch varchar(64) default '',
 		DeclineTime int default 0,
 		AdminId int default 0,
 		Status int default 0
