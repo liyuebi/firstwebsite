@@ -59,23 +59,14 @@ if ($res2) {
 				if (isNotLoginAndJump()) {
 					return;
 				}
-/*
-				document.getElementById("1").style.color = "red";
-				
-				$('table#tag_table td').click(function(){
-					$(this).css('color','red');//点击的设置字色为红色
-// 					$(this).css('border-bottom','soild red 1px');//点击的设置为绿色
-					$('#tag_table td').not(this).css('color','black');//其他的全部设置为黑色
-// 					$('#tag_table td').not(this).css('border-bottom','none');//其他的全部设置为红色
 
-					if ($(this).attr("id") == "1" ) {
-						switchToAssociated();
-					}
-					else {
-						switchToFans();
-					}
+				$('#main').height($(window).height() - $('#title').height() - $('#bar'
+					).height());
+				
+				$(window).resize(function() {
+					$('#main').height($(window).height() - $('#title').height() - $('#bar'
+						).height());
 				});
-*/
 			});
 			
 			function switchToAssociated()
@@ -107,8 +98,10 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
-		<div class="big_frame">
-			<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; line-height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">好友</h3>
+		<div id="title" align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+			<h3 style="line-height: 50px;">好友</h3>
+		</div>
+		<div id="main" class="big_frame" style="overflow-y: scroll;">
 		
 			<div class="container-fluid" style="margin-top: 5px;">
 				<div class="row">
@@ -150,15 +143,14 @@ if ($res2) {
 		        }
 		        ?>
 	        </div>
-	        
-			<div class="footer"> 
-				<div>
-					<ul class="nav nav-pills" >
-						<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
-						<li style="display:table-cell; width:1%; float: none" class="active"><a style="text-align: center;" href="#">朋友</a></li>
-						<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="me.php">个人中心</a></li>
-					</ul>
-				</div>
+		</div>
+		<div id="bar" class="footer"> 
+			<div>
+				<ul class="nav nav-pills" >
+					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
+					<li style="display:table-cell; width:1%; float: none" class="active"><a style="text-align: center;" href="#">朋友</a></li>
+					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="me.php">个人中心</a></li>
+				</ul>
 			</div>
 		</div>
     </body>
