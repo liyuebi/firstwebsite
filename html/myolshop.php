@@ -176,7 +176,8 @@ if ($con) {
 				}
 				
 				if (isQRGenerated) {
-					$('#qrModal').modal('show');
+					// $('#qrModal').modal('show');
+					location.href = "olsQRCode.php";
 					return;
 				}
 				else {
