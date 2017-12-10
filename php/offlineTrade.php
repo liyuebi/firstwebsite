@@ -34,6 +34,9 @@ if (isset($_POST['func'])) {
 	else if ("sOLSRecord" == $_POST['func']) {
 		searchOfflineShopRecord();
 	}
+	else if ("cwrInA" == $_POST['func']) {
+		changeWithdrawRate();		
+	}
 }
 
 function openOfflineShop($userid, $refererId, &$error_msg)
@@ -863,6 +866,56 @@ function searchOfflineShopRecord()
 			return;
 		}
 	}
+}
+
+function changeWithdrawRate()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["sid"]));
+	$rate = trim(htmlspecialchars($_POST["r"]));
+
+	$rate = floatval($rate);
+
+	if ($rate < 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'提现手续费率不能小于0'));
+		return;
+	}	
+	else if ($rate >= 1) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'提现手续费率不能大于100%'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysql_fetch_assoc($res);
+
+		$res1 = mysql_query("update OfflineShop set WdFeeRate='$rate' where ShopId='$shopId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'修改提现手续费率失败，请稍后重试！'));
+			return;
+		}
+	}
+
+	echo json_encode(array('error'=>'false'));
 }
 
 ?>

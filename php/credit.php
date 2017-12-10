@@ -364,6 +364,7 @@ function applyWithdrawPnts()
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户数据有误，请稍后重试！'));	
 			return;
 		}
+		$handlefee = $row["WdFeeRate"];
 		
 		$result = mysql_query("select * from Credit where UserId='$userid'");
 		if (!$result) {
@@ -402,7 +403,8 @@ function applyWithdrawPnts()
 		}
 		
 		$total = $pnts - $amount;
-		$fee = calcHandleFee($amount, $withdrawHandleRate);
+		// $fee = calcHandleFee($amount, $withdrawHandleRate);
+		$fee = calcHandleFee($amount, $handlefee);
 		$actual = $amount - $fee;
 		
 		// 添加交易申请
@@ -519,13 +521,18 @@ function allowWithdrawPnts()
 		$amount = $row["ApplyAmount"];
 		$applyTime = $row["ApplyTime"];
 		$fee = $amount - $row["ActualAmount"];
+
+		if ($olShopWdApplied != $row["Status"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'状态已改变，操作中断！','index'=>$index));	
+			return;			
+		}
 		
 		$adminId = $_SESSION['adminUid'];
 		
 		$now = time();
 		$result = mysql_query("update PntsWdApplication set Status='$olShopWdAccepted', AcceptTime='$now', AdminId='$adminId' where IndexId='$index'");
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'删除取现申请记录失败，请稍后重试！','index'=>$index));	
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'删除取现申请记录失败，请稍后重试！','index'=>$index));	
 			return;			
 		}
 		
@@ -580,6 +587,11 @@ function denyWithdrawPnts()
 	$userid = $row["UserId"];
 	$shopId = $row["ShopId"];
 	$amount = $row["ApplyAmount"];
+
+	if ($olShopWdApplied != $row["Status"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'状态已改变，操作中断！','index'=>$index));	
+		return;			
+	}
 	
 	$res = mysql_query("select * from Credit where UserId='$userid'");
 	if (!$res || mysql_num_rows($res) <= 0) {

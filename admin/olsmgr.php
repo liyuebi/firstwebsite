@@ -124,6 +124,27 @@ include '../php/constant.php';
 									d8.innerHTML = status;
 							}
 							trow.appendChild(d8);
+
+							var d12 = document.createElement("td");
+							var rateInput = document.createElement("input");
+							rateInput.type = "text";
+							rateInput.value = list[key].WdFeeRate;
+							rateInput.id = "rate_" + key;
+							rateInput.dataset.orig = list[key].WdFeeRate;
+							d12.appendChild(rateInput);
+							var rateBtn = document.createElement("input");
+							rateBtn.type = "button";
+							rateBtn.value = "修改";
+							rateBtn.id = key;
+							if (rateBtn.addEventListener) {
+								rateBtn.addEventListener('click', changeWdHandleFee, false);
+							}
+							else if (rateBtn.attachEvent) {
+								rateBtn.attachEvent('onclick', changeWdHandleFee);
+							}
+							d12.appendChild(rateBtn);
+							trow.appendChild(d12);
+
 							var d9 = document.createElement("td");
 							d9.innerHTML = list[key].TradeAmount;
 							d9.className = "text-info";
@@ -147,6 +168,21 @@ include '../php/constant.php';
 					}
 					else {
 						alert("搜索线下商家失败：" + data.error_msg);
+					}
+				}, "json");
+			}
+
+			function changeWdHandleFee(e)
+			{
+				var rate = document.getElementById("rate_" + e.target.id).value;
+				$.post("../php/offlineTrade.php", {"func":"cwrInA","sid":e.target.id,"r":rate}, function(data){
+
+					if (data.error == "false") {
+						alert("修改成功！");
+					}
+					else {
+						alert("修改失败：" + data.error_msg);	
+						document.getElementById("rate_" + e.target.id).value = document.getElementById("rate_" + e.target.id).dataset.orig;
 					}
 				}, "json");
 			}
@@ -193,6 +229,7 @@ include '../php/constant.php';
 						<th>商家地址</th>
 						<th>营业执照</th>
 						<th>商家状态</th>
+						<th>取现费率</th>
 						<th>收款总额</th>
 						<th>取现总额</th>
 						<th>操作</th>

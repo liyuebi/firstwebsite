@@ -318,6 +318,7 @@ function createOfflineShopTable()
 	 * ReadyForCheckTime: 提交审查时间
 	 * OnlineTime: 上线时间
 	 * DeclineReason: 审核失败原因
+	 * WdFeeRate: 提现手续费率（0 - 1）
 	 * TradeTimes: 收款次数
 	 * TradeAmount: 收款总额
 	 * TradeIncome: 实际收入，从首款总额中减去手续费及给推荐人的分红
@@ -343,6 +344,7 @@ function createOfflineShopTable()
 		ReadyForCheckTime int default 0,
 		OnlineTime int default 0,
 		DeclineReason varchar(256) default '',
+		WdFeeRate decimal(10,3) default 0,
 		TradeTimes int default 0,
 		TradeAmount int default 0,
 		TradeIncome int default 0,
@@ -489,8 +491,8 @@ function createPntsWithdrawTable()
 		PRIMARY KEY(IndexId),
 		UserId int not null,
 		ShopId int default 0,
-		ApplyAmount int not null,
-		ActualAmount int not null,
+		ApplyAmount decimal(10,2) not null,
+		ActualAmount decimal(10,2) not null,
 		ApplyTime int not null,
 		AcceptTime int default 0,
 		NickName varchar(32) default '',

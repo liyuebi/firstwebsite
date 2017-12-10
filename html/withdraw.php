@@ -32,7 +32,8 @@ if (isset($_GET["s"])) {
 include "../php/constant.php";
 $leastCredit = $withdrawFloorAmount;
 $mostCredit = $withdrawCeilAmountOneDay;
-$handlefee = $withdrawHandleRate;
+// $handlefee = $withdrawHandleRate;
+$handlefee = 0;
 $weAcc = '';
 $isWechatSet = false;
 $aliAcc = '';
@@ -95,6 +96,13 @@ if ($con) {
 			$bankAcc = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
 			$isBankSet = true;
 		}
+	}
+
+	$res4 = mysql_query("select * from OfflineShop where UserId='$userid'");
+	if ($res4 && mysql_num_rows($res4) > 0) {
+
+		$row4 = mysql_fetch_assoc($res4);
+		$handlefee = $row4["WdFeeRate"];
 	}
 }
 
@@ -203,7 +211,7 @@ $mostCredit = max(0, $mostCredit - $applyCount);
 				
 				var actualCount = 0;
 				var rate = <?php echo $handlefee; ?>;
-				actualCount = amount - Math.floor(amount * rate);
+				actualCount = amount - Math.floor(amount * rate * 100) / 100;
 				document.getElementById("autual_count").innerHTML = actualCount;
 			}
 			
@@ -306,7 +314,7 @@ $mostCredit = max(0, $mostCredit - $applyCount);
 	        <hr>
         
 	        <div name="display">
-		        <p>当前线下云量：<b><?php echo $mycredit;?></b></p>
+		        <p class="text-info">当前线下云量：<b><?php echo $mycredit;?></b></p>
 		        <p>
 			        <label>每次提现的最少数量为<?php echo $leastCredit; ?>线下云量，提现数量须是100的倍数，您今日还可以提取<?php echo $mostCredit; ?>线下云量。</label>
 			        <input id="amount" class="form-control" type="text" placeholder="请输入提现金额！" onkeypress="return onlyNumber(event)" onblur="calcActualNum()" /> 
