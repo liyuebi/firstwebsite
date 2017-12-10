@@ -98,8 +98,8 @@ if ($res2) {
 		</script>
 	</head>
 	<body>
-		<div id="title" align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
-			<h3 style="line-height: 50px;">好友</h3>
+		<div id="title" align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 50px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+			<h3 style="line-height: 50px; font-size: 20;">好友</h3>
 		</div>
 		<div id="main" class="big_frame" style="overflow-y: scroll;">
 		

@@ -41,6 +41,12 @@ if ($con) {
 				if (isNotLoginAndJump()) {
 					return;
 				}
+
+				$('#main').height($(window).height() - $('#bar').height());
+				
+				$(window).resize(function() {
+					$('#main').height($(window).height() - $('#bar').height());
+				});
 			});
 /*
 			function submitCheck()
@@ -68,44 +74,48 @@ if ($con) {
 	</head>
 	
 	<body>
-		<h3 align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; line-height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;"><?php echo $_SESSION['nickname']; ?>（<?php echo "$phone" ?>）</h3>
-		
-		<a class="link_forward" href="editme.php">
- 			<span>编辑资料</span>
-		</a>
-		<a class="link_forward" href="address.html">
- 			<span>地址管理</span>
-		</a>		
-		<a class="link_forward" href="pwd.php">
- 			<span>密码管理</span>
-		</a>		
-		<a class="link_forward" href="payment.php" style="border-bottom: 0">
- 			<span>支付管理</span>
-		</a>		
-        
-        <hr>
-        
-		<a class="link_forward" href="order.php">
- 			<span>订单管理</span>
-		</a>
-		
-		<a class="link_forward" href="record.php" style="border-bottom: 0">
- 			<span>云量记录</span>
-		</a>		
-				
-        <hr>        
-        
-        <p style="padding-left: 20px;">云粉慈善：献出爱心<b> <?php echo $charity; ?> </b>线上云量</p>
-        
-        <hr>
-        
-        <p style="padding-left: 20px;">客服微信：Lww1555</p>
-        
-        <hr>
-        
-		<input type="button" class="button button-glow button-border button-rounded button-primary" name="submit" style="width: 100%;" value="退出" onclick="logout()" />
-        
-		<div class="footer"> 
+		<div id="main" style="overflow-y: scroll; padding-bottom: 10px;">
+			<div align="center" style="background-color: rgba(0, 0, 255, 0.32); height: 60px; font-size: 20; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+				<h3 style="line-height: 60px; font-size: 20;"><?php echo $_SESSION['nickname']; ?>（<?php echo "$phone" ?>）</h3>
+			</div>
+			
+			<a class="link_forward" href="editme.php">
+	 			<span>编辑资料</span>
+			</a>
+			<a class="link_forward" href="address.html">
+	 			<span>地址管理</span>
+			</a>		
+			<a class="link_forward" href="pwd.php">
+	 			<span>密码管理</span>
+			</a>		
+			<a class="link_forward" href="payment.php" style="border-bottom: 0">
+	 			<span>支付管理</span>
+			</a>		
+	        
+	        <hr>
+	        
+			<a class="link_forward" href="order.php">
+	 			<span>订单管理</span>
+			</a>
+			
+			<a class="link_forward" href="record.php" style="border-bottom: 0">
+	 			<span>云量记录</span>
+			</a>		
+					
+	        <hr>        
+	        
+	        <p style="padding-left: 20px;">云粉慈善：献出爱心<b> <?php echo $charity; ?> </b>线上云量</p>
+	        
+	        <hr>
+	        
+	        <p style="padding-left: 20px;">客服微信：Lww1555</p>
+	        
+	        <hr>
+	        
+			<input type="button" class="button button-glow button-border button-rounded button-primary" name="submit" style="width: 100%;" value="退出" onclick="logout()" />
+        </div>
+
+		<div class="footer" id="bar"> 
 			<div>
 				<ul class="nav nav-pills">
 					<li style="display:table-cell; width:1%; float: none"><a style="text-align: center;" href="home.php">首页</a></li>
