@@ -167,6 +167,12 @@ if ($con) {
 				    	else if ($row["Type"] == $code2OlSHopWdDecline) {
 					    	echo "提现线下云量请求管理员拒绝，退回线下云量" . $row["Amount"] . "。";
 				    	}
+				    	else if ($row["Type"] == $code2TryCP) {
+				    		echo "充话费使用线下云量" . $row["Amount"] . "。";
+				    	}
+				    	else if ($row["Type"] == $code2CancelCP) {
+				    		echo "您取消了话费充值，返还线下云量" . $row["Amount"] . "。";
+				    	}
 				    				    	
 				    	echo "<br>";
 				    	echo "当前线下云量" . $row["CurrAmount"] . "。";

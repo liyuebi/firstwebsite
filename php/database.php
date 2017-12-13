@@ -233,8 +233,10 @@ function createCreditBankTable()
 function createTransactionTable()
 {
 	/*
-	 * Type: 订单类型，1：初始订单，2:充话费，3:充油费，10：自由集市
+	 * Type: 订单类型，1：初始订单，2:充话费，3:充油费，4:新手充话费（部分使用现金） 10：自由集市
 	 * ProductId: 产品ID
+	 * Price: 价格，该比交易的总价格
+	 * PriceInCash： 价格，该比交易的现金付款部分
 	 * AddressId: 添加订单后用户可能修改地址，所以应以记录的地址信息为准。添加原因，发现有订单的地址信息为空，所以添加来防错
 	 * CellNum: 充话费的手机号码，或充油卡时的油卡关联手机号
 	 * CardNum: 充油费的油卡号码
@@ -254,8 +256,9 @@ function createTransactionTable()
 		PRIMARY KEY(OrderId),
 		UserId int NOT NULL,
 		Type int not null,
-		ProductId int NOT NULL,
-		Price decimal(10,2) NOT NULL,
+		ProductId int not null,
+		Price decimal(10,2) not null,
+		PriceInCash decimal(10,2) not null,
 		HandleFee decimal(10,2) default 0,
 		Count int NOT NULL,
 		AddressId int default 0,

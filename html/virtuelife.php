@@ -74,6 +74,9 @@ if ($con) {
 		<a class="link_forward" href="teleFare.php">
 			<span>话费充值</span>
 		</a>
+		<a class="link_forward" href="teleFare1.php">
+			<span>话费充值（新用户专享）</span>
+		</a>
 		<a class="link_forward" href="fuelFare.php" style="border-bottom: 0">
 			<span>油费充值</span>
 		</a>

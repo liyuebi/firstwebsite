@@ -83,6 +83,9 @@
 	$code2OlShopWdAccept = 7;	// 线下商家提现通过
 	$code2OlSHopWdDecline = 8;	// 线下商家提现申请被拒 
 	$code2Divident = 9;		// 线下积分每日分红导致积分变化
+	$code2TryCP = 10;		// 提交手机充值申请，扣除积分
+	$code2CancelCP = 11;	// 用户取消手机充值申请，返还积分
+	$code2StopCP = 12;		// 后台停止手机充值申请，返还积分
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易
@@ -98,8 +101,10 @@
 	// 订单状态
 	$OrderStatusBuy = 1; 	// 订单状态，用户已下单
 	$OrderStatusDefault = 2; 	// 订单状态，默认给新用户添加的订单，状态是已付款，但需要添加地址信息
-	$OrderStatusDelivery = 3;	// 订单状态，卖家已发货
-	$OrderStatusAccept = 5; 	// 订单状态，用户已收货
+	$OrderStatusPaid = 3;		// 订单状态，买家完成支付
+	$OrderStatusCanceled = 4;	// 订单状态，买家取消订单
+	$OrderStatusDelivery = 6;	// 订单状态，卖家已发货
+	$OrderStatusAccept = 8; 	// 订单状态，用户已收货
 	
 	// 公告状态
 	$postStatusWait = 0;	// 公告状态，新添加后等待发布

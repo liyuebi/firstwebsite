@@ -9,6 +9,15 @@ if (!isset($_POST['func'])) {
 if ("phoneCharge" == $_POST['func']) {
 	createChargePhoneOrder();
 }
+else if ("pc1" == $_POST['func']) {
+	createChargePhoneWithCashOrder();
+}
+else if ("confirmPC1" == $_POST['func']) {
+	confirmChargePhoneWithCashOrder();
+}
+else if ("cancelPC1" == $_POST['func']) {
+	cancelChargePhoneWithCashOrder();
+}
 else if ("fuelCharge" == $_POST['func']) {
 	createChargeFuelOrder();
 }
@@ -23,6 +32,9 @@ else if ("delivery" == $_POST['func']) {
 }
 else if ("deliveryPhone" == $_POST['func']) {
 	deliveryPhoneFare();
+}
+else if ("deliveryPC1" == $_POST['func']) {
+	deliveryPhoneFareWithCashOrder();	
 }
 else if ("deliveryOil" == $_POST['func']) {
 	deliveryOilFare();
@@ -150,6 +162,233 @@ function createChargePhoneOrder()
 	
 	echo json_encode(array("error"=>"false"));
 	return;
+}
+
+function createChargePhoneWithCashOrder()
+{
+	include 'constant.php';
+	include 'regtest.php';
+	
+	$phonenum = trim(htmlspecialchars($_POST['phonenum']));
+	// $amount = trim(htmlspecialchars($_POST['amount']));
+	$paypwd = trim(htmlspecialchars($_POST['paypwd']));
+	$amount = 100;
+
+	// 验证电话号码
+	if (!isValidCellPhoneNum($phonenum)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'电话号码格式不对，请重新填写！'));
+		return;
+	}
+	
+	// if ($amount < $phoneChargeLeast) {
+	// 	$str = '充值额度不能小于' . $phoneChargeLeast . '，请重新输入！';
+	// 	echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$str));
+	// 	return;
+	// }
+	// else if ($amount > $phoneChargeMost) {
+	// 	$str = '充值额度不能大于' . $phoneChargeMost . '，请重新输入！';
+	// 	echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
+	// 	return;		
+	// }
+
+	// if ($amount % 10 != 0) {
+	// 	echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'充值额度须为10的整数倍！'));
+	// 	return;		
+	// }
+	
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	if (!password_verify($paypwd, $_SESSION['buypwd'])) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'支付密码错误，请重新输入！'));
+		return;
+	}	
+	
+	$con = connectToDB();
+	if (!$con) {
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else {
+		
+		$userid = $_SESSION["userId"];
+		$handleFee = 0;// $amount * $phoneChargeRate;
+		$cashAmout = $amount * 0.5;
+		$pntAmout = $amount - $cashAmout;
+		
+		$res = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
+			return;				
+		}
+		
+		$row = mysql_fetch_assoc($res);
+		$pnts = $row["Pnts"];
+		
+		$result = createTransactionTable();
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'查表失败，请稍后重试！'));	
+			return;						
+		}
+
+		$res1 = mysql_query("select * from Transaction where UserId='$userid' and Type='4' and Status != '$OrderStatusCanceled'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'信息查询失败，请稍后重试！'));	
+			return;				
+		}
+		else if (mysql_num_rows($res1) > 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'您已参加过该活动，每个用户仅限参加一次!'));	
+			return;					
+		}
+
+		if ($pnts < $handleFee + $pntAmout) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线下云量余额不足！'));
+			return;					
+		}
+		
+		$now = time();
+		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, PriceInCash, HandleFee, Count, CellNum, OrderTime, Status)
+								values($userid, 4, 0, $amount, $cashAmout, $handleFee, 1, $phonenum, $now, $OrderStatusBuy)");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！'));	
+			return;				
+		}
+		
+		$insertIdx = mysql_insert_id();
+		$pnts = $pnts - $handleFee - $pntAmout;
+		$res1 = mysql_query("update Credit set Pnts='$pnts' where UserId='$userid'");
+		if (!$res1) {
+			/// !! log error
+		}
+		else {
+			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
+									values($userid, $pntAmout, $pnts, $handleFee, $now, $insertIdx, $code2TryCP)");
+			if (!$res2) {
+				/// !! log error
+			}	
+		}
+	}
+	
+	echo json_encode(array("error"=>"false"));
+	return;
+}
+
+function confirmChargePhoneWithCashOrder()
+{
+	include 'constant.php';
+
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
+
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con) {
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else {
+		
+		$userid = $_SESSION["userId"];
+
+		$res = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询订单出错，请稍后重试！'));
+			return;
+		}
+		$row = mysql_fetch_assoc($res);
+
+		if ($OrderStatusBuy != $row["Status"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'订单状态改变，请刷新重试！'));
+			return;
+		}
+
+		$now = time();
+		$res1 = mysql_query("update Transaction set Status='$OrderStatusPaid', ConfirmTime='$now' where OrderId='$TransactionId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改订单状态出错，请稍后重试！'));
+			return;
+		}
+	}
+
+	echo json_encode(array("error"=>"false"));	
+}
+
+function cancelChargePhoneWithCashOrder()
+{
+	include 'constant.php';
+
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
+
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con) {
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else {
+		
+		$userid = $_SESSION["userId"];
+
+		$res = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+		if (!$res || mysql_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询订单出错，请稍后重试！'));
+			return;
+		}
+		$row = mysql_fetch_assoc($res);
+
+		if ($OrderStatusBuy != $row["Status"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'订单状态改变，请刷新重试！'));
+			return;
+		}
+
+		$now = time();
+		$res1 = mysql_query("update Transaction set Status='$OrderStatusCanceled', CancelTime='$now' where OrderId='$TransactionId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改订单状态出错，请稍后重试！'));
+			return;
+		}
+
+		$price = $row["Price"];
+		$priceInCash = $row["PriceInCash"];
+		$priceInPtn = $price - $priceInCash;
+
+		$res2 = mysql_query("select * from Credit where UserId='$userid'");
+		if (!$res2 || mysql_num_rows($res2) <= 0) {
+			// !!! log error
+		}
+		else {
+
+			$row2 = mysql_fetch_assoc($res2);
+			$pnt = $row2["Pnts"];
+			$pnt += $priceInPtn;
+
+			$res3 = mysql_query("update Credit set Pnts='$pnt' where UserId='$userid'");
+			if (!$res3) {
+				// !!! log error
+			} 
+			else {
+				$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
+									values($userid, $priceInPtn, $pnt, 0, $now, $TransactionId, $code2CancelCP)");
+				if (!$res4) {
+					/// !! log error
+				}	
+			}
+		}
+	}
+
+	echo json_encode(array("error"=>"false"));
 }
 
 function createChargeFuelOrder()
@@ -959,6 +1198,63 @@ function deliveryPhoneFare()
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
+}
+
+function deliveryPhoneFareWithCashOrder()
+{
+	include 'constant.php';
+	include_once 'admin_func.php';
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$TransactionId = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
+		return;		
+	}
+	
+	$row = mysql_fetch_assoc($result);	
+	$status = $row['Status'];
+	
+	if ($status != $OrderStatusPaid) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不是已付款的状态，请重新检查！'));
+		return;
+	}
+	
+	if ($row["Type"] != 4) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'订单类型错误！'));
+		return;
+	}
+	
+	$time = time();
+	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
+		return;		
+	}
+	
+	include_once "func.php";
+	$amount = $row["Price"];
+	$amountInCash = $row["PriceInCash"];
+	$fee = $row["HandleFee"];
+	insertVLStatistics($amount - $amountInCash, $fee);
+		
+	echo json_encode(array('error'=>'false','index'=>$TransactionId));
+	return;
+
 }
 
 function deliveryOilFare()
