@@ -30,8 +30,16 @@
 		<!-- Bootstrap 3.3.7 -->
 		<!-- <script src="../js/bootstrap-3.3.7/bootstrap.min.js"></script> -->
 		<script src="../js/adminlte/adminlte.min.js"></script>
+		<script src="../js/scripts.js"></script>
 		<script type="text/javascript">
 			
+			var numNewOrder = getCookie('c_n_u_o');
+			var numPhoneOrder = getCookie('c_p_c_o');
+			var numPhoneOrderNew = getCookie('c_p_c_f_n');
+			var numOilOrder = getCookie('c_o_c_o');
+			var numOLReview = getCookie('c_ol_r');
+			var numOLWithdraw = getCookie('c_ol_wd_a');
+
 			$(document).ready(function() {
 				$('#riframe').height($(window).height());
 				$('#rightContent').height($(window).height());
@@ -42,6 +50,8 @@
 					$('#rightContent').height($(window).height());
 					$('.main-sidebar').height($(window).height());
 				});
+
+				window.setInterval(updateNums, 60000);
 			});
 			
 			var tmpmenu = 'index_Index';
@@ -50,13 +60,96 @@
 				$(obj).addClass('active');
 				tmpmenu = $(obj).attr('data-id');
 			}
+
+			function updateNums()
+			{
+				$.post("../php/login.php", {"func":"updateN"}, function(data){
+					if (data.error == "false") {
+
+						var nNumNewOrder = getCookie('c_n_u_o');
+						var nNumPhoneOrder = getCookie('c_p_c_o');
+						var nNumPhoneOrderNew = getCookie('c_p_c_f_n');
+						var nNumOilOrder = getCookie('c_o_c_o');
+						var nNumOLReview = getCookie('c_ol_r');
+						var nNumOLWithdraw = getCookie('c_ol_wd_a');
+
+						var bDiffenert = false;
+						var bLarger = false;
+						if (numNewOrder != nNumNewOrder) {
+							bDiffenert = true;
+							if (nNumNewOrder > numNewOrder) {
+								bLarger = true;
+							}
+							numNewOrder = nNumNewOrder;
+						}
+						if (numPhoneOrder != nNumPhoneOrder) {
+							bDiffenert = true;
+							if (nNumPhoneOrder > numPhoneOrder) {
+								bLarger = true;
+							}
+							numPhoneOrder = nNumPhoneOrder;
+						}
+						if (numPhoneOrderNew != nNumPhoneOrderNew) {
+							bDiffenert = true;
+							if (nNumPhoneOrderNew > numPhoneOrderNew) {
+								bLarger = true;
+							}
+							numPhoneOrderNew = nNumPhoneOrderNew;
+						}
+						if (numOilOrder != nNumOilOrder) {
+							bDiffenert = true;
+							if (nNumOilOrder > numOilOrder) {
+								bLarger = true;
+							}
+							numOilOrder = nNumOilOrder;
+						}
+						if (numOLReview != nNumOLReview) {
+							bDiffenert = true;
+							if (nNumOLReview > numOLReview) {
+								bLarger = true;
+							}
+							numOLReview = nNumOLReview;
+						}
+						if (numOLWithdraw != nNumOLWithdraw) {
+							bDiffenert = true;
+							if (nNumOLWithdraw > numOLWithdraw) {
+								bLarger = true;
+							}
+							numOLWithdraw = nNumOLWithdraw;
+						}
+
+						if (bDiffenert) {
+
+							var src = document.getElementById('rightContent').contentWindow.location.href;
+							if (src.includes('indexpage.php')) {
+								document.getElementById('rightContent').contentWindow.location.reload();
+							}
+							else {
+								// log
+							}
+						}
+
+						if (bLarger) {
+							document.getElementById("change_sound").play();
+						}
+					}
+					else {
+						// !!! log error
+					}
+				}, "json");
+			}
 		</script>
 	</head>
 	<body class="hold-transition skin-blue sidebar-mini">		
+
+		<audio id="change_sound" src="../audio/7499.wav">
+			您的浏览器不支持 audio 标签。
+		</audio>
+
 		<div class="wrapper">
 			<header class="main-header">
 			    <!-- Logo -->
-			    <a href="index2.html" class="logo">
+			    <a href="adminhome.php" class="logo">
 			    	<!-- mini logo for sidebar mini 50x50 pixels -->
 					<span class="logo-mini"><b>连</b></span>
 					<!-- logo for regular state and mobile devices -->
@@ -183,7 +276,7 @@
 				</section>
 			</aside>
 			<section class="content-wrapper right-side" id="riframe">
-				<iframe id='rightContent' name='rightContent' width="100%"></iframe>
+				<iframe id='rightContent' name='rightContent' width="100%" src="indexpage.php"></iframe>
 			</section>
 		</div>
 		

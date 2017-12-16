@@ -26,6 +26,9 @@ else if ("logout" == $_POST['func']) {
 else if ("loginAdmin" == $_POST['func']) {
 	loginAdmin();	
 }
+else if ("updateN" == $_POST['func']) {
+	updateIdxDisplayCntInAdmin();
+}
 else if ("setPayPwd" == $_POST['func']) {
 	setPayPwd();
 }
@@ -163,10 +166,27 @@ function loginAdmin()
 		$userid = $row["AdminId"];
 		$now = time();
 		mysql_query("update AdminTable set LastLoginTime='$now' where AdminId='$userid'");
+
+		getIndexDisplayCnt();
 	}
 	
 	$arr = array('error'=>'false');
 	echo json_encode($arr);
+}
+
+function updateIdxDisplayCntInAdmin()
+{
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'连接失败，请稍后重试！'));
+		return;
+	}
+	else {
+		include "admin_func.php";
+		getIndexDisplayCnt();
+	}
+	echo json_encode(array('error'=>'false'));
 }
 
 function adminChangePwd()
