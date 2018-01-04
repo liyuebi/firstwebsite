@@ -7,7 +7,7 @@ include "../php/database.php";
 $con = connectToDB();
 if ($con) {
 	
- 	$res = mysql_query("select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
+ 	$res = mysqli_query($con, "select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
 }
 
 ?>
@@ -55,7 +55,7 @@ if ($con) {
 			<?php 
 				if ($res) {
 					date_default_timezone_set('PRC');
-					while ($row = mysql_fetch_array($res)) {
+					while ($row = mysqli_fetch_assoc($res)) {
 			?>
 					<div>
 						<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>">

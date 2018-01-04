@@ -34,33 +34,33 @@ $con = connectToDB();
 if ($con) {
 	
 	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$mycredit = 0;
 	}
 	
-	$res1 = mysql_query("select * from WechatAccount where UserId='$userid'");
+	$res1 = mysqli_query($con, "select * from WechatAccount where UserId='$userid'");
 	if ($res1) {
-		if (mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
+		if (mysqli_num_rows($res1) > 0) {
+			$row1 = mysqli_fetch_assoc($res1);
 			$weAcc = $row1["WechatAcc"];
 			$isWechatSet = true;
 		}
 	}
-	$res2 = mysql_query("select * from AlipayAccount where UserId='$userid'");
+	$res2 = mysqli_query($con, "select * from AlipayAccount where UserId='$userid'");
 	if ($res2) {
-		if (mysql_num_rows($res2) > 0) {
-			$row2 = mysql_fetch_assoc($res2);
+		if (mysqli_num_rows($res2) > 0) {
+			$row2 = mysqli_fetch_assoc($res2);
 			$aliAcc = $row2["AlipayAcc"];
 			$isAlipaySet = true;
 		}
 	}
 /*
-	$res3 = mysql_query("select * from BankAccount where UserId='$userid'");
+	$res3 = mysqli_query($con, "select * from BankAccount where UserId='$userid'");
 	if ($res3) {
-		if (mysql_num_rows($res3) > 0) {
-			$row3 = mysql_fetch_assoc($res3);
+		if (mysqli_num_rows($res3) > 0) {
+			$row3 = mysqli_fetch_assoc($res3);
 			$bankAcc = $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"];
 			$isBankSet = true;
 		}

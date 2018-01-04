@@ -24,7 +24,7 @@ if (!$con)
 
 include "./../php/constant.php";
 $userid = $_SESSION["userId"];
-$result = mysql_query("select * from Transaction where UserId='$userid' and Type!=1 order by OrderTime desc");
+$result = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type!=1 order by OrderTime desc");
 if (!$result) {
 	return;	
 }
@@ -133,7 +133,7 @@ if (!$result) {
 	        <div>
 		        <?php
 			        date_default_timezone_set('PRC');
-			        while($row = mysql_fetch_array($result)) {
+			        while($row = mysqli_fetch_assoc($result)) {
 				        if (2 == $row["Type"]) {
 		        ?>
 		        		<ul class="order_block" style="background: white; margin-top: 3%;">
@@ -229,77 +229,6 @@ if (!$result) {
 			        }
 		        ?>
 	        </div>
-
-	
-<!--
-			<table id="tag_table" class="t2">
-				<tr>
-					<td id="1" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 10%; margin-right: 5%;" >未完成订单</td>
-					<td id="2" width="40%" style="border-bottom: 1px solid rgba(0, 0, 0, 0); margin-left: 5%; margin-right: 10%;">已完成订单</td>
-				</tr>
-			</table>
-			
-	        <div id="block_unfinish" style="display: inline; margin-top: 3%;">
-				<table border="1" width="100%">
-					<tr>
-						<th>订单号</th>
-						<th>数量</th>
-						<th>价格</th>
-						<th>快递单号</th>
-						<th>状态</th>
-					</tr>
-					<?php
-						include "../php/constant.php";
-						while($row = mysql_fetch_array($result)) {
-					?>
-							<tr>
-								<td><?php echo $row["UserId"]; ?></td>
-								<td><?php echo $row["Count"] ?></td>
-								<td><?php echo $row["Price"]; ?></td>
-								<td><?php echo $row["CourierNum"]; ?></td>
-								<td align="center"><?php 
-									if ($OrderStatusBuy == $row["Status"]) 
-										echo "等待发货"; 
-									else if ($OrderStatusDefault == $row["Status"]) {
-	// 									echo "请确认地址"; 
-										?>
-										<input type="button" value="确认订单" id=<?php echo $row["OrderId"]; ?> onclick="confirmAddress(this)" />
-										<?php
-									}
-									else if ($OrderStatusDelivery == $row["Status"]) {
-										?>
-										<input type="button" value="确认收货" id=<?php echo $row["OrderId"]; ?> onclick="onConfirm(this)" />
-										<?php
-									}
-									else if ($OrderStatusAccept == $row["Status"])
-										echo "已收货";
-									?>
-								</td>
-							</tr>
-					<?php
-						}
-					?>
-				</table>
-	        </div>
-	        
-	        <div id="block_finish" style="display: none">
-		        <?php
-			        date_default_timezone_set('PRC');
-			        while($row1 = mysql_fetch_array($res1)) {
-		        ?>
-		        		<ul class="order_block" style="background: white; margin-top: 3%;">
-			        		<li class="left_ele"><b><?php if ($row1["ProductId"] == 1) echo $prodcutName; else echo $prodcutName1; ?></b></li>
-			        		<li class="right_ele">x <?php echo $row1["Count"]; ?></li>
-			        		<br>
-			        		<hr>
-			        		<li class="left_ele"><?php echo date("Y-m-d H:i:s" ,$row1["OrderTime"]); ?></li>
-			        		<li class="right_ele" style="float: right">使用蜜券： <?php echo ($row1["Count"] * $row1["Price"]); ?></li>
-		        		</ul>
-		        <?php
-			        }
-		        ?>
-	        </div>
--->
         </div>
 		<div class="modal fade" id="payModal" tabindex="-1" role="dialog" aria-labelledby="payModalLabel">
 			<div class="modal-dialog" role="document">

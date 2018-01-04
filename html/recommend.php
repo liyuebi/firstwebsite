@@ -17,15 +17,14 @@ else {
 }
 
 $mycredit = 0;
-$neededcredit = $refererConsumePoint;
 $userid = $_SESSION["userId"];
 $paypwd = $_SESSION["buypwd"];
 
 $con = connectToDB();
 if ($con) {
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$mycredit = $row["Credits"];
 	}
 }
@@ -152,14 +151,6 @@ if ($con) {
 					?>
 					<p class="text-danger" style="margin-bottom: 0;">您的支付密码还没有设置</p>
 					<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="设置支付密码！" onclick="goSetPayPwd()" />
-		<!--
-					<?php
-						}
-						else if ($neededcredit > $mycredit) {
-					?>
-					<p>您的注册券余额不足</p>
-					<input type="button" class="button-rounded" style="width: 45%; height: 30px; display: block; margin: 20px 0;" name="submit" value="前往云量交易" onclick="goCharge()" />
-		-->
 					<?php
 						}
 						else {

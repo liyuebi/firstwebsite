@@ -118,13 +118,13 @@ function createChargePhoneOrder()
 		$userid = $_SESSION["userId"];
 		$handleFee = $amount * $phoneChargeRate;
 		
-		$res = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
 			return;				
 		}
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$credit = $row["Credits"];
 		
 		if ($credit < $handleFee + $amount) {
@@ -132,14 +132,14 @@ function createChargePhoneOrder()
 			return;					
 		}
 		
-		$result = createTransactionTable();
+		$result = createTransactionTable($con);
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'交易创建失败，请稍后重试！'));	
 			return;						
 		}
 		
 		$now = time();
-		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CellNum, OrderTime, Status)
+		$res1 = mysqli_query($con, "insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CellNum, OrderTime, Status)
 								values($userid, 2, 0, $amount, $handleFee, 1, $phonenum, $now, $OrderStatusBuy)");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！'));	
@@ -147,12 +147,12 @@ function createChargePhoneOrder()
 		}
 		
 		$credit = $credit - $handleFee - $amount;
-		$res1 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+		$res1 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$res1) {
 			/// !! log error
 		}
 		else {
-			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
+			$res2 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
 									values($userid, $amount, $credit, $handleFee, $now, $now, $codeTryChargePhone)");
 			if (!$res2) {
 				/// !! log error
@@ -219,27 +219,27 @@ function createChargePhoneWithCashOrder()
 		$cashAmout = $amount * 0.5;
 		$pntAmout = $amount - $cashAmout;
 		
-		$res = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
 			return;				
 		}
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$pnts = $row["Pnts"];
 		
-		$result = createTransactionTable();
+		$result = createTransactionTable($con);
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'查表失败，请稍后重试！'));	
 			return;						
 		}
 
-		$res1 = mysql_query("select * from Transaction where UserId='$userid' and Type='4' and Status != '$OrderStatusCanceled'");
+		$res1 = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type='4' and Status != '$OrderStatusCanceled'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'信息查询失败，请稍后重试！'));	
 			return;				
 		}
-		else if (mysql_num_rows($res1) > 0) {
+		else if (mysqli_num_rows($res1) > 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'您已参加过该活动，每个用户仅限参加一次!'));	
 			return;					
 		}
@@ -250,21 +250,21 @@ function createChargePhoneWithCashOrder()
 		}
 		
 		$now = time();
-		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, PriceInCash, HandleFee, Count, CellNum, OrderTime, Status)
+		$res1 = mysqli_query($con, "insert into Transaction (UserId, Type, ProductId, Price, PriceInCash, HandleFee, Count, CellNum, OrderTime, Status)
 								values($userid, 4, 0, $amount, $cashAmout, $handleFee, 1, $phonenum, $now, $OrderStatusBuy)");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！'));	
 			return;				
 		}
 		
-		$insertIdx = mysql_insert_id();
+		$insertIdx = mysqli_insert_id($con);
 		$pnts = $pnts - $handleFee - $pntAmout;
-		$res1 = mysql_query("update Credit set Pnts='$pnts' where UserId='$userid'");
+		$res1 = mysqli_query($con, "update Credit set Pnts='$pnts' where UserId='$userid'");
 		if (!$res1) {
 			/// !! log error
 		}
 		else {
-			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
+			$res2 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
 									values($userid, $pntAmout, $pnts, $handleFee, $now, $insertIdx, $code2TryCP)");
 			if (!$res2) {
 				/// !! log error
@@ -297,12 +297,12 @@ function confirmChargePhoneWithCashOrder()
 		
 		$userid = $_SESSION["userId"];
 
-		$res = mysql_query("select * from Transaction where OrderId='$TransactionId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询订单出错，请稍后重试！'));
 			return;
 		}
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 
 		if ($OrderStatusBuy != $row["Status"]) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'订单状态改变，请刷新重试！'));
@@ -310,7 +310,7 @@ function confirmChargePhoneWithCashOrder()
 		}
 
 		$now = time();
-		$res1 = mysql_query("update Transaction set Status='$OrderStatusPaid', ConfirmTime='$now' where OrderId='$TransactionId'");
+		$res1 = mysqli_query($con, "update Transaction set Status='$OrderStatusPaid', ConfirmTime='$now' where OrderId='$TransactionId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改订单状态出错，请稍后重试！'));
 			return;
@@ -341,12 +341,12 @@ function cancelChargePhoneWithCashOrder()
 		
 		$userid = $_SESSION["userId"];
 
-		$res = mysql_query("select * from Transaction where OrderId='$TransactionId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询订单出错，请稍后重试！'));
 			return;
 		}
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 
 		if ($OrderStatusBuy != $row["Status"]) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'订单状态改变，请刷新重试！'));
@@ -354,7 +354,7 @@ function cancelChargePhoneWithCashOrder()
 		}
 
 		$now = time();
-		$res1 = mysql_query("update Transaction set Status='$OrderStatusCanceled', CancelTime='$now' where OrderId='$TransactionId'");
+		$res1 = mysqli_query($con, "update Transaction set Status='$OrderStatusCanceled', CancelTime='$now' where OrderId='$TransactionId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改订单状态出错，请稍后重试！'));
 			return;
@@ -364,22 +364,22 @@ function cancelChargePhoneWithCashOrder()
 		$priceInCash = $row["PriceInCash"];
 		$priceInPtn = $price - $priceInCash;
 
-		$res2 = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res2 || mysql_num_rows($res2) <= 0) {
+		$res2 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res2 || mysqli_num_rows($res2) <= 0) {
 			// !!! log error
 		}
 		else {
 
-			$row2 = mysql_fetch_assoc($res2);
+			$row2 = mysqli_fetch_assoc($res2);
 			$pnt = $row2["Pnts"];
 			$pnt += $priceInPtn;
 
-			$res3 = mysql_query("update Credit set Pnts='$pnt' where UserId='$userid'");
+			$res3 = mysqli_query($con, "update Credit set Pnts='$pnt' where UserId='$userid'");
 			if (!$res3) {
 				// !!! log error
 			} 
 			else {
-				$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
+				$res4 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, ApplyIndexId, Type)
 									values($userid, $priceInPtn, $pnt, 0, $now, $TransactionId, $code2CancelCP)");
 				if (!$res4) {
 					/// !! log error
@@ -443,13 +443,13 @@ function createChargeFuelOrder()
 		$userid = $_SESSION["userId"];
 		$handleFee = $amount * $oilChargeRate;
 		
-		$res = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
 			return;				
 		}
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$credit = $row["Credits"];
 		
 		if ($credit < $handleFee + $amount) {
@@ -457,27 +457,27 @@ function createChargeFuelOrder()
 			return;					
 		}
 		
-		$result = createTransactionTable();
+		$result = createTransactionTable($con);
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'交易创建失败，请稍后重试！'));	
 			return;						
 		}
 		
 		$now = time();
-		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardNum, CellNum, OrderTime, Status)
+		$res1 = mysqli_query($con, "insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardNum, CellNum, OrderTime, Status)
 								values($userid, 3, 0, $amount, $handleFee, 1, '$card', $phonenum, $now, $OrderStatusBuy)");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysql_error()));	
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysqli_error($con)));	
 			return;				
 		}
 		
 		$credit = $credit - $handleFee - $amount;
-		$res1 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+		$res1 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$res1) {
 			/// !! log error
 		}
 		else {
-			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
+			$res2 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
 									values($userid, $amount, $credit, $handleFee, $now, $now, $codeTryChargePhone)");
 			if (!$res2) {
 				/// !! log error
@@ -531,13 +531,13 @@ function createChargeFuelLAOrder()
 		$userid = $_SESSION["userId"];
 		$handleFee = $amount * $oilChargeRate;
 		
-		$res = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'查询用户信息出错！'));
 			return;				
 		}
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$credit = $row["Credits"];
 		
 		if ($credit < $handleFee + $amount) {
@@ -545,27 +545,27 @@ function createChargeFuelLAOrder()
 			return;					
 		}
 		
-		$result = createTransactionTable();
+		$result = createTransactionTable($con);
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'交易创建失败，请稍后重试！'));	
 			return;						
 		}
 		
 		$now = time();
-		$res1 = mysql_query("insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardComp, CardNum, CellNum, OrderTime, Status)
+		$res1 = mysqli_query($con, "insert into Transaction (UserId, Type, ProductId, Price, HandleFee, Count, CardComp, CardNum, CellNum, OrderTime, Status)
 								values($userid, 3, 0, $amount, $handleFee, 1, 2, '$card', $phonenum, $now, $OrderStatusBuy)");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysql_error()));	
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'交易创建失败，请稍后重试！','sql_error'=>mysqli_error($con)));	
 			return;				
 		}
 		
 		$credit = $credit - $handleFee - $amount;
-		$res1 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+		$res1 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$res1) {
 			/// !! log error
 		}
 		else {
-			$res2 = mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
+			$res2 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, HandleFee, ApplyTime, AcceptTime, Type)
 									values($userid, $amount, $credit, $handleFee, $now, $now, $codeTryChargePhone)");
 			if (!$res2) {
 				/// !! log error
@@ -613,18 +613,18 @@ function reinvest()
 	$userid = $_SESSION["userId"];
 	
 	$boughtLimit = 0;
-	$result = mysql_query("select * from Product where ProductId='$productId'");
+	$result = mysqli_query($con, "select * from Product where ProductId='$productId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'选择的产品无效！'));	
 		return;
 	}
 	else {
-		if (mysql_num_rows($result) <= 0) {
+		if (mysqli_num_rows($result) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'找不到指定产品！'));	
 			return;				
 		}
 		else {
-			$product = mysql_fetch_assoc($result);
+			$product = mysqli_fetch_assoc($result);
 			$price = $product["Price"];
 			$boughtLimit = $product["LimitOneDay"];
 		}
@@ -632,7 +632,7 @@ function reinvest()
 	
 	// 检查是否超过一日购买上限
 	if ($boughtLimit > 0) {
-	 	$boughtCount = getDayBoughtCount($userid, $productId);
+	 	$boughtCount = getDayBoughtCount($con, $userid, $productId);
 	 	if ($count > $boughtLimit - $boughtCount) {
  			echo json_encode(array('error'=>'true','error_code'=>'14','error_msg'=>'购买个数超过今天剩余的上限，请重新选择！'));
 			return;				
@@ -640,7 +640,7 @@ function reinvest()
  	}
  	
  	// 检查是否超过等级购买上限
- 	$lvlBought = getLevelBoughtCnt($userid, $_SESSION['lvl'], 0);	// use 0 as product id for reinvest
+ 	$lvlBought = getLevelBoughtCnt($con, $userid, $_SESSION['lvl'], 0);	// use 0 as product id for reinvest
  	if ($lvlBought >= $levelReinvestTime[$_SESSION['lvl'] - 1]) {
 		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'当前等级下此产品已达到购买上限，暂时不能购买！'));
 		return;				
@@ -656,29 +656,29 @@ function reinvest()
 	}
 		
 	// 更新小金库
-	$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
+	$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
 	if (!$res1) {
 		echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'增加小金库数值时出错1！'));
 		return;				
 	}
-	$row1 = mysql_fetch_assoc($res1);
+	$row1 = mysqli_fetch_assoc($res1);
 	
 	$totalPrice = $price * $count;
 	$creditInfo = false;
 	$credit = 0;
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'用户积分信息出错！'));	
 		return;
 	}
 	else {
-		if (mysql_num_rows($res) <= 0) {
+		if (mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户积分信息出错了！'));	
 			return;				
 		}
 		else {
-			$creditInfo = mysql_fetch_assoc($res);
+			$creditInfo = mysqli_fetch_assoc($res);
 			$credit = $creditInfo["Credits"];
 		}
 	}
@@ -694,19 +694,19 @@ function reinvest()
 	$phonenum = '';
 	if ($productId != 2) {
 		
-		$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-		if (!$result || mysql_num_rows($result) <= 0) {
+		$result = mysqli_query($con, "select * from Address where AddressId='$addressId' and UserId='$userid'");
+		if (!$result || mysqli_num_rows($result) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
 			return;								
 		}
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$address = $row["Address"];
 // 		$zipcode = $row["ZipCode"];
 		$receiver = $row["Receiver"];
 		$phonenum = $row["PhoneNum"];
 	}
 	
-	$result = createTransactionTable();
+	$result = createTransactionTable($con);
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'交易创建失败，请稍后重试！'));	
 		return;						
@@ -748,7 +748,7 @@ function reinvest()
 	$lastRwdBPCntPost = $lastRwdBPCnt + $cnt * $rewardBPCnt;
 	$dynVault = $creditInfo['Vault'] + $count * $dyNewAccountVault;
 	
-	$result = mysql_query("update Credit set Credits='$left', Vault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
+	$result = mysqli_query($con, "update Credit set Credits='$left', Vault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
@@ -759,7 +759,7 @@ function reinvest()
 	if ($productId == 2) {
 		$status = $OrderStatusAccept;
 	}
-	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, AddressId, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
+	$result = mysqli_query($con, "insert into Transaction (UserId, ProductId, Price, Count, AddressId, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
 					VALUES('$userid', '$productId', '$totalPrice', '$count', '0', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$status')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
@@ -782,19 +782,19 @@ function reinvest()
 		$error_msg = '';
 		$sql_error = '';
 		
-		insertNewUserNode($userid, $phone, $name, $idNum, 0, $newUserId, $error_code, $error_msg, $sql_error);	
+		insertNewUserNode($con, $userid, $phone, $name, $idNum, 0, $newUserId, $error_code, $error_msg, $sql_error);	
 	
 		if (0 != $newUserId) {
-			$result = mysql_query("select * from Credit where UserId='$newUserId'");
+			$result = mysqli_query($con, "select * from Credit where UserId='$newUserId'");
 			if (!$result) {
 				// !!! log error
 			}
 			else {
-				$num = mysql_num_rows($result);
+				$num = mysqli_num_rows($result);
 				if ($num == 0) {
 					$vault = 0;
 					$dynVault = 0;
-					$result = mysql_query("insert into Credit (UserId, Vault)
+					$result = mysqli_query($con, "insert into Credit (UserId, Vault)
 						VALUES('$newUserId', '$vault')");
 					if (!$result) {
 						// !!! log
@@ -813,21 +813,21 @@ function reinvest()
 		}
 		
 		// 统计新用户总数增加
-// 		insertRecommendStatistics(0, 0, 0);
+// 		insertRecommendStatistics($con, 0, 0, 0);
 	}
 
 	// 修改今天购买个数
-	updateDayBoughtCount($userid, $productId, $count);
+	updateDayBoughtCount($con, $userid, $productId, $count);
 	// 修改等级购买个数
-	updateLevelBoughtCount($userid, $_SESSION['lvl'], 0, $count);
+	updateLevelBoughtCount($con, $userid, $_SESSION['lvl'], 0, $count);
 	
 	// 纪录积分记录
 	$now = time();
-	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+	mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $count);
+	insertOrderStatistics($con, $totalPrice, $count);
 	
 	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserIds));
 	return;
@@ -875,18 +875,18 @@ function purchaseProduct()
 	$userid = $_SESSION["userId"];
 	
 	$boughtLimit = 0;
-	$result = mysql_query("select * from Product where ProductId='$productId'");
+	$result = mysqli_query($con, "select * from Product where ProductId='$productId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'选择的产品无效！'));	
 		return;
 	}
 	else {
-		if (mysql_num_rows($result) <= 0) {
+		if (mysqli_num_rows($result) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'找不到指定产品！'));	
 			return;				
 		}
 		else {
-			$product = mysql_fetch_assoc($result);
+			$product = mysqli_fetch_assoc($result);
 			$price = $product["Price"];
 			$boughtLimit = $product["LimitOneDay"];
 		}
@@ -894,7 +894,7 @@ function purchaseProduct()
 	
 	// 检查是否超过一日购买上限
 	if ($boughtLimit > 0) {
-	 	$boughtCount = getDayBoughtCount($userid, $productId);
+	 	$boughtCount = getDayBoughtCount($con, $userid, $productId);
 	 	if ($count > $boughtLimit - $boughtCount) {
  			echo json_encode(array('error'=>'true','error_code'=>'14','error_msg'=>'购买个数超过今天剩余的上限，请重新选择！'));
 			return;				
@@ -907,29 +907,29 @@ function purchaseProduct()
 	}
 		
 	// 更新小金库
-	$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
+	$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
 	if (!$res1) {
 		echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'增加小金库数值时出错1！'));
 		return;				
 	}
-	$row1 = mysql_fetch_assoc($res1);
+	$row1 = mysqli_fetch_assoc($res1);
 	
 	$totalPrice = $price * $count;
 	$creditInfo = false;
 	$credit = 0;
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'用户积分信息出错！'));	
 		return;
 	}
 	else {
-		if (mysql_num_rows($res) <= 0) {
+		if (mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户积分信息出错了！'));	
 			return;				
 		}
 		else {
-			$creditInfo = mysql_fetch_assoc($res);
+			$creditInfo = mysqli_fetch_assoc($res);
 			$credit = $creditInfo["Credits"];
 		}
 	}
@@ -944,19 +944,19 @@ function purchaseProduct()
 	$receiver = '';
 	$phonenum = '';
 	if ($productId != 2) {
-		$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-		if (!$result || mysql_num_rows($result) <= 0) {
+		$result = mysqli_query($con, "select * from Address where AddressId='$addressId' and UserId='$userid'");
+		if (!$result || mysqli_num_rows($result) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'选择无效的地址，请稍后重试！'));	
 			return;								
 		}
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$address = $row["Address"];
 // 		$zipcode = $row["ZipCode"];
 		$receiver = $row["Receiver"];
 		$phonenum = $row["PhoneNum"];
 	}
 	
-	$result = createTransactionTable();
+	$result = createTransactionTable($con);
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'交易创建失败，请稍后重试！'));	
 		return;						
@@ -998,7 +998,7 @@ function purchaseProduct()
 	$lastRwdBPCntPost = $lastRwdBPCnt + $cnt * $rewardBPCnt;
 	$dynVault = $creditInfo['Vault'] + $count * $dyNewAccountVault;
 	
-	$result = mysql_query("update Credit set Credits='$left', Vault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
+	$result = mysqli_query($con, "update Credit set Credits='$left', Vault='$dynVault', LastConsumptionTime='$time', DayConsumption='$dayConsume', MonthConsumption='$monConsume', YearConsumption='$yearConsume', TotalConsumption='$totalConsume', BPCnt='$bpCntPost', LastRwdBPCnt='$lastRwdBPCntPost' where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'扣款失败，请稍后重试！'));
 		return;
@@ -1009,7 +1009,7 @@ function purchaseProduct()
 	if ($productId == 2) {
 		$status = $OrderStatusAccept;
 	}
-	$result = mysql_query("insert into Transaction (UserId, ProductId, Price, Count, AddressId, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
+	$result = mysqli_query($con, "insert into Transaction (UserId, ProductId, Price, Count, AddressId, Receiver, PhoneNum, Address, ZipCode, OrderTime, Status) 
 					VALUES('$userid', '$productId', '$totalPrice', '$count', '0', '$receiver', '$phonenum', '$address', '$zipcode', '$time', '$status')");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'交易插入失败，请稍后重试！'));	
@@ -1022,15 +1022,15 @@ function purchaseProduct()
 	$newUserIds = '';
 
 	// 修改今天购买个数
-	updateDayBoughtCount($userid, $productId, $count);
+	updateDayBoughtCount($con, $userid, $productId, $count);
 	
 	// 纪录积分记录
 	$now = time();
-	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+	mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 					VALUES('$userid', '$totalPrice', '$left', '$now', '$now', '$codeConsume')");
 	
 	// 更新统计数据
-	insertOrderStatistics($totalPrice, $count);
+	insertOrderStatistics($con, $totalPrice, $count);
 	
 	echo json_encode(array("error"=>"false","has_new_user"=>$hasNewUser,"new_user_id"=>$newUserIds));
 	return;
@@ -1064,27 +1064,27 @@ function confirmOrder()
 
 	$userid = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from Transaction where OrderId='$orderId' and Userid='$userid'");
-	if (!$result || mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$orderId' and Userid='$userid'");
+	if (!$result || mysqli_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的订单！'));
 		return;
 	}	
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$count = $row['Count'];
 	
-	$result = mysql_query("select * from Address where AddressId='$addressId' and UserId='$userid'");
-	if (!$result || mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Address where AddressId='$addressId' and UserId='$userid'");
+	if (!$result || mysqli_num_rows($result) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'选择无效的地址！'));	
 		return;								
 	}
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$address = $row["Address"];
 // 	$zipcode = $row["ZipCode"];
 	$receiver = $row["Receiver"];
 	$phonenum = $row["PhoneNum"];
 
 	$time = time();
-	$result = mysql_query("update Transaction set AddressId='$addressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
+	$result = mysqli_query($con, "update Transaction set AddressId='$addressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', OrderTime='$time' where OrderId='$orderId' and Userid='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新订单状态出错，请稍后重试！'));	
 		return;								
@@ -1120,13 +1120,13 @@ function deliveryProduct()
 		return;
 	}
 
-	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
 	}
 	
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusBuy) {
@@ -1135,7 +1135,7 @@ function deliveryProduct()
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time', CourierNum='$courier' where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "update Transaction set Status='$OrderStatusDelivery', DeliveryTime='$time', CourierNum='$courier' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
@@ -1165,13 +1165,13 @@ function deliveryPhoneFare()
 		return;
 	}
 
-	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
 	}
 	
-	$row = mysql_fetch_assoc($result);	
+	$row = mysqli_fetch_assoc($result);	
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusBuy) {
@@ -1185,7 +1185,7 @@ function deliveryPhoneFare()
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
@@ -1194,7 +1194,7 @@ function deliveryPhoneFare()
 	include_once "func.php";
 	$amount = $row["Price"];
 	$fee = $row["HandleFee"];
-	insertVLStatistics($amount, $fee);
+	insertVLStatistics($con, $amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
@@ -1220,13 +1220,13 @@ function deliveryPhoneFareWithCashOrder()
 		return;
 	}
 
-	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
 	}
 	
-	$row = mysql_fetch_assoc($result);	
+	$row = mysqli_fetch_assoc($result);	
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusPaid) {
@@ -1240,7 +1240,7 @@ function deliveryPhoneFareWithCashOrder()
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
@@ -1250,7 +1250,7 @@ function deliveryPhoneFareWithCashOrder()
 	$amount = $row["Price"];
 	$amountInCash = $row["PriceInCash"];
 	$fee = $row["HandleFee"];
-	insertVLStatistics($amount - $amountInCash, $fee);
+	insertVLStatistics($con, $amount - $amountInCash, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
@@ -1277,13 +1277,13 @@ function deliveryOilFare()
 		return;
 	}
 
-	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
 	}
 	
-	$row = mysql_fetch_assoc($result);	
+	$row = mysqli_fetch_assoc($result);	
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusBuy) {
@@ -1297,7 +1297,7 @@ function deliveryOilFare()
 	}
 	
 	$time = time();
-	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "update Transaction set Status='$OrderStatusAccept', DeliveryTime='$time', CompleteTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'更新成等待发货状态时出错，请稍后重试！'));
 		return;		
@@ -1306,7 +1306,7 @@ function deliveryOilFare()
 	include_once "func.php";
 	$amount = $row["Price"];
 	$fee = $row["HandleFee"];
-	insertVLStatistics($amount, $fee);
+	insertVLStatistics($con, $amount, $fee);
 		
 	echo json_encode(array('error'=>'false','index'=>$TransactionId));
 	return;
@@ -1333,13 +1333,13 @@ function acceptProduct()
 	}	
 	
 	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Transaction where OrderId='$TransactionId'"); 
+	$result = mysqli_query($con, "select * from Transaction where OrderId='$TransactionId'"); 
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！'));
 		return;		
 	}
 	
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$status = $row['Status'];
 	
 	if ($status != $OrderStatusDelivery) {
@@ -1349,13 +1349,12 @@ function acceptProduct()
 
 	$time = time();
 
-	$result = mysql_query("update Transaction set Status='$OrderStatusAccept', CompleteTime='$time' where OrderId='$TransactionId'");
+	$result = mysqli_query($con, "update Transaction set Status='$OrderStatusAccept', CompleteTime='$time' where OrderId='$TransactionId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'更新成交易完成状态时出错，请稍后重试！'));
 		return;		
 	}
 	
-// 	echo mysql_error();
 	echo json_encode(array('error'=>'false'));
 	return;
 }
@@ -1369,28 +1368,28 @@ function quertUserOrder()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','uid'=>$userid));
 		return;
 	}
-	$res = mysql_query("select * from ClientTable where UserId='$userid'");
-	if (!$res || mysql_num_rows($res)<=0) {
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res)<=0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的用户ID，请重新输入！','uid'=>$userid));
 		return;				
 	}
-	$result = mysql_query("select * from Transaction where UserId='$userid'"); 
+	$result = mysqli_query($con, "select * from Transaction where UserId='$userid'"); 
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查到指定的交易，请稍后重试！','uid'=>$userid));
 		return;		
 	}
 	$array = array();
-	while ($row = mysql_fetch_array($result)) {
+	while ($row = mysqli_fetch_assoc($result)) {
 		$productId = $row['ProductId'];
-		$res1 = mysql_query("select * from Product where ProductId='$productId'");
-		if ($res1 && mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
+		$res1 = mysqli_query($con, "select * from Product where ProductId='$productId'");
+		if ($res1 && mysqli_num_rows($res1) > 0) {
+			$row1 = mysqli_fetch_assoc($res1);
 			$row["ProductName"] = $row1["ProductName"];
 		}
 		$array[$row['OrderId']] = $row;
 	}
 	
-	echo json_encode(array('error'=>'false','uid'=>$userid,'num'=>mysql_num_rows($result),'order_list'=>$array));
+	echo json_encode(array('error'=>'false','uid'=>$userid,'num'=>mysqli_num_rows($result),'order_list'=>$array));
 }
 
 /*
@@ -1425,15 +1424,15 @@ function markProductExported()
 	for ($idx = 0; $idx < $cnt; ++$idx) {
 		
 		$orderid = $arr[$idx];
-	 	$res = mysql_query("select * from Transaction where OrderId='$orderid'");
-	 	if (!$res || mysql_num_rows($res) <= 0) {
+	 	$res = mysqli_query($con, "select * from Transaction where OrderId='$orderid'");
+	 	if (!$res || mysqli_num_rows($res) <= 0) {
 		 	// ..
 			continue; 	
 	 	} 
 	 	
-	 	$row = mysql_fetch_assoc($res);
+	 	$row = mysqli_fetch_assoc($res);
 	 	$val = $row["Exported"] + 1;
-	 	$res1 = mysql_query("update Transaction set Exported='$val' where OrderId='$orderid'");
+	 	$res1 = mysqli_query($con, "update Transaction set Exported='$val' where OrderId='$orderid'");
 	 	if (!$res) {
 		 	// .. 
 		 	continue;

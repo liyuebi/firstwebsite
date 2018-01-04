@@ -17,16 +17,16 @@ if (!$con)
 }
 
 /*
-$res = mysql_query("select * from Product");
+$res = mysqli_query($con, "select * from Product");
 if ($res) {
-	while($row = mysql_fetch_array($res)) {
+	while($row = mysqli_fetch_array($res)) {
 		$productList[$row['ProductId']] = $row['ProductName'];
 	}	
 }
 */
 
 include "../php/constant.php";
-$result = mysql_query("select * from Transaction where Type=3");
+$result = mysqli_query($con, "select * from Transaction where Type=3");
 
 ?>
 
@@ -271,7 +271,7 @@ $result = mysql_query("select * from Transaction where Type=3");
 					<?php
 						include "../php/constant.php";
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($result)) {
+						while($row = mysqli_fetch_assoc($result)) {
 					?>
 							<tr>
 								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>

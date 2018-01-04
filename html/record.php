@@ -24,8 +24,8 @@ $userid = $_SESSION["userId"];
 $result = false;
 $con = connectToDB();
 if ($con) {
-	$result = mysql_query("select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
-	$res = mysql_query("select * from PntsRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
+	$result = mysqli_query($con, "select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
+	$res = mysqli_query($con, "select * from PntsRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
 }
 	
 ?>
@@ -72,7 +72,7 @@ if ($con) {
 		    	<?php
 			    	include "../php/constant.php";
 			    	date_default_timezone_set('PRC');
-			        while ($row = mysql_fetch_array($result)) {
+			        while ($row = mysqli_fetch_assoc($result)) {
 				?>  	
 				    <p style="margin: 5px 3px;"><?php 
 					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
@@ -137,7 +137,7 @@ if ($con) {
 			    <?php
 				    include "../php/constant.php";
 					date_default_timezone_set('PRC');
-			        while ($row = mysql_fetch_array($res)) {
+			        while ($row = mysqli_fetch_assoc($res)) {
 				?>  	
 			    	<p style="margin: 5px 3px;">
 			    	<?php

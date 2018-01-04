@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited' order by CreateTime desc");
+	$result = mysqli_query($con, "select * from CreditTrade where Status='$creditTradeInited' order by CreateTime desc");
 }
 
 ?>
@@ -79,7 +79,7 @@ if ($con) {
 		<?php
 			if ($result) {
 				date_default_timezone_set('PRC');
-				while ($row = mysql_fetch_array($result)) {
+				while ($row = mysqli_fetch_assoc($result)) {
 		?>
 					<hr>
 					<div>

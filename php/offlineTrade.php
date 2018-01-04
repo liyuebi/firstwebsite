@@ -39,28 +39,28 @@ if (isset($_POST['func'])) {
 	}
 }
 
-function openOfflineShop($userid, $refererId, &$error_msg)
+function openOfflineShop($con, $userid, $refererId, &$error_msg)
 {
 	include 'constant.php';
 	
-	$result = createOfflineShopTable();
+	$result = createOfflineShopTable($con);
 	if (!$result) {
 		$error_msg = '查表失败，请稍后重试！';
 		return false;
 	}
 	
-	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
+	$result = mysqli_query($con, "select * from OfflineShop where UserId='$userid'");
 	if (!$result) {
 		$error_msg = '查询线下商店，请稍后重试！';
 		return false;
 	}
-	else if (mysql_num_rows($result) > 0) {
+	else if (mysqli_num_rows($result) > 0) {
 		$error_msg = '一个用户只能申请一个线下商家账户！';
 		return false;	
 	}
 	
 	$now = time();
-	$res1 = mysql_query("insert into OfflineShop (UserId, RefererId, RegisterTime, Status)
+	$res1 = mysqli_query($con, "insert into OfflineShop (UserId, RefererId, RegisterTime, Status)
 							values($userid, $refererId, $now, $olshopRegistered)");
 	if (!$res1) {
 		$error_msg = '申请线下商店失败，请稍后重试！';
@@ -69,7 +69,7 @@ function openOfflineShop($userid, $refererId, &$error_msg)
 	
 	// statistics
 	include_once 'func.php';
-	insertOfflineShopOpenStatistics($offlineShopRegisterFee);
+	insertOfflineShopOpenStatistics($con, $offlineShopRegisterFee);
 	
 	return true;
 }
@@ -95,12 +95,12 @@ function createOfflineShopAccount()
 		$userid = $_SESSION['userId'];
 		$now = time();
 		
-		$res = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查表失败，请稍后重试！'));	
 			return;
 		}
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$credit = $row["Credits"];
 		
 		if ($credit < $offlineShopRegisterFee) {
@@ -109,19 +109,19 @@ function createOfflineShopAccount()
 		}
 
 		$error_msg = '';
-		if (!openOfflineShop($userid, 0, $error_msg))
+		if (!openOfflineShop($con, $userid, 0, $error_msg))
 		{
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$error_msg));	
 			return;
 		}
 				
 		$credit = $credit - $offlineShopRegisterFee;
-		$res2 = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 		if (!$res2) {
 			// !!! log error
 		}
 		
-		$res3 = mysql_query("insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+		$res3 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 											VALUES($userid, $offlineShopRegisterFee, 0, $credit, $now, $now, 0, $codeRegiOlShop)");
 		if (!$res3) {
 			// !!! log error
@@ -205,19 +205,19 @@ function editOLSAcc()
 	{
 		$userid = $_SESSION['userId'];
 		
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		
 		if ($row["UserId"] != $userid) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'越权操作！'));
 			return;
 		}
 		
-		$res1 = mysql_query("update OfflineShop set ShopName='$name', Contacter='$man', PhoneNum='$phone', Address='$address', LicencePic='$imgFileName', ModifiedTime='$now' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set ShopName='$name', Contacter='$man', PhoneNum='$phone', Address='$address', LicencePic='$imgFileName', ModifiedTime='$now' where ShopId='$shopId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'编辑失败，请稍后重试！'));
 			return;
@@ -249,12 +249,12 @@ function applyForReview()
 	{
 		$userid = $_SESSION['userId'];
 
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);	
+		$row = mysqli_fetch_assoc($res);	
 		
 		if ($row["UserId"] != $userid) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'越权操作！'));
@@ -292,9 +292,9 @@ function applyForReview()
 		}
 		
 		$now = time();
-		$res1 = mysql_query("update OfflineShop set ReadyForCheckTime='$now', Status='$olshopApplied' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set ReadyForCheckTime='$now', Status='$olshopApplied' where ShopId='$shopId'");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'申请失败，请稍后重试！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'申请失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 			return;
 		}
 	}
@@ -323,12 +323,12 @@ function approveForOnline()
 	}
 	else 
 	{
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);	
+		$row = mysqli_fetch_assoc($res);	
 
 		if ($row["Status"] == $olshopAccepted) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'已经上线，请误重复操作！'));
@@ -341,9 +341,9 @@ function approveForOnline()
 		}
 				
 		$now = time();
-		$res1 = mysql_query("update OfflineShop set OnlineTime='$now', Status='$olshopAccepted' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set OnlineTime='$now', Status='$olshopAccepted' where ShopId='$shopId'");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysqli_error($con)));
 			return;
 		}
 	}
@@ -372,12 +372,12 @@ function declineForOnline()
 	}
 	else 
 	{
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);	
+		$row = mysqli_fetch_assoc($res);	
 
 		if ($row["Status"] == $olshopDeclined) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'已经拒绝请求，请误重复操作！'));
@@ -390,9 +390,9 @@ function declineForOnline()
 		}
 				
 		$now = time();
-		$res1 = mysql_query("update OfflineShop set Status='$olshopDeclined' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set Status='$olshopDeclined' where ShopId='$shopId'");
 		if (!$res1) {
-			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysqli_error()));
 			return;
 		}
 	}
@@ -420,17 +420,17 @@ function searchForShop()
 	}
 	else 
 	{	
-		$res = mysql_query("select * from OfflineShop where ShopId='$cond' and Status='$olshopAccepted'");
-		if (!$res || mysql_num_rows($res) <= 0) {
-			$res = mysql_query("select * from OfflineShop where Status='$olshopAccepted' and ShopName like '%$cond%'");
-			if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$cond' and Status='$olshopAccepted'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
+			$res = mysqli_query($con, "select * from OfflineShop where Status='$olshopAccepted' and ShopName like '%$cond%'");
+			if (!$res || mysqli_num_rows($res) <= 0) {
 				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'未查询到商家！'));	
 				return;
 			}
 		}	
 		
 		$arr = array();
-		while ($row = mysql_fetch_array($res)) {
+		while ($row = mysqli_fetch_assoc($res)) {
 			
 			$arr1 = array();
 			
@@ -496,14 +496,14 @@ function searchForShopInAdmin()
 			$condNum += 1;
 		}
 
-		$res = mysql_query($sql);
+		$res = mysqli_query($con, $sql);
 		if (!$res) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'搜索失败，请稍后重试！',"sql"=>$sql));
 			return;
 		}
 
 		$arr = array();
-		while ($row = mysql_fetch_array($res, MYSQL_ASSOC)) {
+		while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
 			
 			$arr1 = array();
 			
@@ -514,7 +514,7 @@ function searchForShopInAdmin()
 			$arr[$row["ShopId"]] = $arr1;
 		}
 
-		echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res),'list'=>$arr));
+		echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res),'list'=>$arr));
 	}
 }
 
@@ -553,13 +553,13 @@ function payOLShop()
 	{
 		$userid = $_SESSION['userId'];
 		
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId' and Status='$olshopAccepted'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId' and Status='$olshopAccepted'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找商家出错，请稍后重试！'));	
 			return;
 		}	
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$sellid = $row["UserId"];
 
 		if ($userid == $sellid) {
@@ -567,22 +567,22 @@ function payOLShop()
 			return;
 		}
 		
-		$res3 = mysql_query("select * from Credit where UserId='$sellid'");
-		if (!$res3 || mysql_num_rows($res3) <= 0) {
+		$res3 = mysqli_query($con, "select * from Credit where UserId='$sellid'");
+		if (!$res3 || mysqli_num_rows($res3) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查找商家个人账户出错，请稍后重试！'));	
 			return;	
 		} 
-		$row3 = mysql_fetch_assoc($res3);
+		$row3 = mysqli_fetch_assoc($res3);
 		$sellerPnts = $row3["Pnts"];
 
 		$now = time();
 	
-		$res1 = mysql_query("select * from Credit where UserId='$userid'");
-		if (!$res1 || mysql_num_rows($res1) <= 0) {
+		$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$res1 || mysqli_num_rows($res1) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'账户操作出错，请稍后重试!'));	
 			return;			
 		}
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$pnts = $row1["Pnts"];
 		
 		if ($pnts < $cnt) {
@@ -592,14 +592,14 @@ function payOLShop()
 		}
 		
 		$pnts -= $cnt;
-		$res2 = mysql_query("update Credit set Pnts='$pnts' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update Credit set Pnts='$pnts' where UserId='$userid'");
 		if (!$res2) {
 			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'转账操作失败，请稍后重试!'));	
 			return;			
 		}
 		else {
 			// insert pay pnts record
-			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+			$res2 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
 								values('$userid', '$cnt', '$pnts', '$now', '$shopId', '$sellid', '$code2OlShopPay')");
 			if (!$res2) {
 				// !!! log error
@@ -613,22 +613,22 @@ function payOLShop()
 		$refererId = $row["RefererId"];
 		if (0 != $refererId) {
 						
-			$res5 = mysql_query("select * from Credit where UserId='$refererId'");
-			if ($res5 && mysql_num_rows($res5) > 0) {
+			$res5 = mysqli_query($con, "select * from Credit where UserId='$refererId'");
+			if ($res5 && mysqli_num_rows($res5) > 0) {
 				
-				$row5 = mysql_fetch_assoc($res5);
+				$row5 = mysqli_fetch_assoc($res5);
 				$refererPnts = $row5["Pnts"];
 				
 				$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
 				$refererPnts += $bonusUpstream;
 				
-				$res6 = mysql_query("update Credit set Pnts='$refererPnts' where UserId='$refererId'");
+				$res6 = mysqli_query($con, "update Credit set Pnts='$refererPnts' where UserId='$refererId'");
 				if (!$res6) {
 					// !!! log error
 				}
 				else {
 					// insert pnts bonus record
-					$res6 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+					$res6 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
 										values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
 					if (!$res6) {
 						// !!! log error
@@ -640,13 +640,13 @@ function payOLShop()
 		$receiveCnt = $cnt - $fee - $bonusUpstream;
 		
 		$sellerPnts += $receiveCnt;
-		$res2 = mysql_query("update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
+		$res2 = mysqli_query($con, "update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
 		if (!$res2) {
 			// !!! log error
 		}
 		else {
 			// insert receive pnts record
-			$res2 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
+			$res2 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
 								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code2OlShopReceive')");
 			if (!$res2) {
 				// !!! log error
@@ -658,14 +658,14 @@ function payOLShop()
 		$tradeAmt = $row["TradeAmount"] + $cnt;
 		$tradeIncome = $row["TradeIncome"] + $receiveCnt;
 		$tradeFee = $row["TradeFee"] + $fee;
-		$res2 = mysql_query("update OfflineShop set TradeTimes='$tradeCnt', TradeAmount='$tradeAmt', TradeIncome='$tradeIncome', TradeFee='$tradeFee' where ShopId='$shopId'");
+		$res2 = mysqli_query($con, "update OfflineShop set TradeTimes='$tradeCnt', TradeAmount='$tradeAmt', TradeIncome='$tradeIncome', TradeFee='$tradeFee' where ShopId='$shopId'");
 		if (!$res2) {
 			// !!! log error
 		}
 		
 		// 添加线下商家交易数据统计
 		include_once "func.php";
-		insertOfflineShopTradeStatistics($fee);
+		insertOfflineShopTradeStatistics($con, $fee);
 	}
 	
 	echo json_encode(array('error'=>'false'));
@@ -694,12 +694,12 @@ function createQRCode()
 	{
 		$userid = $_SESSION['userId'];
 
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);	
+		$row = mysqli_fetch_assoc($res);	
 		
 		if ($row["UserId"] != $userid) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'越权操作！'));
@@ -768,7 +768,7 @@ function createQRCode()
 			}
 		}
 
-		$res1 = mysql_query("update OfflineShop set QRCode='$imgFileName' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set QRCode='$imgFileName' where ShopId='$shopId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'保存二维码失败，请稍后重试！'));
 			return;
@@ -807,24 +807,24 @@ function searchOfflineShopRecord()
 	}
 	else 
 	{
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$sellid = $row["UserId"];
 
 		if (1 == $recordType) {
 
-			$res1 = mysql_query("select * from PntsRecord where Type='$code2OlShopReceive' and UserId='$sellid' order by ApplyTime desc");
+			$res1 = mysqli_query($con, "select * from PntsRecord where Type='$code2OlShopReceive' and UserId='$sellid' order by ApplyTime desc");
 			if (!$res1) {
 				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询交易记录出错，请稍后重试！'));
 				return;
 			} 
 
 			$arr = array();
-			while ($row1 = mysql_fetch_array($res1)) {
+			while ($row1 = mysqli_fetch_assoc($res1)) {
 				
 				$arr1 = array();
 				foreach($row1 as $key=>$value) {
@@ -833,23 +833,23 @@ function searchOfflineShopRecord()
 				}
 				array_push($arr, $arr1);
 			}
-			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res1),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
+			echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res1),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
 		}
 		else if (2 == $recordType) {
 
-			if (!createPntsWithdrawTable()) {
+			if (!createPntsWithdrawTable($con)) {
 				echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'数据操作失败，请稍后重试！'));
 				return;				
 			}
 
-			$res2 = mysql_query("select * from PntsWdApplication where UserId='$sellid' order by ApplyTime desc");
+			$res2 = mysqli_query($con, "select * from PntsWdApplication where UserId='$sellid' order by ApplyTime desc");
 			if (!$res2) {
 				echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'查询提现记录出错，请稍后重试！'));
 				return;
 			}
 
 			$arr = array();
-			while ($row2 = mysql_fetch_array($res2)) {
+			while ($row2 = mysqli_fetch_assoc($res2)) {
 				
 				$arr1 = array();
 				foreach($row2 as $key=>$value) {
@@ -859,7 +859,7 @@ function searchOfflineShopRecord()
 				array_push($arr, $arr1);
 			}
 
-			echo json_encode(array('error'=>'false','num'=>mysql_num_rows($res2),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
+			echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res2),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
 		}
 		else {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'参数出错！'));
@@ -901,14 +901,14 @@ function changeWithdrawRate()
 	}
 	else 
 	{
-		$res = mysql_query("select * from OfflineShop where ShopId='$shopId'");
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
 			return;
 		}	
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 
-		$res1 = mysql_query("update OfflineShop set WdFeeRate='$rate' where ShopId='$shopId'");
+		$res1 = mysqli_query($con, "update OfflineShop set WdFeeRate='$rate' where ShopId='$shopId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'修改提现手续费率失败，请稍后重试！'));
 			return;

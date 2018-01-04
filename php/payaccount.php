@@ -37,22 +37,22 @@ function setWechat()
 		return;
 	}
 	
-	createWechatTable();
+	createWechatTable($con);
 	
 	$userid = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from WechatAccount where UserId='$userid'");
+	$result = mysqli_query($con, "select * from WechatAccount where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询微信账户失败，请稍后重试'));
 		return;
 	}
 	
-	if (mysql_num_rows($result) > 0) {
+	if (mysqli_num_rows($result) > 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您的微信账户已设置，请不要重复设置！'));
 		return;
 	}
 	
-	$res = mysql_query("insert into WechatAccount (UserId, WechatAcc) 
+	$res = mysqli_query($con, "insert into WechatAccount (UserId, WechatAcc) 
 							values('$userid', '$weAcc')");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'添加微信账户失败，请稍后重试！'));
@@ -83,22 +83,22 @@ function setAlipay()
 		return;
 	}
 	
-	createAlipayTable();
+	createAlipayTable($con);
 	
 	$userid = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from AlipayAccount where UserId='$userid'");
+	$result = mysqli_query($con, "select * from AlipayAccount where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询支付宝账户失败，请稍后重试'));
 		return;
 	}
 	
-	if (mysql_num_rows($result) > 0) {
+	if (mysqli_num_rows($result) > 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您的支付宝账户已设置，请不要重复设置！'));
 		return;
 	}
 	
-	$res = mysql_query("insert into AlipayAccount (UserId, AlipayAcc) 
+	$res = mysqli_query($con, "insert into AlipayAccount (UserId, AlipayAcc) 
 							values('$userid', '$alipayAcc')");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'添加支付宝账户失败，请稍后重试！'));
@@ -134,20 +134,20 @@ function setBank()
 
 	$userid = $_SESSION["userId"];
 	
-	createBankAccountTable();
+	createBankAccountTable($con);
 	
-	$result = mysql_query("select * from BankAccount where UserId='$userid'");
+	$result = mysqli_query($con, "select * from BankAccount where UserId='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询银行账户失败，请稍后重试'));
 		return;
 	}
 	
-	if (mysql_num_rows($result) > 0) {
+	if (mysqli_num_rows($result) > 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您的银行账户已设置，请不要重复设置！'));
 		return;
 	}
 	
-	$res = mysql_query("insert into BankAccount (UserId, BankAcc, AccName, BankName, BankBranch)
+	$res = mysqli_query($con, "insert into BankAccount (UserId, BankAcc, AccName, BankName, BankBranch)
 							values('$userid', '$acc', '$name', '$bank', '$branch')");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'添加银行账户失败，请稍后重试！'));

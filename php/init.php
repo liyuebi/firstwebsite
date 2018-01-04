@@ -2,98 +2,98 @@
 
 include "database.php";
 
-$con = mysql_connect("127.0.0.1:3306", "root", "123456789");
+$con = mysqli_connect("127.0.0.1:3306", "root", "123456789");
 if (!$con)
 {
-	echo "Could not connect: " . mysql_error();
+	echo "Could not connect: " . mysqli_connect_error();
 	return; 
 }
 
-if (mysql_query("create database mifeng_db", $con)) {
+if (mysqli_query($con, "create database mifeng_db")) {
 	echo "Database created";
 	echo "<br>";
 }
 else {
-	echo "Error creating database: " . mysql_error();
+	echo "Error creating database: " . mysqli_error($con);
 	echo "<br>";
 }
 
-$db_selected = mysql_select_db("mifeng_db", $con);
+$db_selected = mysqli_select_db($con, "mifeng_db");
 if (!$db_selected) {
-	echo "select db failed: " , mysql_error();
+	echo "select db failed: " , mysqli_error($con);
 	return;
 }
 
 $now = time();
 
 // create client table and credit talbe and root user account
-createClientTable();
-createCreditTable();
+createClientTable($con);
+createCreditTable($con);
 
 $pwd = md5('000000');
 $pwd = password_hash($pwd, PASSWORD_DEFAULT);
 $time = time();
-if (mysql_query("insert into ClientTable (UserId, PhoneNum, NickName, Password, RegisterTime)
-					values('10000', '13812345678', 'peter', '$pwd', '$time')"))
+if (mysqli_query($con, "insert into ClientTable (UserId, PhoneNum, NickName, Password, RegisterTime)
+							values('10000', '13812345678', 'peter', '$pwd', '$time')"))
 {
 	echo "root user created";
 	echo "<br>";	
 	
-	if (mysql_query("insert into Credit (UserId, Credits)
+	if (mysqli_query("insert into Credit (UserId, Credits)
 			values(10000, 10000)"))
 	{
 		echo "root user credit created";
 		echo "<br>";		
 	}
 	else {
-		echo "Error creating root user credit: " . mysql_error();
+		echo "Error creating root user credit: " . mysqli_error($con);
 		echo "<br>";
 	}
 }
 else {
-	echo "Error creating root user: " . mysql_error();
+	echo "Error creating root user: " . mysqli_error($con);
 	echo "<br>";
 }
 
 // create admin table and default admin account
-createAdminTable();
+createAdminTable($con);
 $pwd = md5("super_admin");
 $pwd = password_hash($pwd, PASSWORD_DEFAULT);
-if (mysql_query("insert into AdminTable (Name, Password, Priority)
+if (mysqli_query($con, "insert into AdminTable (Name, Password, Priority)
 					values('admin', '$pwd', '10')")) {
 	echo "Default admin created";
 	echo "<br>";	
 }
 else {
-	echo "Error creating default admin: " . mysql_error();
+	echo "Error creating default admin: " . mysqli_error($con);
 	echo "<br>";
 }
 $pwd = md5('000000');
 $pwd = password_hash($pwd, PASSWORD_DEFAULT);
-mysql_query("insert into AdminTable (Name, Password, Priority)
+mysqli_query($con, "insert into AdminTable (Name, Password, Priority)
 					values('xieshuqian', '$pwd', '1')");
 
-createCreditRecordTable();
-createPntsRecordTable();
+createCreditRecordTable($con);
+createPntsRecordTable($con);
 
-createCreditTradeTable();
-createCreditBankTable();
-createTransactionTable();
-createOfflineShopTable();
+createCreditTradeTable($con);
+createCreditBankTable($con);
+createTransactionTable($con);
+createOfflineShopTable($con);
 
-createComplaintTable();
+createComplaintTable($con);
 
-createStatisticsTable();
-initGeneralStatisTable();
+createStatisticsTable($con);
+initGeneralStatisTable($con);
 
 // 创建产品表，推入第一个产品
 /*
-$ret = createProductTable();
+$ret = createProductTable($con);
 if ($ret) {
-	$res = mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime, FirstImg)
+	$res = mysqli_query($con, "insert into Product (Price, ProductName, ProductDesc, AddTime, FirstImg)
 							values('300', '茗菊春皇菊', '源自天然，传播健康', '$now', '2.jpg')");
 	if (!$res) {
-		echo "insert default product failed: " . mysql_error();
+		echo "insert default product failed: " . mysqli_error($con);
 		echo "<br>";
 	}
 }

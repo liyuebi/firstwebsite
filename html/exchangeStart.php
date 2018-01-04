@@ -22,9 +22,9 @@ $idx = $_GET["h"];
 $con = connectToDB();
 if ($con) {
 	
-	$result = mysql_query("select * from CreditTrade where IdxId='$idx'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($con, "select * from CreditTrade where IdxId='$idx'");
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 	}
 }
 

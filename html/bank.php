@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from CreditBank where UserId='$userid' and Type='1' order by SaveTime desc");
+	$result = mysqli_query($con, "select * from CreditBank where UserId='$userid' and Type='1' order by SaveTime desc");
 }
 
 ?>
@@ -94,11 +94,11 @@ if ($con) {
 			<hr>
 			
 			<div>
-				<h4 class="text-info">已有存储（<?php if ($result) echo mysql_num_rows($result); else echo 0; ?>笔）</h4>
+				<h4 class="text-info">已有存储（<?php if ($result) echo mysqli_num_rows($result); else echo 0; ?>笔）</h4>
 				<?php
 					if ($result) {
 						date_default_timezone_set('PRC');
-						while ($row = mysql_fetch_array($result)) {
+						while ($row = mysqli_fetch_assoc($result)) {
 				?>
 					<div class="panel panel-success">
 						<div class="panel-heading">

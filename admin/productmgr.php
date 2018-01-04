@@ -12,7 +12,7 @@ if (!$con) {
 	return;
 }
 
-$result = mysql_query("select * from Product");
+$result = mysqli_query($con, "select * from Product");
 	
 ?>
 
@@ -98,7 +98,7 @@ $result = mysql_query("select * from Product");
 						</tr>
 						<?php
 						if ($result) {
-							while ($row = mysql_fetch_assoc($result)) {
+							while ($row = mysqli_fetch_assoc($result)) {
 						?>
 						<tr> 
 <!-- 							<td><?php echo $row["ProductId"]; ?></td> -->

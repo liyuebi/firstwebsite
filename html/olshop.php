@@ -28,7 +28,7 @@ if (isset($_GET['s'])) {
 
 	$shopId = $_GET['s'];
 	if ($con) {
-		$result = mysql_query("select * from OfflineShop where ShopId='$shopId'");
+		$result = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
 	}
 }
 
@@ -201,7 +201,7 @@ if (isset($_GET['s'])) {
 		<div id="result_block">
 			<?php
 				if ($result) {
-					while ($row = mysql_fetch_array($result)) {
+					while ($row = mysqli_fetch_assoc($result)) {
 			?>
 					<hr>
 					<div>

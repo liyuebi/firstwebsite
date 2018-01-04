@@ -13,7 +13,7 @@ $result = false;
 $con = connectToDB();
 if ($con)
 {
-	$result = mysql_query("select * from PntsWdApplication where Status='$olShopWdApplied' order by ApplyTime");
+	$result = mysqli_query($con, "select * from PntsWdApplication where Status='$olShopWdApplied' order by ApplyTime");
 }
 		
 ?>
@@ -120,7 +120,7 @@ if ($con)
 					<?php
 						date_default_timezone_set('PRC');
 						if ($result) {
-							while($row = mysql_fetch_array($result)) {
+							while($row = mysqli_fetch_assoc($result)) {
 					?>
 								<tr>
 <!-- 									<td><?php echo $row["IndexId"]; ?></td> -->

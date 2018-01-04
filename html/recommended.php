@@ -15,22 +15,22 @@ $userid = $_SESSION["userId"];
 $numTeam = 0;
 $numRefAccount = 0;
 
-$result = mysql_query("select * from ClientTable where UserId='$userid'");
-if (!$result || mysql_num_rows($result) <= 0) {
+$result = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+if (!$result || mysqli_num_rows($result) <= 0) {
 	// !!! log error
 }
 else {
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$numTeam = $row["ChildCnt"];
 	$numRefAccount = $row["RecoCnt"];	
 }
 
 $res1 = false;
-$res2 = mysql_query("select * from ClientTable where ReferreeId='$userid'");
+$res2 = mysqli_query($con, "select * from ClientTable where ReferreeId='$userid'");
 
 if ($res2) {
 	
-	$cnt = mysql_num_rows($res2);
+	$cnt = mysqli_num_rows($res2);
 	if ($cnt != $numRefAccount) {
 		// !!! log error
 	}
@@ -122,7 +122,7 @@ if ($res2) {
 					        <th style="width: 50%; text-align: center;">手机号</th>
 				        </tr>
 				<?php
-					while ($row2 = mysql_fetch_array($res2)) {
+					while ($row2 = mysqli_fetch_assoc($res2)) {
 				?>
 						<tr>
 	<!--  						<td><?php echo $row2["UserId"]; ?></td> -->

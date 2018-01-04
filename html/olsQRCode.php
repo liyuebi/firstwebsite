@@ -28,12 +28,12 @@ include "../php/database.php";
 $con = connectToDB();
 if ($con) {
 
-	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
+	$result = mysqli_query($con, "select * from OfflineShop where UserId='$userid'");
+	if ($result && mysqli_num_rows($result) > 0) {
 
 		$isOwnShop = true;
 
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$url = $row["QRCode"];
 		if ("" != $url) {
 			$hasQRCode = true;

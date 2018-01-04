@@ -33,9 +33,9 @@ include "../php/database.php";
 $con = connectToDB();
 if ($con) {
 	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$mycredit = $row["Credits"];
 		
 /*		
@@ -46,9 +46,9 @@ if ($con) {
 			$dayWithdraw = $dayWd;
 		}
 		
-		$res1 = mysql_query("select * from WithdrawApplication where UserId='$userid'");
+		$res1 = mysqli_query($con, "select * from WithdrawApplication where UserId='$userid'");
 		if ($res1) {
-			while ($row1 = mysql_fetch_array($res1)) {
+			while ($row1 = mysqli_fetch_array($res1)) {
 				if (isInTheSameDay($now, $row1["ApplyTime"])) {
 					$applyCount += $row1["ApplyAmount"];
 				}

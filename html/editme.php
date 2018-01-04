@@ -3,8 +3,8 @@
 session_start();
 $userid = $_SESSION["userId"];
 $phone = $_SESSION["phonenum"];
-$name = $_SESSION["name"];
-$idnum = $_SESSION["idnum"]; 
+$name = ''; // $_SESSION["name"];
+$idnum = ''; //$_SESSION["idnum"]; 
 
 $new = 0;
 if (isset($_GET['new'])) {
@@ -12,21 +12,21 @@ if (isset($_GET['new'])) {
 }
 
 $noAddress = false;
-if ($new) {
-	include "../php/database.php";
-	$con = connectToDB();
-	if ($con)
-	{
-		$result = mysql_query("select * from Address where UserId='$userid'");
-		if ($result) {
-			if (mysql_num_rows($result) > 0) {
-			}
-			else {
-				$noAddress = true;
-			}
-		}
-	}
-}
+// if ($new) {
+// 	include "../php/database.php";
+// 	$con = connectToDB();
+// 	if ($con)
+// 	{
+// 		$result = mysqli_query($con, "select * from Address where UserId='$userid'");
+// 		if ($result) {
+// 			if (mysqli_num_rows($result) > 0) {
+// 			}
+// 			else {
+// 				$noAddress = true;
+// 			}
+// 		}
+// 	}
+// }
 
 ?>
 
@@ -157,16 +157,6 @@ if ($new) {
 		            <td style="text-align: right;">昵称</td>
 		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="nickname" value="<?php echo $_SESSION["nickname"];  ?>" onkeypress="return onlyCharAndNum(event)" /></td>
 	            </tr>	            
-<!--
-	            <tr>
-		            <td style="text-align: right;">姓名</td>
-		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="name" value="<?php echo "$name" ?>" /></td>
-	            </tr>
-	            <tr>
-		            <td style="text-align: right;">身份证号</td>
-		            <td width="70%" style="text-align: left;"><input type="text" class="form-control" id="idNum" value="<?php echo "$idnum" ?>" /></td>
-	            </tr>
--->
             </table>
             
             <input type="hidden" id="oriNickName" value="<?php echo $_SESSION["nickname"]; ?>">

@@ -70,32 +70,32 @@ function login()
 	}
 	else 
 	{		
-		$result = createClientTable();		
+		$result = createClientTable($con);		
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'暂时不能登录，请稍后重试！'));	
 			return;
 		}
 		else {
 			$bUseNickName = false;
-			$result = mysql_query("select * from ClientTable where PhoneNum='$phonenum'");
-			if (!$result || 0 == mysql_num_rows($result)) {
-				$result = mysql_query("select * from ClientTable where NickName='$phonenum'");				
+			$result = mysqli_query($con, "select * from ClientTable where PhoneNum='$phonenum'");
+			if (!$result || 0 == mysqli_num_rows($result)) {
+				$result = mysqli_query($con, "select * from ClientTable where NickName='$phonenum'");				
 				$bUseNickName = true;
 			}
 			
-			if (!$result || 0 == mysql_num_rows($result)) {
+			if (!$result || 0 == mysqli_num_rows($result)) {
 				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号或密码出错，请重新输入！'));	
 				return;		
 			}
 			else {
 				if ($bUseNickName) {
-					if (mysql_num_rows($result) > 1) {
+					if (mysqli_num_rows($result) > 1) {
 						echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您使用的昵称别人也使用了，请使用手机号登录！'));	
 						return;								
 					}
 				}
 				
-				$row = mysql_fetch_assoc($result);
+				$row = mysqli_fetch_assoc($result);
 				if (!password_verify($password, $row["Password"])) {
 					echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'账号或密码出错，请重新输入！'));	
 					return;		
@@ -107,7 +107,7 @@ function login()
 				
 				$userid = $row["UserId"];
 				$now = time();
-				mysql_query("update ClientTable set LastLoginTime='$now' where UserId='$userid'");
+				mysqli_query($con, "update ClientTable set LastLoginTime='$now' where UserId='$userid'");
 			}
 		}
 		
@@ -116,7 +116,7 @@ function login()
 	}
 	
 	echo json_encode(array('error'=>'false'));
-	mysql_close($con);
+	mysqli_close($con);
 }
 
 function logout()
@@ -141,19 +141,19 @@ function loginAdmin()
 	}
 	else 
 	{		
-		createAdminTable();
+		createAdminTable($con);
 		
-		$result = mysql_query("select * from AdminTable where Name='$name'");
+		$result = mysqli_query($con, "select * from AdminTable where Name='$name'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号或密码出错，请重新输入！'));	
 			return;		
 		}
-		else if (0 == mysql_num_rows($result)) {
+		else if (0 == mysqli_num_rows($result)) {
 			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'账号或密码出错，请重新输入！'));	
 			return;		
 		}
 		
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		if (!password_verify($password, $row["Password"])) {
 			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'账号或密码出错，请重新输入！'));	
 			return;		
@@ -165,9 +165,9 @@ function loginAdmin()
 		
 		$userid = $row["AdminId"];
 		$now = time();
-		mysql_query("update AdminTable set LastLoginTime='$now' where AdminId='$userid'");
+		mysqli_query($con, "update AdminTable set LastLoginTime='$now' where AdminId='$userid'");
 
-		getIndexDisplayCnt();
+		getIndexDisplayCnt($con);
 	}
 	
 	$arr = array('error'=>'false');
@@ -184,7 +184,7 @@ function updateIdxDisplayCntInAdmin()
 	}
 	else {
 		include "admin_func.php";
-		getIndexDisplayCnt();
+		getIndexDisplayCnt($con);
 	}
 	echo json_encode(array('error'=>'false'));
 }
@@ -210,12 +210,12 @@ function adminChangePwd()
 		return;
 	}
 	
-	$res = mysql_query("select * from AdminTable where AdminId='$adminUid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from AdminTable where AdminId='$adminUid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'您的账号有问题，请稍后重试！'));
 		return;		
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$pwd = $row["Password"];
 	
 	if (!password_verify($oldpwd, $pwd)) {
@@ -224,7 +224,7 @@ function adminChangePwd()
 	}
 	
 	$pwd = password_hash($newpwd, PASSWORD_DEFAULT);
-	$res1 = mysql_query("update AdminTable set Password='$pwd' where AdminId='$adminUid'");
+	$res1 = mysqli_query($con, "update AdminTable set Password='$pwd' where AdminId='$adminUid'");
 	if (!$res1) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改密码失败，请稍后重试！'));
 		return;
@@ -266,7 +266,7 @@ function adminAddAccount()
 	}
 	
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res = mysql_query("insert into AdminTable (Name, Password, Priority)
+	$res = mysqli_query($con, "insert into AdminTable (Name, Password, Priority)
 							values('$account', '$pwd', '6')");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加账户失败，请稍后重试！'));
@@ -302,7 +302,7 @@ function setPayPwd()
 	{
 		$userid = $_SESSION["userId"];
 		$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
-		$result = mysql_query("update ClientTable set PayPwd='$paypwd' where UserId='$userid'");
+		$result = mysqli_query($con, "update ClientTable set PayPwd='$paypwd' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -342,7 +342,7 @@ function changePayPwd()
 		$userid = $_SESSION["userId"];
 		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
 		$now = time();
-		$result = mysql_query("update ClientTable set PayPwd='$newpwd', LastPPwdModiTime='$now' where UserId='$userid'");
+		$result = mysqli_query($con, "update ClientTable set PayPwd='$newpwd', LastPPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -383,7 +383,7 @@ function changeLoginPwd()
 		$userid = $_SESSION["userId"];
 		$newpwd = password_hash($newpwd, PASSWORD_DEFAULT);
 		$now = time();
-		$result = mysql_query("update ClientTable set Password='$newpwd', LastPwdModiTime='$now' where UserId='$userid'");
+		$result = mysqli_query($con, "update ClientTable set Password='$newpwd', LastPwdModiTime='$now' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'设置失败，请稍后重试！'));	
 			return;
@@ -449,19 +449,19 @@ function editProfile()
 	}
 	else 
 	{
-		$result = mysql_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
+		$result = mysqli_query($con, "select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysqli_error($con)));	
 			return;
 		}
-		else if (mysql_num_rows($result) > 0) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysql_error()));	
+		else if (mysqli_num_rows($result) > 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysqli_error($con)));	
 			return;			
 		}
 				
-		$result = mysql_query("update ClientTable set NickName='$nickname' where UserId='$userid'");
+		$result = mysqli_query("update ClientTable set NickName='$nickname' where UserId='$userid'");
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
+			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysqli_error($con)));	
 			return;
 		}
 		
@@ -524,9 +524,9 @@ function getProfile()
 	else 
 	{
 		if (isValidCellPhoneNum($ident)) {
-			$res = mysql_query("select * from ClientTable where PhoneNum='$ident'");
-			if ($res && mysql_num_rows($res) > 0) {
-				$row = mysql_fetch_assoc($res);
+			$res = mysqli_query($con, "select * from ClientTable where PhoneNum='$ident'");
+			if ($res && mysqli_num_rows($res) > 0) {
+				$row = mysqli_fetch_assoc($res);
 				
 				$uid = $row["UserId"];
 				$num = $row["PhoneNum"];
@@ -536,9 +536,9 @@ function getProfile()
 			}
 		}
 		
-		$res = mysql_query("select * from ClientTable where UserId='$ident'");
-		if ($res && mysql_num_rows($res) > 0) {
-			$row = mysql_fetch_assoc($res);
+		$res = mysqli_query($con, "select * from ClientTable where UserId='$ident'");
+		if ($res && mysqli_num_rows($res) > 0) {
+			$row = mysqli_fetch_assoc($res);
 			
 			$uid = $row["UserId"];
 			$num = $row["PhoneNum"];
@@ -591,13 +591,13 @@ function initAccount()
 	
 	$userid = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
+	$result = mysqli_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
 	if (!$result) {
-		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysql_error()));	
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysqli_error($con)));	
 		return;
 	}
-	else if (mysql_num_rows($result) > 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysql_error()));	
+	else if (mysqli_num_rows($result) > 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'你输入的昵称已有人使用，请重新输入！',"sql_error"=>mysqli_error($con)));	
 		return;			
 	}
 
@@ -612,7 +612,7 @@ function initAccount()
 	$time = time();
 	$loginPwd = password_hash($loginPwd, PASSWORD_DEFAULT);
 	$paypwd = password_hash($paypwd, PASSWORD_DEFAULT);
-	$res = mysql_query("update ClientTable set NickName='$nickname', Password='$loginPwd', PayPwd='$paypwd', DefaultAddressId='$newAddressId', AccInited='1', LastPwdModiTime='$time', LastPPwdModiTime='$time' where UserId='$userid'");
+	$res = mysqli_query($con, "update ClientTable set NickName='$nickname', Password='$loginPwd', PayPwd='$paypwd', DefaultAddressId='$newAddressId', AccInited='1', LastPwdModiTime='$time', LastPPwdModiTime='$time' where UserId='$userid'");
 	if (!$res) {
 	    echo json_encode(array('error'=>'true','error_code'=>'34','error_msg'=>'初始化账号出错！'));
 	    return;	
@@ -625,14 +625,14 @@ function initAccount()
 	$_SESSION['ppwdModiT'] = $time;
 	$_SESSION['accInited'] = 1;
 	
-	$res1 = mysql_query("select * from Transaction where UserId='$userid' and Type='1' and Status='$OrderStatusDefault'");
-	if (!$res1 || mysql_num_rows($res1) <= 0) {
+	$res1 = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type='1' and Status='$OrderStatusDefault'");
+	if (!$res1 || mysqli_num_rows($res1) <= 0) {
 		// !!! log error
 	}
 	else {
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$orderId = $row1["OrderId"];
-		$res2 = mysql_query("update Transaction set AddressId='$newAddressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', ConfirmTime='$time' where OrderId='$orderId'");
+		$res2 = mysqli_query($con, "update Transaction set AddressId='$newAddressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', ConfirmTime='$time' where OrderId='$orderId'");
 		if (!$res2) {
 			// !!! log error
 		}
@@ -659,12 +659,12 @@ function switchAccount()
 		return;
 	}
 	
-	$res = mysql_query("select * from ClientTable where UserId='$toUserId'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$toUserId'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'要切换的账户异常，请稍后重试！'));
 		return;
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	
 	include "func.php";
 	setSession($row);
@@ -673,12 +673,12 @@ function switchAccount()
 	return;
 }
 
-function check_table_is_exist($sql, $find_table)
+function check_table_is_exist($con, $sql, $find_table)
 {
-	$row = mysql_query($sql);
+	$row = mysqli_query($con, $sql);
 	$database = array();
 	$finddatabase=$find_table;
-	while($result=mysql_fetch_array($row,MYSQL_ASSOC))
+	while($result=mysqli_fetch_array($row,MYSQLI_ASSOC))
 	{
 		$database[]=$result['DataBase'];
 	}

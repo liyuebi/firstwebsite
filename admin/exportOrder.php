@@ -18,17 +18,17 @@ if (!$con)
 	return false;
 }
 
-$res = mysql_query("select * from Product");
+$res = mysqli_query($con, "select * from Product");
 if ($res) {
-	while($row = mysql_fetch_array($res)) {
+	while($row = mysqli_fetch_assoc($res)) {
 		$productList[$row['ProductId']] = $row['ProductName'];
 	}	
 }
 
 include "../php/constant.php";
-$result = mysql_query("select * from Transaction where Status='$OrderStatusBuy' and Exported=0");
-// 	$result = mysql_query("select * from Transaction");
-// $res1 = mysql_query("select * from Transaction  where Status='$OrderStatusDefault'");
+$result = mysqli_query($con, "select * from Transaction where Status='$OrderStatusBuy' and Exported=0");
+// 	$result = mysqli_query($con, "select * from Transaction");
+// $res1 = mysqli_query($con, "select * from Transaction  where Status='$OrderStatusDefault'");
 
 ?>
 
@@ -198,7 +198,7 @@ $result = mysql_query("select * from Transaction where Status='$OrderStatusBuy' 
 						<?php
 							include "../php/constant.php";
 							date_default_timezone_set('PRC');
-							while($row = mysql_fetch_array($result)) {
+							while($row = mysqli_fetch_assoc($result)) {
 						?>
 								<tr>
 									<td id="<?php echo $row["OrderId"]; ?>"></td>

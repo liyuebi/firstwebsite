@@ -31,10 +31,12 @@ function addNewProduct()
 	$price = htmlspecialchars($_POST["productprice"]);
 	
 	$con = connectToDB();
-	createProductTable();
-	$time = time();
-	mysql_query("insert into Product (Price, ProductName, ProductDesc, AddTime) 
-		VALUES('$price', '$name', '$desc', '$time')");
+	if ($con) {
+		createProductTable($con);
+		$time = time();
+		mysqli_query($con, "insert into Product (Price, ProductName, ProductDesc, AddTime) 
+			VALUES('$price', '$name', '$desc', '$time')");
+	}
 }
 
 function editProduct()
@@ -52,14 +54,14 @@ function editProduct()
 		return;
 	}
 	
-	$res = mysql_query("select * from Product where ProductId='$idx'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from Product where ProductId='$idx'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到对应产品！'));
 		return;
 	}
 	
 	$price = floatval($price);
-	$res = mysql_query("update Product set ProductName='$name', ProductDesc='$desc', Price='$price', LimitOneDay='$limit' where ProductId='$idx'");
+	$res = mysqli_query($con, "update Product set ProductName='$name', ProductDesc='$desc', Price='$price', LimitOneDay='$limit' where ProductId='$idx'");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改产品信息失败！'));
 		return;
@@ -71,18 +73,18 @@ function editProduct()
 function getProducts()
 {
 	$con = connectToDB();
-	$result = mysql_query("select * from Product");
+	$result = mysqli_query($con, "select * from Product");
 	if (!$result) {
 		
 	}
 	else {
-		if (0 == mysql_num_rows($result)) {
+		if (0 == mysqli_num_rows($result)) {
 			
 		}
 		else {
-			$num = mysql_num_rows($result);
+			$num = mysqli_num_rows($result);
 			$ret = array();
-			while($row = mysql_fetch_array($result))
+			while($row = mysqli_fetch_assoc($result))
 			{
 				$arr = array("name"=>$row["ProductName"],
 							 	"price"=>$row["Price"],
@@ -106,13 +108,13 @@ function getProductInfo()
 		return;
 	}
 	
-	$result = mysql_query("select * from Product where ProductId='$productid'");
+	$result = mysqli_query($con, "select * from Product where ProductId='$productid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找指定产品失败！'));
 		return;
 	}
 	
-	$row = mysql_fetch_array($result);
+	$row = mysqli_fetch_assoc($result);
 	$arr = array("productid"=>$row["ProductId"],
 					"name"=>$row["ProductName"],
 				 	"price"=>$row["Price"],

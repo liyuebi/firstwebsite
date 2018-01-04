@@ -19,9 +19,9 @@ if (!$con)
 	return false;
 }
 
-$res1 = mysql_query("select * from ShortStatis");
+$res1 = mysqli_query($con, "select * from ShortStatis");
 if ($res1) {
-	$row1 = mysql_fetch_assoc($res1);
+	$row1 = mysqli_fetch_assoc($res1);
 	$gross = $row1["OrderGross"];
 }
 

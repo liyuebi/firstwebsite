@@ -104,11 +104,11 @@ function addNewPoster()
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
-	createPostTable();
+	createPostTable($con);
 
-	$res = mysql_query("insert into PostTable (Title, TextFile, Pic, AddTime) values('$title', '$textFileName', '$imgFileName', '$now')");
+	$res = mysqli_query($con, "insert into PostTable (Title, TextFile, Pic, AddTime) values('$title', '$textFileName', '$imgFileName', '$now')");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加公告失败！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'添加公告失败！','sql_error'=>mysqli_error($con)));
 		return;		
 	}
 	
@@ -136,12 +136,12 @@ function editPoster()
 		return;
 	}
 	
-	$res = mysql_query("select * from PostTable where IndexId='$idx'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from PostTable where IndexId='$idx'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的公告！'));
 		return;		
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	
 	$textFileName = $row["TextFile"];
 	$imgFileName = $row['Pic'];
@@ -214,7 +214,7 @@ function editPoster()
 	}
 
 	
-	$res2 = mysql_query("update PostTable set Title='$title', TextFile='$filename', Pic='$imgFileName', LMT='$now' where IndexId='$idx'");
+	$res2 = mysqli_query($con, "update PostTable set Title='$title', TextFile='$filename', Pic='$imgFileName', LMT='$now' where IndexId='$idx'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新数据库失败，请稍后重试！'));
 		return;		
@@ -235,15 +235,15 @@ function postPoster()
 		return;
 	}
 	
-	$res = mysql_query("select * from PostTable where IndexId='$idx'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from PostTable where IndexId='$idx'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的公告！'));
 		return;		
 	}
 	
 	include "constant.php";
 	$now = time();
-	$res2 = mysql_query("update PostTable set Status='$postStatusOnline', OnlineTime='$now' where IndexId='$idx'");
+	$res2 = mysqli_query($con, "update PostTable set Status='$postStatusOnline', OnlineTime='$now' where IndexId='$idx'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'修改公告状态失败！'));
 		return;				
@@ -263,15 +263,15 @@ function unpostPoster()
 		return;
 	}
 	
-	$res = mysql_query("select * from PostTable where IndexId='$idx'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from PostTable where IndexId='$idx'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的公告！'));
 		return;		
 	}
 	
 	include "constant.php";
 	$now = time();
-	$res2 = mysql_query("update PostTable set Status='$postStatusDown', ReT='$now' where IndexId='$idx'");
+	$res2 = mysqli_query($con, "update PostTable set Status='$postStatusDown', ReT='$now' where IndexId='$idx'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'修改公告状态失败！'));
 		return;				
@@ -291,15 +291,15 @@ function deletePoster()
 		return;
 	}
 	
-	$res = mysql_query("select * from PostTable where IndexId='$idx'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from PostTable where IndexId='$idx'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的公告！'));
 		return;		
 	}
 	
-	$res2 = mysql_query("delete from PostTable where IndexId='$idx'");
+	$res2 = mysqli_query($con, "delete from PostTable where IndexId='$idx'");
 	if (!$res2) {
-		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'删除出错','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'删除出错','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	

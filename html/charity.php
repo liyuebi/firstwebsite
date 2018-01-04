@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from Credit where UserId='$userid'");
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
 }
 
 ?>
@@ -60,6 +60,6 @@ if ($con) {
 		</div>
 		
 		<p>您投入的会员慈善金额为：</p>
-		<p align="center"><b><?php if ($result) { $row = mysql_fetch_array($result); echo $row["Charity"]; } else echo 0;?></b></p>
+		<p align="center"><b><?php if ($result) { $row = mysqli_fetch_assoc($result); echo $row["Charity"]; } else echo 0;?></b></p>
     </body>
 </html>

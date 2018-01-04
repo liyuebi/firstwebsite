@@ -20,11 +20,11 @@ $userid = $_SESSION['userId'];
 $row = false;
 
 if ($con) {
-	$result = mysql_query("select * from OfflineShop where UserId='$userid'");
+	$result = mysqli_query($con, "select * from OfflineShop where UserId='$userid'");
 	if (!$result) {
 	}
-	else if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	else if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 	}
 }
 

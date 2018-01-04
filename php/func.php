@@ -37,21 +37,21 @@ function setSession($row)
  * relateUserId: 积分纪录中的相关账号
  * $recordCode: 积分记录码
  */
-function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserId, $recordCode)
+function addCreditFromVault($con, $userid, $vault, $credit, $addedCredit, $relateUserId, $recordCode)
 {
 	if ($addedCredit <= 0) {
 		return;
 	}
 	
-	$res = mysql_query("select * from CreditBank where UserId='$userid' and Type='1' and Balance>0 order by SaveTime");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from CreditBank where UserId='$userid' and Type='1' and Balance>0 order by SaveTime");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		// !!! log error
 		return;
 	}
 	
 	$now = time();
 	$actualAdded = 0;
-	while ($addedCredit > 0 && $row = mysql_fetch_array($res)) {
+	while ($addedCredit > 0 && $row = mysqli_fetch_assoc($res)) {
 		
 		$idxId = $row["IdxId"];
 		$balance = $row["Balance"];
@@ -61,7 +61,7 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 			$balance -= $addedCredit;
 			$addedCredit = 0;
 			
-			$res1 = mysql_query("update CreditBank set Balance='$balance', LastChangeT='$now' where IdxId='$idxId'");
+			$res1 = mysqli_query($con, "update CreditBank set Balance='$balance', LastChangeT='$now' where IdxId='$idxId'");
 			if (!$res1) {
 				// !!! log error
 			}
@@ -72,7 +72,7 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 			$addedCredit -= $balance;
 			$balance = 0;
 			
-			$res1 = mysql_query("update CreditBank set Balance='$balance', LastChangeT='$now', EmptyTime='$now' where IdxId='$idxId'");
+			$res1 = mysqli_query($con, "update CreditBank set Balance='$balance', LastChangeT='$now', EmptyTime='$now' where IdxId='$idxId'");
 			if (!$res1) {
 				// !!! log error
 			}
@@ -88,12 +88,12 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
 			$vault = 0;
 		}
 		
-		$res2 = mysql_query("update Credit set Credits='$credit', Vault='$vault' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update Credit set Credits='$credit', Vault='$vault' where UserId='$userid'");
 		if (!$res2) {
 			// !!! log error
 		}
 		else {
-			$res3 =	mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+			$res3 =	mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
 										VALUES($userid, $actualAdded, $credit, $now, $now, $relateUserId, $recordCode)");
 			if (!$res3) {
 				// !!! log error
@@ -109,7 +109,7 @@ function addCreditFromVault($userid, $vault, $credit, $addedCredit, $relateUserI
  * $collisionVal: 新用户支线的碰撞值／复投额度
  * $recordCode: 积分记录码
  */
-function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate, $recordCode)
+function attributeCollisionBonus($con, $userid, $newuserid, $collisionVal, $bonusRate, $recordCode)
 {
 	include "constant.php";
 	include_once "database.php";
@@ -122,13 +122,13 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate,
 	while ($userid != 0) {	
 		
 		// 对当前父节点进行碰撞
-		$res = mysql_query("select * from Credit where UserId='$userid'");
+		$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
 		if (!$res) {
 			// !!! log error
 			break;
 		}
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$credit = $row["Credits"];
 		$vault = $row["Vault"];
 		$collChild2 = $row["CollChild"];
@@ -156,26 +156,26 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate,
 			}
 			
 			$addedCredit = $currCollVal * $bonusRate;
-			addCreditFromVault($userid, $vault, $credit, $addedCredit, $newuserid, $recordCode);
+			addCreditFromVault($con, $userid, $vault, $credit, $addedCredit, $newuserid, $recordCode);
 		}
 		
-		$res1 = mysql_query("update Credit set CollChild='$newCollChild', CollVal='$newCollVal' where UserId='$userid'");
+		$res1 = mysqli_query($con, "update Credit set CollChild='$newCollChild', CollVal='$newCollVal' where UserId='$userid'");
 		if (!$res1) {
 			// !!! log error
 		}
 				
 		// 取得下一个进行碰撞的父节点
-		$res2 = mysql_query("select * from ClientTable where UserId='$userid'");
+		$res2 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
 		if (!$res2) {
 			// !!! log error
 			break;
 		}
-		if (mysql_num_rows($res2) <= 0) {
+		if (mysqli_num_rows($res2) <= 0) {
 			// !!! log error
 			break;
 		}
 			
-		$row2 = mysql_fetch_assoc($res2);
+		$row2 = mysqli_fetch_assoc($res2);
 		$collChild1 = $userid;
 		$userid = $row2["ParentId"];
 	}
@@ -190,7 +190,7 @@ function attributeCollisionBonus($userid, $newuserid, $collisionVal, $bonusRate,
  * $lastObtainedT: 上次获得蜜券的时刻
  * $dayObtained: 当日获得蜜券数量
  */
-function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastObtainedT, &$dayObtained)
+function attributeLevelupBonus($con, $userid, $lvl, &$credit, &$pnts, &$vault, &$lastObtainedT, &$dayObtained)
 {
 	include "constant.php";
 	include_once "database.php";
@@ -230,16 +230,16 @@ function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastO
 		}
 		$dayObtained += $addedCredit;
 		$lastObtainedT = $now;
-		$res = mysql_query("update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts', LastObtainedTime='$lastObtainedT', DayObtained='$dayObtained' where UserId='$userid'");
+		$res = mysqli_query($con, "update Credit set Credits='$credit', Vault='$vault', Pnts='$pnts', LastObtainedTime='$lastObtainedT', DayObtained='$dayObtained' where UserId='$userid'");
 		if (!$res) {
 			// 出错
 		}
 		
-		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+		mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 							values('$userid', '$addedCredit', '$credit', '$now', '$now', '$codeLevelupBonus')");		
 							
 		if ($pntsToCredit > 0) {
-			mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+			mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 					values('$userid', '$pntsToCredit', '$pnts', '$now', '$now', '0')");
 		}
 	}
@@ -249,7 +249,7 @@ function attributeLevelupBonus($userid, $lvl, &$credit, &$pnts, &$vault, &$lastO
 }
 
 // 插入一个新用户账号
-function insertNewUserNode($userid, $phonenum, $name, $idNum, &$newUserId, &$error_code, &$error_msg, &$sql_error)
+function insertNewUserNode($con, $userid, $phonenum, $name, $idNum, &$newUserId, &$error_code, &$error_msg, &$sql_error)
 {
 	include "constant.php";
 	
@@ -258,27 +258,27 @@ function insertNewUserNode($userid, $phonenum, $name, $idNum, &$newUserId, &$err
 	$now = time();
 	$pwd = md5('000000');
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res = mysql_query("insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
+	$res = mysqli_query($con, "insert into ClientTable (PhoneNum, Name, IDNum, Password, ReferreeId, ParentId, RegisterTime)
 							values('$phonenum', '$name', '$idNum', '$pwd', '$userid', '$parentId', '$now')");
 	if (!$res) {
 		$error_code = '51';
 		$error_msg = '插入用户失败，请稍后重试';
-		$sql_error = mysql_error();
+		$sql_error = mysqli_error($con);
 		return false;
 	}
-	$newUserId = mysql_insert_id();	
+	$newUserId = mysqli_insert_id($con);	
 	
 	// update ChildCnt of all ancestors
 	while ($userid != 0) {
-		$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
-		if (!$res1 || mysql_num_rows($res1) <= 0) {
+		$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+		if (!$res1 || mysqli_num_rows($res1) <= 0) {
 			// !!! log error
 			break;
 		}	
 		
-		$row = mysql_fetch_assoc($res1);
+		$row = mysqli_fetch_assoc($res1);
 		$childcnt = $row["ChildCnt"] + 1;
-		$res2 = mysql_query("update ClientTable set ChildCnt='$childcnt' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update ClientTable set ChildCnt='$childcnt' where UserId='$userid'");
 		if (!$res2) {
 			// !!! log error
 		}
@@ -299,9 +299,9 @@ function distributeReferBonus($con, $userid, $count)
 	}
 	
 	{
-		$res1 = mysql_query("select * from ClientTable where UserId='$userid'");
-		if ($res1 && mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
+		$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+		if ($res1 && mysqli_num_rows($res1) > 0) {
+			$row1 = mysqli_fetch_assoc($res1);
 			$referId = $row1["ReferreeId"];	// 推荐人
 			$refeeId = $userid; // 被推荐人
 			$idx = 1;
@@ -317,17 +317,17 @@ function distributeReferBonus($con, $userid, $count)
 				$recommendCount = 1;
 				$id3 = 0;
 				// 得到推荐人的推荐人数以及他的推荐人
-				$res3 = mysql_query("select * from ClientTable where UserId='$id2'");
-				if ($res3 && mysql_num_rows($res3) > 0) {
-					$row3 = mysql_fetch_assoc($res3);
+				$res3 = mysqli_query($con, "select * from ClientTable where UserId='$id2'");
+				if ($res3 && mysqli_num_rows($res3) > 0) {
+					$row3 = mysqli_fetch_assoc($res3);
 					
 					$id3 = $row3["ReferreeId"];
 					$recommendCount = $row3["RecoCnt"];
 				}
 				
-				$res2 = mysql_query("select * from Credit where UserId='$id2'");
-				if ($res2 && mysql_num_rows($res2) > 0) {
-					$row2 = mysql_fetch_assoc($res2);
+				$res2 = mysqli_query($con, "select * from Credit where UserId='$id2'");
+				if ($res2 && mysqli_num_rows($res2) > 0) {
+					$row2 = mysqli_fetch_assoc($res2);
 					$val1 = $row2["Credits"];
 					$val2 = $row2["DayObtained"];
 					$val3 = $row2["LastObtainedTime"];
@@ -373,10 +373,10 @@ function distributeReferBonus($con, $userid, $count)
 							}
 							$val1 += $add;
 		
-							mysql_query("update Credit set Credits='$val1', Vault='$val4', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
+							mysqli_query($con, "update Credit set Credits='$val1', Vault='$val4', DayObtained='$val2', LastObtainedTime='$time'  where UserId='$id2'");
 
 							include "constant.php";
-							mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, WithUserId)
+							mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type, AcceptTime, WithUserId)
 											VALUES('$id2', '$add', '$val1', '$time', '0', '$codeBonus', '$time', '$refeeId')");
 							$ret += $add;											
 						}
@@ -421,23 +421,23 @@ function isValidAddress($receiver, $phone, $address, &$error_str)
 function addOneAddress($con, $userid, $receiver, $phone, $address, $isDefault, &$newAddressId, &$error_str)
 {	
 	$newAddressId = 0;
-	$result = createAddressTable();
+	$result = createAddressTable($con);
 	if (!$result) {
 		$error_str = "创建地址表失败，请稍后重试！";
 		return false;
 	}
 	else {
-		$result = mysql_query("insert into Address (UserId, Receiver, PhoneNum, Address)
+		$result = mysqli_query($con, "insert into Address (UserId, Receiver, PhoneNum, Address)
 		 	VALUES('$userid', '$receiver', '$phone', '$address')");
 		if (!$result) {
 			$error_str = "插入地址失败，请稍后重试！";
 			return false;
 		}
 		else {
-			$newAddressId = mysql_insert_id();
+			$newAddressId = mysqli_insert_id($con);
 			// 更新默认地址,出错了不做处理
 			if ($isDefault) {
-				mysql_query("update ClientTable set DefaultAddressId='$addId' where UserId='$userid'");
+				mysqli_query($con, "update ClientTable set DefaultAddressId='$newAddressId' where UserId='$userid'");
 			}
 		}
 	}
@@ -452,13 +452,13 @@ function getCreditsPoolLeft($con)
 		return $ret;
 	}	
 	
-	$result = mysql_query("select * from TotalStatis where IndexId=1");
+	$result = mysqli_query($con, "select * from TotalStatis where IndexId=1");
 	if (!$result) {
 		return $ret;
 	}
 	
-	if (mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	if (mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$ret = $row["CreditsPool"];
 	}
 	
@@ -501,80 +501,80 @@ function createFolderIfNotExist($path)
 }
 
 /////////////////////////// insert statistics function begin ///////////////////////////
-function insertExchangeCreateStatistics($amount)
+function insertExchangeCreateStatistics($con, $amount)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$total = $row["ExchangeNewQuan"] + $amount;
 			$cnt = $row["ExchangeNewCnt"] + 1;
-			mysql_query("update Statistics set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, ExchangeNewQuan, ExchangeNewCnt)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, ExchangeNewQuan, ExchangeNewCnt)
 					VALUES('$year', '$month', '$day', '$amount', '1')");
 		}
 	}
 	
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);;
+		$row1 = mysqli_fetch_assoc($res1);;
 		$total = $row1["ExchangeNewQuan"] + $amount;
 		$cnt = $row1["ExchangeNewCnt"] + 1;
 		
-		mysql_query("update TotalStatis set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set ExchangeNewQuan='$total', ExchangeNewCnt='$cnt' where IndexId=1");
 	}
 }
 
-function insertExchangeSuccessStatistics($amount, $fee)
+function insertExchangeSuccessStatistics($con, $amount, $fee)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$total = $row["ExchangeSuccQuan"] + $amount;
 			$cnt = $row["ExchangeSuccCnt"] + 1;
 			$handleFee = $row["ExchangeFee"] + $fee;
-			mysql_query("update Statistics set ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, ExchangeSuccQuan, ExchangeSuccCnt, ExchangeFee)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, ExchangeSuccQuan, ExchangeSuccCnt, ExchangeFee)
 					VALUES('$year', '$month', '$day', '$amount', '1', '$fee')");
 		}
 	}
 	
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);;
+		$row1 = mysqli_fetch_assoc($res1);;
 		$total = $row1["ExchangeSuccQuan"] + $amount;
 		$cnt = $row1["ExchangeSuccCnt"] + 1;
 		$creditPool = $row1["CreditsPool"] + $fee;
 		$handleFee = $row1["ExchangeFee"] + $fee;
 		
-		mysql_query("update TotalStatis set CreditsPool='$creditPool', ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$creditPool', ExchangeSuccQuan='$total', ExchangeSuccCnt='$cnt', ExchangeFee='$handleFee' where IndexId=1");
 	}
 }
 
@@ -582,36 +582,36 @@ function insertExchangeSuccessStatistics($amount, $fee)
  * 添加虚拟生活相关的统计数据
  * $fee - 
  */
-function insertVLStatistics($amount, $fee)
+function insertVLStatistics($con, $amount, $fee)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$withdrawTotal = $row["WithdrawTotal"] + $amount;
 			$feeTotal = $row["WithdrawFee"] + $fee;
-			mysql_query("update Statistics set WithdrawTotal='$withdrawTotal', WithdrawFee='$feeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set WithdrawTotal='$withdrawTotal', WithdrawFee='$feeTotal' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, WithdrawTotal, WithdrawFee)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, WithdrawTotal, WithdrawFee)
 					VALUES('$year', '$month', '$day', '$amount', '$fee')");
 		}
 	}
 	
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		
 		$credits = $row1["CreditsPool"];
 		$withdrawTotal = $row1["WithdrawTotal"];
@@ -620,7 +620,7 @@ function insertVLStatistics($amount, $fee)
 		$credits += $amount + $fee;			// 取现积分数收入积分池，积分数包含手续费
 		$withdrawTotal += $amount;
 		$withdrawFee += $fee;
-		mysql_query("update TotalStatis set CreditsPool='$credits', WithdrawTotal='$withdrawTotal', WithdrawFee='$withdrawFee' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$credits', WithdrawTotal='$withdrawTotal', WithdrawFee='$withdrawFee' where IndexId=1");
 	}
 }
 
@@ -628,43 +628,43 @@ function insertVLStatistics($amount, $fee)
  * 添加开放线下商定的数据
  * $fee - 申请线下商店的费用
  */
-function insertOfflineShopOpenStatistics($fee)
+function insertOfflineShopOpenStatistics($con, $fee)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$shopCnt = $row["OlShopCnt"] + 1;
 			$regiFee = $row["OlShopRegiFee"] + $fee;
-			mysql_query("update Statistics set OlShopCnt='$shopCnt', OlShopRegiFee='$regiFee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set OlShopCnt='$shopCnt', OlShopRegiFee='$regiFee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopCnt, OlShopRegiFee)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, OlShopCnt, OlShopRegiFee)
 					VALUES('$year', '$month', '$day', '1', '$fee')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$credits = $row1["CreditsPool"];
 		$regiFee = $row1["OlShopRegiFee"];
 		
 		$credits += $fee;			// 转账手续费收入积分池
 		$regiFee += $fee;
 		
-		mysql_query("update TotalStatis set CreditsPool='$credits', OlShopRegiFee='$regiFee' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$credits', OlShopRegiFee='$regiFee' where IndexId=1");
 	}
 }
 
@@ -672,41 +672,41 @@ function insertOfflineShopOpenStatistics($fee)
  * 添加开放线下商定的数据
  * $fee - 申请线下商店的费用
  */
-function insertOfflineShopTradeStatistics($fee)
+function insertOfflineShopTradeStatistics($con, $fee)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$tradeCnt = $row["OlShopTradeCnt"] + 1;
 			$tradeFee = $row["OlShopTradeFee"] + $fee;
-			mysql_query("update Statistics set OlShopTradeCnt='$tradeCnt', OlShopTradeFee='$tradeFee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set OlShopTradeCnt='$tradeCnt', OlShopTradeFee='$tradeFee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopTradeCnt, OlShopTradeFee)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, OlShopTradeCnt, OlShopTradeFee)
 					VALUES('$year', '$month', '$day', '1', '$fee')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$credits = $row1["CreditsPool"];
 		
 		$credits += $fee;			// 线下交易手续费收入积分池
 		
-		mysql_query("update TotalStatis set CreditsPool='$credits' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$credits' where IndexId=1");
 	}
 }
 
@@ -715,92 +715,92 @@ function insertOfflineShopTradeStatistics($fee)
  * $amount - 申请提现的金额，其中包括$fee，实际金额为$amount - $fee
  * $fee - 提现收取的手续费
  */
-function insertOfflineShopWithdrawStatistics($amount, $fee)
+function insertOfflineShopWithdrawStatistics($con, $amount, $fee)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$wdAmt = $row["OlShopWdAmt"] + $amount - $fee;
 			$wdFee = $row["OlShopWdFee"] + $fee;
-			mysql_query("update Statistics set OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OlShopWdAmt, OlShopWdFee)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, OlShopWdAmt, OlShopWdFee)
 					VALUES('$year', '$month', '$day', '$wdAmt', '$wdFee')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$credits = $row1["CreditsPool"];
 		$credits += $amount;			// 取出金额（其中含手续费）收入积分池
 		$wdAmt = $row1["OlShopWdAmt"] + $amount - $fee;
 		$wdFee = $row1["OlShopWdFee"] + $fee;
 		
-		mysql_query("update TotalStatis set CreditsPool='$credits', OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$credits', OlShopWdAmt='$wdAmt', OlShopWdFee='$wdFee' where IndexId=1");
 	}
 }
 	
-function insertOrderStatistics($totalPrice, $count)
+function insertOrderStatistics($con, $totalPrice, $count)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$gross = $row["OrderGross"] + $totalPrice;
 			$orderNum = $row["OrderNum"] + 1;
 			$spnum = $row["SPNum"] + $count;
-			mysql_query("update Statistics set OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, SPNum)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, OrderGross, OrderNum, SPNum)
 					VALUES('$year', '$month', '$day', '$totalPrice', '1', '$count')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$credits = $row1["CreditsPool"];
 		$gross = $row1["OrderGross"] + $totalPrice;
 		$orderNum = $row1["OrderNum"] + 1;
 		$spnum = $row1["SPNum"] + $count;
 		
 		$credits = $credits + $totalPrice;	// 购买使用的积分归入积分池，再取出奖励积分分给上游用户
-		mysql_query("update TotalStatis set CreditsPool='$credits', OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$credits', OrderGross='$gross', OrderNum='$orderNum', SPNum='$spnum' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
-	$res2 = mysql_query("select * from ShortStatis where IndexId=1");
-	if ($res2 && mysql_num_rows($res2) > 0) {
+	$res2 = mysqli_query($con, "select * from ShortStatis where IndexId=1");
+	if ($res2 && mysqli_num_rows($res2) > 0) {
 		
-		$row2 = mysql_fetch_assoc($res2);
+		$row2 = mysqli_fetch_assoc($res2);
 		$gross = $row2["OrderGross"] + $totalPrice;
-		mysql_query("update ShortStatis set OrderGross='$gross' where IndexId='1'");
+		mysqli_query($con, "update ShortStatis set OrderGross='$gross' where IndexId='1'");
 	}
 }
 
@@ -810,42 +810,42 @@ function insertOrderStatistics($totalPrice, $count)
  * $newUserAsset - 新用户获得的总资产，包括线上云量、线下云量、慈善金、财富云量，目前为推荐费的3倍
  * $charity - 慈善金，做慈善统计用，也包含在$newUserAsset中
  */
-function insertRecommendStatistics($referFee, $newUserAsset, $charity)
+function insertRecommendStatistics($con, $referFee, $newUserAsset, $charity)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			$newUserCount = $row["NSCount"] + 1;
 			$fee = $row["RecommendTotal"] + $referFee;
 
-			mysql_query("update Statistics set NSCount='$newUserCount', RecommendTotal='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set NSCount='$newUserCount', RecommendTotal='$fee' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, NSCount, RecommendTotal)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, NSCount, RecommendTotal)
 					VALUES('$year', '$month', '$day', '1', '$referFee')");
 		}
 	}
 	
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$userCnt = $row1["UserCount"] + 1;
 		$recomTotal = $row1["RecommendTotal"] + $referFee;
 		$creditPool = $row1["CreditsPool"] + $referFee - $newUserAsset;
 		$charityTotal = $row1["CharityPool"] + $charity; 
-		mysql_query("update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set UserCount='$userCnt', RecommendTotal='$recomTotal', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
 	}
 	
 	// 更新短期统计数据
@@ -853,40 +853,40 @@ function insertRecommendStatistics($referFee, $newUserAsset, $charity)
 }
 
 // 静态分红统计
-function insertBonusStatistics($bonus)
+function insertBonusStatistics($con, $bonus)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			
 			$total = $row["BonusTotal"] + $bonus;
-			mysql_query("update Statistics set BonusTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set BonusTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, BonusTotal)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, BonusTotal)
 					VALUES('$year', '$month', '$day', '$bonus')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 // 		$pool = $row1["CreditsPool"] - $bonus;
 		$total = $row1["BonusTotal"] + $bonus;
 		
-		mysql_query("update TotalStatis set BonusTotal='$total' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set BonusTotal='$total' where IndexId=1");
 	}
 }
 
@@ -896,41 +896,41 @@ function insertBonusStatistics($bonus)
  * $newUserAsset - 用户新获得的资产值，包括线上云量、线下云量、慈善金、财富云量，目前为存储额的3倍
  * $charity - 慈善金，做慈善统计用，也包含在$newAsset中
  */
-function insertReinventStatistics($value, $newAsset, $charity)
+function insertReinventStatistics($con, $value, $newAsset, $charity)
 {
 	$now = time();
 	
 	// 更新每日统计数据
-	$result = createStatisticsTable();
+	$result = createStatisticsTable($con);
 	if ($result) {
 		date_default_timezone_set('PRC');
 		$year = date("Y", $now);
 		$month = date("m", $now);
 		$day = date("d", $now);
 		
-		$result = mysql_query("select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
-		if ($result && mysql_num_rows($result) > 0) {
-			$row = mysql_fetch_assoc($result);
+		$result = mysqli_query($con, "select * from Statistics where Ye='$year' and Mon='$month' and Day='$day'");
+		if ($result && mysqli_num_rows($result) > 0) {
+			$row = mysqli_fetch_assoc($result);
 			
 			$total = $row["ReinventTotal"] + $value;
-			mysql_query("update Statistics set ReinventTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
+			mysqli_query($con, "update Statistics set ReinventTotal='$total' where Ye='$year' and Mon='$month' and Day='$day'");
 		}
 		else {
-			mysql_query("insert into Statistics (Ye, Mon, Day, ReinventTotal)
+			mysqli_query($con, "insert into Statistics (Ye, Mon, Day, ReinventTotal)
 					VALUES('$year', '$month', '$day', '$value')");
 		}
 	}
 
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$total = $row1["ReinventTotal"] + $value;
 		$creditPool = $row1["CreditsPool"] + $value - $newAsset;
 		$charityTotal = $row1["CharityPool"] + $charity; 
 		
-		mysql_query("update TotalStatis set ReinventTotal='$total', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set ReinventTotal='$total', CreditsPool='$creditPool', CharityPool='$charityTotal' where IndexId=1");
 	}
 }
 
@@ -938,16 +938,16 @@ function insertReinventStatistics($value, $newAsset, $charity)
  * 处理积分池变动
  * $val: 变动值，直接在加分值上增加对应数值，传入时需注意
  */
-function updateCreditPoolStatistics($val)
+function updateCreditPoolStatistics($con, $val)
 {
 	// 更新总统计数据
-	$res1 = mysql_query("select * from TotalStatis where IndexId=1");
-	if ($res1 && mysql_num_rows($res1) > 0) {
+	$res1 = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if ($res1 && mysqli_num_rows($res1) > 0) {
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$pool = $row1["CreditsPool"] + $val;
 		
-		mysql_query("update TotalStatis set CreditsPool='$pool' where IndexId=1");
+		mysqli_query($con, "update TotalStatis set CreditsPool='$pool' where IndexId=1");
 	}
 }
 

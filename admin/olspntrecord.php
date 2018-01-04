@@ -17,12 +17,12 @@ if (isset($_GET["sid"])) {
 	include "../php/database.php";
 	$con = connectToDB();
 	if ($con)	{
-		$res1 = mysql_query("select * from OfflineShop where ShopId='$sid'");
-		if ($res1 && mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
+		$res1 = mysqli_query($con, "select * from OfflineShop where ShopId='$sid'");
+		if ($res1 && mysqli_num_rows($res1) > 0) {
+			$row1 = mysqli_fetch_assoc($res1);
 		}
 
-		$res = mysql_query("select * from PntsRecord where Type='$code2OlShopReceive' and WithStoreId='$sid' order by ApplyTime desc");
+		$res = mysqli_query($con, "select * from PntsRecord where Type='$code2OlShopReceive' and WithStoreId='$sid' order by ApplyTime desc");
 	}
 }
 
@@ -189,7 +189,7 @@ if (isset($_GET["sid"])) {
 				</form>
 			</div>
 			<p>
-				<span id="searchresult"><?php if ($res) echo "记录数为：" . mysql_num_rows($res); ?></span>
+				<span id="searchresult"><?php if ($res) echo "记录数为：" . mysqli_num_rows($res); ?></span>
 				<div id="stat_blk" class="dl-horizontal">
 					<div style="min-width: 100px; display: inline-block;">
 						<span><b>总交易额：</b></span>
@@ -216,7 +216,7 @@ if (isset($_GET["sid"])) {
 					<?php
 					if ($res) {
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($res)) {
+						while($row = mysqli_fetch_assoc($res)) {
 					?>
 					<tr>
 						<td><?php echo $row["ApplyTime"]; ?></td>

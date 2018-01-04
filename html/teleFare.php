@@ -22,7 +22,7 @@ $result = false;
 
 if ($con) {
 	
-	$result = mysql_query("select * from CreditTrade where Status='$creditTradeInited'");
+	$result = mysqli_query($con, "select * from CreditTrade where Status='$creditTradeInited'");
 }
 
 ?>

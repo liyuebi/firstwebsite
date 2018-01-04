@@ -16,7 +16,7 @@ function getRechargeApplication()
 		return false;
 	}
 	
-	$result = mysql_query("select * from RechargeApplication");
+	$result = mysqli_query($con, "select * from RechargeApplication");
 	return $result;
 }
 
@@ -137,7 +137,7 @@ $result = getRechargeApplication();
 					<?php
 						date_default_timezone_set('PRC');
 						if ($result > 0) {
-							while($row = mysql_fetch_array($result)) {
+							while($row = mysqli_fetch_assoc($result)) {
 					?>
 								<tr>
 									<td><?php echo $row["IndexId"]; ?></td>

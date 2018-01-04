@@ -17,7 +17,7 @@ if (!$con)
 	return false;
 }
 
-$result = mysql_query("select * from PostTable order by AddTime desc");
+$result = mysqli_query($con, "select * from PostTable order by AddTime desc");
 
 ?>
 
@@ -117,7 +117,7 @@ $result = mysql_query("select * from PostTable order by AddTime desc");
 				<?php
 					if ($result) {
 						date_default_timezone_set('PRC');
-						while ($row = mysql_fetch_array($result)) {
+						while ($row = mysqli_fetch_assoc($result)) {
 				?>
 					<tr>
 						<td><?php echo $row["Title"]; ?></td>

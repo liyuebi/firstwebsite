@@ -31,18 +31,18 @@ if ($type == $complainTCreditTrade) {
 $con = connectToDB();
 if ($con) {
 	
-	$res = mysql_query("select * from CreditTrade where IdxId='$relatedId'");
-	if ($res && mysql_num_rows($res) > 0) {
-		$row = mysql_fetch_assoc($res);
+	$res = mysqli_query($con, "select * from CreditTrade where IdxId='$relatedId'");
+	if ($res && mysqli_num_rows($res) > 0) {
+		$row = mysqli_fetch_assoc($res);
 		$respNickName = $row["BuyerNickN"];
 		
 		if (empty($respNickName)) {
 			
 			$respId = $row["BuyerId"];
-			$res1 = mysql_query("select * from ClientTable where UserId='$respId'");
-			if ($res1 && mysql_num_rows($res1) > 0) {
+			$res1 = mysqli_query($con, "select * from ClientTable where UserId='$respId'");
+			if ($res1 && mysqli_num_rows($res1) > 0) {
 				
-				$row1 = mysql_fetch_assoc($res1);
+				$row1 = mysqli_fetch_assoc($res1);
 				$respNickName = $row1["NickName"];
 			}
 		}

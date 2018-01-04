@@ -13,15 +13,15 @@ function writeLog($file, $msg)
  * 计算用户当日应该获得的云量利息。
  * 
  */
-function getDayBonus($userId)
+function getDayBonus($con, $userId)
 {
 	$ret = 0;
 	
-	$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime desc");
+	$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime desc");
 	if ($res) {
 		
 		$now = time();
-		while ($row = mysql_fetch_array($res)) {
+		while ($row = mysqli_fetch_assoc($res)) {
 			
 			// 当日存的云量不进行返还
 			$savetime = $row["SaveTime"];
@@ -52,21 +52,21 @@ function calcBonus($file)
 		return false;
 	}
 	
-	$res = mysql_query("select * from TotalStatis where IndexId=1");
-	if (!$res || mysql_num_rows($res) < 1) {
+	$res = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+	if (!$res || mysqli_num_rows($res) < 1) {
 		writeLog($file, "!!! 查找TotalStatis记录出错!\n");
 		return false;
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$pool = $row["CreditsPool"];
 	
-	$res1 = mysql_query("select * from ShortStatis where IndexId=1");
-	if (!$res1 || mysql_num_rows($res1) < 1) {
+	$res1 = mysqli_query($con, "select * from ShortStatis where IndexId=1");
+	if (!$res1 || mysqli_num_rows($res1) < 1) {
 		writeLog($file, "\n!!! 查找Short记录出错!\n\n");
 		return false;
 	}
 	
-	$row1 = mysql_fetch_assoc($res1);
+	$row1 = mysqli_fetch_assoc($res1);
 	$gross = $row1["OrderGross"];
 	
 	$now = time();
@@ -128,21 +128,21 @@ function calcBonus($file)
 	$totalDFeng = 0;
 	$totalBonus = 0;
 	writeLog($file, "\n------------------------------------------------------------------\n");
-	$res5 = mysql_query("select * from ClientTable");
+	$res5 = mysqli_query($con, "select * from ClientTable");
 	if (!$res5) {
 		writeLog($file, "\n!!! 查询用户表失败！\n");
 	}
 	else {
-		while($row5 = mysql_fetch_array($res5)) {
+		while($row5 = mysqli_fetch_assoc($res5)) {
 			
 			$userid = $row5["UserId"];
 			$lvl = $row5["Lvl"];
-			$res6 = mysql_query("select * from Credit where UserId='$userid'");
-			if (!$res6 || mysql_num_rows($res6) < 1) {
+			$res6 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+			if (!$res6 || mysqli_num_rows($res6) < 1) {
 				writeLog($file, "\n!!! 查询用户" . $userid . "的积分表失败！\n");
 			}
 			else {
-				$row6 = mysql_fetch_assoc($res6);
+				$row6 = mysqli_fetch_assoc($res6);
 				
 				$vault = $row6["Vault"];
 				$bonus = 0;
@@ -166,9 +166,9 @@ function calcBonus($file)
 				if ($bonus > 0) {
 					++$dCnt;
 				}
-				$res7 = mysql_query("update Credit set CurrBonus='$bonus', Vault='$vault' where UserId='$userid'");
+				$res7 = mysqli_query($con, "update Credit set CurrBonus='$bonus', Vault='$vault' where UserId='$userid'");
 				if (!$res7) {
-					writeLog($file, "\n!!! 更新用户 " . $userid . " 的固定分红失败: " . mysql_error() . "\n\n");
+					writeLog($file, "\n!!! 更新用户 " . $userid . " 的固定分红失败: " . mysqli_error($con) . "\n\n");
 				}
 				else {
 					writeLog($file, $userid . " 固定分红：" . $bonus . "，固定蜂值： " . $vault . "\n");
@@ -198,28 +198,28 @@ function calcBonus($file)
 	writeLog($file, "\n分红后积分池余额：" . $pool . "\n");
 	
 	// 更新总统计表
-	$res3 = mysql_query("update TotalStatis set CreditsPool='$pool' where IndexId=1");
+	$res3 = mysqli_query($con, "update TotalStatis set CreditsPool='$pool' where IndexId=1");
 	if (!$res3) {
-		echo "\n!!! 更新总统计表失败： " . mysql_error() . "\n";
+		echo "\n!!! 更新总统计表失败： " . mysqli_error($con) . "\n";
 	}
 	
 	// 更新短期统计表	
-	$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+	$res4 = mysqli_query($con, "update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
 						BonusTotal='$totalBonus', BonusLeft='$totalBonus', LastCalcTime='$now' where IndexId=1");
 /*
 	$res4 = false;
 	if ($bCalcBonus) {
-		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+		$res4 = mysqli_query($con, "update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
 								BonusTotal='$totalBonus', BonusLeft='$totalBonus', LastCalcTime='$now',
 								DBonusTotal='$dBonusTotal', DBonusLeft='$dBonusTotal', LastDCalcTime='$now' where IndexId=1");
 	}
 	else {
-		$res4 = mysql_query("update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
+		$res4 = mysqli_query($con, "update ShortStatis set Recharge=0, Withdraw=0, Transfer=0, OrderGross=0, WithdrawFee=0, TransferFee=0, 
 								DBonusTotal='$dBonusTotal', DBonusLeft='$dBonusTotal', LastDCalcTime='$now' where IndexId=1");		
 	}
 */
 	if (!$res4) {
-		echo "\n!!! 更新短期统计表失败： " . mysql_error() . "\n";
+		echo "\n!!! 更新短期统计表失败： " . mysqli_error($con) . "\n";
 	}
 }
 
@@ -234,8 +234,8 @@ function acceptBonus($userId)
 		return;
 	}
 	
-	$res1 = mysql_query("select * from Credit where UserId='$userId'");
-	if (!$res1 || mysql_num_rows($res1) < 1) {
+	$res1 = mysqli_query($con, "select * from Credit where UserId='$userId'");
+	if (!$res1 || mysqli_num_rows($res1) < 1) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
 		return;
 	}
@@ -243,7 +243,7 @@ function acceptBonus($userId)
 		
 		$now = time();
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		
 		$bonusTotal = $row1["TotalBonus"];
 		$vault = $row1["Vault"];
@@ -258,11 +258,11 @@ function acceptBonus($userId)
 		}
 			
 		$bonus = 0;
-		$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime");
+		$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime");
 		if ($res) {
 			
 			$now = time();
-			while ($row = mysql_fetch_array($res)) {
+			while ($row = mysqli_fetch_assoc($res)) {
 				
 				// 当日存的云量不进行返还
 				$savetime = $row["SaveTime"];
@@ -283,7 +283,7 @@ function acceptBonus($userId)
 				
 				$bonus += $diviCnt;
 				$idx = $row["IdxId"];
-				$res2 = mysql_query("update CreditBank set Balance='$balance', Divident='$divident', LastDiviT='$now', LastChangeT='$now', EmptyTime='$emptyTime' where IdxId=$idx");
+				$res2 = mysqli_query($con, "update CreditBank set Balance='$balance', Divident='$divident', LastDiviT='$now', LastChangeT='$now', EmptyTime='$emptyTime' where IdxId=$idx");
 				if (!$res2) {
 					// !!! log error
 				}
@@ -339,7 +339,7 @@ function acceptBonus($userId)
 			// !!! log error
 		}
 		
-		$res2 = mysql_query("update Credit set Credits='$credit', LastCBTime='$now', Vault='$vault' where UserId='$userId'");
+		$res2 = mysqli_query($con, "update Credit set Credits='$credit', LastCBTime='$now', Vault='$vault' where UserId='$userId'");
 		if (!$res2) {
  			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'领取失败，请稍后重试'));
 			return;
@@ -348,11 +348,11 @@ function acceptBonus($userId)
 		echo json_encode(array('error'=>'false','credit'=>$credit,'vault'=>$vault));
 		
 		// 添加积分记录
-		mysql_query("insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+		mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
 						VALUES('$userId', '$bonus', '$credit', '$now', '$now', '$codeDivident')");
 				
  		// 统计分红信息
- 		insertBonusStatistics($bonus);
+ 		insertBonusStatistics($con, $bonus);
 	}
 }
 
@@ -360,13 +360,13 @@ function acceptBonus($userId)
  * Send user pnts bonus every day.
  * Check when user login to home page, so need to check more than today to send user pnts.
  */
-function acceptPntsBonus($userId, &$pnts)
+function acceptPntsBonus($con, $userId, &$pnts)
 {
 	include_once "func.php";
 	include "constant.php";
 	
-	$res1 = mysql_query("select * from Credit where UserId='$userId'");
-	if (!$res1 || mysql_num_rows($res1) < 1) {
+	$res1 = mysqli_query($con, "select * from Credit where UserId='$userId'");
+	if (!$res1 || mysqli_num_rows($res1) < 1) {
 		// echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
 		return false;
 	}
@@ -374,7 +374,7 @@ function acceptPntsBonus($userId, &$pnts)
 		
 		$now = time();
 		
-		$row1 = mysql_fetch_assoc($res1);
+		$row1 = mysqli_fetch_assoc($res1);
 		$credit = $row1["Pnts"];
 
 		$lastCBPntsTime = $row1["LastCBPTime"];
@@ -388,11 +388,11 @@ function acceptPntsBonus($userId, &$pnts)
 		}
 		// 从未领过每日分红，获取注册时间，从注册时间开始领取
 		else {
-			$res3 = mysql_query("select * from ClientTable where UserId='$userId'");
-			if (!$res3 || mysql_num_rows($res3) < 1) {
+			$res3 = mysqli_query($con, "select * from ClientTable where UserId='$userId'");
+			if (!$res3 || mysqli_num_rows($res3) < 1) {
 				return false;
 			}
-			$row3 = mysql_fetch_assoc($res3);
+			$row3 = mysqli_fetch_assoc($res3);
 			$lastCBPntsTime = $row3["RegisterTime"];
 
 			if ($lastCBPntsTime >= $now 
@@ -419,10 +419,10 @@ function acceptPntsBonus($userId, &$pnts)
 				}
 
 				$dayBonus = 0;
-				$res = mysql_query("select * from CreditBank where UserId='$userId' and Type='2' and Balance>0 order by SaveTime");
+				$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' and Type='2' and Balance>0 order by SaveTime");
 				if ($res) {
 					
-					while ($row = mysql_fetch_array($res)) {
+					while ($row = mysqli_fetch_assoc($res)) {
 						
 						// 当日存的云量不进行返还
 						$savetime = $row["SaveTime"];
@@ -444,7 +444,7 @@ function acceptPntsBonus($userId, &$pnts)
 						
 						$dayBonus += $diviCnt;
 						$idx = $row["IdxId"];
-						$res2 = mysql_query("update CreditBank set Balance='$balance', Divident='$divident', LastDiviT='$oneTime', LastChangeT='$oneTime', EmptyTime='$emptyTime' where IdxId=$idx");
+						$res2 = mysqli_query($con, "update CreditBank set Balance='$balance', Divident='$divident', LastDiviT='$oneTime', LastChangeT='$oneTime', EmptyTime='$emptyTime' where IdxId=$idx");
 						if (!$res2) {
 							// !!! log error
 						}
@@ -456,7 +456,7 @@ function acceptPntsBonus($userId, &$pnts)
 						$credit += $dayBonus;
 
 						// 添加线下云量记录
-						$res4 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, Type)
+						$res4 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, Type)
 										VALUES('$userId', '$dayBonus', '$credit', '$oneTime', '$code2Divident')");
 						if (!$res4) {
 							// !!! log error
@@ -470,7 +470,7 @@ function acceptPntsBonus($userId, &$pnts)
 			return false;
 		}
 		
-		$res2 = mysql_query("update Credit set Pnts='$credit', LastCBPTime='$now' where UserId='$userId'");
+		$res2 = mysqli_query($con, "update Credit set Pnts='$credit', LastCBPTime='$now' where UserId='$userId'");
 		if (!$res2) {
 			// !!! log error
 			return false;

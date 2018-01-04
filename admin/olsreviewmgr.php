@@ -19,9 +19,9 @@ if (!$con)
 }
 
 include "../php/constant.php";
-$result = mysql_query("select * from OfflineShop where Status='$olshopApplied' order by ReadyForCheckTime");
-// 	$result = mysql_query("select * from Transaction");
-// $res1 = mysql_query("select * from Transaction  where Status='$OrderStatusDefault'");
+$result = mysqli_query($con, "select * from OfflineShop where Status='$olshopApplied' order by ReadyForCheckTime");
+// 	$result = mysqli_query($con, "select * from Transaction");
+// $res1 = mysqli_query($con, "select * from Transaction  where Status='$OrderStatusDefault'");
 
 ?>
 
@@ -109,7 +109,7 @@ $result = mysql_query("select * from OfflineShop where Status='$olshopApplied' o
 					<?php
 						include "../php/constant.php";
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($result)) {
+						while($row = mysqli_fetch_assoc($result)) {
 					?>
 							<tr>
 								<td><?php echo date("Y.m.d H:i" ,$row["ReadyForCheckTime"]); ?></td>

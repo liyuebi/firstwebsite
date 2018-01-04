@@ -2,21 +2,21 @@
 	
 function connectToDB()
 {
-	$con = mysql_connect("127.0.0.1:3306", "root", "123456789");
+	$con = mysqli_connect("127.0.0.1:3306", "root", "123456789");
 	if (!$con)
 	{
-		echo "Could not connect: " . mysql_error();
+		echo "Could not connect: " . mysqli_connect_error();
 	}
 	/* mifeng_db */
-	$db_selected = mysql_select_db("mifeng_db", $con);
+	$db_selected = mysqli_select_db($con, "mifeng_db");
 	if (!$db_selected) {
-		echo "Cannot use mifeng_db : " . mysql_error();
+		echo "Cannot use mifeng_db : " . mysqli_error($con);
 		$con = false;
 	}
 	return $con;
 }
 	
-function createClientTable()
+function createClientTable($con)
 {
 	/*
 	 * UserId: Id of user 用户编号 
@@ -49,14 +49,14 @@ function createClientTable()
 		DefaultAddressId int DEFAULT 0,
 		AccInited int default 0
 	) ENGINE=MEMORY AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create ClientTable table error: " . mysql_error() . "<br>";
+		echo "create ClientTable table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createCreditTable()
+function createCreditTable($con)
 {
 	/*
 	 * RegiToken: 注册券
@@ -98,14 +98,14 @@ function createCreditTable()
 		LastCBTime int default 0,
 		LastCBPTime int default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Credit table error: " . mysql_error() . "<br>";
+		echo "create Credit table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createAdminTable()
+function createAdminTable($con)
 {
 	$sql = "create table if not exists AdminTable
 	(
@@ -116,14 +116,14 @@ function createAdminTable()
 		Priority int not null,
 		LastLoginTime int default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create AdminTable table error: " . mysql_error() . "<br>";
+		echo "create AdminTable table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createAddressTable()
+function createAddressTable($con)
 {
 	$sql = "create table if not exists Address
 	(
@@ -135,14 +135,14 @@ function createAddressTable()
 		Address varchar(128) NOT NULL,
 		ZipCode varchar(8) DEFAULT ''
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Address table error: " . mysql_error() . "<br>";
+		echo "create Address table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createCreditTradeTable()
+function createCreditTradeTable($con)
 {
 	/*
 	* IdxId: 订单序号，按顺序生成
@@ -181,14 +181,14 @@ function createCreditTradeTable()
 		ComplainStatus int default 0,
 		ComplainIdx int default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create CreditTrade table error: " . mysql_error() . "<br>";
+		echo "create CreditTrade table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createCreditBankTable()
+function createCreditBankTable($con)
 {
 	/*
 	 * IdxId: 存储序号
@@ -223,14 +223,14 @@ function createCreditBankTable()
 		DiviChangeT int default 0,
 		Type int default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create CreditBank table error: " . mysql_error() . "<br>";
+		echo "create CreditBank table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createTransactionTable()
+function createTransactionTable($con)
 {
 	/*
 	 * Type: 订单类型，1：初始订单，2:充话费，3:充油费，4:新手充话费（部分使用现金） 10：自由集市
@@ -280,14 +280,14 @@ function createTransactionTable()
 		Status int
 	)";
 
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Transaction table error: " . mysql_error() . "<br>";
+		echo "create Transaction table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createCompanyTable()
+function createCompanyTable($con)
 {
 	$sql = "create table if not exists Company
 	(
@@ -297,14 +297,14 @@ function createCompanyTable()
 		PhoneNum varchar(15)
 	)";
 	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Company table error: " . mysql_error() . "<br>";
+		echo "create Company table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createOfflineShopTable()
+function createOfflineShopTable($con)
 {
 	/*
 	 * ShopId: 线上商店编号
@@ -357,14 +357,14 @@ function createOfflineShopTable()
 		Status int default 0		
 	) ENGINE=MEMORY AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create OfflineShop table error: " . mysql_error() . "<br>";
+		echo "create OfflineShop table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createProductTable()
+function createProductTable($con)
 {
 	$sql = "create table if not exists Product
 	(
@@ -383,14 +383,14 @@ function createProductTable()
 		LimitOneDay int DEFAULT 0,
 		Status int NOT NULL DEFAULT 1
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Product table error: " . mysql_error() . "<br>";
+		echo "create Product table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createProductDayBoughtTable()
+function createProductDayBoughtTable($con)
 {
 	$sql = "create table if not exists ProductDayBought
 	(
@@ -401,14 +401,14 @@ function createProductDayBoughtTable()
 		LastBoughtTime int DEFAULT 0,
 		Count int DEFAULT 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create ProductDayBought table error: " . mysql_error() . "<br>";
+		echo "create ProductDayBought table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createProductLevelBoughtTable()
+function createProductLevelBoughtTable($con)
 {
 	$sql = "create table if not exists ProductLevelBought
 	(
@@ -420,14 +420,14 @@ function createProductLevelBoughtTable()
 		LastBoughtTime int DEFAULT 0,
 		Count int DEFAULT 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create ProductLevelBought table error: " . mysql_error() . "<br>";
+		echo "create ProductLevelBought table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createRechargeTable()
+function createRechargeTable($con)
 {
 	$sql = "create table if not exists RechargeApplication
 	(
@@ -447,14 +447,14 @@ function createRechargeTable()
 		DeclineTime int DEFAULT 0,
 		AdminId int DEFAULT 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create RechargeApplication table error: " . mysql_error() . "<br>";
+		echo "create RechargeApplication table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createWithdrawTable()
+function createWithdrawTable($con)
 {
 	$sql = "create table if not exists WithdrawApplication
 	(
@@ -475,14 +475,14 @@ function createWithdrawTable()
 		DeclineTime int DEFAULT 0,
 		AdminId int DEFAULT 0
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create WithdrawApplication table error: " . mysql_error() . "<br>";
+		echo "create WithdrawApplication table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createPntsWithdrawTable()
+function createPntsWithdrawTable($con)
 {
 	/*
 	 * 线下云量提取申请表
@@ -510,14 +510,14 @@ function createPntsWithdrawTable()
 		AdminId int default 0,
 		Status int default 0
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create PntsWdApplication table error: " . mysql_error() . "<br>";
+		echo "create PntsWdApplication table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createWechatTable()
+function createWechatTable($con)
 {
 	$sql = "create table if not exists WechatAccount
 	(
@@ -526,14 +526,14 @@ function createWechatTable()
 		UserId int NOT NULL,
 		WechatAcc varchar(32) NOT NULL
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create WechatAccount table error: " . mysql_error() . "<br>";
+		echo "create WechatAccount table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createAlipayTable()
+function createAlipayTable($con)
 {
 	$sql = "create table if not exists AlipayAccount
 	(
@@ -542,14 +542,14 @@ function createAlipayTable()
 		UserId int NOT NULL,
 		AlipayAcc varchar(32) NOT NULL
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create AlipayAccount table error: " . mysql_error() . "<br>";
+		echo "create AlipayAccount table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;	
 }
 
-function createBankAccountTable()
+function createBankAccountTable($con)
 {
 	$sql = "create table if not exists BankAccount
 	(
@@ -561,14 +561,14 @@ function createBankAccountTable()
 		BankName varchar(32) NOT NULL,
 		BankBranch varchar(64) default ''
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create BankAccount table error: " . mysql_error() . "<br>";
+		echo "create BankAccount table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;		
 }
 
-function createCreditRecordTable()
+function createCreditRecordTable($con)
 {
 	/*
 	 * Amount - 实际变动值
@@ -595,14 +595,14 @@ function createCreditRecordTable()
 		WithUserId int DEFAULT 0,
 		Type int NOT NULL
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create CreditRecord table error: " . mysql_error() . "<br>";
+		echo "create CreditRecord table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createPntsRecordTable()
+function createPntsRecordTable($con)
 {
 	/*
 	 * Amount - 实际变动值
@@ -632,14 +632,14 @@ function createPntsRecordTable()
 		WithUserId int default 0,
 		Type int not null
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create PntsRecord table error: " . mysql_error() . "<br>";
+		echo "create PntsRecord table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createComplaintTable()
+function createComplaintTable($con)
 {
 	/*
 	 * 投诉信息表
@@ -680,14 +680,14 @@ function createComplaintTable()
 		RespCloseTime int default 0,
 		Status int not null
 	)";	
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Complaint table error: " . mysql_error() . "<br>";
+		echo "create Complaint table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createStatisticsTable()
+function createStatisticsTable($con)
 {
 	/*
 	 * Ye 	
@@ -734,14 +734,14 @@ function createStatisticsTable()
 		OlShopWdAmt decimal(10,2) default 0,
 		OlShopWdFee decimal(10,2) default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create Statistics table error: " . mysql_error() . "<br>";
+		echo "create Statistics table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createTotalStatisTable()
+function createTotalStatisTable($con)
 {
 	/*
 	 * CreditsPool - 系统云量池
@@ -782,14 +782,14 @@ function createTotalStatisTable()
 		OlShopWdAmt decimal(10,2) default 0,
 		OlShopWdFee decimal(10,2) default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create TotalStatis table error: " . mysql_error() . "<br>";
+		echo "create TotalStatis table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createShortStatisTable()
+function createShortStatisTable($con)
 {
 	/*
 	 * LastCalcTime: 上次计算分红的时间
@@ -813,14 +813,14 @@ function createShortStatisTable()
 		LastCalcTime int DEFAULT 0,
 		LastDCalcTime int DEFAULT 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create ShortStatis table error: " . mysql_error() . "<br>";
+		echo "create ShortStatis table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
 
-function createPostTable()
+function createPostTable($con)
 {
 	/*
 	 * AddTime: 添加时间
@@ -841,9 +841,9 @@ function createPostTable()
 		ReT int default 0,
 		Status int default 0
 	)";
-	$result = mysql_query($sql);
+	$result = mysqli_query($con, $sql);
 	if (!$result) {
-		echo "create PostTable table error: " . mysql_error() . "<br>";
+		echo "create PostTable table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }
@@ -883,16 +883,16 @@ function isInTheSameYear($time1, $time2)
 	return $year1 == $year2;
 }
 
-function getMonthConsumption($userid)
+function getMonthConsumption($con, $userid)
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 	
 	//  如果值为0，就设为零
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	if ($row["MonthConsumption"] == 0) {
 		return 0;
 	}
@@ -904,7 +904,7 @@ function getMonthConsumption($userid)
 	
 	// set DayConsumption to 0 if LastConsumptionTime is not today
 	if (!isInTheSameMonth($lasttime, time())) {
-		mysql_query("update Credit set MonthConsumption=0 where UserId='$userid'");
+		mysqli_query($con, "update Credit set MonthConsumption=0 where UserId='$userid'");
 		return 0;
 	}
 	
@@ -912,18 +912,18 @@ function getMonthConsumption($userid)
 
 }
 
-function updateMonthConsumption($userid)
+function updateMonthConsumption($con, $userid)
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$lasttime = $row["LastConsumptionTime"];
 	if ($lasttime == 0) {
-		mysql_query("update Credit set MonthConsumption='$consumption' and LastConsumptionTime='$time' where UserId='$userid'");
+		mysqli_query($con, "update Credit set MonthConsumption='$consumption' and LastConsumptionTime='$time' where UserId='$userid'");
 		return;
 	}	
 
@@ -933,21 +933,21 @@ function updateMonthConsumption($userid)
 	}
 	
 	$dayConsumption += $consumption;
-	mysql_query("update Credit set isInTheSameMonth='$dayConsumption' and LastConsumptionTime='$time' where UserId='$userid'");
+	mysqli_query($con, "update Credit set isInTheSameMonth='$dayConsumption' and LastConsumptionTime='$time' where UserId='$userid'");
 	return;
 
 }
 
-function getDayConsumption($userid)
+function getDayConsumption($con, $userid)
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 	
 	//  如果值为0，就设为零
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	if ($row["DayConsumption"] == 0) {
 		return 0;
 	}
@@ -959,25 +959,25 @@ function getDayConsumption($userid)
 	
 	// set DayConsumption to 0 if LastConsumptionTime is not today
 	if (!isInTheSameDay($lasttime, time())) {
-		mysql_query("update Credit set DayConsumption=0 where UserId='$userid'");
+		mysqli_query($con, "update Credit set DayConsumption=0 where UserId='$userid'");
 		return 0;
 	}
 	
 	return $row["DayConsumption"];
 }
 
-function updateDayConsumption($userid, $consumption, $time) 
+function updateDayConsumption($con, $userid, $consumption, $time) 
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$lasttime = $row["LastConsumptionTime"];
 	if ($lasttime == 0) {
-		mysql_query("update Credit set DayConsumption='$consumption' and LastConsumptionTime='$time' where UserId='$userid'");
+		mysqli_query($con, "update Credit set DayConsumption='$consumption' and LastConsumptionTime='$time' where UserId='$userid'");
 		return;
 	}	
 
@@ -987,20 +987,20 @@ function updateDayConsumption($userid, $consumption, $time)
 	}
 	
 	$dayConsumption += $consumption;
-	mysql_query("update Credit set DayConsumption='$dayConsumption' and LastConsumptionTime='$time' where UserId='$userid'");
+	mysqli_query($con, "update Credit set DayConsumption='$dayConsumption' and LastConsumptionTime='$time' where UserId='$userid'");
 	return;
 }
 
-function getDayObtained($userid)
+function getDayObtained($con, $userid)
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 	
 	//  如果值为0，就设为零
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	if ($row["DayObtained"] == 0) {
 		return 0;
 	}
@@ -1012,25 +1012,25 @@ function getDayObtained($userid)
 	
 	// set DayConsumption to 0 if LastConsumptionTime is not today
 	if (!isInTheSameDay($lasttime, time())) {
-		mysql_query("update Credit set DayConsumption=0 where UserId='$userid'");
+		mysqli_query($con, "update Credit set DayConsumption=0 where UserId='$userid'");
 		return 0;
 	}
 	
 	return $row["DayObtained"];
 }
 
-function updateDayObtained($userid, $obtained, $time)
+function updateDayObtained($con, $userid, $obtained, $time)
 {
 	$ret = 0;
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result && mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result && mysqli_num_rows($result) <= 0) {
 		return;
 	}
 
-	$row = mysql_fetch_assoc($result);
+	$row = mysqli_fetch_assoc($result);
 	$lasttime = $row["LastObtainedTime"];
 	if ($lasttime == 0) {
-		mysql_query("update Credit set DayObtained='$obtained' and LastObtainedTime='$time' where UserId='$userid'");
+		mysqli_query($con, "update Credit set DayObtained='$obtained' and LastObtainedTime='$time' where UserId='$userid'");
 		return;
 	}	
 
@@ -1040,7 +1040,7 @@ function updateDayObtained($userid, $obtained, $time)
 	}
 	
 	$dayObtained += $obtained;
-	mysql_query("update Credit set DayConsumption='$dayObtained' and LastObtainedTime='$time' where UserId='$userid'");
+	mysqli_query($con, "update Credit set DayConsumption='$dayObtained' and LastObtainedTime='$time' where UserId='$userid'");
 	return;
 }
 
@@ -1049,13 +1049,13 @@ function calcHandleFee($amount, $rate) {
 	return $fee;
 }
 
-function getDayBoughtCount($userid, $productid)
+function getDayBoughtCount($con, $userid, $productid)
 {
 	$count = 0;
-	$result = mysql_query("select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
-	if ($result && mysql_num_rows($result) > 0) {
+	$result = mysqli_query($con, "select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
+	if ($result && mysqli_num_rows($result) > 0) {
 		
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$lTime = $row["LastBoughtTime"];
 		$now = time();
 		if (isInTheSameDay($lTime, $now)) {
@@ -1066,108 +1066,108 @@ function getDayBoughtCount($userid, $productid)
 	return $count;
 }
 
-function getLevelBoughtCnt($userid, $lvl, $productid)
+function getLevelBoughtCnt($con, $userid, $lvl, $productid)
 {
 	$count = 0;
-	$res = mysql_query("select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
-	if ($res && mysql_num_rows($res) > 0) {
+	$res = mysqli_query($con, "select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+	if ($res && mysqli_num_rows($res) > 0) {
 		
-		$row = mysql_fetch_assoc($res);
+		$row = mysqli_fetch_assoc($res);
 		$count = $row["Count"];
 	}
 	return $count;
 }
 
-function updateDayBoughtCount($userid, $productid, $count) 
+function updateDayBoughtCount($con, $userid, $productid, $count) 
 {
-	$result = createProductDayBoughtTable();
+	$result = createProductDayBoughtTable($con);
 	if (!$result) {
 		return;
 	}
 	
-	$result = mysql_query("select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
+	$result = mysqli_query($con, "select * from ProductDayBought where UserId='$userid' and ProductId='$productid'");
 	if ($result) {
 		
 		$now = time();
-		if (mysql_num_rows($result) > 0) {
+		if (mysqli_num_rows($result) > 0) {
 		
-			$row = mysql_fetch_assoc($result);
+			$row = mysqli_fetch_assoc($result);
 			$lTime = $row["LastBoughtTime"];
 			if (isInTheSameDay($lTime, $now)) {
 				$count += $row["Count"];
 			}
 			
-			mysql_query("update ProductDayBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and ProductId='$productid'");
+			mysqli_query($con, "update ProductDayBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and ProductId='$productid'");
 		}
 		else {
-			mysql_query("insert into ProductDayBought (UserId, ProductId, Count, LastBoughtTime)
+			mysqli_query($con, "insert into ProductDayBought (UserId, ProductId, Count, LastBoughtTime)
 							VALUES('$userid', '$productid', '$count', '$now')");
 		}
 	}
 }
 
-function updateLevelBoughtCount($userid, $lvl, $productid, $count) 
+function updateLevelBoughtCount($con, $userid, $lvl, $productid, $count) 
 {
-	$result = createProductLevelBoughtTable();
+	$result = createProductLevelBoughtTable($con);
 	if (!$result) {
 		return;
 	}
 	
-	$result = mysql_query("select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+	$result = mysqli_query($con, "select * from ProductLevelBought where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
 	if ($result) {
 		
 		$now = time();
-		if (mysql_num_rows($result) > 0) {
+		if (mysqli_num_rows($result) > 0) {
 		
-			$row = mysql_fetch_assoc($result);
+			$row = mysqli_fetch_assoc($result);
 			$count += $row["Count"];
 			
-			mysql_query("update ProductLevelBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
+			mysqli_query($con, "update ProductLevelBought set Count='$count', LastBoughtTime='$now' where UserId='$userid' and Level='$lvl' and ProductId='$productid'");
 		}
 		else {
-			mysql_query("insert into ProductLevelBought (UserId, Level, ProductId, Count, LastBoughtTime)
+			mysqli_query($con, "insert into ProductLevelBought (UserId, Level, ProductId, Count, LastBoughtTime)
 							values('$userid', '$lvl', '$productid', '$count', '$now')");
 		}
 	}
 }
 
-function initGeneralStatisTable()
+function initGeneralStatisTable($con)
 {
-	$result = createTotalStatisTable();
+	$result = createTotalStatisTable($con);
 	if ($result) {
 		
-		$res = mysql_query("select * from TotalStatis");
+		$res = mysqli_query($con, "select * from TotalStatis");
 		if (!$res) {
-			echo "init general statis error: " . mysql_error() . "<br>";
+			echo "init general statis error: " . mysqli_error($con) . "<br>";
 		}
 		else {
-			if (mysql_num_rows($res) > 0) {
+			if (mysqli_num_rows($res) > 0) {
 				// inited
 			}
 			else {
-				$res1 = mysql_query("insert into TotalStatis (CreditsPool) VALUES('9999000')");
+				$res1 = mysqli_query($con, "insert into TotalStatis (CreditsPool) VALUES('9999000')");
 				if (!$res1) {
-					echo "insert into general statis error: " . mysql_error() . "<br>";
+					echo "insert into general statis error: " . mysqli_error($con) . "<br>";
 				}
 			}
 		}
 	}
 	
 /*
-	$result = createShortStatisTable();
+	$result = createShortStatisTable($con);
 	if ($result) {
-		$res = mysql_query("select * from ShortStatis");
+		$res = mysqli_query($con, "select * from ShortStatis");
 		if (!$res) {
-			echo "init short statis error: " . mysql_error() . "<br>";
+			echo "init short statis error: " . mysqli_error($con) . "<br>";
 		}
 		else {
-			if (mysql_num_rows($res) > 0) {
+			if (mysqli_num_rows($res) > 0) {
 				// inited
 			}
 			else {
-				$res1 = mysql_query("insert into ShortStatis (LastCalcTime) VALUES('0')");
+				$res1 = mysqli_query($con, "insert into ShortStatis (LastCalcTime) VALUES('0')");
 				if (!$res1) {
-					echo "insert into short statis error: " . mysql_error() . "<br>";
+					echo "insert into short statis error: " . mysqli_error($con) . "<br>";
 				}
 			}
 		}

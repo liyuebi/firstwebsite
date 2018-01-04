@@ -15,8 +15,8 @@ include "../php/database.php";
 $con = connectToDB();
 if ($con) {
 	
-	$res = mysql_query("select * from ClientTable where UserId='$userid'");
-	$res1 = mysql_query("select * from Credit where UserId='$userid'");
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+	$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
 }
 	
 ?>
@@ -137,10 +137,10 @@ if ($con) {
 			<div id="blk_chk" style="display: block;">
 				<table id="user_tbl" border="1">
 					<?php 
-						if ($res && mysql_num_rows($res) > 0
-							&& $res1 && mysql_num_rows($res1) > 0) {
-							$row = mysql_fetch_assoc($res);
-							$row1 = mysql_fetch_assoc($res1);
+						if ($res && mysqli_num_rows($res) > 0
+							&& $res1 && mysqli_num_rows($res1) > 0) {
+							$row = mysqli_fetch_assoc($res);
+							$row1 = mysqli_fetch_assoc($res1);
 					?>
 					<tr>
 						<th>属性</th>

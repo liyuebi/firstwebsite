@@ -19,9 +19,9 @@ if (!$con)
 }
 
 include "../php/constant.php";
-// $result = mysql_query("select * from Transaction  where Status='$OrderStatusBuy'");
-// 	$result = mysql_query("select * from Transaction");
-$res1 = mysql_query("select * from Transaction where Type=2");
+// $result = mysqli_query($con, "select * from Transaction  where Status='$OrderStatusBuy'");
+// 	$result = mysqli_query($con, "select * from Transaction");
+$res1 = mysqli_query($con, "select * from Transaction where Type=2");
 
 ?>
 
@@ -253,7 +253,7 @@ $res1 = mysql_query("select * from Transaction where Type=2");
 					<?php
 						include "../php/constant.php";
 						date_default_timezone_set('PRC');
-						while($row = mysql_fetch_array($res1)) {
+						while($row = mysqli_fetch_assoc($res1)) {
 					?>
 							<tr>
 								<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>

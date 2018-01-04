@@ -10,12 +10,10 @@ if (!checkLoginOrJump()) {
 
 include "../php/database.php";
 $con = connectToDB();
-if (!$con)
+if ($con)
 {
-	return false;
+	$res = mysqli_query($con, "select * from AdminTable where Name!='admin'");
 }
-	
-$res = mysql_query("select * from AdminTable where Name!='admin'");
 	
 ?>
 
@@ -164,7 +162,7 @@ $res = mysql_query("select * from AdminTable where Name!='admin'");
 					</tr>
 					<?php
 						if ($res) {
-							while ($row = mysql_fetch_array($res)) {
+							while ($row = mysqli_fetch_assoc($res)) {
 					?>
 								<tr>
 									<td><?php echo $row["Name"]; ?></td>

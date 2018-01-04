@@ -20,32 +20,32 @@ if (!$con)
 	return false;
 }
 
-$res = mysql_query("select * from TotalStatis");
+$res = mysqli_query($con, "select * from TotalStatis");
 if ($res) {
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 }
 
-$res1 = mysql_query("select * from ShortStatis");
+$res1 = mysqli_query($con, "select * from ShortStatis");
 if ($res1) {
-	$row1 = mysql_fetch_assoc($res1);
+	$row1 = mysqli_fetch_assoc($res1);
 }
 
 $i = 1;
 while ($i <= 10) {
 	$userCnt[$i] = 0;
 	
-	$res2 = mysql_query("select count(*) from ClientTable where Lvl='$i'");
-	if ($res2 && mysql_num_rows($res2) > 0) {
-		$row2 = mysql_fetch_assoc($res2);
+	$res2 = mysqli_query($con, "select count(*) from ClientTable where Lvl='$i'");
+	if ($res2 && mysqli_num_rows($res2) > 0) {
+		$row2 = mysqli_fetch_assoc($res2);
 		$userCnt[$i] = $row2["count(*)"];
 	}
 	
 	++$i;
 }
 
-$res3 = mysql_query("select count(*) from ClientTable");
-if ($res3 && mysql_num_rows($res3) > 0) {
-	$row3 = mysql_fetch_assoc($res3);
+$res3 = mysqli_query($con, "select count(*) from ClientTable");
+if ($res3 && mysqli_num_rows($res3) > 0) {
+	$row3 = mysqli_fetch_assoc($res3);
 	$totalCnt = $row3["count(*)"];
 }
 

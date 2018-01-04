@@ -41,19 +41,19 @@ function getRecommended()
 		return;
 	}
 
-	$result = mysql_query("select * from ClientTable where ReferreeId='$userId'");
+	$result = mysqli_query($con, "select * from ClientTable where ReferreeId='$userId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找被推荐人时出错，请稍后重试！'));
 		return;
 	}
 	else {	
 		$arr = array();
-		$num = mysql_num_rows($result);
+		$num = mysqli_num_rows($result);
 		if ($num == 0) {	
 		}
 		else {
 			$idx = 1;
-			while($row = mysql_fetch_array($result))
+			while($row = mysqli_fetch_assoc($result))
 			{
 				$man = array("id"=>$row["UserId"],
 								"name"=>$row["Name"],

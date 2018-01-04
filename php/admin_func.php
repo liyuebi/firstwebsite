@@ -46,7 +46,7 @@ function isAdminLogin()
 	return isset($_SESSION['adminLogin']) && $_SESSION['adminLogin'];
 }
 
-function getIndexDisplayCnt($bSetCookie=true)
+function getIndexDisplayCnt($con, $bSetCookie=true)
 {
 	include 'constant.php';
 
@@ -58,30 +58,30 @@ function getIndexDisplayCnt($bSetCookie=true)
 	$cntOLReview = 0;
 	$cntOLWithdrawApply = 0;
 
-	$res = mysql_query("select * from Transaction where Type='1' and Status='$OrderStatusBuy'");
+	$res = mysqli_query($con, "select * from Transaction where Type='1' and Status='$OrderStatusBuy'");
 	if ($res) {
-		$cntNewUesrOrder = mysql_num_rows($res);
+		$cntNewUesrOrder = mysqli_num_rows($res);
 	}
-	$res = mysql_query("select * from Transaction where Type='2' and Status='$OrderStatusBuy'");
+	$res = mysqli_query($con, "select * from Transaction where Type='2' and Status='$OrderStatusBuy'");
 	if ($res) {
-		$cntPhoneChargeOrder = mysql_num_rows($res);
+		$cntPhoneChargeOrder = mysqli_num_rows($res);
 	}
-	$res = mysql_query("select * from Transaction where Type='4' and Status='$OrderStatusPaid'");
+	$res = mysqli_query($con, "select * from Transaction where Type='4' and Status='$OrderStatusPaid'");
 	if ($res) {
-		$cntPhoneChargeForNew = mysql_num_rows($res);
+		$cntPhoneChargeForNew = mysqli_num_rows($res);
 	}
-	$res = mysql_query("select * from Transaction where Type='3' and Status='$OrderStatusBuy'");
+	$res = mysqli_query($con, "select * from Transaction where Type='3' and Status='$OrderStatusBuy'");
 	if ($res) {
-		$cntOilChargeOrder = mysql_num_rows($res);
+		$cntOilChargeOrder = mysqli_num_rows($res);
 	}
 
-	$res = mysql_query("select * from OfflineShop where Status='$olshopApplied'");
+	$res = mysqli_query($con, "select * from OfflineShop where Status='$olshopApplied'");
 	if ($res) {
-		$cntOLReview = mysql_num_rows($res);
+		$cntOLReview = mysqli_num_rows($res);
 	}
-	$res = mysql_query("select * from PntsWdApplication where Status='$olShopWdApplied'");
+	$res = mysqli_query($con, "select * from PntsWdApplication where Status='$olShopWdApplied'");
 	if ($res) {
-		$cntOLWithdrawApply = mysql_num_rows($res);
+		$cntOLWithdrawApply = mysqli_num_rows($res);
 	}
 
 	if ($bSetCookie) {

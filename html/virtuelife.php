@@ -27,9 +27,9 @@ $con = connectToDB();
 if ($con) {
 	
 	$userid = $_SESSION["userId"];
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 		$mycredit = 0;
 	}
 }

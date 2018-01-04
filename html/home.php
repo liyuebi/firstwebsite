@@ -37,12 +37,12 @@ $pnts = 0;
 $con = connectToDB();
 if ($con) {
 		
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result || mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result || mysqli_num_rows($result) <= 0) {
 		
 	}
 	else {
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		$pnts = $row["Pnts"];
 
 		$now = time();
@@ -60,7 +60,7 @@ if ($con) {
 			// 利息每日只能收获一次
 			if (!isInTheSameDay($lastCBTime, $now)) {
 				
-				$bonus = getDayBonus($userid);
+				$bonus = getDayBonus($con, $userid);
 				if ($bonus > 0) {
 					$hasBonus = true;
 				}
@@ -68,12 +68,12 @@ if ($con) {
 
 			if (!isInTheSameDay($lastCBPntsTime, $now)) {
 
-				acceptPntsBonus($userid, $pnts);
+				acceptPntsBonus($con, $userid, $pnts);
 			}
 		}
 	}
 	
-// 	$res = mysql_query("select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
+// 	$res = mysqli_query($con, "select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
 }
 
 ?>
@@ -265,22 +265,6 @@ if ($con) {
 			</ul>
 		</div>
 		
-<!--
-		<div id="post" style="background: #dddbdb; margin-bottom: 30px;">
-			<h3>公告：</h3>
-			<?php 
-				if ($res) {
-					while ($row = mysql_fetch_array($res)) {
-			?>
-					<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>"><?php echo $row["Title"]; ?></a>
-					<br>		
-			<?php
-					}
-				}
-			?>
-		</div>
--->
-<!-- 		<div class="btn_box" width="auto"> -->
 		<div class="footer"> 
 			<div>
 				<ul class="nav nav-pills">

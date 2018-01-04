@@ -27,10 +27,10 @@ if ($orderid != '') {
 	$con = connectToDB();
 	if ($con)
 	{
-		$result = mysql_query("select * from Transaction where UserId='$userid' and OrderId='$orderid'");
+		$result = mysqli_query($con, "select * from Transaction where UserId='$userid' and OrderId='$orderid'");
 		if ($result) {
-			if (mysql_num_rows($result) > 0) {
-				$row = mysql_fetch_assoc($result);
+			if (mysqli_num_rows($result) > 0) {
+				$row = mysqli_fetch_assoc($con, $result);
 				$productId = $row['ProductId'];
 				$count = $row['Count'];
 			}

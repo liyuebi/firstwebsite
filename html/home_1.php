@@ -43,12 +43,12 @@ $res = false;
 $con = connectToDB();
 if ($con) {
 		
-	$result = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$result || mysql_num_rows($result) <= 0) {
+	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$result || mysqli_num_rows($result) <= 0) {
 		
 	}
 	else {
-		$row = mysql_fetch_assoc($result);
+		$row = mysqli_fetch_assoc($result);
 		
 		$vault = $row["Vault"];
 		$dvault = $row["DVault"];
@@ -63,11 +63,11 @@ if ($con) {
 		}
 	}
 	
-	$res = mysql_query("select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
+	$res = mysqli_query($con, "select * from PostTable where Status='$postStatusOnline' order by OnlineTime desc");
 }
 
-// $monConsumption = getMonthConsumption($userid);
-$dayObtained = getDayObtained($userid);
+// $monConsumption = getMonthConsumption($con, $userid);
+$dayObtained = getDayObtained($con, $userid);
 $feng = ceil($vault / $fengzhiValue);
 $dfeng = ceil($dvault / $fengzhiValue);
 
@@ -288,7 +288,7 @@ $bonusPnts = floor($bonus * $levelPntsRate[$_SESSION['lvl'] - 1] * 100) / 100;
 			<h3>公告：</h3>
 			<?php 
 				if ($res) {
-					while ($row = mysql_fetch_array($res)) {
+					while ($row = mysqli_fetch_assoc($res)) {
 			?>
 					<a href="poster.php?idx=<?php echo $row["IndexId"]; ?>"><?php echo $row["Title"]; ?></a>
 					<br>		

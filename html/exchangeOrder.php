@@ -25,8 +25,8 @@ $res = false;
 $res1 = false;
 
 if ($con) {
-	$res = mysql_query("select * from CreditTrade where SellerId='$userid' order by CreateTime desc");
-	$res1 = mysql_query("select * from CreditTrade where BuyerId='$userid' order by ReserveTime desc ");
+	$res = mysqli_query($con, "select * from CreditTrade where SellerId='$userid' order by CreateTime desc");
+	$res1 = mysqli_query($con, "select * from CreditTrade where BuyerId='$userid' order by ReserveTime desc ");
 }
 
 ?>
@@ -212,7 +212,7 @@ if ($con) {
 			<?php
 				if ($res) {
 					date_default_timezone_set('PRC');
-					while ($row = mysql_fetch_array($res)) {
+					while ($row = mysqli_fetch_assoc($res)) {
 			?>
 						<hr>
 						<div style="margin: 0 5px;">
@@ -280,7 +280,7 @@ if ($con) {
 			<?php
 				if ($res1) {
 					date_default_timezone_set('PRC');
-					while ($row = mysql_fetch_array($res1)) {
+					while ($row = mysqli_fetch_assoc($res1)) {
 			?>
 						<hr>
 						<div>
@@ -292,9 +292,9 @@ if ($con) {
 								
 								$info = "卖家手机号：" . $row["SellPhoneNum"] . "\n";
 								$str = "select * from BankAccount where UserId=" . $row['SellerId'];
-								$res3 = mysql_query($str);
-								if ($res3 && mysql_num_rows($res3) > 0) {
-									$row3 = mysql_fetch_assoc($res3);
+								$res3 = mysqli_query($con, $str);
+								if ($res3 && mysqli_num_rows($res3) > 0) {
+									$row3 = mysqli_fetch_assoc($res3);
 									$info = $info . "卖家账户：" . $row3["AccName"] . " " . $row3["BankAcc"] . " " . $row3["BankName"] . " " . $row3["BankBranch"] . "\n";
 								}
 								else {

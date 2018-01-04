@@ -10,9 +10,9 @@ include "../php/database.php";
 $charity = 0;
 $con = connectToDB();
 if ($con) {
-	$res = mysql_query("select * from Credit where UserId='$userId'");
-	if ($res && mysql_num_rows($res) > 0) {
-		$row = mysql_fetch_assoc($res);
+	$res = mysqli_query($con, "select * from Credit where UserId='$userId'");
+	if ($res && mysqli_num_rows($res) > 0) {
+		$row = mysqli_fetch_assoc($res);
 		$charity = $row["Charity"];
 	}
 }

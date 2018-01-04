@@ -25,9 +25,6 @@ else if ("queryUser" == $_POST['func']) {
 else if ("qubd" == $_POST['func']) {
 	queryUserByCondition();
 } 
-else if ("getDFeng" == $_POST['func']) {
-	getAllDFeng();
-}
 else if ("rlp" == $_POST['func']) {
 	resetLoginPwd();
 }
@@ -71,66 +68,66 @@ function addUser()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	else 
 	{		  
-		$result = createClientTable();
+		$result = createClientTable($con);
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'用户表创建失败，请稍后重试！','sql_error'=>mysql_error())); 
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'用户表创建失败，请稍后重试！','sql_error'=>mysqli_error($con))); 
 			return;
 		}
-		$result = createCreditTable();
+		$result = createCreditTable($con);
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'积分表创建失败，请稍后重试！','sql_error'=>mysql_error())); 
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'积分表创建失败，请稍后重试！','sql_error'=>mysqli_error($con))); 
 			return;
 		}
 		
 		$userid = 0;
 		
 		$sql = "select * from ClientTable where PhoneNum='$phonenum'";
-		$result = mysql_query($sql, $con);
+		$result = mysqli_query($con, $sql);
 		$newuserid = 0;
 		$now = time();
 		if (!$result) {
-			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号查询出错，请稍后重试！','sql_error'=>mysql_error()));
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'账号查询出错，请稍后重试！','sql_error'=>mysqli_error($con)));
 			return;
 		}
 		else {
-			$num = mysql_num_rows($result);
+			$num = mysqli_num_rows($result);
 			if ($num == 0) {
 				$pwd = md5('000000');
 				$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-				$result = mysql_query("insert into ClientTable (PhoneNum, Name, Password, RegisterTime, ReferreeId)
+				$result = mysqli_query($con, "insert into ClientTable (PhoneNum, Name, Password, RegisterTime, ReferreeId)
 					VALUES('$phonenum', '$username', '$pwd', '$now', '$userid')");
 				if (!$result) {
-					echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'创建账号失败，请稍后重试！','sql_error'=>mysql_error()));
+					echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'创建账号失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 					return;
 				}
 				else {
-					$newuserid = mysql_insert_id();
+					$newuserid = mysqli_insert_id($con);
 				}
 			}
 			else {
-				echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'该手机号已经注册过！','sql_error'=>mysql_error()));
+				echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'该手机号已经注册过！','sql_error'=>mysqli_error($con)));
 				return;			
 			}
 		}
 			
 		if (0 != $newuserid) {
-			$result = mysql_query("select * from Credit where UserId='$newuserid'");
+			$result = mysqli_query($con, "select * from Credit where UserId='$newuserid'");
 			if (!$result) {
-				echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'积分查询出错，请稍后重试！','sql_error'=>mysql_error()));
+				echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'积分查询出错，请稍后重试！','sql_error'=>mysqli_error($con)));
 				return;
 			}
 			else {
-				$num = mysql_num_rows($result);
+				$num = mysqli_num_rows($result);
 				if ($num == 0) {
-					$result = mysql_query("insert into Credit (UserId)
+					$result = mysqli_query($con, "insert into Credit (UserId)
 						VALUES('$newuserid')");
 					if (!$result) {
-	// 					echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'创建积分失败，请稍后重试！','sql_error'=>mysql_error()));
+	// 					echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'创建积分失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 	// 					return;
 					}
 					else {
@@ -146,9 +143,9 @@ function addUser()
 		
 		// 更新统计数据
 		include "../php/func.php";
-// 		insertRecommendStatistics(0, 0, 0);
+// 		insertRecommendStatistics($con, 0, 0, 0);
 		
-		mysql_close($con);
+		mysqli_close($con);
 	/*
 		$home_url = '../html/home.php';
 		header('Location: ' . $home_url);
@@ -165,29 +162,29 @@ function queryUser()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 
 	// find user first by ID, then by phone num, then by nickname
-	$res = mysql_query("select * from ClientTable where UserId='$val'");
-	if (!$res || mysql_num_rows($res) <= 0) {
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$val'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		
 		// find by id failed
-		$res = mysql_query("select * from ClientTable where PhoneNum='$val'");		
-		if (!$res || mysql_num_rows($res) <= 0) {
+		$res = mysqli_query($con, "select * from ClientTable where PhoneNum='$val'");		
+		if (!$res || mysqli_num_rows($res) <= 0) {
 			
-			$res = mysql_query("select * from ClientTable where NickName='$val'");
-			if (!$res || mysql_num_rows($res) <= 0) {
+			$res = mysqli_query($con, "select * from ClientTable where NickName='$val'");
+			if (!$res || mysqli_num_rows($res) <= 0) {
 			
-				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到您输入的用户，请重新输入！','sql_error'=>mysql_error()));
+				echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到您输入的用户，请重新输入！','sql_error'=>mysqli_error($con)));
 				return;	
 			}
 		}	
 	}
 	
 	$arr = array();
-	while ($row = mysql_fetch_array($res)) {
+	while ($row = mysqli_fetch_assoc($res)) {
 	
 		$arr1 = array();
 		
@@ -198,9 +195,9 @@ function queryUser()
 		$arr1["ChildCnt"] = $row["ChildCnt"];
 		
 		$userid = $row['UserId'];
-		$res1 = mysql_query("select * from Credit where UserId='$userid'");
-		if ($res1 && mysql_num_rows($res1) > 0) {
-			$row1 = mysql_fetch_assoc($res1);
+		$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if ($res1 && mysqli_num_rows($res1) > 0) {
+			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
 			$arr1["pnt"] = $row1["Pnts"];
 			$arr1["vault"] = $row1["Vault"];
@@ -214,7 +211,7 @@ function queryUser()
 				'phone'=>$row["PhoneNum"],'RecoCnt'=>$row['RecoCnt'],'ChildCnt'=>$row['ChildCnt'],
 				'credit'=>$credit,'pnt'=>$pnts,'vault'=>$vault));
 */
-	echo json_encode(array('error'=>'false','cnt'=>mysql_num_rows($res),'list'=>$arr));
+	echo json_encode(array('error'=>'false','cnt'=>mysqli_num_rows($res),'list'=>$arr));
 }
 
 function queryUserByCondition()
@@ -226,7 +223,7 @@ function queryUserByCondition()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
@@ -254,17 +251,17 @@ function queryUserByCondition()
 	}
 	
 	if ($cond <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请至少选择一个有效条件！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请至少选择一个有效条件！','sql_error'=>mysqli_error($con)));
 		return;	
 	}
-	$res = mysql_query($sql);
+	$res = mysqli_query($con, $sql);
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'查询出错！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'查询出错！','sql_error'=>mysqli_error($con)));
 		return;		
 	}
 	
 	$arr = array();
-	while ($row = mysql_fetch_array($res)) {
+	while ($row = mysqli_fetch_assoc($res)) {
 		
 		$arr1 = array();
 		
@@ -275,9 +272,9 @@ function queryUserByCondition()
 		$arr1["ChildCnt"] = $row["ChildCnt"];
 		
 		$userid = $row['UserId'];
-		$res1 = mysql_query("select * from Credit where UserId='$userid'");
-		if ($res1 && mysql_num_rows($res1)) {
-			$row1 = mysql_fetch_assoc($res1);
+		$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if ($res1 && mysqli_num_rows($res1)) {
+			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
 			$arr1["pnt"] = $row1["Pnts"];
 			$arr1["vault"] = $row1["Vault"];
@@ -285,29 +282,7 @@ function queryUserByCondition()
 		
 		$arr[$userid] = $arr1;
 	}
-	echo json_encode(array('error'=>'false','cnt'=>mysql_num_rows($res),'list'=>$arr));
-}
-
-function getAllDFeng()
-{
-	include "constant.php";
-	$con = connectToDB();
-	if (!$con)
-	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
-		return;
-	}
-	
-	$res = mysql_query("select * from Credit");
-	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找积分库失败，请稍后重试！','sql_error'=>mysql_error()));
-		return;
-	}
-	
-	$feng = 0;
-	while($row = mysql_fetch_array($res)) {
-	}
-	echo json_encode(array('error'=>'false','dfeng'=>$feng));	
+	echo json_encode(array('error'=>'false','cnt'=>mysqli_num_rows($res),'list'=>$arr));
 }
 
 function resetLoginPwd()
@@ -315,22 +290,22 @@ function resetLoginPwd()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
 	$userid = trim(htmlspecialchars($_POST['uid']));
-	$res = mysql_query("select * from ClientTable where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysqli_error($con)));
 		return;		
 	}
 	
 	$pwd = md5('000000');
 	$pwd = password_hash($pwd, PASSWORD_DEFAULT);
-	$res2 = mysql_query("update ClientTable set Password='$pwd' where UserId='$userid'");
+	$res2 = mysqli_query($con, "update ClientTable set Password='$pwd' where UserId='$userid'");
 	if (!$res2) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
@@ -342,20 +317,20 @@ function resetPayPwd()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
 	$userid = trim(htmlspecialchars($_POST['uid']));
-	$res = mysql_query("select * from ClientTable where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找用户失败！','sql_error'=>mysqli_error($con)));
 		return;		
 	}
 	
-	$res2 = mysql_query("update ClientTable set PayPwd='' where UserId='$userid'");
+	$res2 = mysqli_query($con, "update ClientTable set PayPwd='' where UserId='$userid'");
 	if (!$res2) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
@@ -372,26 +347,26 @@ function changeUserCredit()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;					
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$credit = $row["Credits"];
 	
-	$res = mysql_query("update Credit set Credits='$val' where UserId='$userid'");
+	$res = mysqli_query($con, "update Credit set Credits='$val' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
 	include_once "func.php";
-	updateCreditPoolStatistics($credit - $val);
+	updateCreditPoolStatistics($con, $credit - $val);
 	
 	echo json_encode(array('error'=>'false'));
 }
@@ -406,27 +381,27 @@ function addUserCredit()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;					
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$credit = $row["Credits"];
 	$credit += $val;
 	
-	$res = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+	$res = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
 	include_once "func.php";
-	updateCreditPoolStatistics(-$val);
+	updateCreditPoolStatistics($con, -$val);
 	
 	echo json_encode(array('error'=>'false', 'credit'=>$credit));
 }
@@ -441,33 +416,33 @@ function decreaseUserCredit()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;					
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$credit = $row["Credits"];
 	if ($credit < $val) {
 		$msg = '用户线上云量不足' . $val . '!';
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg,'sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg,'sql_error'=>mysqli_error($con)));
 		return;		
 	}
 	
 	$credit -= $val;
 	
-	$res = mysql_query("update Credit set Credits='$credit' where UserId='$userid'");
+	$res = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
 	include_once "func.php";
-	updateCreditPoolStatistics($val);
+	updateCreditPoolStatistics($con, $val);
 	
 	echo json_encode(array('error'=>'false', 'credit'=>$credit));
 }
@@ -481,27 +456,27 @@ function changeUserPnts()
 	$con = connectToDB();
 	if (!$con)
 	{
-		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;
 	}
 	
-	$res = mysql_query("select * from Credit where UserId='$userid'");
-	if (!$res || mysql_num_rows($res) <= 0) {
-		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;					
 	}
-	$row = mysql_fetch_assoc($res);
+	$row = mysqli_fetch_assoc($res);
 	$credit = $row["Pnts"];
 
 	
-	$res = mysql_query("update Credit set Pnts='$val' where UserId='$userid'");
+	$res = mysqli_query($con, "update Credit set Pnts='$val' where UserId='$userid'");
 	if (!$res) {
-		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysql_error()));
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线下云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	
 	include_once "func.php";
-	updateCreditPoolStatistics($credit - $val);
+	updateCreditPoolStatistics($con, $credit - $val);
 	
 	echo json_encode(array('error'=>'false'));
 }

@@ -30,16 +30,16 @@ if (!$con) {
 
 $leftCount = 0;
 
-$result = mysql_query("select * from Product where ProductId='$productId'");
-if ($result && mysql_num_rows($result)>0) {
-	$row = mysql_fetch_assoc($result);
+$result = mysqli_query($con, "select * from Product where ProductId='$productId'");
+if ($result && mysqli_num_rows($result)>0) {
+	$row = mysqli_fetch_assoc($result);
 	$productName = $row["ProductName"];
 	$productPrice = $row["Price"];
 	$productDesc = $row["ProductDesc"];
 	$countlimit = $row["LimitOneDay"];
 }
 
-$dayBought = getDayBoughtCount($userid, $productId);
+$dayBought = getDayBoughtCount($con, $userid, $productId);
 $leftCount = max(0, $countlimit - $dayBought);
 
 ?>

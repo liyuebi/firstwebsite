@@ -44,15 +44,15 @@ function getAddresses()
 	
 	$userId = $_SESSION["userId"];
 	
-	$result = mysql_query("select * from Address where UserId = '$userId'");
+	$result = mysqli_query($con, "select * from Address where UserId = '$userId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'提取地址信息出错，请稍后重试！'));
 		return;
 	}
 	else {
-		$num = mysql_num_rows($result);
+		$num = mysqli_num_rows($result);
 		$ret = array();
-		while($row = mysql_fetch_array($result))
+		while($row = mysqli_fetch_assoc($result))
 		{
 			$arr = array("receiver"=>$row["Receiver"],
 						 	"phone"=>$row["PhoneNum"],
@@ -62,9 +62,9 @@ function getAddresses()
 		}
 		
 		$defaultAdd = 0;
-		$res1 = mysql_query("select * from ClientTable where UserId='$userId'");
+		$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userId'");
 		if ($res1) {
-			$row1 = mysql_fetch_assoc($res1);
+			$row1 = mysqli_fetch_assoc($res1);
 			$defaultAdd = $row1['DefaultAddressId'];
 		}
 		
@@ -152,17 +152,17 @@ function editAddress()
 		return;
 	}
 	
-	$result = mysql_query("select * from Address where UserId='$userId' and AddressId='$addId'");
+	$result = mysqli_query($con, "select * from Address where UserId='$userId' and AddressId='$addId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应的地址数据，请稍后重试！'));
 		return;
 	}
 	else {
-		mysql_query("update Address set Receiver='$receiver', PhoneNum='$phonenum', Address='$address' where UserId='$userId' and AddressId='$addId'");
+		mysqli_query($con, "update Address set Receiver='$receiver', PhoneNum='$phonenum', Address='$address' where UserId='$userId' and AddressId='$addId'");
 		
 		$bDefault = $isdefault != '0';
 		if ($bDefault) {
-			mysql_query("update ClientTable set DefaultAddressId='$addId' where UserId='$userId'");
+			mysqli_query($con, "update ClientTable set DefaultAddressId='$addId' where UserId='$userId'");
 		}
 		echo json_encode(array('error'=>'false'));
 	}
@@ -186,7 +186,7 @@ function deleteAddress()
 		return;
 	}
 
-	$result = mysql_query("delete from Address where UserId='$userId' and AddressId='$addId'");
+	$result = mysqli_query($con, "delete from Address where UserId='$userId' and AddressId='$addId'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'删除失败，请稍后重试！'));
 		return;
@@ -214,16 +214,16 @@ function changeDefaultAddress()
 
 	session_start();
 	$userId = $_SESSION['userId'];
-	$result = mysql_query("select * from Address where UserId='$userId' and AddressId='$defaultAdd'");
+	$result = mysqli_query($con, "select * from Address where UserId='$userId' and AddressId='$defaultAdd'");
 	if (!$result) {
 		$ret = false;
-		$error_msg = mysql_error();
+		$error_msg = mysqli_error($con);
 	}
 	else {	
-		$result = mysql_query("update ClientTable set DefaultAddressId='$defaultAdd' where UserId='$userId'");
+		$result = mysqli_query($con, "update ClientTable set DefaultAddressId='$defaultAdd' where UserId='$userId'");
 		if (!$result) {
 			$ret = false;
-			$error_msg = mysql_error();
+			$error_msg = mysqli_error($con);
 		}
 	}
 	

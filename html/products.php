@@ -21,8 +21,8 @@ if (!$con) {
 	exit();
 }
 
-$result = mysql_query("select * from Product where Status=1 and ProductId!=2");
-$error = mysql_error();
+$result = mysqli_query($con, "select * from Product where Status=1 and ProductId!=2");
+$error = mysqli_error($con);
 	
 ?>
 
@@ -74,7 +74,7 @@ $error = mysql_error();
 		
         <div id="product_list">
 			<?php
-				while($row = mysql_fetch_array($result)) {
+				while($row = mysqli_fetch_assoc($result)) {
 			?>	
 					<div class="product_frame" id="<?php echo $row["ProductId"]; ?>" style="border: black solid 1;" onclick="buyItem(this)" >
 						<div class="img_container" align="center" style="text-align: center;">

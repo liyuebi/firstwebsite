@@ -15,9 +15,9 @@ if (!$con)
 }
 
 if ($idx > 0) {
-	$result = mysql_query("select * from PostTable where IndexId='$idx'");	
-	if ($result && mysql_num_rows($result) > 0) {
-		$row = mysql_fetch_assoc($result);
+	$result = mysqli_query("select * from PostTable where IndexId='$idx'");	
+	if ($result && mysqli_num_rows($result) > 0) {
+		$row = mysqli_fetch_assoc($result);
 	}
 }
 
