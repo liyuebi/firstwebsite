@@ -48,7 +48,7 @@ function createClientTable($con)
 		LastPPwdModiTime int DEFAULT 0,
 		DefaultAddressId int DEFAULT 0,
 		AccInited int default 0
-	) ENGINE=MEMORY AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
+	) AUTO_INCREMENT=10000 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	$result = mysqli_query($con, $sql);
 	if (!$result) {
 		echo "create ClientTable table error: " . mysqli_error($con) . "<br>";
@@ -355,7 +355,7 @@ function createOfflineShopTable($con)
 		WithdrawAmount int default 0,
 		WithdrawFee int default 0,
 		Status int default 0		
-	) ENGINE=MEMORY AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
+	) AUTO_INCREMENT=101 DEFAULT CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC";
 	
 	$result = mysqli_query($con, $sql);
 	if (!$result) {
