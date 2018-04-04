@@ -84,7 +84,7 @@ if ($con) {
 					<hr>
 					<div>
 						<p>交易编号：<?php echo $row["TradeId"]; ?></p>
-						<p>卖家昵称：<?php echo $row["SellNickN"] ?></p>
+						<!-- <p>卖家昵称：<?php // echo $row["SellNickN"] ?></p> -->
 						<p>总交易额：<?php echo $row["Quantity"] ?></p>
 						<p>创建时间：<?php echo date("Y-m-d H:i:s" ,$row["CreateTime"]); ?></p>
 						<p>过期时间：<?php echo date("Y-m-d H:i:s", $row["CreateTime"] + 60 * 60 * $exchangeBuyHours); ?></p>
