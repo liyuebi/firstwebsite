@@ -668,7 +668,7 @@ function saveCredit()
 		}
 
 		// 查看现在的总存储额是否超过存储上限
-		$res = mysql_query("select sum(Invest), count(*) from CreditBank where UserId='$userid' and Balance > 0");
+		$res = mysql_query("select sum(Invest), count(*) from CreditBank where UserId='$userid' and Type='1' and Balance > 0");
 		if (!$res || mysql_num_rows($res) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'查验存储金额失败，请稍后重试！'));
 			return;	
