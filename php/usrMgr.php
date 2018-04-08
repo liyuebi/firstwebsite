@@ -31,6 +31,12 @@ else if ("rlp" == $_POST['func']) {
 else if ("rpp" == $_POST['func']) {
 	resetPayPwd();
 }
+else if ("cun" == $_POST['func']) {
+	changeUserNickname();
+}
+else if ("cup" == $_POST['func']) {
+	changeUserPhone();	
+}
 else if ("cuc" == $_POST['func']) {
 	changeUserCredit();
 }
@@ -331,6 +337,66 @@ function resetPayPwd()
 	$res2 = mysqli_query($con, "update ClientTable set PayPwd='' where UserId='$userid'");
 	if (!$res2) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserNickname()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+	
+	$res = mysql_query("select * from ClientTable where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改用户名失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	
+	$res = mysql_query("update ClientTable set NickName='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改用户名失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;				
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserPhone()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;
+	}
+
+	include_once "regtest.php";
+	if (!isValidCellPhoneNum($val)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的手机号，请重新输入！','sql_error'=>mysql_error()));
+		return;							
+	}
+	
+	$res = mysql_query("select * from ClientTable where UserId='$userid'");
+	if (!$res || mysql_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改用户手机号失败，请稍后重试！','sql_error'=>mysql_error()));
+		return;					
+	}
+	
+	$res = mysql_query("update ClientTable set PhoneNum='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'修改用户手机号失败，请稍后重试！','sql_error'=>mysql_error()));
 		return;				
 	}
 	

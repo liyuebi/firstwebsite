@@ -34,6 +34,44 @@ if ($con) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 
+			function changeNickname()
+			{
+				var val = document.getElementById("nickn").value;
+				val = $.trim(val);
+				
+				$.post("../php/usrMgr.php", {"func":"cun","uid":<?php echo $userid; ?>,"val":val}, function(data){
+						
+					if (data.error == "false") {
+		
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+
+			function changePhone()
+			{
+				var val = document.getElementById("phone").value;
+				val = $.trim(val);
+				if (val.length <= 0) {
+					alert("不能为空！");	
+					return;
+				}
+				
+				$.post("../php/usrMgr.php", {"func":"cup","uid":<?php echo $userid; ?>,"val":val}, function(data){
+						
+					if (data.error == "false") {
+		
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+
 			function changeCredits()
 			{
 				var val = document.getElementById("credit").value;
@@ -153,11 +191,13 @@ if ($con) {
 					</tr>
 					<tr>
 						<td>昵称</td>
-						<td><?php echo $row["NickName"]; ?></td>
+						<td><input type="text" id="nickn" value="<?php echo $row["NickName"]; ?>" /></td>
+						<td><input type="button" value="更改" onclick="changeNickname()" /></td>
 					</tr>
 					<tr>
 						<td>电话号码</td>
-						<td><?php echo $row["PhoneNum"]; ?></td>
+						<td><input type="text" id="phone" value="<?php echo $row["PhoneNum"]; ?>" /></td>
+						<td><input type="button" value="更改" onclick="changePhone()" /></td>
 					</tr>
 					<tr>
 						<td>线上云量</td>
