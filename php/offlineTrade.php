@@ -609,29 +609,62 @@ function payOLShop()
 		$fee = floor($cnt * $offlineTradeRate * 100) / 100;
 		$bonusUpstream = 0;
 
-		// 分红给线下商家账号的推荐人
-		$refererId = $row["RefererId"];
-		if (0 != $refererId) {
+		// // 分红给线下商家账号的推荐人
+		// $refererId = $row["RefererId"];
+		// if (0 != $refererId) {
 						
-			$res5 = mysql_query("select * from Credit where UserId='$refererId'");
-			if ($res5 && mysql_num_rows($res5) > 0) {
+		// 	$res5 = mysql_query("select * from Credit where UserId='$refererId'");
+		// 	if ($res5 && mysql_num_rows($res5) > 0) {
 				
-				$row5 = mysql_fetch_assoc($res5);
-				$refererPnts = $row5["Pnts"];
+		// 		$row5 = mysql_fetch_assoc($res5);
+		// 		$refererPnts = $row5["Pnts"];
 				
-				$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
-				$refererPnts += $bonusUpstream;
+		// 		$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
+		// 		$refererPnts += $bonusUpstream;
 				
-				$res6 = mysql_query("update Credit set Pnts='$refererPnts' where UserId='$refererId'");
-				if (!$res6) {
-					// !!! log error
-				}
-				else {
-					// insert pnts bonus record
-					$res6 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
-										values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
+		// 		$res6 = mysql_query("update Credit set Pnts='$refererPnts' where UserId='$refererId'");
+		// 		if (!$res6) {
+		// 			// !!! log error
+		// 		}
+		// 		else {
+		// 			// insert pnts bonus record
+		// 			$res6 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+		// 								values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
+		// 			if (!$res6) {
+		// 				// !!! log error
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// 修改为分红给线下商家的用户账号推荐人，即不管是该商家账号被推荐时即开启还是自己开启商家账号，都需分提成上游推荐人
+		$res4 = mysql_query("select * from ClientTable where UserId='$sellid'");
+		if ($res4 && mysql_num_rows($res4) > 0) {
+
+			$row4 = mysql_fetch_assoc($res4);
+			$refererId = $row4["ReferreeId"];
+			if (0 != $refererId) {
+							
+				$res5 = mysql_query("select * from Credit where UserId='$refererId'");
+				if ($res5 && mysql_num_rows($res5) > 0) {
+					
+					$row5 = mysql_fetch_assoc($res5);
+					$refererPnts = $row5["Pnts"];
+					
+					$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
+					$refererPnts += $bonusUpstream;
+					
+					$res6 = mysql_query("update Credit set Pnts='$refererPnts' where UserId='$refererId'");
 					if (!$res6) {
 						// !!! log error
+					}
+					else {
+						// insert pnts bonus record
+						$res6 = mysql_query("insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+											values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
+						if (!$res6) {
+							// !!! log error
+						}
 					}
 				}
 			}
