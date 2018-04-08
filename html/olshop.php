@@ -86,7 +86,18 @@ if (isset($_GET['s'])) {
 								
 								var br = document.createElement("br");
 								div.appendChild(br);
+
+								var labelAdd = document.createElement("label");
+								labelAdd.innerHTML = "地址： ";
+								div.appendChild(labelAdd);
+
+								var address = document.createElement("span");
+								address.innerHTML = list[key].add;
+								div.appendChild(address);
 								
+								var br1 = document.createElement("br");
+								div.appendChild(br1);
+
 								var cnt = document.createElement("input");
 								cnt.className = "form-control";
 								cnt.id = "cnt_" + key;
@@ -206,6 +217,8 @@ if (isset($_GET['s'])) {
 					<hr>
 					<div>
 						<label>商家：<?php echo $row["ShopName"]; ?></label>
+						<br>
+						<span><label>地址： </label><?php echo $row["Address"]; ?></span>
 						<br>
 						<input type="text" class="form-control" id="cnt_<?php echo $row["ShopId"]; ?>" placeholder="请输入支付的线下云量金额！" >
 
