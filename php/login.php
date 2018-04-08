@@ -26,6 +26,9 @@ else if ("logout" == $_POST['func']) {
 else if ("loginAdmin" == $_POST['func']) {
 	loginAdmin();	
 }
+else if ("logoutA" == $_POST['func']) {
+	logoutAdmin();
+}
 else if ("updateN" == $_POST['func']) {
 	updateIdxDisplayCntInAdmin();
 }
@@ -172,6 +175,15 @@ function loginAdmin()
 	
 	$arr = array('error'=>'false');
 	echo json_encode($arr);
+}
+
+function logoutAdmin()
+{	
+	session_start();
+	$_SESSION['adminLogin'] = false;
+
+	include "admin_func.php";
+	deleteAdminCookie();
 }
 
 function updateIdxDisplayCntInAdmin()
