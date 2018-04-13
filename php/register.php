@@ -191,16 +191,16 @@ else
 	
 	echo json_encode(array('error'=>'false', 'new_user_id'=>$newuserid));
 	
-	// 添加初始订单
-	$result = createTransactionTable($con);
-	if ($result) {
+	// // 添加初始订单
+	// $result = createTransactionTable($con);
+	// if ($result) {
 		
-		$res2 = mysqli_query($con, "insert into Transaction (UserId, ProductId, Type, Price, Count, OrderTime, Status)
-						VALUES('$newuserid', '0', '1', '$quantity', '1', '$now', '$OrderStatusDefault') ");
-		if (!$res2) {
-			// !!! log error
-		}
-	}
+	// 	$res2 = mysqli_query($con, "insert into Transaction (UserId, ProductId, Type, Price, Count, OrderTime, Status)
+	// 					VALUES('$newuserid', '0', '1', '$quantity', '1', '$now', '$OrderStatusDefault') ");
+	// 	if (!$res2) {
+	// 		// !!! log error
+	// 	}
+	// }
 	
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
 	$res3 = mysqli_query($con, "select * from Credit where UserId='$userid'");
