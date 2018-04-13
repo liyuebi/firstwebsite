@@ -11,13 +11,13 @@
 	$pntInRewardRate = 0.7;	// 从分红中取多少比例返还成采线上云量，剩下的依旧返还成线上云量
 
 	$regiCreditLeast =300;		// 推荐用户时最少存储积分数
-	$regiCreditMost =9000;		// 推荐用户时最多存储积分数
+	$regiCreditMost =2000;		// 推荐用户时最多存储积分数
 	$saveCreditLeast =300;		// 存储云量时最少存储的云量数
-	$saveCreditMost =9000;		// 存储云量时最多存储的云量数
+	$saveCreditMost =2000;		// 存储云量时最多存储的云量数
 	$exchangeLeast =100;		// 挂单最小额度
 	$exchangeMost =500;		// 挂单最大额度
-	$phoneChargeLeast =10;		// 话费充值最小额度
-	$phoneChargeMost =100;		// 话费充值最大额度
+	$phoneChargeLeast =100;		// 话费充值最小额度
+	$phoneChargeMost =300;		// 话费充值最大额度
 	$oilChargeLeast =10;		// 油费充值最小额度
 	$oilChargeMost =500;		// 油费充值最大额度
 
@@ -42,8 +42,8 @@
 	$exchangeDeliveryHours = 2;	// 云量交易付款后确认收款的有效期，单位为小时
 	$exchangeComplainHours = 24;// 云量交易自动完成后，卖家的投诉时间
 	
-	$withdrawFloorAmount =300;	// 提现最少的积分额度
-	$withdrawCeilAmountOneDay =300;	// 用户一天可以提现的上限数额
+	$withdrawFloorAmount =1000;	// 提现最少的积分额度
+	$withdrawCeilAmountOneDay =2000;	// 用户一天可以提现的上限数额
 	
 	$transferFloorAmount =1;// 转账最低的积分额度
 	
