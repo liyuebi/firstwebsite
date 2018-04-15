@@ -603,7 +603,7 @@ function initAccount()
 	
 	$userid = $_SESSION["userId"];
 	
-	$result = mysqli_query("select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
+	$result = mysqli_query($con, "select * from ClientTable where NickName='$nickname' && UserId!='$userid'");
 	if (!$result) {
 		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysqli_error($con)));	
 		return;
