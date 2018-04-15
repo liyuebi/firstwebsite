@@ -28,7 +28,7 @@ if (isset($_GET['s'])) {
 
 	$shopId = $_GET['s'];
 	if ($con) {
-		$result = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		$result = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId' and Status='$olshopAccepted'");
 	}
 }
 

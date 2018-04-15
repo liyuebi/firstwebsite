@@ -264,6 +264,12 @@ if ($con) {
 			<p class="alert alert-danger">您的商家账户未通过审核，请完善信息，并重新提交审核。详细信息请联系客服。</p>
 			<?php
 				}
+				else if ($olshopClosed == $row["Status"]
+							|| $olshopSuspended == $row["Status"]) {
+			?>
+			<p class="alert alert-danger">您的商家账户已被管理员下线，详细信息请联系客服。</p>
+			<?php
+				}
 			?>
 			
 			<div id="btns_oper1">
@@ -331,7 +337,9 @@ if ($con) {
 			<div id="bnts_oper">
 				<input id="btn_edit" type="button" class="btn btn-primary btn-block" value="编辑信息" onclick="startEdit()" />
 				<?php
-					if ($olshopAccepted != $row["Status"]) {
+					if ($olshopAccepted != $row["Status"]
+							&& $olshopClosed != $row["Status"]
+							&& $olshopSuspended != $row["Status"]) {
 				?>
 				<input id="btn_review" type="button" class="btn btn-success btn-block" value="提交审查" onclick="applyForReview()" />
 				<?php

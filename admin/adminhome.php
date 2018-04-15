@@ -227,6 +227,9 @@
 				            <ul class="treeview-menu">
 			            		<li onclick="makecss(this)" data-id="index_OLShopSearch">
 			            			<a href='olsmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>商家查询</a>
+								</li>
+			            		<li onclick="makecss(this)" data-id="index_OLShopAll">
+			            			<a href='olsall.php' target='rightContent'><i class="fa fa-circle-o"></i>全部商家</a>
 								</li>	            
 			            		<li onclick="makecss(this)" data-id="index_OlShopApply">
 			            			<a href='olsreviewmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待审核商家</a>

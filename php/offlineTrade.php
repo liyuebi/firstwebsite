@@ -25,6 +25,12 @@ if (isset($_POST['func'])) {
 	else if ("dfo" == $_POST['func']) {
 		declineForOnline();
 	}
+	else if ('cOls' == $_POST['func']) {
+		closeOfflineShop();
+	}
+	else if ('roOls' == $_POST['func']) {
+		reopenOfflineShop();
+	}
 	else if ("cqrc" == $_POST['func']) {
 		createQRCode();
 	}
@@ -391,6 +397,94 @@ function declineForOnline()
 				
 		$now = time();
 		$res1 = mysqli_query($con, "update OfflineShop set Status='$olshopDeclined' where ShopId='$shopId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysqli_error()));
+			return;
+		}
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function closeOfflineShop()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysqli_fetch_assoc($res);	
+		
+		if ($row["Status"] != $olshopAccepted) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'不是正在运营的商铺！'));
+			return;	
+		}
+				
+		$now = time();
+		$res1 = mysqli_query($con, "update OfflineShop set Status='$olshopClosed' where ShopId='$shopId'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysqli_error()));
+			return;
+		}
+	}
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function reopenOfflineShop()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$shopId = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到商家记录，请稍后重试！'));
+			return;
+		}	
+		$row = mysqli_fetch_assoc($res);	
+		
+		if ($row["Status"] != $olshopClosed && $row["Status"] != $olshopSuspended) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'不是被下线的商铺！'));
+			return;	
+		}
+				
+		$now = time();
+		$res1 = mysqli_query($con, "update OfflineShop set Status='$olshopAccepted' where ShopId='$shopId'");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'操作出错，请稍后重试！','sql_error'=>mysqli_error()));
 			return;
