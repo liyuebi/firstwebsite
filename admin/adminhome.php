@@ -247,11 +247,9 @@
 			            		<li onclick="makecss(this)" data-id="index_Config">
 			            			<a href='configmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>全局配置</a>
 								</li>	            
-	<!--
-			            		<li onclick="makecss(this)" data-id="index_Config">
-			            			<a href='lvl_configmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>等级配置</a>
+			            		<li onclick="makecss(this)" data-id="index_PackConf">
+			            			<a href='packconf.php' target='rightContent'><i class="fa fa-circle-o"></i>产品包配置</a>
 								</li>	            
-	-->
 			            	</ul>
 						</li>
 						<li class="treeview">

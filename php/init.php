@@ -80,6 +80,7 @@ createCreditTradeTable($con);
 createCreditBankTable($con);
 createTransactionTable($con);
 createOfflineShopTable($con);
+createProductPackTable($con);
 
 createComplaintTable($con);
 

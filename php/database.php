@@ -390,6 +390,28 @@ function createProductTable($con)
 	return $result;
 }
 
+function createProductPackTable($con)
+{
+	$sql = "create table if not exists ProductPack
+	(
+		PackId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(PackId),
+		Price decimal(10,2) NOT NULL,
+		PackName varchar(128) default '',
+		PackDesc varchar(256) default '',
+		SaveRate decimal(10,2) default 1,
+		DisplayImg varchar(128) DEFAULT '',
+		AddTime int NOT NULL,
+		StockCnt int default -1,
+		Status int NOT NULL default 0
+	)";
+	$result = mysqli_query($con, $sql);
+	if (!$result) {
+		echo "create ProductPack table error: " . mysqli_error($con) . "<br>";
+	}
+	return $result;
+}
+
 function createProductDayBoughtTable($con)
 {
 	$sql = "create table if not exists ProductDayBought

@@ -5,6 +5,11 @@ function isValidNum($str)
 	return preg_match("/^\d+$/", $str);
 }
 
+function isVaildDecimal($str)
+{
+	return preg_match("/^[0-9]+(.[0-9]{1,2})?$/", $str);
+}
+
 function isValidCellPhoneNum($str)
 {
 	return preg_match("/^1\d{10}$/", $str);
