@@ -61,7 +61,35 @@ if ($con) {
 		<script src="../js/jquery.form-3.46.0.js" ></script>
 		<script src="../js/md5.js" ></script>
 		<script type="text/javascript">
-						
+				
+			$(document).ready(function(){
+
+				// $('#main').height($(window).height() - $('#title').height();
+				setContentVertialCenter();
+				
+				$(window).resize(function() {
+
+					setContentVertialCenter();
+				});
+			});
+
+			function setContentVertialCenter()
+			{
+				var mainHeight = $(window).height() - $('#title').height();
+				var contentHeight = $(`#content`).height();
+
+				if (contentHeight >= mainHeight) {
+					$('#main').height(contentHeight);
+					$('#main').css("margin-top", "10px");
+					$('#space').height(0);
+				}
+				else {
+					$('#main').height(mainHeight);
+					$('#main').css("margin-top", "0");
+					$('#space').height((mainHeight - contentHeight) / 2);	
+				}
+			}
+
 			function goback() 
 			{
 				location.href = "myolshop.php";
@@ -69,7 +97,7 @@ if ($con) {
 		</script>
 	</head>
 	<body>
-		<div class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
+		<div id="title" class="container-fluid" style="height: 50px; margin-top: 10px; background-color: rgba(0, 0, 255, 0.32);">
 			<div class="row" style="position: relative; top: 10px;">
 				<div class="col-xs-3 col-md-3"><a><img src="../img/sys/back.png" style="float: left;" onclick="goback()" </img></a></div>
 				<div class="col-xs-6 col-md-6"><h4 style="text-align: center; color: white">商家二维码</h4></div>
@@ -77,39 +105,42 @@ if ($con) {
 			</div>
 		</div>
 
-		<div style="margin: 10px 3px 0 3px;">
-
-		<?php 
-			if (!$isOwnShop) {
-		?>
-			<div class="text-danger well">
-				您还没有开启线下商家账号！
+		<div id="main" style="margin: 10px 3px 0 3px;">
+			<div id="space" width="50px">
 			</div>
-		<?php  
-			}
-			else if (!$hasQRCode) {
-		?>
-			<div class="text-danger well">
-				您还没有生成二维码！
-			</div>
-		<?php	
-			}
-			else {
-		?>
-			<div class="alert-info" style="padding: 20px; text-align: center;">
-				<h3>连物网商家收款二维码</h3>
-				<div style="padding: 40px 10%;">
-					<p>
-						<span class="pull-left"><b>商家编号：</b> <?php echo $row["ShopId"]; ?></span>
-						<span class="pull-right"><?php echo $row["ShopName"];?></span>
-					</p>
-					<br>
-					<img src="<?php echo '../olqrc/' . $url; ?>" style="width: 100%;" >
+			<div id="content">
+			<?php 
+				if (!$isOwnShop) {
+			?>
+				<div class="text-danger well">
+					您还没有开启线下商家账号！
 				</div>
+			<?php  
+				}
+				else if (!$hasQRCode) {
+			?>
+				<div class="text-danger well">
+					您还没有生成二维码！
+				</div>
+			<?php	
+				}
+				else {
+			?>
+				<div class="alert-info" style="padding: 20px; text-align: center;">
+					<h3>连物网商家收款二维码</h3>
+					<div style="padding: 40px 10%;">
+						<p>
+							<span class="pull-left"><b>商家编号：</b> <?php echo $row["ShopId"]; ?></span>
+							<span class="pull-right"><?php echo $row["ShopName"];?></span>
+						</p>
+						<br>
+						<img src="<?php echo '../olqrc/' . $url; ?>" style="width: 100%;" >
+					</div>
+				</div>
+			<?php
+				}
+			?>
 			</div>
-		<?php
-			}
-		?>
 		</div>	
 	</body>
 </html>
