@@ -20,12 +20,21 @@ $mycredit = 0;
 $userid = $_SESSION["userId"];
 $paypwd = $_SESSION["buypwd"];
 
+$result = false;
+$res = false;
+$hasPack = false;
+
 $con = connectToDB();
 if ($con) {
 	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	if ($result && mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
 		$mycredit = $row["Credits"];
+	}
+
+	$res = mysqli_query($con, "select * from ProductPack where Status>0");
+	if ($res && mysqli_num_rows($res) > 0) {
+		$hasPack = true;
 	}
 }
 
@@ -45,17 +54,22 @@ if ($con) {
 		<link rel="stylesheet" href="../css/mystyle1.0.1.css">
 		<link rel="stylesheet" href="../css/buttons.css">
 	
-		<script src="../js/jquery-1.8.3.min.js"></script>
+		<script src="../js/jquery-3.2.1.min.js"></script>
         <script src="../js/scripts.js" ></script>	
         <script src="../js/md5.js" ></script>
+        <script src="../js/bootstrap-3.3.7/bootstrap.min.js"></script>
 		<script type="text/javascript">
 			
+			var packId = -1;
+			var isBuyingPack = false;
+
 			function onRegister()
 			{
 				var phonenum = document.getElementById("phonenum").value;
 				var num = document.getElementById("investnum").value;
 				var paypwd = document.getElementById("paypwd").value;
-				var isOlShop = document.getElementById("ols_check").checked;
+				var isOlShop = false; // document.getElementById("ols_check").checked;
+
 				
 				phonenum=$.trim(phonenum);
 				num=$.trim(num);
@@ -66,6 +80,12 @@ if ($con) {
 				if (paypwd == "") {
 					alert("无效的支付密码！");
 					return;
+				}
+
+				var fromPack = 0;
+				if (isBuyingPack) {
+					num = '0';
+					fromPack = 1;
 				}
 				
 				if (isOlShop && !confirm("确定要推荐为线下商家账号，需要额外使用<?php echo $offlineShopRegisterFee; ?>线上云量？")) {
@@ -79,7 +99,7 @@ if ($con) {
 				}
 
 				paypwd = md5(paypwd);
-				$.post("../php/register.php", {"phonenum":phonenum, "quantity":num, "olShop":isOlShop, "paypwd":paypwd}, function(data){
+				$.post("../php/register.php", {"phonenum":phonenum, "quantity":num, "pack":fromPack, "pId":packId, "olShop":isOlShop, "paypwd":paypwd}, function(data){
 					
 					if (data.error == "false") {
 						alert("注册成功！");// \n新用户的ids是" + data.new_user_id);	
@@ -97,6 +117,28 @@ if ($con) {
 			{
 				
 			}
+
+			function ChooseItem(item)
+			{
+				$idx = item.idx;
+				document.getElementById("label_sel").style.display = "none";
+				document.getElementById("blk_seled").style.display = "block";	
+				item.style.borderColor = "yellow";
+				document.getElementById("sel_name").innerHTML = item.getAttribute('data-name');
+				packId = item.getAttribute('data-who');
+			}
+
+			function showPackBlk(show)
+			{
+				if (show) {
+					document.getElementById("blk_amt").style.display = "none";
+					document.getElementById("blk_pack").style.display = "block";
+				}
+				else {
+					document.getElementById("blk_amt").style.display = "block";
+					document.getElementById("blk_pack").style.display = "none";
+				}
+			}
 			
 			function goSetPayPwd()
 			{
@@ -112,6 +154,14 @@ if ($con) {
 			{
 				location.href = "home.php";
 			}
+
+			$(document).ready(function(){
+
+				$("#nav-tabs li").on("click",function(){
+ 
+		            isBuyingPack = $(this).index() == 1;
+		        });
+		    });
 			
 		</script>
 	</head>
@@ -126,26 +176,66 @@ if ($con) {
 		
         <div style="margin: 10px 3px 0 3px;"> 
 	        <div>
-		        <h4 class="text-warning" style="">推荐</h4>
+		        <!-- <h4 class="text-warning" style="">推荐</h4> -->
 		        <p>   
 		            <input type="text" class="form-control" id="phonenum" name="phonenum" placeholder="请输入新用户的电话号码" onkeypress="return onlyNumber(event)" />
 		        </p>
-		        
-	            <p>
-	            	<input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
-	            	<span class="help-block">注册用户可存储线上云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的线上云量为 <strong><?php echo $mycredit; ?></strong></span>
-	            </p>
+
+				<?php if ($hasPack) { ?>		        
+		        <ul class="nav nav-tabs" id="nav-tabs">
+					<li class="active">
+				    	<a href="#amt" data-toggle="tab">使用线上云量</a>
+					</li>
+					<li><a href="#pack" data-toggle="tab">购买产品包</a></li>
+				</ul>
+				<?php } ?> 
+			    <div class="tab-content well">  
+			     	<div class="tab-pane fade in active" id="amt">  
+		            <!-- <p id="blk_amt"> -->
+		            	<input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
+		            	<span class="help-block">注册用户可存储线上云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的线上云量为 <strong><?php echo $mycredit; ?></strong></span>
+		            </div>
+				<?php if ($hasPack) { ?>		        
+		            <div class="tab-pane fade" id="pack">
+		            	<label id="label_sel">请选择产品包：</label>
+		            	<div id="blk_seled" style="display: none">
+			            	<label id="label_selected" >选中：<span id="sel_name" class="text-primary"></span></label>
+			            </div>
+		            	<div id="blk_sel_pack" style="display: -webkit-flex; display: flex; justify-content: space-around;">
+		            		<?php 
+		            		while ($row = mysqli_fetch_assoc($res)) {
+		            		?>
+		            			<div id="<?php echo $row["PackId"]; ?>" onclick="ChooseItem(this)" style=" background: #e1dede; margin: 1px 0.7%; padding: 5px; width: 48%;" data-who="<?php echo $row["PackId"]; ?>" data-name="<?php echo $row['PackName']; ?>">
+									<div class="img_container" align="center" style="text-align: center; max-width: 98%;">
+										<img src="<?php if ($row["DisplayImg"] != "") echo "../pPackPic/" . $row["DisplayImg"]; ?>" style="max-width: 100%;" ></img>
+									</div>
+									<h4 class="text-warning"><?php echo $row["PackName"]; ?></h4>
+									<div style="display: -webkit-flex; display: flex; justify-content: space-between;">
+										<span class="text-info">价格：<?php echo $row["Price"]; ?> 线上云量</span>
+										<span class="text-info">存储比例：<?php echo $row["SaveRate"]; ?></span>
+									</div>
+		            			</div>
+		            		<?php
+		            		}
+		            		?>
+		            	</div>
+		            	<!-- <button class="btn btn-info" style="display: block">选择产品包</button> -->
+		            	<!-- <button class="btn btn-info" style="display: none">更改产品包</button> -->
+		            </div>
+		        <?php } ?>
+		        </div>
 	<!--             <input type="Captcha" class="form-control" id="Captcha" name="Captcha" style="width: 70%; display: inline-block;" placeholder="请输入验证码！"/> -->
 	<!--             <input type="button" class="button-rounded" name="test" onclick="getTestKey()" style="width: 28%; height: 30px;" value="获取验证码" ／> -->
 	<!-- 			<br> -->
 				<p>
 					
-				<p class="checkbox">
+<!-- 				<p class="checkbox">
 				    <label>
 				    	<input type="checkbox" id="ols_check"> 注册为线下商家账号
 				    </label>
 				    <span class="help-block">注册线下商家账号需要额外使用线上云量<strong><?php echo $offlineShopRegisterFee; ?></strong></span>
-				</p>
+				</p> -->
+					<label>确认注册：</label>
 					<?php
 						if ($paypwd == "") {		
 					?>
@@ -168,7 +258,11 @@ if ($con) {
 		        <h4 class="text-warning" style="">注意事项</h4>
 			    <p style="margin: 0;">1. 用户默认登录密码被设置为000000，请用户登录后及时修改成新密码</p>
 			    <p style="margin: 0;">2. 请用户登录后完善信息</p>
-			    <p style="margin: 0;">3. 注册为线下商家账号后，请去 <strong>线下商家->我的商家</strong> 完善商家信息。</p>
+			    <!-- <p style="margin: 0;">3. 注册为线下商家账号后，请去 <strong>线下商家->我的商家</strong> 完善商家信息。</p> -->
+			    <p style="margin: 0;">3. 须注册商家号请前往“线下商家->我的商家”注册</p>
+			    <?php if ($hasPack) { ?>
+			    <p style="margin: 0;">4. 购买产品包赠送相应数额线上云量存储额的指定比率额度成为云粉。</p>
+			    <?php } ?>
 	        </div>
         </div>
     </body>

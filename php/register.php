@@ -9,6 +9,8 @@ $phonenum = trim(htmlspecialchars($_POST['phonenum']));
 $paypwd = trim(htmlspecialchars($_POST['paypwd']));
 $quantity = trim(htmlspecialchars($_POST['quantity']));
 $isOlShop = trim(htmlspecialchars($_POST['olShop']));
+$buyPack = trim(htmlspecialchars($_POST['pack']));
+$packId = trim(htmlspecialchars($_POST['pId']));
 // $username = htmlspecialchars($_POST['username']);
 
 if ("1" == $isOlShop) {
@@ -16,6 +18,13 @@ if ("1" == $isOlShop) {
 }
 else {
 	$isOlShop = false; 
+}
+
+if ("1" == $buyPack) {
+	$buyPack = true;
+}
+else {
+	$buyPack = false;
 }
 
 // 验证电话号码
@@ -36,20 +45,22 @@ if (!password_verify($paypwd, $_SESSION["buypwd"])) {
 	return;
 }
 
-if ($quantity < $regiCreditLeast) {
-	$str = '投入额度不能小于' . $regiCreditLeast . '，请重新输入！';
-	echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
-	return;
-}
-else if ($quantity > $regiCreditMost) {
-	$str = '投入额度不能大于' . $regiCreditMost . '，请重新输入！';
-	echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
-	return;		
-}
+if (!$buyPack) {
+	if ($quantity < $regiCreditLeast) {
+		$str = '投入额度不能小于' . $regiCreditLeast . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>$str));
+		return;
+	}
+	else if ($quantity > $regiCreditMost) {
+		$str = '投入额度不能大于' . $regiCreditMost . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>$str));
+		return;		
+	}
 
-if ($quantity % 100 != 0) {
-	echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'投入额度必须是100的整数倍，请重新输入！'));
-	return;
+	if ($quantity % 100 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'投入额度必须是100的整数倍，请重新输入！'));
+		return;
+	}
 }
 
 $con = connectToDB();
@@ -70,6 +81,20 @@ else
 		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'积分表创建失败，请稍后重试！','sql_error'=>mysqli_error($con))); 
 		return;
 	}
+
+	$packRes = false;
+	$packSaveRate = 0;
+	if ($buyPack) {
+		$packRes = mysqli_query($con, "select * from ProductPack where PackId='$packId'");
+		if (!$packRes || mysqli_num_rows($packRes) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'查询产品包出错，请刷新后重试','sql_error'=>mysqli_error($con))); 
+			return;		
+		}
+
+		$packRow = mysqli_fetch_assoc($packRes);
+		$quantity = $packRow["Price"];
+		$packSaveRate =  $packRow["SaveRate"];
+	}
 	
 	$userid = $_SESSION["userId"];
 	$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
@@ -81,7 +106,7 @@ else
 	else {
 		$row = mysqli_fetch_assoc($res1);
 	}
-	
+
 	if ($row["Credits"] < $quantity) {
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线上云量不足，不能推荐用户！'));
 		return;		
@@ -135,12 +160,16 @@ else
 			$diviCnt = 0;
 			$num = mysqli_num_rows($result);
 			if ($num == 0) {
-				$newUserAsset = $quantity * 3;
+				$saveCnt = $quantity;
+				if ($buyPack) {
+					$saveCnt = floor($quantity * $packSaveRate);
+				}
+				$newUserAsset = $saveCnt * 3;
 				$charity = floor($newUserAsset * $charityRate * 100) / 100;
 				$pnts = floor($newUserAsset * $pntsRate * 100) / 100;
 				$pntsReturnDirect = floor($pnts * $pntsReturnDirRate * 100) / 100;
 				$pntsInBank = $pnts - $pntsReturnDirect;
-				$diviCnt = floor($quantity * $dayBonusRate * 100) / 100;
+				$diviCnt = floor($saveCnt * $dayBonusRate * 100) / 100;
 				$vault1 = $newUserAsset - $charity - $pnts;
 				$result = mysqli_query($con, "insert into Credit (UserId, Vault, Pnts, Charity)
 					VALUES('$newuserid', '$vault1', '$pntsReturnDirect', '$charity')");
@@ -155,7 +184,7 @@ else
 					// insert credit bank 
 					$newSaveId = 0;
 					$res4 = mysqli_query($con, "insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
-										values('$newuserid', '$vault1', '$quantity', '$vault1', '$diviCnt', '$now', '1')");
+										values('$newuserid', '$vault1', '$saveCnt', '$vault1', '$diviCnt', '$now', '1')");
 					if (!$res4) {
 						// !!! log error
 					}
@@ -176,7 +205,7 @@ else
 					if ($pntsInBank > 0) {
 						$pntsDiviCnt = floor($pntsInBank * $dayPntsBonusRate * 100) / 100;
 						$res5 = mysqli_query($con, "insert into CreditBank (UserId, Quantity, Invest, Balance, DiviCnt, SaveTime, Type)
-											values('$newuserid', '$pntsInBank', '$quantity', '$pntsInBank', '$pntsDiviCnt', '$now', '2')");
+											values('$newuserid', '$pntsInBank', '$saveCnt', '$pntsInBank', '$pntsDiviCnt', '$now', '2')");
 						if (!$res5) {
 							// !!! log error
 						}
@@ -201,6 +230,20 @@ else
 	// 		// !!! log error
 	// 	}
 	// }
+
+	// 添加产品包订单
+	if ($buyPack) {
+
+		$result = createTransactionTable($con);
+		if ($result) {
+			
+			$res2 = mysqli_query($con, "insert into Transaction (UserId, ProductId, Type, Price, Count, OrderTime, Status)
+							VALUES('$newuserid', '$packId', '8', '$quantity', '1', '$now', '$OrderStatusDefault') ");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
+	}
 	
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
 	$res3 = mysqli_query($con, "select * from Credit where UserId='$userid'");

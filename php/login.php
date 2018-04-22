@@ -637,16 +637,17 @@ function initAccount()
 	$_SESSION['ppwdModiT'] = $time;
 	$_SESSION['accInited'] = 1;
 	
-	$res1 = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type='1' and Status='$OrderStatusDefault'");
+	$res1 = mysqli_query($con, "select * from Transaction where UserId='$userid' and Status='$OrderStatusDefault'");
 	if (!$res1 || mysqli_num_rows($res1) <= 0) {
 		// !!! log error
 	}
 	else {
-		$row1 = mysqli_fetch_assoc($res1);
-		$orderId = $row1["OrderId"];
-		$res2 = mysqli_query($con, "update Transaction set AddressId='$newAddressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', ConfirmTime='$time' where OrderId='$orderId'");
-		if (!$res2) {
-			// !!! log error
+		while ($row1 = mysqli_fetch_assoc($res1)) {
+			$orderId = $row1["OrderId"];
+			$res2 = mysqli_query($con, "update Transaction set AddressId='$newAddressId', Receiver='$receiver', PhoneNum='$phonenum', Address='$address', Status='$OrderStatusBuy', ConfirmTime='$time' where OrderId='$orderId'");
+			if (!$res2) {
+				// !!! log error
+			}
 		}
 	}
 	

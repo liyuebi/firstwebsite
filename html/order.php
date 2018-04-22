@@ -24,7 +24,7 @@ if (!$con)
 
 include "./../php/constant.php";
 $userid = $_SESSION["userId"];
-$result = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type!=1 order by OrderTime desc");
+$result = mysqli_query($con, "select * from Transaction where UserId='$userid' and Type!=1 and Type!=8 order by OrderTime desc");
 if (!$result) {
 	return;	
 }
