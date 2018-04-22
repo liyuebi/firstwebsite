@@ -40,7 +40,7 @@ if ($con) {
 
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -70,7 +70,6 @@ if ($con) {
 				var paypwd = document.getElementById("paypwd").value;
 				var isOlShop = false; // document.getElementById("ols_check").checked;
 
-				
 				phonenum=$.trim(phonenum);
 				num=$.trim(num);
 				if (!isPhoneNumValid(phonenum)) {
@@ -115,16 +114,22 @@ if ($con) {
 			
 			function getTestKey()
 			{
-				
+					
 			}
 
 			function ChooseItem(item)
 			{
-				$idx = item.idx;
 				document.getElementById("label_sel").style.display = "none";
 				document.getElementById("blk_seled").style.display = "block";	
-				item.style.borderColor = "yellow";
 				document.getElementById("sel_name").innerHTML = item.getAttribute('data-name');
+
+				var parent = item.parentNode;
+				var brothers = parent.children;
+				for (var i = 0; i < brothers.length; ++i) {
+					brothers[i].style.border = "";
+				}
+				item.style.border = "2px solid blue";
+
 				packId = item.getAttribute('data-who');
 			}
 
@@ -207,7 +212,7 @@ if ($con) {
 		            		?>
 		            			<div id="<?php echo $row["PackId"]; ?>" onclick="ChooseItem(this)" style=" background: #e1dede; margin: 1px 0.7%; padding: 5px; width: 48%;" data-who="<?php echo $row["PackId"]; ?>" data-name="<?php echo $row['PackName']; ?>">
 									<div class="img_container" align="center" style="text-align: center; max-width: 98%;">
-										<img src="<?php if ($row["DisplayImg"] != "") echo "../pPackPic/" . $row["DisplayImg"]; ?>" style="max-width: 100%;" ></img>
+										<img src="<?php if ($row["DisplayImg"] != "") echo "../pPackPic/" . $row["DisplayImg"]; ?>" style="max-width: 100%;"></img>
 									</div>
 									<h4 class="text-warning"><?php echo $row["PackName"]; ?></h4>
 									<div style="display: -webkit-flex; display: flex; justify-content: space-between;">
