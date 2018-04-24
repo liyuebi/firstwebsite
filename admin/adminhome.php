@@ -33,6 +33,7 @@
 		<script src="../js/scripts.js"></script>
 		<script type="text/javascript">
 			
+			var numNewPackOrder = getCookie('c_n_u_p');
 			var numNewOrder = getCookie('c_n_u_o');
 			var numPhoneOrder = getCookie('c_p_c_o');
 			var numPhoneOrderNew = getCookie('c_p_c_f_n');
@@ -73,6 +74,7 @@
 				$.post("../php/login.php", {"func":"updateN"}, function(data){
 					if (data.error == "false") {
 
+						var nNumNewPackOrder = getCookie('c_n_u_p');
 						var nNumNewOrder = getCookie('c_n_u_o');
 						var nNumPhoneOrder = getCookie('c_p_c_o');
 						var nNumPhoneOrderNew = getCookie('c_p_c_f_n');
@@ -82,6 +84,13 @@
 
 						var bDiffenert = false;
 						var bLarger = false;
+						if (numNewPackOrder != nNumNewPackOrder) {
+							bDiffenert = true;
+							if (nNumNewPackOrder > numNewPackOrder) {
+								bLarger = true;
+							}
+							numNewPackOrder = nNumNewPackOrder;
+						}
 						if (numNewOrder != nNumNewOrder) {
 							bDiffenert = true;
 							if (nNumNewOrder > numNewOrder) {

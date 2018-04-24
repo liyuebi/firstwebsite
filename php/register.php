@@ -279,13 +279,16 @@ else
 			// !!! log error
 		}
 	}
-								
-	$addedCredit = $quantity * $referBonusRate;
 
+	$bonusAmt = $quantity;
+	if ($buyPack) {
+		$bonusAmt = floor($quantity * $packSaveRate);
+	}				
+	$addedCredit = $bonusAmt * $referBonusRate;
 	addCreditFromVault($con, $userid, $vault, $leftCredit, $addedCredit, $newuserid, $codeReferBonus);
 								
 	// 分发碰撞奖励
-	attributeCollisionBonus($con, $userid, $newuserid, $quantity, $colliBonusRateRefer, $codeColliBonusNew);
+	attributeCollisionBonus($con, $userid, $newuserid, $bonusAmt, $colliBonusRateRefer, $codeColliBonusNew);
 								
 	// 更新推荐人的推荐人数，若失败不影响返回结果
 	$result = mysqli_query($con, "select * from ClientTable where UserId='$userid'");

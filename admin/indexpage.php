@@ -1,3 +1,25 @@
+<?php  
+
+$userCnt = 0;
+$offlineShopCnt = 0;
+$vaildOfflineShopCnt = 0;
+
+include '../php/constant.php';
+include "../php/database.php";
+$con = connectToDB();
+if ($con) {
+
+	$res = mysqli_query($con, "select * from ClientTable");
+	$userCnt = mysqli_num_rows($res);
+
+	$res = mysqli_query($con, "select * from OfflineShop");
+	$offlineShopCnt = mysqli_num_rows($res);
+
+	$res = mysqli_query($con, "select * from OfflineShop where Status='$olshopAccepted'");
+	$vaildOfflineShopCnt = mysqli_num_rows($res);
+}
+
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -24,6 +46,12 @@
 			function updateNums()
 			{
 				var cnt = 0; 
+
+				// 更新新购产品包数
+				cnt = getCookie('c_n_u_p');
+				if (cnt != '') {
+					document.getElementById('num_pack').innerHTML = cnt;
+				}
 
 				// 更新新用户订单数
 				cnt = getCookie('c_n_u_o');
@@ -69,6 +97,30 @@
 	        <div class="col-md-3">
 	          <div class="box box-primary box-solid">
 	            <div class="box-header with-border">
+	              <h3 class="box-title">信息</h3>
+
+<!-- 	              <div class="box-tools pull-right">
+	                <span data-toggle="tooltip" title="3 New Messages" class="badge bg-light-blue">3</span>
+	                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+	                </button>
+	                <button type="button" class="btn btn-box-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
+	                  <i class="fa fa-comments"></i></button>
+	                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+	              </div>
+ -->	           
+ 				</div>
+	            <!-- /.box-header -->
+	            <div class="box-body">
+	            	<ul class="nav nav-stacked">
+	            		<li><a href="#">用户 <span class="pull-right text-info"><?php echo $userCnt; ?></span></a></li>
+	            		<li><a href="#">线下商家 <span class="pull-right text-primary"><?php echo $vaildOfflineShopCnt . '/' . $offlineShopCnt; ?></span></a></li>
+	            	</ul>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="col-md-3">
+	          <div class="box box-primary box-solid">
+	            <div class="box-header with-border">
 	              <h3 class="box-title">订单</h3>
 
 <!-- 	              <div class="box-tools pull-right">
@@ -84,10 +136,11 @@
 	            <!-- /.box-header -->
 	            <div class="box-body">
 	            	<ul class="nav nav-stacked">
-	            		<li><a href="ordermgr.php">新用户订单 <span id='num_new' class="pull-right badge bg-blue">0</span></a></li>
+	            		<li><a href="ordermgr5.php">产品包订单 <span id='num_pack' class="pull-right badge bg-blue">0</span></a></li>
 	            		<li><a href="ordermgr1.php">话费订单 <span id='num_p' class="pull-right badge bg-blue">0</span></a></li>
 	            		<li><a href="ordermgr3.php">话费订单（新用户） <span id='num_p_new' class="pull-right badge bg-blue">0</span></a></li>
 	            		<li><a href="ordermgr2.php">油费订单 <span id='num_o' class="pull-right badge bg-blue">0</span></a></li>
+	            		<li><a href="ordermgr.php">新用户订单 <span id='num_new' class="pull-right badge bg-blue">0</span></a></li>
 	            	</ul>
 	            </div>
 	          </div>

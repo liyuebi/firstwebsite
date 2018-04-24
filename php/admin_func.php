@@ -50,6 +50,7 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 {
 	include 'constant.php';
 
+ 	$cntNewPackOrder = 0;
 	$cntNewUesrOrder = 0;	
 	$cntPhoneChargeOrder = 0;
 	$cntPhoneChargeForNew = 0;
@@ -57,6 +58,11 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 
 	$cntOLReview = 0;
 	$cntOLWithdrawApply = 0;
+
+	$res = mysqli_query($con, "select * from Transaction where Type='8' and Status='$OrderStatusBuy'");
+	if ($res) {
+		$cntNewPackOrder = mysqli_num_rows($res);
+	}
 
 	$res = mysqli_query($con, "select * from Transaction where Type='1' and Status='$OrderStatusBuy'");
 	if ($res) {
@@ -87,7 +93,8 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 	if ($bSetCookie) {
 
 		$time = time() + 24 * 60 * 60;
-		setcookie("c_n_u_o", $cntNewUesrOrder, $time, '/');	
+		setcookie("c_n_u_p", $cntNewPackOrder, $time, '/');
+		setcookie("c_n_u_o", $cntNewUesrOrder, $time, '/');		
 		setcookie("c_p_c_o", $cntPhoneChargeOrder, $time, '/');
 		setcookie("c_p_c_f_n", $cntPhoneChargeForNew, $time, '/');	
 		setcookie("c_o_c_o", $cntOilChargeOrder, $time, '/');
