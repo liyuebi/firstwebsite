@@ -202,7 +202,7 @@
 				            </a>
 				            <ul class="treeview-menu">
 			            		<li onclick="makecss(this)" data-id="index_Order">
-			            			<a href='ordermgr.php' target='rightContent'><i class="fa fa-circle-o"></i>新用户订单</a>
+			            			<a href='ordermgr5.php' target='rightContent'><i class="fa fa-circle-o"></i>产品包订单</a>
 								</li>
 			            		<li onclick="makecss(this)" data-id="index_Order1">
 			            			<a href='ordermgr1.php' target='rightContent'><i class="fa fa-circle-o"></i>话费订单</a>
@@ -212,6 +212,9 @@
 								</li>
 			            		<li onclick="makecss(this)" data-id="index_Order3">
 			            			<a href='ordermgr2.php' target='rightContent'><i class="fa fa-circle-o"></i>油费订单</a>
+								</li>
+			            		<li onclick="makecss(this)" data-id="index_Order">
+			            			<a href='ordermgr.php' target='rightContent'><i class="fa fa-circle-o"></i>新用户订单</a>
 								</li>
 	<!--
 			            		<li onclick="makecss(this)" data-id="index_Order2">

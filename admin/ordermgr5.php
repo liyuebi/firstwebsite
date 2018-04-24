@@ -9,8 +9,7 @@ if (!checkLoginOrJump()) {
 include "../php/database.php";
 
 $result = false;
-$res1 = false;
-$productList = array();
+$packList = array();
 
 $con = connectToDB();
 if (!$con)
@@ -18,17 +17,15 @@ if (!$con)
 	return false;
 }
 
-$res = mysqli_query($con, "select * from Product");
+$res = mysqli_query($con, "select * from ProductPack");
 if ($res) {
 	while($row = mysqli_fetch_assoc($res)) {
-		$productList[$row['ProductId']] = $row['ProductName'];
+		$packList[$row['PackId']] = $row['PackName'];
 	}	
 }
 
 include "../php/constant.php";
-$result = mysqli_query($con, "select * from Transaction where Type=1");
-// 	$result = mysqli_query($con, "select * from Transaction");
-// $res1 = mysqli_query($con, "select * from Transaction  where Status='$OrderStatusDefault'");
+$result = mysqli_query($con, "select * from Transaction where Type=8");
 
 ?>
 
@@ -74,97 +71,6 @@ $result = mysqli_query($con, "select * from Transaction where Type=1");
 			function goToExport()
 			{
 				location.href = "exportOrder.php";
-			}
-			
-			function exportToExcel()
-			{
-// 				alert(navigator.userAgent);
-/*
-				if (!(window.attachEvent && navigator.userAgent.indexOf('Opera') === -1)) {
-					alert("您没有使用ie浏览器！");
-					return;
-				}
-*/
-				var isIE = !!window.ActiveXObject || "ActiveXObject" in window;
-				if (!isIE) {
-					alert("您没有使用ie浏览器！");
-					return;					
-				}
-				
-				var container = document.getElementById("tbl");
-				if (container == null) {
-					alert("查找表格失败！");
-					return;				
-				}
-
-				try {
-					var fso = new ActiveXObject("Scripting.FileSystemObject");
-					if (!fso.FolderExists("D://导出订货单")) {
-						fso.CreateFolder("D://导出订货单");
-					}
-					var date = new Date();
-					var name = date.getFullYear()+"_"+date.getMonth()+"_"+date.getDate()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds();
-					var folderPath = "D://导出订货单//" + name;
-					var folder = fso.CreateFolder(folderPath);
-					var filePath1 = folderPath + "//普通EXCEL模板.XLS";
-	// 				var file = fso.CreateTextFile(filePath1, true);
-					
-					var XLObj = new ActiveXObject("Excel.Application");
-				}
-				catch (err) {
-					alert(err.description);
-					return;
-				}
-/*
-				var xlBook = XLObj.Workbooks.Add;
-				alert("2");
-				var ExcelSheet = xlBook.Worksheets(1);
-				alert("3");
-				
-				ExcelSheet.SaveAs(folderPath + "//普通EXCEL模板.xls");
-				alert("4");
-				
-				xlBook.Close(true);
-				alert("5");
-*/
-				var ExcelSheet = new ActiveXObject("Excel.Sheet");
-				ExcelSheet.Application.Visible = true;
-				ExcelSheet.ActiveSheet.Cells(1,1).Value = "订单编号";
-				ExcelSheet.ActiveSheet.Cells(1,2).Value = "收件人";
-				ExcelSheet.ActiveSheet.Cells(1,3).Value = "固话";
-				ExcelSheet.ActiveSheet.Cells(1,4).Value = "手机";
-				ExcelSheet.ActiveSheet.Cells(1,5).Value = "地址";
-				ExcelSheet.ActiveSheet.Cells(1,6).Value = "发货信息";
-				ExcelSheet.ActiveSheet.Cells(1,7).Value = "备注";
-				ExcelSheet.ActiveSheet.Cells(1,8).Value = "代收金额";
-				ExcelSheet.ActiveSheet.Cells(1,9).Value = "保价金额";
-				ExcelSheet.ActiveSheet.Cells(1,10).Value = "业务类型";
-				
-			    var rowNum = container.rows.length;
-			    for (i=1;i<rowNum;++i) {
-				    
-					ExcelSheet.ActiveSheet.Cells(i + 1,1).Value = "";
-					ExcelSheet.ActiveSheet.Cells(i + 1,2).Value = container.rows[i].cells[4].innerHTML;
-					ExcelSheet.ActiveSheet.Cells(i + 1,3).Value = "";
-					ExcelSheet.ActiveSheet.Cells(i + 1,4).Value = container.rows[i].cells[5].innerHTML;
-					ExcelSheet.ActiveSheet.Cells(i + 1,5).Value = container.rows[i].cells[6].innerHTML;
-					ExcelSheet.ActiveSheet.Cells(i + 1,6).Value = container.rows[i].cells[2].innerHTML + " x" + container.rows[i].cells[3].innerHTML; 
-			    }
-
-				
-// 				var filePath = folderPath + "//test.XLS"; // "//普通EXCEL模板.XLS";
-// 				var filePath = "D://普通EXCEL模板.XLS";
-				alert("文件将保存到" + filePath1);
-// 				alert(folder.attributes);
-				try {
-					ExcelSheet.SaveAs(filePath1);
-				}
-				catch (err) {
-					alert(err.description);
-				}
-// 				alert(5);
-				ExcelSheet.Application.Quit();
-// 				alert(6);
 			}
 			
 			function queryUserOrders()
@@ -265,8 +171,8 @@ $result = mysqli_query($con, "select * from Transaction where Type=1");
 						<tr>
 							<th>下单时间</th>
 							<th>用户id</th>
-<!--
 							<th>产品信息</th>
+<!--
 							<th>数量</th>
 -->
 							<th>金额</th>
@@ -285,6 +191,7 @@ $result = mysqli_query($con, "select * from Transaction where Type=1");
 								<tr>
 									<td><?php echo date("Y.m.d H:i:s" ,$row["OrderTime"]); ?></td>
 									<td><?php echo $row["UserId"]; ?></td>
+									<td><?php echo $packList[$row["ProductId"]]; ?> </td>
 									<td><?php echo $row["Price"]; ?></td>
 									<td><?php echo $row["Receiver"]; ?></td>
 									<td><?php echo $row["PhoneNum"]; ?></td>
