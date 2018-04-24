@@ -206,7 +206,7 @@ if ($con) {
 		            	<div id="blk_seled" style="display: none">
 			            	<label id="label_selected" >选中：<span id="sel_name" class="text-primary"></span></label>
 			            </div>
-		            	<div id="blk_sel_pack" style="display: -webkit-flex; display: flex; justify-content: space-around;">
+		            	<div id="blk_sel_pack" style="display: -webkit-flex; display: flex; flex-wrap: wrap; justify-content: space-between;">
 		            		<?php 
 		            		while ($row = mysqli_fetch_assoc($res)) {
 		            		?>
