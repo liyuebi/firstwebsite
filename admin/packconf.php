@@ -124,6 +124,7 @@ $result = mysqli_query($con, "select * from ProductPack");
 							<th>价格</th>
 							<th>存储比率</th>
 							<th>产品图片</th>
+							<th>剩余数量</th>
 							<th>状态</th>
 							<th>操作</th>
 						</tr>
@@ -136,6 +137,7 @@ $result = mysqli_query($con, "select * from ProductPack");
 									<td><?php echo $row["Price"]; ?></td>
 									<td><?php echo $row["SaveRate"]; ?></td>
 									<td><input type="button" value="查看" data-toggle="modal" data-target="#licenceModal" data-who="<?php echo $row["PackId"];?>" data-whatever="<?php echo $row["DisplayImg"]; ?>" ></td>
+									<td><?php if ($row["StockCnt"] >= 0) echo $row["StockCnt"]; else echo 999; ?></td>
 									<td id='status_<?php echo $row["PackId"]; ?>'><?php if (0 == $row["Status"]) echo "未上线"; else if (1 == $row["Status"]) echo "已上线";  ?></td>
 									<td><input type="button" value="<?php if (0 == $row["Status"]) echo '上线'; else echo '下线'; ?>" id=<?php echo $row["PackId"]; ?> onclick="changeState(this)" /></td>
 								</tr>
@@ -171,6 +173,10 @@ $result = mysqli_query($con, "select * from ProductPack");
 						    <label for="phone">地址：</label>
 							<input id='add' name='add' type="text" class="form-control" value="" placeholder="请输入店铺地址" style="display: none" />
 						</div> -->
+						<div class="form-group">
+						    <label for="cnt">产品数量：</label>
+							<input id='cnt' name='cnt' type="text" class="form-control" value="" placeholder="请输入数量"  />
+						</div>
 						<div class="form-group">
 						    <label>图片：</label>
 						    <input id='file_input' type="file" id="file" name='file' value="选择图片" accept="image/jpeg,image/png;" />

@@ -143,6 +143,7 @@ function addProductPack()
 	$name = trim(htmlspecialchars($_POST["name"]));
 	$price = trim(htmlspecialchars($_POST["price"]));
 	$rate = trim(htmlspecialchars($_POST["rate"]));
+	$cnt = trim(htmlspecialchars($_POST['cnt']));
 	$imgfile = $_FILES['file'];
 
 	if ($name == "") {
@@ -155,6 +156,10 @@ function addProductPack()
 	}
 	if (!isVaildDecimal($rate)) {
 		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'无效的存储比率，请重新输入！'));
+		return;	
+	}
+	if (!isValidNum($cnt)) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'无效的产品包数量，请重新输入！'));
 		return;	
 	}
 	
@@ -226,8 +231,8 @@ function addProductPack()
 			return;
 		}	
 		
-		$res1 = mysqli_query($con, "insert into ProductPack (Price, PackName, SaveRate, DisplayImg, AddTime)	
-													values('$price', '$name', '$rate', '$imgFileName', '$now')");
+		$res1 = mysqli_query($con, "insert into ProductPack (Price, PackName, SaveRate, DisplayImg, StockCnt, AddTime)	
+													values('$price', '$name', '$rate', '$imgFileName', '$cnt', '$now')");
 		if (!$res1) {
 			echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'编辑失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 			return;

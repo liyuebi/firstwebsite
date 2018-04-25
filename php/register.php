@@ -85,7 +85,7 @@ else
 	$packRes = false;
 	$packSaveRate = 0;
 	if ($buyPack) {
-		$packRes = mysqli_query($con, "select * from ProductPack where PackId='$packId'");
+		$packRes = mysqli_query($con, "select * from ProductPack where PackId='$packId' and Status=1");
 		if (!$packRes || mysqli_num_rows($packRes) <= 0) {
 			echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'查询产品包出错，请刷新后重试','sql_error'=>mysqli_error($con))); 
 			return;		
@@ -94,6 +94,13 @@ else
 		$packRow = mysqli_fetch_assoc($packRes);
 		$quantity = $packRow["Price"];
 		$packSaveRate =  $packRow["SaveRate"];
+		$packCnt = $packRow["StockCnt"];
+
+		// if equals -1, means cnt unlimited, if larger than 0, can be bought
+		if (0 == $packCnt) {
+			echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'该产品包已售磬，请刷新页面重试！','sql_error'=>mysqli_error($con))); 
+			return;		
+		}
 	}
 	
 	$userid = $_SESSION["userId"];
@@ -241,6 +248,25 @@ else
 							VALUES('$newuserid', '$packId', '8', '$quantity', '1', '$now', '$OrderStatusDefault') ");
 			if (!$res2) {
 				// !!! log error
+			}
+
+			// 更新产品包数量
+			if (-1 != $packCnt) {
+
+				if ($packCnt == 0) {
+					// !!! log error
+				}
+				else {
+					$packCnt -= 1;
+					$status = 1;
+					if (0 == $packCnt) {
+						$status = 0;
+					}
+					$res = mysqli_query($con, "update ProductPack set StockCnt='$packCnt', Status='$status' where PackId='$packId'");
+					if (!$res) {
+						// !!! log error
+					}
+				}
 			}
 		}
 	}
