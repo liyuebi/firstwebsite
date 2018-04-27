@@ -230,7 +230,7 @@ function cancelTradeOrder()
 		$handleRate = $row["HanderRate"];
 		$handleFee = $quantity * $handleRate;
 		$sellid = $row["SellerId"];
-		refundSeller($sellid, $quantity, $handleFee);
+		refundSeller($con, $sellid, $quantity, $handleFee);
 
  	}
 	
@@ -317,12 +317,12 @@ function startTradeOrder()
 	echo json_encode(array('error'=>'false'));
 }
 
-function refundSeller($sellid, $quantity, $handleFee)
+function refundSeller($con, $sellid, $quantity, $handleFee)
 {
 	include 'constant.php';
 	
 	$res = mysqli_query($con, "select * from Credit where UserId='$sellid'");
-	if (!$res && mysqli_num_rows($res) > 0) {
+	if (!$res || mysqli_num_rows($res) <= 0) {
 		// !!! log error
 		return false;
 	}
@@ -472,7 +472,7 @@ function confirmTradeOrderPay()
 			$handleRate = $row["HanderRate"];
 			$handleFee = $quantity * $handleRate;
 			$sellid = $row["SellerId"];
-			refundSeller($sellid, $quantity, $handleFee);
+			refundSeller($con, $sellid, $quantity, $handleFee);
 						
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'该交易已过期，请重新选择其他交易！'));	
 			return;	
@@ -544,7 +544,7 @@ function abandonTradeOrderPay()
 		$handleFee = $quantity * $handleRate;
 		$sellid = $row["SellerId"];
 		
-		refundSeller($sellid, $quantity, $handleFee);
+		refundSeller($con, $sellid, $quantity, $handleFee);
 	}
 	
 	echo json_encode(array('error'=>'false'));
@@ -761,7 +761,6 @@ function saveCredit()
 
 function updateUserExchangeOrder()
 {
-	session_start();
 	if (!$_SESSION["isLogin"]) {
 // 		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
 		return;
@@ -805,7 +804,7 @@ function updateUserExchangeBuy($con, $userid)
 					$sellId = $row["SellerId"];
 					$quantity = $row["Quantity"];
 					$handleFee = $quantity * $row["HanderRate"];
-					refundSeller($sellId, $quantity, $handleFee);
+					refundSeller($con, $sellId, $quantity, $handleFee);
 				}
 			}
 		}
@@ -855,7 +854,7 @@ function updateUserExchangeSell($con, $userid)
 					$sellId = $row["SellerId"];
 					$quantity = $row["Quantity"];
 					$handleFee = $quantity * $row["HanderRate"];
-					refundSeller($sellId, $quantity, $handleFee);
+					refundSeller($con, $sellId, $quantity, $handleFee);
 				}
 			}
 		}
@@ -870,7 +869,7 @@ function updateUserExchangeSell($con, $userid)
 					$sellId = $row["SellerId"];
 					$quantity = $row["Quantity"];
 					$handleFee = $quantity * $row["HanderRate"];
-					refundSeller($sellId, $quantity, $handleFee);
+					refundSeller($con, $sellId, $quantity, $handleFee);
 				}
 			}
 		}

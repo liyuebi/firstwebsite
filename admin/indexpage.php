@@ -10,7 +10,9 @@ $con = connectToDB();
 if ($con) {
 
 	$res = mysqli_query($con, "select * from ClientTable");
-	$userCnt = mysqli_num_rows($res);
+	$userCnt = mysqli_num_rows($res) - 1;
+	if ($userCnt <= 0)
+		$userCnt = 0;
 
 	$res = mysqli_query($con, "select * from OfflineShop");
 	$offlineShopCnt = mysqli_num_rows($res);

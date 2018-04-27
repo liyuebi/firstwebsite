@@ -64,7 +64,8 @@ function login()
 {	
 	$phonenum = trim(htmlspecialchars($_POST['phonenum']));
 	$password = trim(htmlspecialchars($_POST['password']));
-		
+	session_start();
+	
 	$con = connectToDB();
 	if (!$con)
 	{
@@ -104,7 +105,6 @@ function login()
 					return;		
 				}
 				
-				session_start();
 				include "func.php";
 				setSession($row);
 				
