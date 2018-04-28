@@ -471,7 +471,7 @@ function editProfile()
 			return;			
 		}
 				
-		$result = mysqli_query("update ClientTable set NickName='$nickname' where UserId='$userid'");
+		$result = mysqli_query($con, "update ClientTable set NickName='$nickname' where UserId='$userid'");
 		if (!$result) {
 			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'更新信息失败，请稍后重试！',"sql_error"=>mysqli_error($con)));	
 			return;
