@@ -34,7 +34,7 @@ else if ("rpp" == $_POST['func']) {
 else if ("cun" == $_POST['func']) {
 	changeUserNickname();
 }
-else if ("cup" == $_POST['func']) {
+else if ("cuphone" == $_POST['func']) {
 	changeUserPhone();	
 }
 else if ("cuc" == $_POST['func']) {

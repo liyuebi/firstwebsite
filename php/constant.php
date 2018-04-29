@@ -86,6 +86,16 @@
 	$code2TryCP = 10;		// 提交手机充值申请，扣除积分
 	$code2CancelCP = 11;	// 用户取消手机充值申请，返还积分
 	$code2StopCP = 12;		// 后台停止手机充值申请，返还积分
+
+	// profit pnt code
+	$code3OlShopReceive = 1;// 线下商家收款
+	$code3OlShopBonus = 2;	// 线下商家分红，推荐人收到商家交易额一定比例作为推荐奖励
+	$code3OlShopWdApply = 3;// 线下商家提现申请
+	$code3OlShopWdCancel = 4;	// 线下商家提现撤销
+	$code3OlShopWdAccept = 5;	// 线下商家提现通过
+	$code3OlSHopWdDecline = 6;	// 线下商家提现申请被拒 
+	$code3ToCredit = 9;		// 消费云量转换为线上云量
+	$code3ToPnts = 10;		// 消费云量转换为线下云量
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

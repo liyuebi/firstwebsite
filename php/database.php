@@ -62,6 +62,7 @@ function createCreditTable($con)
 	 * RegiToken: 注册券
 	 * Credits: 线上云量
 	 * Pnts: 线下资产
+	 * ProfitPnt: 消费云量，线下商家收款和分给上游用户的积分均计入消费云量。
 	 * Vault: 静态金库
 	 * CollChild: 对碰金所在下线的直接子节点
 	 * CollVal: 对碰金所在下线的总金额
@@ -77,6 +78,7 @@ function createCreditTable($con)
 		PRIMARY KEY(UserId),
 		Credits decimal(10,2) DEFAULT 0,
 		Pnts decimal(10,2) DEFAULT 0,
+		ProfitPnt decimal(10,2) default 0,
 		Charity decimal(10,2) DEFAULT 0,
 		Vault decimal(10,2) DEFAULT 0,
 		CollChild int DEFAULT 0,
@@ -657,6 +659,43 @@ function createPntsRecordTable($con)
 	$result = mysqli_query($con, $sql);
 	if (!$result) {
 		echo "create PntsRecord table error: " . mysqli_error($con) . "<br>";
+	}
+	return $result;
+}
+
+function createProfitPntRecordTable($con)
+{
+	/*
+	 * Amount - 实际变动值
+	 * CurrAmount - 变动后的数值
+	 * RelatedAmount - 相关的数值，如线下商家支付时，为买家支付金额
+	 * HandleFee - 手续费
+	 * ApplyTime - 申请时间，即为变动时间
+	 * ApplyIndexId - 相关数据的记录id
+	 * AcceptTime - 接受时间，暂不使用
+	 * WithStoreId - 交易商店的id
+	 * WithUserId - 交易对象的id
+	 * Type - 记录类型
+	 */
+	$sql = "create table if not exists ProfitPntRecord
+	(
+		IndexId int not null AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int not null,
+		Amount decimal(10,2) not null,
+		CurrAmount decimal(10,2) not null,
+		RelatedAmount decimal(10,2) default 0,
+		HandleFee decimal(10,2) default 0,
+		ApplyTime int not null,
+		ApplyIndexId int default 0,
+		AcceptTime int default 0,
+		WithStoreId int default 0,
+		WithUserId int default 0,
+		Type int not null
+	)";	
+	$result = mysqli_query($con, $sql);
+	if (!$result) {
+		echo "create ProfitPntRecord table error: " . mysqli_error($con) . "<br>";
 	}
 	return $result;
 }

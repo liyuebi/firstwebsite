@@ -10,6 +10,7 @@ include '../php/constant.php';
 
 $sid = "";
 $res = false;
+$res1 = false;
 $row1 = false;
 if (isset($_GET["sid"])) {
 	$sid = $_GET["sid"];
@@ -22,9 +23,12 @@ if (isset($_GET["sid"])) {
 			$row1 = mysqli_fetch_assoc($res1);
 		}
 
+		$res1 = mysqli_query($con, "select * from ProfitPntRecord where Type='$code3OlShopReceive' and WithStoreId='$sid' order by ApplyTime desc");
 		$res = mysqli_query($con, "select * from PntsRecord where Type='$code2OlShopReceive' and WithStoreId='$sid' order by ApplyTime desc");
 	}
 }
+
+date_default_timezone_set('PRC');
 
 ?>
 
@@ -214,12 +218,25 @@ if (isset($_GET["sid"])) {
 						<th>线下云量数</th>
 					</tr>
 					<?php
+					if ($res1) {
+						while($row1 = mysqli_fetch_assoc($res1)) {
+					?>
+					<tr>
+						<td><?php echo date("Y.m.d H:i:s" ,$row1["ApplyTime"]); ?></td>
+						<td><?php echo $row1["WithUserId"]; ?></td>
+						<td><?php echo $row1["UserId"]; ?></td>
+						<td><?php echo $row1["RelatedAmount"]; ?></td>
+					</tr>
+					<?php
+						}
+					}
+					?>
+					<?php
 					if ($res) {
-						date_default_timezone_set('PRC');
 						while($row = mysqli_fetch_assoc($res)) {
 					?>
 					<tr>
-						<td><?php echo $row["ApplyTime"]; ?></td>
+						<td><?php echo date("Y.m.d H:i:s" , $row["ApplyTime"]); ?></td>
 						<td><?php echo $row["WithUserId"]; ?></td>
 						<td><?php echo $row["UserId"]; ?></td>
 						<td><?php echo $row["RelatedAmount"]; ?></td>

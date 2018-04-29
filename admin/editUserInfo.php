@@ -60,7 +60,7 @@ if ($con) {
 					return;
 				}
 				
-				$.post("../php/usrMgr.php", {"func":"cup","uid":<?php echo $userid; ?>,"val":val}, function(data){
+				$.post("../php/usrMgr.php", {"func":"cuphone","uid":<?php echo $userid; ?>,"val":val}, function(data){
 						
 					if (data.error == "false") {
 		

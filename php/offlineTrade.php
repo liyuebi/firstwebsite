@@ -667,7 +667,7 @@ function payOLShop()
 			return;	
 		} 
 		$row3 = mysqli_fetch_assoc($res3);
-		$sellerPnts = $row3["Pnts"];
+		$sellerPnts = $row3["ProfitPnt"];
 
 		$now = time();
 	
@@ -743,19 +743,19 @@ function payOLShop()
 				if ($res5 && mysqli_num_rows($res5) > 0) {
 					
 					$row5 = mysqli_fetch_assoc($res5);
-					$refererPnts = $row5["Pnts"];
+					$refererPnts = $row5["ProfitPnt"];
 					
 					$bonusUpstream = floor($cnt * $offlineTradeUpDiviRate * 100) / 100;
 					$refererPnts += $bonusUpstream;
 					
-					$res6 = mysqli_query($con, "update Credit set Pnts='$refererPnts' where UserId='$refererId'");
+					$res6 = mysqli_query($con, "update Credit set ProfitPnt='$refererPnts' where UserId='$refererId'");
 					if (!$res6) {
 						// !!! log error
 					}
 					else {
 						// insert pnts bonus record
-						$res6 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
-											values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code2OlShopBonus')");
+						$res6 = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, ApplyTime, WithStoreId, WithUserId, Type)
+											values('$refererId', '$bonusUpstream', '$refererPnts', '$now', '$shopId', '$sellid', '$code3OlShopBonus')");
 						if (!$res6) {
 							// !!! log error
 						}
@@ -768,14 +768,14 @@ function payOLShop()
 		$receiveCnt = $cnt - $fee - $bonusUpstream;
 		
 		$sellerPnts += $receiveCnt;
-		$res2 = mysqli_query($con, "update Credit set Pnts='$sellerPnts' where UserId='$sellid'");
+		$res2 = mysqli_query($con, "update Credit set ProfitPnt='$sellerPnts' where UserId='$sellid'");
 		if (!$res2) {
 			// !!! log error
 		}
 		else {
 			// insert receive pnts record
-			$res2 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
-								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code2OlShopReceive')");
+			$res2 = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
+								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code3OlShopRecieve')");
 			if (!$res2) {
 				// !!! log error
 			}
@@ -945,13 +945,28 @@ function searchOfflineShopRecord()
 
 		if (1 == $recordType) {
 
+			$res3 = mysqli_query($con, "select * from ProfitPntRecord where Type='$code3OlShopReceive' and UserId='$sellid' order by ApplyTime desc");
+			if (!$res3) {
+				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询交易记录出错1，请稍后重试！'));
+				return;				
+			}
+			$arr = array();
+			while ($row3 = mysqli_fetch_assoc($res3)) {
+				
+				$arr1 = array();
+				foreach($row3 as $key=>$value) {
+
+					$arr1[$key] = $value;
+				}
+				array_push($arr, $arr1);
+			}
+
 			$res1 = mysqli_query($con, "select * from PntsRecord where Type='$code2OlShopReceive' and UserId='$sellid' order by ApplyTime desc");
 			if (!$res1) {
-				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询交易记录出错，请稍后重试！'));
+				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查询交易记录出错2，请稍后重试！'));
 				return;
 			} 
 
-			$arr = array();
 			while ($row1 = mysqli_fetch_assoc($res1)) {
 				
 				$arr1 = array();

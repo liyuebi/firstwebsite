@@ -226,13 +226,15 @@ if ($con) {
 		<div>
 			<table class="t1" border="1" align="center" style="margin-top: 5px; border: 1px solid #e7e7e7;" rules="none">
 				<tr>
-					<td width="33%">线上云量</td>
-					<td width="33%">线下云量</td>
-					<td width="33%">财富云量</td>
+					<td width="24.5%">线上云量</td>
+					<td width="24.5%">线下云量</td>
+					<td width="24.5%">消费云量</td>
+					<td width="24.5%">财富云量</td>
 				</tr>
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id=""><?php if ($row) echo $pnts; else echo '0'; ?></td>
+					<td id=""><?php if ($row) echo $row["ProfitPnt"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
 				</tr>
 			</table>

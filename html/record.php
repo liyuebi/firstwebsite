@@ -22,12 +22,17 @@ if (isset($_GET['t']) && 1 == $_GET['t']) {
 
 $userid = $_SESSION["userId"];
 $result = false;
+$res = false;
+$res1 = false;
 $con = connectToDB();
 if ($con) {
 	$result = mysqli_query($con, "select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
 	$res = mysqli_query($con, "select * from PntsRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
+	$res1 = mysqli_query($con, "select * from ProfitPntRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
 }
 	
+date_default_timezone_set('PRC');
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -66,12 +71,12 @@ if ($con) {
 	        <ul class="nav nav-tabs">
 				<li class="<?php if (!$showTab2) echo 'active'; ?>"><a href="#tab1" data-toggle="tab">线上云量记录</a></li>
 				<li class="<?php if ($showTab2) echo 'active'; ?>"><a href="#tab2" data-toggle="tab">线下云量记录</a></li>
+				<li class="<?php // if ($showTab2) echo 'active'; ?>"><a href="#tab3" data-toggle="tab">消费云量记录</a></li>
 			</ul>
 			<div class="tab-content">
 		        <div class="tab-pane <?php if (!$showTab2) echo 'active'; ?>" id="tab1">
 		    	<?php
 			    	include "../php/constant.php";
-			    	date_default_timezone_set('PRC');
 			        while ($row = mysqli_fetch_assoc($result)) {
 				?>  	
 				    <p style="margin: 5px 3px;"><?php 
@@ -136,7 +141,6 @@ if ($con) {
 		       	<div class="tab-pane <?php if ($showTab2) echo 'active'; ?>" id="tab2">
 			    <?php
 				    include "../php/constant.php";
-					date_default_timezone_set('PRC');
 			        while ($row = mysqli_fetch_assoc($res)) {
 				?>  	
 			    	<p style="margin: 5px 3px;">
@@ -179,6 +183,37 @@ if ($con) {
 					?>
 			    	</p>
 					<hr>
+				<?php       	
+			    	}
+		    	?>
+		    	</div>
+
+		    	<div class="tab-pane" id="tab3">
+			    <?php
+				    include "../php/constant.php";
+			        while ($row1 = mysqli_fetch_assoc($res1)) {
+				?>  	
+					<p style="margin: 5px 3px;">
+		    	<?php
+				    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
+				    echo "<br>";
+			    	if ($row1["Type"] == $code3OlShopReceive) {					    	
+				    	echo "收到用户支付的" . $row1["RelatedAmount"] . "消费云量。";
+				    	echo "<br>";
+				    	echo "实际获得" . $row1["Amount"] . "消费云量。";
+			    	}
+			    	else if ($row1["Type"] == $code3OlShopBonus) {
+				    	echo "推荐的商家收款，您获得奖励" . $row1["Amount"] . "消费云量。"; 
+			    	}
+			    	else if ($row1["Type"] == $code3OlShopWdApply) {
+				    	echo "申请提现消费云量" . $row1["RelatedAmount"] . "，收取手续费消费云量" . $row1["HandleFee"] . "。";
+			    	}
+			    	else if ($row1["Type"] == $code3OlSHopWdDecline) {
+				    	echo "提现消费云量请求管理员拒绝，退回消费云量" . $row1["Amount"] . "。";
+			    	}
+			    ?>
+		    		</p>
+		    		<hr>
 				<?php       	
 			    	}
 		    	?>
