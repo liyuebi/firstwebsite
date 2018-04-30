@@ -775,7 +775,7 @@ function payOLShop()
 		else {
 			// insert receive pnts record
 			$res2 = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, WithStoreId, WithUserId, Type)
-								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code3OlShopRecieve')");
+								values('$sellid', '$receiveCnt', '$sellerPnts', '$cnt', '$fee', '$now', '$shopId', '$userid', '$code3OlShopReceive')");
 			if (!$res2) {
 				// !!! log error
 			}

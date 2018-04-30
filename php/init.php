@@ -39,7 +39,7 @@ if (mysqli_query($con, "insert into ClientTable (UserId, PhoneNum, NickName, Pas
 	echo "root user created";
 	echo "<br>";	
 	
-	if (mysqli_query("insert into Credit (UserId, Credits)
+	if (mysqli_query($con, "insert into Credit (UserId, Credits)
 			values(10000, 10000)"))
 	{
 		echo "root user credit created";

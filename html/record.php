@@ -195,7 +195,7 @@ date_default_timezone_set('PRC');
 				?>  	
 					<p style="margin: 5px 3px;">
 		    	<?php
-				    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
+				    echo date("Y-m-d H:i" ,$row1["ApplyTime"]);
 				    echo "<br>";
 			    	if ($row1["Type"] == $code3OlShopReceive) {					    	
 				    	echo "收到用户支付的" . $row1["RelatedAmount"] . "消费云量。";
