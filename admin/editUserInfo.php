@@ -114,6 +114,27 @@ if ($con) {
 				}, "json");
 			}
 
+			function changeProfit()
+			{
+				var val = document.getElementById("profit").value;
+				val = $.trim(val);
+				if (val.length <= 0) {
+					alert("不能为空！");	
+					return;
+				}
+				
+				$.post("../php/usrMgr.php", {"func":"cup1","uid":<?php echo $userid; ?>,"val":val}, function(data){
+						
+					if (data.error == "false") {
+		
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+
 /*
 			function changeVault()
 			{
@@ -208,6 +229,11 @@ if ($con) {
 						<td>线下云量</td>
 						<td><input type="text" id="pnts" value="<?php echo $row1["Pnts"]; ?>" /></td>
 						<td><input type="button" name="submit" value="更改" onclick="changePnts()" /></td>
+					</tr>
+					<tr>
+						<td>消费云量</td>
+						<td><input type="text" id="profit" value="<?php echo $row1["ProfitPnt"]; ?>" /></td>
+						<td><input type="button" name="submit" value="更改" onclick="changeProfit()" /></td>
 					</tr>
 					<tr>
 						<td>财富云量</td>

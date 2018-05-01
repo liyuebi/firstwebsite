@@ -46,8 +46,11 @@ else if ("auc" == $_POST['func']) {
 else if ("duc" == $_POST['func']) {
 	decreaseUserCredit();
 }
-else if ("cup" == $_POST['func']) {
+else if ("cup" == $_POST['func']) {		// change pnts
 	changeUserPnts();
+}
+else if ("cup1" == $_POST['func']) {	// change profit points
+	changeUserProfit();
 }
 
 // admin login
@@ -545,6 +548,40 @@ function changeUserPnts()
 	
 	include_once "func.php";
 	updateCreditPoolStatistics($con, $credit - $val);
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserProfit()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;
+	}
+	
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改消费云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;					
+	}
+	$row = mysqli_fetch_assoc($res);
+	$profit = $row["ProfitPnt"];
+
+	
+	$res = mysqli_query($con, "update Credit set ProfitPnt='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改消费云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;				
+	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics($con, $profit - $val);
 	
 	echo json_encode(array('error'=>'false'));
 }
