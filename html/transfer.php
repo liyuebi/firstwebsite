@@ -26,7 +26,7 @@ $mycredit = 0;
 
 include "../php/constant.php";
 $leastCredit = $transferFloorAmount;
-// $mostCredit = $withdrawCeilAmountOneDay;
+// $mostCredit = $profitWithdrawCeilAmtOneDay;
 $handlefee = $transferHandleRate;
 
 include "../php/database.php";

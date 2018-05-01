@@ -42,12 +42,16 @@
 	$exchangeDeliveryHours = 2;	// 云量交易付款后确认收款的有效期，单位为小时
 	$exchangeComplainHours = 24;// 云量交易自动完成后，卖家的投诉时间
 	
-	$withdrawFloorAmount =1000;	// 提现最少的积分额度
-	$withdrawCeilAmountOneDay =2000;	// 用户一天可以提现的上限数额
+	$pntWithdrawFloorAmt =2000;	// 提现最少需要的线下云量额度
+	$pntWithdrawCeilAmtOneDay =0;	// 用户一天可以提现线下云量的上限数额，暂时为零
+	$pntWithdrawHandleRate =0.1;	// 线下云量提现手续费率
+
+	$profitWithdrawFloorAmt =1000;	// 提现最少的消费积分额度
+	$profitWithdrawCeilAmtOneDay =2000;	// 用户一天可以提现消费云量的上限数额
+	$profitWithdrawHandleRate =0;	// 消费云量提现手续费率
 	
 	$transferFloorAmount =1;// 转账最低的积分额度
 	
-	$withdrawHandleRate =0;		// 提现手续费率
 	$transferHandleRate = 0.05;	// 转账手续费率 
 	
 	$recoBonusTillLevel = 5;	// 几级前有推荐奖励线上云量，包括此级别

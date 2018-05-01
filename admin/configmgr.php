@@ -132,18 +132,24 @@ if (!checkLoginOrJump()) {
 				<table class="table table-striped table-bordered table-condensed" style="max-width: 500px">
 					<tr>
 						<th>线下商家注册费</th>
-						<th>提现金额下线</th>
-						<th>提现金额每日上限</th>
+						<th>提现金额下限(消费云量)</th>
+						<th>提现金额每日上限(消费云量)</th>
+						<th>提现金额下限(线下云量)</th>
+						<th>线下云量提现手续费率</th>
 					</tr>
 					<tr>
 						<td><input type="text" id="ofsRF" value="<?php echo $offlineShopRegisterFee;  ?>" /></td>
-						<td><input type="text" id="wfa" value="<?php echo $withdrawFloorAmount; ?>" /></td>
-						<td><input type="text" id="wca" value="<?php echo $withdrawCeilAmountOneDay;?>"</td>
+						<td><input type="text" id="wfa" value="<?php echo $profitWithdrawFloorAmt; ?>" /></td>
+						<td><input type="text" id="wca" value="<?php echo $profitWithdrawCeilAmtOneDay;?>"</td>
+						<td><input type="text" id="pwfa" value="<?php echo $pntWithdrawFloorAmt;?>"</td>
+						<td><input type="text" id="pwhr" value="<?php echo $pntWithdrawHandleRate;?>"</td>
 					</tr>
 					<tr>
 						<td><input type="button" class="btn btn-default" value="修改" data-whatever="ofsRF" data-func='changeOFLRF' onclick="changeVal(this)" /></td>
 						<td><input type="button" class="btn btn-default" value="修改" data-whatever="wfa" data-func='changeWFA' onclick="changeVal(this)" /></td>
 						<td><input type="button" class="btn btn-default" value="修改" data-whatever="wca" data-func='changeWCA' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="pwfa" data-func='changePWFA' onclick="changeVal(this)" /></td>
+						<td><input type="button" class="btn btn-default" value="修改" data-whatever="pwhr" data-func='changePWHR' onclick="changeVal(this)" /></td>
 					</tr>
 				</table>
 	        </div>

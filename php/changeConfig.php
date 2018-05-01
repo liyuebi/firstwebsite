@@ -46,6 +46,9 @@ else if ("changeCRR1" == $_POST['func']) {
 else if ("changeCRR2" == $_POST['func']) {
 	changeCollBonusRateRei();
 }
+else if ("changePWHR" == $_POST['func']) {
+	changePntWithdrawHandleFee();
+}
 else {
 	tryChangeValue();
 }
@@ -60,6 +63,7 @@ function changeConfig($name, $val, &$err)
 		return false;
 	}
 	
+	$found = false;
 	while (!feof($fp)) {
 		$buf = fgets($fp);
 		if (strstr($buf, $name)) {
@@ -68,17 +72,25 @@ function changeConfig($name, $val, &$err)
 			
 			$sub = substr($buf, $pos1+1, $pos2 - $pos1 - 1);
 			$buf = str_replace($sub, $val, $buf);
+			$found = true;
 		}
 		$str .= $buf;
 	}	
 	fclose($fp);
+
+	if (!$found) {
+		$err = "未找到对应配置";
+		return false;
+	}
 	
 	$fp2 = fopen("constant.php", 'w');
 	if (!$fp2) {
 		$err = "写文件打开文件失败！";
 		return false;
 	}
-	fwrite($fp2, $str);
+	else {
+		fwrite($fp2, $str);
+	}
 	fclose($fp2);
 	return true;
 }
@@ -94,10 +106,13 @@ function tryChangeValue()
 		$paramStr = "offlineShopRegisterFee";
 	}
 	else if ("changeWFA" == $func) {
-		$paramStr = "withdrawFloorAmount";
+		$paramStr = "profitWithdrawFloorAmt";
 	}
 	else if ("changeWCA" == $func) {
-		$paramStr = "withdrawCeilAmountOneDay";
+		$paramStr = "profitWithdrawCeilAmtOneDay";
+	}
+	else if ("changePWFA" == $func) {
+		$paramStr = "pntWithdrawFloorAmt";
 	}
 	else {
 		echo json_encode(array('error'=>'true', 'error_code'=>'2','error_msg'=>"找不到处理对应参数的接口！"));
@@ -300,5 +315,20 @@ function changeCollBonusRateRei()
 	echo json_encode(array('error'=>'false'));
 }
 
+/*
+ * 修改线下云量提现手续费率
+ */ 
+function changePntWithdrawHandleFee()
+{
+	$val = trim(htmlspecialchars($_POST['val']));
+	$val = floatval($val);
+	
+	$err_msg = '';
+	if (!changeConfig("pntWithdrawHandleRate", $val, $err_msg)) {
+		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
+		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
 
 ?>

@@ -43,6 +43,15 @@ if (isset($_POST['func'])) {
 	else if ("cwrInA" == $_POST['func']) {
 		changeWithdrawRate();		
 	}
+	else if ("wdProfit" == $_POST['func']) {
+		applyWithdrawProfit();
+	}
+	else if ("allowWdP" == $_POST['func']) {
+		allowWithdrawProfit();
+	}
+	else if ("denyWdP" == $_POST['func']) {
+		denyWithdrawProfit();
+	}
 }
 
 function openOfflineShop($con, $userid, $refererId, &$error_msg)
@@ -1060,5 +1069,201 @@ function changeWithdrawRate()
 
 	echo json_encode(array('error'=>'false'));
 }
+
+function applyWithdrawProfit()
+{
+	session_start();
+	if (!$_SESSION["isLogin"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$amount = trim(htmlspecialchars($_POST["amount"]));
+	$paypwd = trim(htmlspecialchars($_POST["paypwd"]));
+	$method = trim(htmlspecialchars($_POST["method"]));
+	$shopId = trim(htmlspecialchars($_POST["idx"]));
+	
+	include 'regtest.php';
+	if (!isValidMoneyAmount($amount)) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'输入的金额无效，请重新输入！'));
+		return;		
+	}
+		
+	include "constant.php";
+	if ($amount < $profitWithdrawFloorAmt) {
+		$msg = '输入的金额小于最低取现额度' . $profitWithdrawFloorAmt . '，请重新输入！';
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg));
+		return;				
+	}
+	
+	if ($amount % 100 != 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'输入的金额不是一百的倍数，请重新输入！'));
+		return;
+	}
+		
+	if (!password_verify($paypwd, $_SESSION["buypwd"])) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'支付密码输入错误，请重新填写！'));
+		return;		
+	}
+	
+	$method = intval($method);
+	if ($method != $paymentWechat && $method != $paymentAlipay && $method != $paymentBank) {
+		echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'请选择支付方式！'));
+		return;		
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$userid = $_SESSION['userId'];
+		$time = time();
+		
+		$result = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if (!$result || mysqli_num_rows($result) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'用户数据有误，请稍后重试！'));	
+			return;
+		}
+		$row = mysqli_fetch_assoc($result);
+		if ($userid != $row["UserId"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户数据有误，请稍后重试！'));	
+			return;
+		}
+		$handlefee = $row["WdFeeRate"];
+		
+		$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'找不到对应的用户数据！'));	
+			return;
+		}
+		$row = mysqli_fetch_assoc($result);
+		$profit = $row["ProfitPnt"];
+		
+		if ($profit < $amount) {
+			echo json_encode(array('error'=>'true','error_code'=>'9','error_msg'=>'输入的金额大于您的余额，请重新输入！'));	
+			return;			
+		}
+
+		$mostCredit = $profitWithdrawCeilAmtOneDay;
+		$applyCount = 0;
+		$res1 = mysqli_query($con, "select * from ProfitWdApplication where UserId='$userid' and Status!='$olShopWdDeclined' order by ApplyTime desc");
+		if ($res1) {
+			
+			while ($row1 = mysqli_fetch_array($res1)) {
+				
+				if (isInTheSameDay($time, $row1["ApplyTime"])) {
+					$applyCount += $row1["ApplyAmount"];
+				}
+				else {
+					break;
+				}
+			}
+		}
+
+		$mostCredit = max(0, $mostCredit - $applyCount);
+		if ($amount > $mostCredit) {
+			$msg = '输入的金额大于今天剩余可提取的额度' . $mostCredit . '，请重新输入！';
+			echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>$msg));	
+			return;		
+		}
+		
+		$total = $profit - $amount;
+		// $fee = calcHandleFee($amount, $profitWithdrawHandleRate);
+		$fee = calcHandleFee($amount, $handlefee);
+		$actual = $amount - $fee;
+		
+		// 添加交易申请
+		$result = createProfitWithdrawTable($con);
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查表失败，请稍后重试！'));	
+			return;
+		}
+
+		$accountId = 0;
+		$account = '';
+		$bankUser = '';
+		$bankName = '';
+		$bankBranch = '';
+		if ($method == $paymentWechat) {
+			$res = mysqli_query($con, "select * from WechatAccount where UserId='$userid'");
+			if (!$res || mysqli_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'找不到您的微信账号！'));	
+				return;
+			}
+			$row = mysqli_fetch_assoc($res);	
+			$accountId = $row["IndexId"];
+			$account = $row["WechatAcc"];
+		}
+		else if ($method == $paymentAlipay) {
+			$res = mysqli_query($con, "select * from AlipayAccount where UserId='$userid'");
+			if (!$res || mysqli_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'找不到您的支付宝账号！'));	
+				return;
+			}
+			$row = mysqli_fetch_assoc($res);
+			$accountId = $row["IndexId"];
+			$account = $row["AlipayAcc"];
+		}
+		else if ($method == $paymentBank) {
+			$res = mysqli_query($con, "select * from BankAccount where UserId='$userid'");
+			if (!$res || mysqli_num_rows($res) <= 0) {
+				echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'找不到您的银行账号！'));	
+				return;
+			}
+			$row = mysqli_fetch_assoc($res);
+			$accountId = $row["IndexId"];
+			$account = $row["BankAcc"];
+			$bankUser = $row["AccName"];
+			$bankName = $row["BankName"];
+			$bankBranch = $row["BankBranch"];
+		}
+		
+		$nickname= $_SESSION['nickname'];
+		$phone = $_SESSION['phonenum'];
+		$result = mysqli_query($con, "insert into ProfitWdApplication (UserId, ShopId, NickName, PhoneNum, ApplyAmount, ActualAmount, ApplyTime, Method, AccountId, Account, BankUser, BankName, BankBranch, Status)
+						VALUES('$userid', '$shopId', '$nickname', '$phone', '$amount', '$actual', '$time', '$method', '$accountId', '$account', '$bankUser', '$bankName', '$bankBranch', '$olShopWdApplied')");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'35','error_msg'=>'提现申请失败，请稍后重试！'));
+			return;
+		}
+
+		// 修改credit表
+		$result = mysqli_query($con, "update Credit set ProfitPnt='$total' where UserId='$userid'");
+		if (!$result) {
+			// !!! log error
+		}
+		else {
+			// 添加交易记录
+			$result = createProfitPntRecordTable($con);
+			if (!$result) {
+				// !!! log error
+			}
+			$result = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, ApplyIndexId, WithStoreId, Type)
+							VALUES('$userid', '$actual', '$total', '$amount', '$fee', '$time', '0', '$shopId', '$code2OlShopWdApply')");
+			if (!$result) {
+				// !!! log error				
+			}
+		}
+						
+		echo json_encode(array('error'=>'false'));
+	}
+	return;
+
+}
+
+function allowWithdrawProfit()
+{
+
+}
+
+function denyWithdrawProfit()
+{
+
+}
+
 
 ?>

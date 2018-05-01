@@ -319,8 +319,8 @@ function applyWithdrawPnts()
 	}
 		
 	include "constant.php";
-	if ($amount < $withdrawFloorAmount) {
-		$msg = '输入的金额小于最低取现额度' . $withdrawFloorAmount . '，请重新输入！';
+	if ($amount < $pntWithdrawFloorAmt) {
+		$msg = '输入的金额小于最低取现额度' . $pntWithdrawFloorAmt . '，请重新输入！';
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>$msg));
 		return;				
 	}
@@ -362,7 +362,7 @@ function applyWithdrawPnts()
 			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'用户数据有误，请稍后重试！'));	
 			return;
 		}
-		$handlefee = $row["WdFeeRate"];
+		$handlefee = $pntWithdrawHandleRate; // $row["WdFeeRate"];
 		
 		$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
 		if (!$result) {
@@ -377,31 +377,31 @@ function applyWithdrawPnts()
 			return;			
 		}
 
-		$mostCredit = $withdrawCeilAmountOneDay;
-		$applyCount = 0;
-		$res1 = mysqli_query($con, "select * from PntsWdApplication where UserId='$userid' and Status!='$olShopWdDeclined' order by ApplyTime desc");
-		if ($res1) {
+		// $mostCredit = 0; //$profitWithdrawCeilAmtOneDay;
+		// $applyCount = 0;
+		// $res1 = mysqli_query($con, "select * from PntsWdApplication where UserId='$userid' and Status!='$olShopWdDeclined' order by ApplyTime desc");
+		// if ($res1) {
 			
-			while ($row1 = mysqli_fetch_array($res1)) {
+		// 	while ($row1 = mysqli_fetch_array($res1)) {
 				
-				if (isInTheSameDay($time, $row1["ApplyTime"])) {
-					$applyCount += $row1["ApplyAmount"];
-				}
-				else {
-					break;
-				}
-			}
-		}
+		// 		if (isInTheSameDay($time, $row1["ApplyTime"])) {
+		// 			$applyCount += $row1["ApplyAmount"];
+		// 		}
+		// 		else {
+		// 			break;
+		// 		}
+		// 	}
+		// }
 
-		$mostCredit = max(0, $mostCredit - $applyCount);
-		if ($amount > $mostCredit) {
-			$msg = '输入的金额大于今天剩余可提取的额度' . $mostCredit . '，请重新输入！';
-			echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>$msg));	
-			return;		
-		}
+		// $mostCredit = max(0, $mostCredit - $applyCount);
+		// if ($amount > $mostCredit) {
+		// 	$msg = '输入的金额大于今天剩余可提取的额度' . $mostCredit . '，请重新输入！';
+		// 	echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>$msg));	
+		// 	return;		
+		// }
 		
 		$total = $pnts - $amount;
-		// $fee = calcHandleFee($amount, $withdrawHandleRate);
+		// $fee = calcHandleFee($amount, $profitWithdrawHandleRate);
 		$fee = calcHandleFee($amount, $handlefee);
 		$actual = $amount - $fee;
 		
@@ -464,23 +464,17 @@ function applyWithdrawPnts()
 		$result = mysqli_query($con, "update Credit set Pnts='$total' where UserId='$userid'");
 		if (!$result) {
 			// !!! log error
-// 			echo json_encode(array('error'=>'true','error_code'=>'14','error_msg'=>'更新用户积分失败，请稍后重试','index'=>$index));	
-// 			return; 				
 		}
 		else {
 			// 添加交易记录
 			$result = createPntsRecordTable($con);
 			if (!$result) {
 				// !!! log error
-// 				echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建交易记录表失败，请稍后重试！','index'=>$index));	
-// 				return;
 			}
 			$result = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, ApplyIndexId, WithStoreId, Type)
 							VALUES('$userid', '$actual', '$total', '$amount', '$fee', '$time', '0', '$shopId', '$code2OlShopWdApply')");
 			if (!$result) {
-				// !!! log error
-// 				echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'交易记录插入失败，请稍后重试','index'=>$index, 'mysql_error'=>mysqli_error($con)));
-// 				return; 				
+				// !!! log error			
 			}
 		}
 						
@@ -656,7 +650,7 @@ function applyWithdraw()
 	}
 		
 	include "constant.php";
-	if ($amount < $withdrawFloorAmount) {
+	if ($amount < $profitWithdrawFloorAmt) {
 		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'输入的金额小于最低取现额度，请重新输入！'));
 		return;				
 	}
@@ -707,7 +701,7 @@ function applyWithdraw()
 		if (isInTheSameDay($time, $lastWd)) {
 			$dayWithdraw = $dayWd;
 		}
-		$mostCredit = $withdrawCeilAmountOneDay;
+		$mostCredit = $profitWithdrawCeilAmtOneDay;
 		$applyCount = 0;
 
 		$mostCredit = max(0, $mostCredit - $dayWithdraw /* - $applyCount */);
@@ -718,7 +712,7 @@ function applyWithdraw()
 		
 		$total = $credit - $amount;
 		$now = time();
-		$fee = calcHandleFee($amount, $withdrawHandleRate);
+		$fee = calcHandleFee($amount, $profitWithdrawHandleRate);
 		
 		// 添加交易记录
 		$result = createCreditRecordTable();

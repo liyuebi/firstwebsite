@@ -541,6 +541,42 @@ function createPntsWithdrawTable($con)
 	return $result;
 }
 
+function createProfitWithdrawTable($con)
+{
+	/*
+	 * 线下云量提取申请表
+	 * ShopId - 申请提现的线上商家的ID
+	 */
+	$sql = "create table if not exists ProfitWdApplication
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int not null,
+		ShopId int default 0,
+		ApplyAmount decimal(10,2) not null,
+		ActualAmount decimal(10,2) not null,
+		ApplyTime int not null,
+		AcceptTime int default 0,
+		NickName varchar(32) default '',
+		PhoneNum varchar(15) not null,
+		Method int not null,
+		AccountId int not null,
+		Account varchar(32) not null,
+		BankUser varchar(16) default '',
+		BankName varchar(32) default '',
+		BankBranch varchar(64) default '',
+		DeclineTime int default 0,
+		AdminId int default 0,
+		Status int default 0
+	)";	
+	$result = mysqli_query($con, $sql);
+	if (!$result) {
+		echo "create ProfitWdApplication table error: " . mysqli_error($con) . "<br>";
+	}
+	return $result;
+}
+
+
 function createWechatTable($con)
 {
 	$sql = "create table if not exists WechatAccount
