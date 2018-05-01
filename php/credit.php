@@ -56,6 +56,12 @@ else if ("getPnts" == $_POST['func']) {
 else if ("getProfit" == $_POST['func']) {
 	quertProfit();
 }
+else if ("pToC" == $_POST['func']) {
+	profitToCredit();
+}
+else if ("pToP" == $_POST['func']) {
+	profitToPnt();
+}
 
 function applyRecharge()
 {	
@@ -1122,6 +1128,160 @@ function quertProfit()
 	$row = mysqli_fetch_assoc($res);
 	$profit = $row["ProfitPnt"];
 	echo json_encode(array('error'=>'false','index'=>$index,'profit'=>$profit));
+}
+
+function profitToCredit()
+{
+	include_once "regtest.php";
+
+	$cnt = trim(htmlspecialchars($_POST["num"]));
+	if (!isValidNum($cnt) || $cnt <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的数额，请重新输入！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	session_start();
+	$userid = $_SESSION["userId"];
+
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应用户！'));
+		return;
+	}
+	$row = mysqli_fetch_assoc($res);
+	$credit = $row["Credits"];
+	$profit = $row["ProfitPnt"];
+
+	if ($profit < $cnt) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您输入的额度超过您的消费云量，请重新输入！'));
+		return;
+	}
+
+	$profit -= $cnt;
+	$credit += $cnt;
+
+	$res = mysqli_query($con, "update Credit set Credits='$credit', ProfitPnt='$profit' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'转移操作失败，请稍后重试！'));
+		return;
+	}
+
+	// 添加转移记录
+	{
+		include "constant.php";
+
+		$now = time();
+
+		$result = createProfitPntRecordTable($con);
+		if (!$result) {
+			// !!! log error
+		}
+		else {
+			$result = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type)
+							VALUES('$userid', '$cnt', '$profit', '$now', '0', '$code3ToCredit')");
+			if (!$result) {
+				// !!! log error	
+			}
+		}
+
+		$result = createCreditRecordTable($con);
+		if (!$result) {
+			// !!! log error
+		}
+		else {
+			$result = mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+							VALUES('$userid', '$cnt', '$credit', '$now', '$now', '$codeFromProfit')");
+			if (!$result) {
+				// !!! log error	
+			}
+		}
+	}
+
+	echo json_encode(array('error'=>'false'));	
+}
+
+function profitToPnt()
+{
+	include_once "regtest.php";
+
+	$cnt = trim(htmlspecialchars($_POST["num"]));
+	if (!isValidNum($cnt) || $cnt <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的数额，请重新输入！'));
+		return;
+	}
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+
+	session_start();
+	$userid = $_SESSION["userId"];
+
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'查找不到对应用户！'));
+		return;
+	}
+	$row = mysqli_fetch_assoc($res);
+	$pnt = $row["Pnts"];
+	$profit = $row["ProfitPnt"];
+
+	if ($profit < $cnt) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'您输入的额度超过您的消费云量，请重新输入！'));
+		return;
+	}
+
+	$profit -= $cnt;
+	$pnt += $cnt;
+
+	$res = mysqli_query($con, "update Credit set Pnts='$pnt', ProfitPnt='$profit' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'转移操作失败，请稍后重试！'));
+		return;
+	}
+
+	// 添加转移记录
+	{
+		include "constant.php";
+
+		$now = time();
+
+		$result = createProfitPntRecordTable($con);
+		if (!$result) {
+			// !!! log error
+		}
+		else {
+			$result = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type)
+							VALUES('$userid', '$cnt', '$profit', '$now', '0', '$code3ToCredit')");
+			if (!$result) {
+				// !!! log error	
+			}
+		}
+
+		$result = createPntsRecordTable($con);
+		if (!$result) {
+			// !!! log error
+		}
+		else {
+			$result = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, Type)
+							VALUES('$userid', '$cnt', '$pnt', '$now', '$now', '$code2FromProfit')");
+			if (!$result) {
+				// !!! log error	
+			}
+		}
+	}
+
+	echo json_encode(array('error'=>'false'));	
 }
 	
 ?>

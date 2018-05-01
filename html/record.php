@@ -127,6 +127,9 @@ date_default_timezone_set('PRC');
 				    	else if ($row["Type"] == $codeRegiOlShop) {
 					    	echo "您注册了线下商家，使用" . $row["Amount"] . "线上云量。";
 				    	}
+				    	else if ($row["Type"] == $codeFromProfit) {
+					    	echo "将" . $row["Amount"] . "消费云量转为线上云量。";
+				    	}
 				    	
 				    	echo "<br>";
 				    	echo "当前线上云量" . $row["CurrAmount"] . "。";
@@ -177,6 +180,9 @@ date_default_timezone_set('PRC');
 				    	else if ($row["Type"] == $code2CancelCP) {
 				    		echo "您取消了话费充值，返还线下云量" . $row["Amount"] . "。";
 				    	}
+				    	else if ($row["Type"] == $code2FromProfit) {
+					    	echo "将" . $row["Amount"] . "消费云量转为线下云量。";
+				    	}
 				    				    	
 				    	echo "<br>";
 				    	echo "当前线下云量" . $row["CurrAmount"] . "。";
@@ -211,6 +217,15 @@ date_default_timezone_set('PRC');
 			    	else if ($row1["Type"] == $code3OlSHopWdDecline) {
 				    	echo "提现消费云量请求管理员拒绝，退回消费云量" . $row1["Amount"] . "。";
 			    	}
+			    	else if ($row1["Type"] == $code3ToCredit) {
+				    	echo "将" . $row1["Amount"] . "消费云量转为线上云量。";
+			    	}
+			    	else if ($row1["Type"] == $code3ToPnts) {
+				    	echo "将" . $row1["Amount"] . "消费云量转为线下云量。";
+			    	}
+
+			    	echo "<br>";
+			    	echo "当前消费云量" . $row1["CurrAmount"] . "。";
 			    ?>
 		    		</p>
 		    		<hr>

@@ -234,7 +234,7 @@ if ($con) {
 				<tr>
 					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
 					<td id=""><?php if ($row) echo $pnts; else echo '0'; ?></td>
-					<td id=""><?php if ($row) echo $row["ProfitPnt"]; else echo '0'; ?></td>
+					<td id="" onclick="javascript: location.href='profitPnt.php'"><?php if ($row) echo $row["ProfitPnt"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>
 				</tr>
 			</table>

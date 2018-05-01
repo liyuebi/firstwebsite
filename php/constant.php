@@ -76,6 +76,7 @@
 	$codeTryChargeOil = 16;	// 提交加油卡充值申请，扣除积分
 	$codeStopChargeOil = 17;// 取消加油卡充值申请，返还积分
 	$codeRegiOlShop = 20;	// 注册线下商店
+	$codeFromProfit = 22;	// 消费云量转到线上云量
 	
 	// pnts code
 	$code2Save = 1; 		// 用户存储云量时直接获得的线下云量（包括注册为新用户时的存储）
@@ -90,6 +91,7 @@
 	$code2TryCP = 10;		// 提交手机充值申请，扣除积分
 	$code2CancelCP = 11;	// 用户取消手机充值申请，返还积分
 	$code2StopCP = 12;		// 后台停止手机充值申请，返还积分
+	$code2FromProfit = 15;	// 消费云量转到线下云量
 
 	// profit pnt code
 	$code3OlShopReceive = 1;// 线下商家收款

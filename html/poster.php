@@ -15,7 +15,7 @@ if (!$con)
 }
 
 if ($idx > 0) {
-	$result = mysqli_query("select * from PostTable where IndexId='$idx'");	
+	$result = mysqli_query($con, "select * from PostTable where IndexId='$idx'");	
 	if ($result && mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
 	}
@@ -110,6 +110,4 @@ if ($idx > 0) {
 			</p>
         </div>
     </body>
-    <div style="text-align:center;">
-    </div>
 </html>
