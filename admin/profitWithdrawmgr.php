@@ -13,7 +13,7 @@ $result = false;
 $con = connectToDB();
 if ($con)
 {
-	$result = mysqli_query($con, "select * from PntsWdApplication where Status='$olShopWdApplied' order by ApplyTime");
+	$result = mysqli_query($con, "select * from ProfitWdApplication where Status='$olShopWdApplied' order by ApplyTime");
 }
 		
 ?>
@@ -41,20 +41,20 @@ if ($con)
 				}
 			}
 			
-			function queryCredit(btn)
+			function queryProfit(btn)
 			{
 				var userId = btn.name;
 				var idx = btn.id;
 				btn.disabled = true;
-				$.post("../php/credit.php", {"func":"getPnts","index":idx,"user":userId}, function(data){
+				$.post("../php/credit.php", {"func":"getProfit","index":idx,"user":userId}, function(data){
 					
 					if (data.error == "false") {
 						btn.style.display = "none"; 
-						document.getElementById("pnt_"+data.index).innerHTML = data.pnt;
+						document.getElementById("pnt_"+data.index).innerHTML = data.profit;
 						document.getElementById("pnt_"+data.index).style.display = "inline";
 					}
 					else {
-						alert("获取线上云量失败: " + data.error_msg + " " + data.index);
+						alert("获取消费云量失败: " + data.error_msg + " " + data.index);
 					}
 				}, "json");
 
@@ -63,7 +63,7 @@ if ($con)
 			function onConfirm(btn)
 			{
 				enableBtns(btn.idx, false);
-				$.post("../php/credit.php", {"func":"allowWdPnt","index":btn.id}, function(data){
+				$.post("../php/offlineTrade.php", {"func":"allowWdP","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
 						alert("通过申请！" + data.index);	
@@ -79,7 +79,7 @@ if ($con)
 			function onDeny(btn)
 			{
 				enableBtns(btn.idx, false);
-				$.post("../php/credit.php", {"func":"denyWdPnt","index":btn.id}, function(data){
+				$.post("../php/offlineTrade.php", {"func":"denyWdP","index":btn.id}, function(data){
 					
 					if (data.error == "false") {
 						alert("拒绝成功！" + data.index);	
@@ -96,6 +96,7 @@ if ($con)
 	</head>
 	<body>
 		<div style="padding: 10px 0 0 10px;" >
+			<span>消费云量提现</span>
 	        <div>
 				<table border="1">
 					<tr>
@@ -111,7 +112,7 @@ if ($con)
 						<th>收款方式</th>
 						<th>账号</th>
 						<th>账号其他信息</th>
-						<th>当前线下云量</th>
+						<th>当前消费云量</th>
 						<th>状态</th>
 						<th>确认提现</th>
 						<th>拒绝</th>
@@ -139,7 +140,7 @@ if ($con)
 									<td><?php echo $row["Account"]; ?></td>
 									<td><?php if ($row["Method"] == 3) echo $row["BankUser"] . ' ' . $row["BankName"] . ' ' . $row["BankBranch"]; ?></td>
 									<td>
-										<input type="button" value="查看线下云量" name=<?php echo $row["UserId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="queryCredit(this)" />
+										<input type="button" value="查看消费云量" name=<?php echo $row["UserId"]; ?> id=<?php echo $row["IndexId"]; ?> onclick="queryProfit(this)" />
 										<span id="pnt_<?php echo $row["IndexId"]; ?>" style="color: red; display: none;"></span>
 									</td>
 									<td id="col_status_<?php echo $row["IndexId"]; ?>">未通过</td>

@@ -206,6 +206,7 @@ function queryUser()
 			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
 			$arr1["pnt"] = $row1["Pnts"];
+			$arr1["profit"] = $row1["ProfitPnt"];
 			$arr1["vault"] = $row1["Vault"];
 		}
 		
@@ -283,6 +284,7 @@ function queryUserByCondition()
 			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
 			$arr1["pnt"] = $row1["Pnts"];
+			$arr1["profit"] = $row1["ProfitPnt"];
 			$arr1["vault"] = $row1["Vault"];
 		}
 		

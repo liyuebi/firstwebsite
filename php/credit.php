@@ -53,6 +53,9 @@ else if ("getCredit" == $_POST['func']) {
 else if ("getPnts" == $_POST['func']) {
 	queryPnt();
 }
+else if ("getProfit" == $_POST['func']) {
+	quertProfit();
+}
 
 function applyRecharge()
 {	
@@ -1097,6 +1100,28 @@ function queryPnt()
 	$row = mysqli_fetch_assoc($res);
 	$pnt = $row["Pnts"];
 	echo json_encode(array('error'=>'false','index'=>$index,'pnt'=>$pnt));
+}
+
+function quertProfit()
+{
+	$index = trim(htmlspecialchars($_POST["index"]));
+	$userId = trim(htmlspecialchars($_POST["user"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$res = mysqli_query($con, "select * from Credit where UserId='$userId'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找不到对应用户！','index'=>$index));
+		return;
+	}
+	$row = mysqli_fetch_assoc($res);
+	$profit = $row["ProfitPnt"];
+	echo json_encode(array('error'=>'false','index'=>$index,'profit'=>$profit));
 }
 	
 ?>

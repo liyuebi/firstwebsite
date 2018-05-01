@@ -989,6 +989,32 @@ function searchOfflineShopRecord()
 		}
 		else if (2 == $recordType) {
 
+			if (!createProfitWithdrawTable($con)) {
+				echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'数据操作失败，请稍后重试！'));
+				return;				
+			}
+
+			$res2 = mysqli_query($con, "select * from ProfitWdApplication where UserId='$sellid' order by ApplyTime desc");
+			if (!$res2) {
+				echo json_encode(array('error'=>'true','error_code'=>'33','error_msg'=>'查询提现记录出错，请稍后重试！'));
+				return;
+			}
+
+			$arr = array();
+			while ($row2 = mysqli_fetch_assoc($res2)) {
+				
+				$arr1 = array();
+				foreach($row2 as $key=>$value) {
+
+					$arr1[$key] = $value;
+				}
+				array_push($arr, $arr1);
+			}
+
+			echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res2),'list'=>$arr,'amt'=>$row["TradeAmount"],'a_amt'=>$row["TradeIncome"],'w_amt'=>$row["WithdrawAmount"]));
+		}
+		else if (3 == $recordType) {
+
 			if (!createPntsWithdrawTable($con)) {
 				echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'数据操作失败，请稍后重试！'));
 				return;				
@@ -1243,7 +1269,7 @@ function applyWithdrawProfit()
 				// !!! log error
 			}
 			$result = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, RelatedAmount, HandleFee, ApplyTime, ApplyIndexId, WithStoreId, Type)
-							VALUES('$userid', '$actual', '$total', '$amount', '$fee', '$time', '0', '$shopId', '$code2OlShopWdApply')");
+							VALUES('$userid', '$actual', '$total', '$amount', '$fee', '$time', '0', '$shopId', '$code3OlShopWdApply')");
 			if (!$result) {
 				// !!! log error				
 			}
@@ -1257,12 +1283,146 @@ function applyWithdrawProfit()
 
 function allowWithdrawProfit()
 {
+	include_once 'admin_func.php';
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
 
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	else 
+	{
+		$result = mysqli_query($con, "select * from ProfitWdApplication where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
+			return;			
+		}
+		$row = mysqli_fetch_assoc($result);
+		$shopId = $row["ShopId"];
+		$amount = $row["ApplyAmount"];
+		$applyTime = $row["ApplyTime"];
+		$fee = $amount - $row["ActualAmount"];
+
+		if ($olShopWdApplied != $row["Status"]) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'状态已改变，操作中断！','index'=>$index));	
+			return;			
+		}
+		
+		$adminId = $_SESSION['adminUid'];
+		
+		$now = time();
+		$result = mysqli_query($con, "update ProfitWdApplication set Status='$olShopWdAccepted', AcceptTime='$now', AdminId='$adminId' where IndexId='$index'");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'删除取现申请记录失败，请稍后重试！','index'=>$index));	
+			return;			
+		}
+		
+		$res1 = mysqli_query($con, "select * from OfflineShop where ShopId='$shopId'");
+		if ($res1 && mysqli_num_rows($res1) > 0) {
+			
+			$row1 = mysqli_fetch_assoc($res1);
+			$withdrawAmt = $row1["WithdrawAmount"] + $amount;
+			$withdrawFee = $row1["WithdrawFee"] + $fee;
+			
+			$res2 = mysqli_query($con, "update OfflineShop set WithdrawAmount='$withdrawAmt', WithdrawFee='$withdrawFee' where ShopId='$shopId'");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
+			
+		// 更新统计数据
+		include "func.php";
+		insertOfflineShopWithdrawStatistics($con, $amount, $fee);
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index));
+	return;
 }
 
 function denyWithdrawProfit()
 {
+	include_once 'admin_func.php';
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
 
+	include 'constant.php';
+	$index = trim(htmlspecialchars($_POST["index"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	
+	$result = mysqli_query($con, "select * from ProfitWdApplication where IndexId='$index'");
+	if (!$result || mysqli_num_rows($result) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'找不到对应的提现申请，操作中断！','index'=>$index));	
+		return;			
+	}
+	
+	$row = mysqli_fetch_assoc($result);
+	$userid = $row["UserId"];
+	$shopId = $row["ShopId"];
+	$amount = $row["ApplyAmount"];
+
+	if ($olShopWdApplied != $row["Status"]) {
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'状态已改变，操作中断！','index'=>$index));	
+		return;			
+	}
+	
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'找不到申请对应的用户，操作中断！','index'=>$index));	
+		return;					
+	}
+	$row1 = mysqli_fetch_assoc($res);
+	$profit = $row1["ProfitPnt"];
+	$profitPost = $profit + $amount;
+
+	$now = time();
+	$adminId = $_SESSION['adminUid'];
+
+	// 拒绝取现申请
+	$result = mysqli_query($con, "update ProfitWdApplication set Status='$olShopWdDeclined', AcceptTime='$now', AdminId='$adminId' where IndexId='$index'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'拒绝取现申请失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+	
+	// 更新用户数据
+	$result = mysqli_query($con, "update Credit set ProfitPnt='$profitPost' where UserId='$userid'");
+	if (!$result) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'更新用户线下云量失败，请稍后重试','index'=>$index));	
+		return; 				
+	}
+
+	// 添加交易记录
+	$result = createProfitPntRecordTable($con);
+	if (!$result) {
+		// !!! log error
+	}
+	else {
+		$result = mysqli_query($con, "insert into ProfitPntRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, WithStoreId, Type)
+						VALUES('$userid', '$amount', '$profitPost', '$now', '$index', '$shopId', '$code3OlSHopWdDecline')");
+		if (!$result) {
+			// !!! log error	
+		}
+	}
+	
+	echo json_encode(array('error'=>'false','index'=>$index,'pre'=>$profit,'post'=>$profitPost));
 }
 
 

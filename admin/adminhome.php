@@ -40,6 +40,7 @@
 			var numOilOrder = getCookie('c_o_c_o');
 			var numOLReview = getCookie('c_ol_r');
 			var numOLWithdraw = getCookie('c_ol_wd_a');
+			var numPntWithdraw = getCookie('c_p_wd_a');
 
 			$(document).ready(function() {
 				$('#riframe').height($(window).height());
@@ -81,6 +82,7 @@
 						var nNumOilOrder = getCookie('c_o_c_o');
 						var nNumOLReview = getCookie('c_ol_r');
 						var nNumOLWithdraw = getCookie('c_ol_wd_a');
+						var nNumPntWithdraw = getCookie('c_p_wd_a');
 
 						var bDiffenert = false;
 						var bLarger = false;
@@ -132,6 +134,13 @@
 								bLarger = true;
 							}
 							numOLWithdraw = nNumOLWithdraw;
+						}
+						if (numPntWithdraw != nNumPntWithdraw) {
+							bDiffenert = true;
+							if (nNumPntWithdraw > numPntWithdraw) {
+								bLarger = true;
+							}
+							numPntWithdraw = nNumPntWithdraw;
 						}
 
 						if (bDiffenert) {
@@ -246,8 +255,11 @@
 			            		<li onclick="makecss(this)" data-id="index_OlShopApply">
 			            			<a href='olsreviewmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>待审核商家</a>
 								</li>	            
-			            		<li onclick="makecss(this)" data-id="index_OlShopWithdraw">
-			            			<a href='withdrawmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>提现申请</a>
+			            		<li onclick="makecss(this)" data-id="index_OlShopProfitWithdraw">
+			            			<a href='profitWithdrawmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>提现申请(消费)</a>
+								</li>	    
+			            		<li onclick="makecss(this)" data-id="index_OlShopPntWithdraw">
+			            			<a href='pntWithdrawmgr.php' target='rightContent'><i class="fa fa-circle-o"></i>提现申请(线下)</a>
 								</li>	           
 			            	</ul>
 						</li>

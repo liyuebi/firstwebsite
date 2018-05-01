@@ -105,6 +105,9 @@ if (!checkLoginOrJump()) {
 							var d5 = document.createElement("td");
 							d5.innerHTML = list[key].pnt;
 							trow.appendChild(d5);
+							var d15 = document.createElement("td");
+							d15.innerHTML = list[key].profit;
+							trow.appendChild(d15);
 							var d6 = document.createElement("td");
 							d6.innerHTML = list[key].vault;
 							trow.appendChild(d6);
@@ -271,6 +274,7 @@ if (!checkLoginOrJump()) {
 						<th>电话号码</th>
 						<th>线上云量</th>
 						<th>线下云量</th>
+						<th>消费云量</th>
 						<th>财富云量</th>
 						<th>推荐人数</th>
 						<th>队友人数</th>

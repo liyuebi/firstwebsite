@@ -58,6 +58,7 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 
 	$cntOLReview = 0;
 	$cntOLWithdrawApply = 0;
+	$cntPntWithdrawApply = 0;
 
 	$res = mysqli_query($con, "select * from Transaction where Type='8' and Status='$OrderStatusBuy'");
 	if ($res) {
@@ -85,9 +86,13 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 	if ($res) {
 		$cntOLReview = mysqli_num_rows($res);
 	}
-	$res = mysqli_query($con, "select * from PntsWdApplication where Status='$olShopWdApplied'");
+	$res = mysqli_query($con, "select * from ProfitWdApplication where Status='$olShopWdApplied'");
 	if ($res) {
 		$cntOLWithdrawApply = mysqli_num_rows($res);
+	}
+	$res = mysqli_query($con, "select * from PntsWdApplication where Status='$olShopWdApplied'");
+	if ($res) {
+		$cntPntWithdrawApply = mysqli_num_rows($res);
 	}
 
 	if ($bSetCookie) {
@@ -99,7 +104,8 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 		setcookie("c_p_c_f_n", $cntPhoneChargeForNew, $time, '/');	
 		setcookie("c_o_c_o", $cntOilChargeOrder, $time, '/');
 		setcookie("c_ol_r", $cntOLReview, $time, '/');	
-		setcookie("c_ol_wd_a", $cntOLWithdrawApply, $time, '/');	
+		setcookie("c_ol_wd_a", $cntOLWithdrawApply, $time, '/');
+		setcookie("c_p_wd_a", $cntPntWithdrawApply, $time, '/');	
 	}
 }
 

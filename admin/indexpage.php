@@ -84,11 +84,17 @@ if ($con) {
 				if (cnt != '') {
 					document.getElementById('num_ol_r').innerHTML = cnt;
 				}
-				
-				// 更新线下商家申请提现数
+
+				// 更新线下商家消费云量申请提现数
 				cnt = getCookie('c_ol_wd_a');
 				if (cnt != '') {
-					document.getElementById('num_ol_w').innerHTML = cnt;
+					document.getElementById('num_ol_w_profit').innerHTML = cnt;
+				}
+				
+				// 更新线下商家线下运量申请提现数
+				cnt = getCookie('c_p_wd_a');
+				if (cnt != '') {
+					document.getElementById('num_ol_w_pnt').innerHTML = cnt;
 				}
 			}
 		</script>
@@ -156,7 +162,8 @@ if ($con) {
 	            <div class="box-body">
 	            	<ul class="nav nav-stacked">
 	            		<li><a href="olsreviewmgr.php">待审核商家 <span id='num_ol_r' class="pull-right badge bg-blue">0</span></a></li>
-	            		<li><a href="withdrawmgr.php">提现申请 <span id='num_ol_w' class="pull-right badge bg-blue">0</span></a></li>
+	            		<li><a href="profitWithdrawmgr.php">提现申请(消费) <span id='num_ol_w_profit' class="pull-right badge bg-blue">0</span></a></li>
+	            		<li><a href="pntWithdrawmgr.php">提现申请(线下) <span id='num_ol_w_pnt' class="pull-right badge bg-blue">0</span></a></li>
 	            	</ul>
 	            </div>
 	          </div>
