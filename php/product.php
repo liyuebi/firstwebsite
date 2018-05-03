@@ -15,6 +15,9 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
 	else if ("cps" == $_POST['func']) {
 		changePackState();
 	}
+	else if ("editPack" == $_POST['func']) {
+		editProductPack();
+	}
 }
 else if ($_SERVER['REQUEST_METHOD']=="GET") {
 	if ("getProducts" == $_GET["func"]) {
@@ -222,8 +225,6 @@ function addProductPack()
 			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建表失败，请稍后重试！'));
 			return;		
 		}
-
-		$userid = $_SESSION['userId'];
 		
 		$res = mysqli_query($con, "select * from ProductPack where PackName='$name'");
 		if ($res && mysqli_num_rows($res) > 0) {
@@ -289,6 +290,127 @@ function changePackState()
 
 
 	echo json_encode(array('error'=>'false','idx'=>$idx,'status'=>$status));
+}
+
+function editProductPack()
+{
+	include 'regtest.php';
+	include 'constant.php';
+	
+	session_start();
+	include_once "admin_func.php";
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$idx = trim(htmlspecialchars($_POST["idx"]));
+	$name = trim(htmlspecialchars($_POST["name"]));
+	$price = trim(htmlspecialchars($_POST["price"]));
+	$rate = trim(htmlspecialchars($_POST["rate"]));
+	$cnt = trim(htmlspecialchars($_POST['cnt']));
+	$imgfile = $_FILES['file'];
+
+	if ($name == "") {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'产品包名称不能为空！'));
+		return;
+	}
+	if (!isVaildDecimal($price)) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'无效的价格，请重新输入！'));
+		return;	
+	}
+	if (!isVaildDecimal($rate)) {
+		echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'无效的存储比率，请重新输入！'));
+		return;	
+	}
+	if (!isValidNum($cnt)) {
+		echo json_encode(array('error'=>'true','error_code'=>'4','error_msg'=>'无效的产品包数量，请重新输入！'));
+		return;	
+	}
+	
+	$now = time();
+		
+	$imgFileName = '';
+	if ($imgfile != '') {
+		
+		$imgType = $imgfile['type'];
+		$imgSize = $imgfile['size'];
+		$error = $imgfile['error'];
+		
+		if ($error != 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'上传图片出错，出错码是 ' . $error));
+			return;
+		}
+		
+		if ($imgSize > 1024 * 1024) {
+			echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'图片大小不能超过1MB！'));
+			return;
+		}
+		
+		if ($imgType != 'image/jpeg' && $imgType != 'image/png') {
+			echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'图片格式不对，请使用jpg或png格式的图片，使用图片的格式是' . $imgType));
+			return;
+		}
+		
+		$imgname = $imgfile['name'];
+		$pos = strpos($imgname, '.');
+		$postname = substr($imgname, $pos);
+		
+		$imgFileName = 'pack_' . $now . $postname;
+		
+		include_once "func.php";
+
+		$new_path = dirname(__FILE__) . '/../pPackPic';
+		if (createFolderIfNotExist($new_path)) {
+			$new_name = $new_path . '/' . $imgFileName;
+			move_uploaded_file($imgfile['tmp_name'], $new_name);
+		}
+		else {
+			$imgFileName = '';
+		}
+	}
+	else {
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$result = createProductPackTable($con);
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'建表失败，请稍后重试！'));
+			return;		
+		}
+
+		$res2 = mysqli_query($con, "select * from ProductPack where PackId='$idx'");
+		if (!$res2 || mysqli_num_rows($res2) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'查找要修改的产品包失败，请稍后重试！'));
+			return;
+		}			
+
+		$res = mysqli_query($con, "select * from ProductPack where PackName='$name' and PackId!='$idx'");
+		if ($res && mysqli_num_rows($res) > 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'产品包名称已经被使用了，请更换一个！'));
+			return;
+		}	
+		
+		$str = "Price='$price', PackName='$name', SaveRate='$rate', StockCnt='$cnt'";
+		if ($imgFileName != "") {
+			$str .= ", DisplayImg='$imgFileName'";
+		}
+
+		$res1 = mysqli_query($con, "update ProductPack set " . $str . " where PackId='$idx'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'编辑失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+			return;
+		}
+ 	}
+	
+	echo json_encode(array('error'=>'false'));	
 }
 
 ?>

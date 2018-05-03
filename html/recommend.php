@@ -219,6 +219,9 @@ if ($con) {
 										<span class="text-info">价格：<?php echo $row["Price"]; ?> 线上云量</span>
 										<span class="text-info">存储比例：<?php echo $row["SaveRate"]; ?></span>
 									</div>
+									<div>
+										<span class="text-info">库存：<?php if ($row["StockCnt"] == -1)  echo "999"; else echo $row["StockCnt"]; ?></span>
+									</div>
 		            			</div>
 		            		<?php
 		            		}
