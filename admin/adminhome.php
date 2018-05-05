@@ -41,6 +41,7 @@
 			var numOLReview = getCookie('c_ol_r');
 			var numOLWithdraw = getCookie('c_ol_wd_a');
 			var numPntWithdraw = getCookie('c_p_wd_a');
+			var numExchangeOnSell = getCookie('c_ex_on');
 
 			$(document).ready(function() {
 				$('#riframe').height($(window).height());
@@ -83,6 +84,7 @@
 						var nNumOLReview = getCookie('c_ol_r');
 						var nNumOLWithdraw = getCookie('c_ol_wd_a');
 						var nNumPntWithdraw = getCookie('c_p_wd_a');
+						var nNumExchangeOnSell = getCookie('c_ex_on');
 
 						var bDiffenert = false;
 						var bLarger = false;
@@ -141,6 +143,14 @@
 								bLarger = true;
 							}
 							numPntWithdraw = nNumPntWithdraw;
+						}
+
+						if (numExchangeOnSell != nNumExchangeOnSell) {
+							bDiffenert = true;
+							if (nNumExchangeOnSell > numExchangeOnSell) {
+								bLarger = true;
+							}
+							numExchangeOnSell = nNumExchangeOnSell;	
 						}
 
 						if (bDiffenert) {

@@ -60,6 +60,8 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 	$cntOLWithdrawApply = 0;
 	$cntPntWithdrawApply = 0;
 
+	$cntExchangeOnSell = 0;
+
 	$res = mysqli_query($con, "select * from Transaction where Type='8' and Status='$OrderStatusBuy'");
 	if ($res) {
 		$cntNewPackOrder = mysqli_num_rows($res);
@@ -95,6 +97,11 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 		$cntPntWithdrawApply = mysqli_num_rows($res);
 	}
 
+	$res = mysqli_query($con, "select * from CreditTrade where Status='$creditTradeInited'");
+	if ($res) {
+		$cntExchangeOnSell = mysqli_num_rows($res);
+	}
+
 	if ($bSetCookie) {
 
 		$time = time() + 24 * 60 * 60;
@@ -106,6 +113,7 @@ function getIndexDisplayCnt($con, $bSetCookie=true)
 		setcookie("c_ol_r", $cntOLReview, $time, '/');	
 		setcookie("c_ol_wd_a", $cntOLWithdrawApply, $time, '/');
 		setcookie("c_p_wd_a", $cntPntWithdrawApply, $time, '/');	
+		setcookie("c_ex_on", $cntExchangeOnSell, $time, '/');
 	}
 }
 

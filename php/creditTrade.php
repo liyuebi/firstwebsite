@@ -734,7 +734,7 @@ function saveCredit()
 
 		if ($pntsReturnDirect > 0) {
 			$res4 = mysqli_query($con, "insert into PntsRecord (UserId, Amount, CurrAmount, ApplyTime, ApplyIndexId, Type)
-								values('$userid', '$pntsReturnDirect', '$pntsReturnDirect', '$now', '$newSaveId', '$code2Save')");
+								values('$userid', '$pntsReturnDirect', '$newPnts', '$now', '$newSaveId', '$code2Save')");
 			if (!$res4) {
 				// !!! log error
 			}

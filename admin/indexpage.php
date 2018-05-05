@@ -3,9 +3,13 @@
 $userCnt = 0;
 $offlineShopCnt = 0;
 $vaildOfflineShopCnt = 0;
+$currCreditExchangeCnt = 0;	// credit exchange waiting to be bought
 
 include '../php/constant.php';
 include "../php/database.php";
+
+$statRow = false;
+
 $con = connectToDB();
 if ($con) {
 
@@ -19,6 +23,14 @@ if ($con) {
 
 	$res = mysqli_query($con, "select * from OfflineShop where Status='$olshopAccepted'");
 	$vaildOfflineShopCnt = mysqli_num_rows($res);
+
+	$statRes = mysqli_query($con, "select * from TotalStatis");
+	if ($statRes) {
+		$statRow = mysqli_fetch_assoc($statRes);
+	}
+
+	$res = mysqli_query($con, "select * from CreditTrade where Status='$creditTradeInited'");
+	$currCreditExchangeCnt = mysqli_num_rows($res);
 }
 
 ?>
@@ -96,6 +108,12 @@ if ($con) {
 				if (cnt != '') {
 					document.getElementById('num_ol_w_pnt').innerHTML = cnt;
 				}
+
+				// 更新云量交易目前挂单总数
+				cnt = getCookie('c_ex_on');
+				if (cnt != '') {
+					document.getElementById('num_trade_on').innerHTML = cnt;
+				}
 			}
 		</script>
 	</head>
@@ -164,6 +182,21 @@ if ($con) {
 	            		<li><a href="olsreviewmgr.php">待审核商家 <span id='num_ol_r' class="pull-right badge bg-blue">0</span></a></li>
 	            		<li><a href="profitWithdrawmgr.php">提现申请(消费) <span id='num_ol_w_profit' class="pull-right badge bg-blue">0</span></a></li>
 	            		<li><a href="pntWithdrawmgr.php">提现申请(线下) <span id='num_ol_w_pnt' class="pull-right badge bg-blue">0</span></a></li>
+	            	</ul>
+	            </div>
+	          </div>
+	        </div>
+	        <div class="col-md-3">
+	          <div class="box box-primary box-solid">
+	            <div class="box-header with-border">
+	              <h3 class="box-title">云量交易</h3>
+ 				</div>
+	            <!-- /.box-header -->
+	            <div class="box-body">
+	            	<ul class="nav nav-stacked">
+	            		<li><a href="#">成交单数 <span class="pull-right text-info"><?php if ($statRow) echo $statRow["ExchangeSuccCnt"]; else echo 0; ?></span></a></li>
+	            		<li><a href="#">总成交额 <span class="pull-right text-info"><?php if ($statRow) echo $statRow["ExchangeSuccQuan"] . '(' . $statRow["ExchangeFee"] . ')'; else echo 0; ?></span></a></li>
+	            		<li><a href="#">目前挂单数 <span id='num_trade_on' class="pull-right badge bg-blue"><?php echo $currCreditExchangeCnt; ?></span></a></li>
 	            	</ul>
 	            </div>
 	          </div>
