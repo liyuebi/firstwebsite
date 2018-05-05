@@ -404,10 +404,11 @@ function acceptPntsBonus($con, $userId, &$pnts)
 		$bonus = 0;
 		if ($lastCBPntsTime < $now) {
 
-			$i = 0; // 计数，一次只累积五天，安全处理，以免无限循环
-			while ($i < 5) {
+			$flag = true;
+			// $i = 0; // 计数，一次只累积五天，安全处理，以免无限循环 -- bug: 如果上次领取时间非常久以前，那么只计算五天时间则无法再领
+			while ($flag) { //$i < 5) {
 
-				$i += 1;
+				// $i += 1;
 
 				$oneTime = $lastCBPntsTime + 24 * 60 * 60;
 				$lastCBPntsTime = $oneTime; 
@@ -415,7 +416,8 @@ function acceptPntsBonus($con, $userId, &$pnts)
 					|| isInTheSameDay($oneTime, $now)) {
 
 					$oneTime = $now;
-					$i = 5;	// break from while after run this time
+					$flag = false;
+					// $i = 5;	// break from while after run this time
 				}
 
 				$dayBonus = 0;
@@ -466,9 +468,9 @@ function acceptPntsBonus($con, $userId, &$pnts)
 			}
 		}
 							
-		if ($bonus <= 0) {
-			return false;
-		}
+		// if ($bonus <= 0) {
+		// 	return false;
+		// }
 		
 		$res2 = mysqli_query($con, "update Credit set Pnts='$credit', LastCBPTime='$now' where UserId='$userId'");
 		if (!$res2) {
