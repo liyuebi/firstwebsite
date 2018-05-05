@@ -361,7 +361,7 @@ function acceptBonus($userId)
  * Check when user login to home page, so need to check more than today to send user pnts.
  */
 function acceptPntsBonus($con, $userId, &$pnts)
-{
+{$pnts = 0; return false;
 	include_once "func.php";
 	include "constant.php";
 	
