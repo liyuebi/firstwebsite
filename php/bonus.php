@@ -361,7 +361,7 @@ function acceptBonus($userId)
  * Check when user login to home page, so need to check more than today to send user pnts.
  */
 function acceptPntsBonus($con, $userId, &$pnts)
-{$pnts = 0; return false;
+{
 	include_once "func.php";
 	include "constant.php";
 	
@@ -399,6 +399,10 @@ function acceptPntsBonus($con, $userId, &$pnts)
 				|| isInTheSameDay($now, $lastCBPntsTime)) {
 				return false;
 			}
+		}
+
+		if ($lastCBPntsTime <= 0) {
+			$lastCBPntsTime = $now;
 		}
 			
 		$bonus = 0;
