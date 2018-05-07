@@ -126,6 +126,16 @@ if ($con) {
 					}, "json");
 				}	
 			}
+
+			function showQRCode(btn)
+			{
+				if (btn.dataset.img == "") {
+					alert("商家" + btn.id + "还没有生成商家二维码！");
+					return;
+				}	
+
+				window.open("checkQR.php?img=" + btn.dataset.img + "&id=" + btn.id + '&name=' + btn.dataset.name);
+			}
 						
 			$(document).ready(function(){
 				
@@ -254,6 +264,7 @@ if ($con) {
 										}
 									?>
 									<li><a href="#" id="<?php echo $row['ShopId']; ?>" onclick="checkIncomeRecord(this)">收入记录</a></li>
+									<li><a href="#" id="<?php echo $row['ShopId']; ?>" data-img="<?php echo $row['QRCode']; ?>" data-name="<?php echo $row['ShopName'];?>" onclick="showQRCode(this)">收款二维码</a></li>
 								</ul>
 							</div>
 						</td>

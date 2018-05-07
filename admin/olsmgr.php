@@ -153,17 +153,57 @@ include '../php/constant.php';
 							d10.innerHTML = list[key].WithdrawAmount;
 							d9.className = "text-info";
 							trow.appendChild(d10);
-							d11 = document.createElement("input");
-							d11.type = "button";
-							d11.value = "查看收入记录";
-							d11.id = key;
-							if (d11.addEventListener) {
-								d11.addEventListener('click', checkIncomeRecord, false);
-							}
-							else if (d11.attachEvent) {
-								d11.attachEvent('onclick', checkIncomeRecord);
-							}
+
+							var d11 = document.createElement("td");
 							trow.appendChild(d11);
+							{
+								var blk = document.createElement("div");
+								blk.className = "btn-group";
+								d11.appendChild(blk);
+
+								var a = document.createElement("a");
+								a.className = "btn dropdown-toggle";
+								a.dataset.toggle = "dropdown";
+								a.href = "#";
+								a.innerHTML = "操作"
+								blk.appendChild(a);
+
+								var span = document.createElement("span");
+								span.className = "caret";
+								a.appendChild(span);
+
+								var ul = document.createElement("ul");
+								ul.className="dropdown-menu";
+								blk.appendChild(ul);
+
+								var li1 = document.createElement("li");
+								var a1 = document.createElement("a");
+								a1.id = key;
+								a1.innerHTML = "查看收入记录";
+								if (a1.addEventListener) {
+									a1.addEventListener('click', checkIncomeRecord, false);
+								}
+								else if (a1.attachEvent) {
+									a1.attachEvent('onclick', checkIncomeRecord);
+								}
+								li1.appendChild(a1);
+								ul.appendChild(li1);
+
+								var li2 = document.createElement("li");
+								var a2 = document.createElement("a");
+								a2.id = key;
+								a2.innerHTML = "收款二维码";
+								a2.dataset.img = list[key].QRCode;
+								a2.dataset.name = list[key].ShopName;
+								if (a2.addEventListener) {
+									a2.addEventListener('click', showQRCode, false);
+								}
+								else if (a2.attachEvent) {
+									a2.attachEvent('onclick', showQRCode);
+								}
+								li2.appendChild(a2);
+								ul.appendChild(li2);
+							}
 						}				    	
 					}
 					else {
@@ -190,6 +230,18 @@ include '../php/constant.php';
 			function checkIncomeRecord(e)
 			{
 				location.href = "olspntrecord.php?sid=" + e.target.id;
+			}
+
+			function showQRCode(e)
+			{
+				var btn = e.target;
+
+				if (btn.dataset.img == "") {
+					alert("商家" + btn.id + "还没有生成商家二维码！");
+					return;
+				}	
+
+				window.open("checkQR.php?img=" + btn.dataset.img + "&id=" + btn.id + '&name=' + btn.dataset.name);
 			}
 						
 			$(document).ready(function(){

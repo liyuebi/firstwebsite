@@ -64,13 +64,12 @@ if ($con) {
 				
 			$(document).ready(function(){
 
-				// $('#main').height($(window).height() - $('#title').height();
-				setContentVertialCenter();
+				// setContentVertialCenter();
 				
-				$(window).resize(function() {
+				// $(window).resize(function() {
 
-					setContentVertialCenter();
-				});
+				// 	setContentVertialCenter();
+				// });
 			});
 
 			function setContentVertialCenter()
@@ -128,13 +127,16 @@ if ($con) {
 			?>
 				<div class="alert-info" style="padding: 20px; text-align: center;">
 					<h3>连物网商家收款二维码</h3>
-					<div style="padding: 40px 10%;">
+					<div style="padding: 40px 10% 0 10%;">
 						<p>
 							<span class="pull-left"><b>商家编号：</b> <?php echo $row["ShopId"]; ?></span>
 							<span class="pull-right"><?php echo $row["ShopName"];?></span>
 						</p>
 						<br>
 						<img src="<?php echo '../olqrc/' . $url; ?>" style="width: 100%;" >
+					</div>
+					<div style="margin-top: 20px; margin-bottom: 0">
+						<font size="5" color="green">连接你我   半价消费</font>
 					</div>
 				</div>
 			<?php
