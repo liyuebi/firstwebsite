@@ -636,7 +636,7 @@ function payOLShop()
 	$pwd = trim(htmlspecialchars($_POST["paypwd"]));
 	$shopId = trim(htmlspecialchars($_POST["sId"]));
 	
-	if (!isValidMoneyAmount($cnt)) {
+	if (!isVaildDecimal($cnt)) {
 		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'无效的金额输入，请重新输入！'));
 		return;
 	}
