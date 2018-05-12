@@ -1,6 +1,9 @@
 #!/bin/sh
 #backup
 
+this_dir=`dirname $0`
+cd $this_dir
+
 timestamp="`date +%y%m%d%H%M`"
 path="/root/dump"
 
@@ -32,3 +35,4 @@ cp -a ./pPackPic $folderpath
 #compress folder
 cd $path
 tar czf ${timestamp}".tar.gz" $timestamp
+rm -rf $timestamp
