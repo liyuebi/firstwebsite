@@ -16,22 +16,40 @@ function writeLog($file, $msg)
 function getDayBonus($con, $userId)
 {
 	$ret = 0;
+
+	$res1 = mysqli_query($con, "select * from ClientTable where UserId='$userId'");
+	if (!$res1 || mysqli_num_rows($res1) <= 0) {
+		return $ret;
+	}
+	$row1 = mysqli_fetch_assoc($res1);
+	$recoCnt = $row1["RecoCnt"];
+	$registerTime = $row1["RegisterTime"];
+
+	$hasReco = $recoCnt > 0;	// check if hasn't recommend anybody
+	$now = time();
 	
 	$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime desc");
 	if ($res) {
 		
 		$now = time();
+		$decreaseBonusTime = 60 * 60 * 24 * 120;
+
 		while ($row = mysqli_fetch_assoc($res)) {
 			
 			// 当日存的云量不进行返还
 			$savetime = $row["SaveTime"];
-			
 			if (isInTheSameDay($savetime, $now)) {
 				continue;
 			}
 			
 			$balance = $row["Balance"];
+
 			$diviCnt = $row["DiviCnt"];
+			// if haven't recommend anyone, and save time is over 4 month, only return half the DiviCnt
+			if (!$hasReco && $now - $savetime >= $decreaseBonusTime) {
+				$diviCnt = floor($diviCnt / 2 * 100) / 100;
+			}
+
 			if ($diviCnt > $balance) {
 				$diviCnt = $balance;
 			}
@@ -233,6 +251,18 @@ function acceptBonus($userId)
 		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
 		return;
 	}
+
+	$res2 = mysqli_query($con, "select * from ClientTable where UserId='$userId'");
+	if (!$res2 || mysqli_num_rows($res2) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'数据获取失败，请稍后重试！'));
+		return;
+	}
+	$row2 = mysqli_fetch_assoc($res2);
+	$recoCnt = $row2["RecoCnt"];
+	$registerTime = $row2["RegisterTime"];
+
+	$hasReco = $recoCnt > 0;	// check if hasn't recommend anybody
+	$now = time();
 	
 	$res1 = mysqli_query($con, "select * from Credit where UserId='$userId'");
 	if (!$res1 || mysqli_num_rows($res1) < 1) {
@@ -240,8 +270,6 @@ function acceptBonus($userId)
 		return;
 	}
 	else {
-		
-		$now = time();
 		
 		$row1 = mysqli_fetch_assoc($res1);
 		
@@ -261,7 +289,8 @@ function acceptBonus($userId)
 		$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' and Type='1' and Balance>0 order by SaveTime");
 		if ($res) {
 			
-			$now = time();
+			$decreaseBonusTime = 60 * 60 * 24 * 120;
+
 			while ($row = mysqli_fetch_assoc($res)) {
 				
 				// 当日存的云量不进行返还
@@ -272,7 +301,13 @@ function acceptBonus($userId)
 				}
 				
 				$balance = $row["Balance"];
+
 				$diviCnt = $row["DiviCnt"];
+				// if haven't recommend anyone, and save time is over 4 month, only return half the DiviCnt
+				if (!$hasReco && $now - $savetime >= $decreaseBonusTime) {
+					$diviCnt = floor($diviCnt / 2 * 100) / 100;
+				}
+
 				$emptyTime = 0;
 				if ($diviCnt > $balance) {
 					$diviCnt = $balance;
@@ -289,44 +324,7 @@ function acceptBonus($userId)
 				}
 			}
 		}
-							
-/*
-		$bonusTotal += $toCredit;
-		if (isInTheSameDay($now, $lastObtainedtime)) {
-			$dayObtained += $toCredit;
-		}
-		else {
-			$dayObtained = $toCredit;
-		}
-		
-		$totalPnt = $row1["TotalObtainedPnts"];
-		$yearPnt = $row1["YearObtainedPnts"];
-		$monPnt = $row1["MonObtainedPnts"];
-		$dayPnt = $row1["DayObtainedPnts"];
-		if ($toPnts > 0) {
-			if (isInTheSameDay($now, $lastObtainedPntTime)) {
-				$dayPnt += $toPnts;
-			}
-			else {
-				$dayPnt = $toPnts;
-			}
-			if (isInTheSameMonth($now, $lastObtainedPntTime)) {
-				$monPnt += $toPnts;
-			}
-			else {
-				$monPnt = $toPnts; 
-			}
-			if (isInTheSameYear($now, $lastObtainedPntTime)) {
-				$yearPnt += $toPnts;
-			}
-			else {
-				$yearPnt = $toPnts;
-			}
-			$totalPnt += $toPnts;
-			$lastObtainedPntTime = $now;
-		}
-*/
-		
+									
 		if ($bonus <= 0) {
 			echo json_encode(array('error'=>'false','credit'=>$row1["Credits"],'vault'=>$vault));
 			return;
