@@ -648,6 +648,13 @@ function saveCredit()
 	else 
 	{
 		$userid = $_SESSION['userId'];
+
+		$res5 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
+		if (!$res5 || mysqli_num_rows($res5) <= 0) {
+			return;
+		}
+		$row5 = mysqli_fetch_assoc($res5);
+		$recoCnt = $row5["RecoCnt"];
 		
 		$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
 		if (!$res1 || mysqli_num_rows($res1) <= 0) {
@@ -675,6 +682,13 @@ function saveCredit()
 		}		
 		$row = mysqli_fetch_assoc($res);
 		if ($row["count(*)"] > 0) {
+
+			// 为推荐的用户只能存储两笔（包括注册时的那一笔）
+			if ($recoCnt <= 0 && $row["count(*)"] >= 2) {
+				echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'您已存储两笔，不能继续存储。分享新用户可享更多存储机会，快去分享吧！'));
+				return;					
+			}
+
 			$total = $row["sum(Invest)"];
 			if ($total >= $saveCreditMost) {
 				echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的存储额度已满，请等任一存款余额领取结束才能继续存储！'));
