@@ -683,13 +683,27 @@ function saveCredit()
 		$row = mysqli_fetch_assoc($res);
 		if ($row["count(*)"] > 0) {
 
-			// 为推荐的用户只能存储两笔（包括注册时的那一笔）
+			$total = $row["sum(Invest)"];
+
+			// 未推荐的用户只能存储两笔（包括注册时的那一笔）
 			if ($recoCnt <= 0 && $row["count(*)"] >= 2) {
 				echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'您已存储两笔，不能继续存储。分享新用户可享更多存储机会，快去分享吧！'));
 				return;					
 			}
+			// 若现在是第3笔存储，检查该用户之前的推荐额度和存储额度，若推荐额度不大于存储额度，不能继续存储
+			else if ($row["count(*)"] == 2) {
+				$res7 = mysqli_query($con, "select sum(Amount) from CreditRecord where UserId='$userid' and Type='$codeReferer'");
+				if ($res7 && mysqli_num_rows($res7) > 0) {
+					$row7 = mysqli_fetch_assoc($res7);
+					$recoTotal = $row7["sum(Amount)"];
+					if ($recoTotal < $total) {
+						$gap = $total - $recoTotal;
+						echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'您的业绩未达标，需'.$gap.'推荐额度才能继续存储！'));
+						return;	
+					}
+				}	
+			}
 
-			$total = $row["sum(Invest)"];
 			if ($total >= $saveCreditMost) {
 				echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的存储额度已满，请等任一存款余额领取结束才能继续存储！'));
 				return;	
