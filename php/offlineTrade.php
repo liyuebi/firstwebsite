@@ -664,11 +664,30 @@ function payOLShop()
 		
 		$row = mysqli_fetch_assoc($res);
 		$sellid = $row["UserId"];
+		$now = time();
 
 		if ($userid == $sellid) {
 			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'不能向自己的商店交易，请稍后重试！'));	
 			return;
 		}
+
+		$res6 = mysqli_query($con, "select * from PntsRecord where UserId='$userid' and Type='$code2OlShopPay' order by ApplyTime desc");
+		if ($res6 && mysqli_num_rows($res6) > 0) {
+
+			$amtToday = 0;
+			while ($row6 = mysqli_fetch_assoc($res6)) {
+				if (!isInTheSameDay($now, $row6["ApplyTime"])) {
+					break;
+				}
+				$amtToday += $row6["Amount"];
+			}
+
+			$amtToday += $cnt;
+			if ($amtToday >= 200) {
+				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'应监管部门要求，每天的交易额度不可超过200线下云量！'));	
+				return;									
+			}
+		} 
 		
 		$res3 = mysqli_query($con, "select * from Credit where UserId='$sellid'");
 		if (!$res3 || mysqli_num_rows($res3) <= 0) {
@@ -677,8 +696,6 @@ function payOLShop()
 		} 
 		$row3 = mysqli_fetch_assoc($res3);
 		$sellerPnts = $row3["ProfitPnt"];
-
-		$now = time();
 	
 		$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
 		if (!$res1 || mysqli_num_rows($res1) <= 0) {
