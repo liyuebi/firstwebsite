@@ -84,6 +84,8 @@ else
 
 	$packRes = false;
 	$packSaveRate = 0;
+	$saveCnt = $quantity;
+	// calc quantity and save cnt if is through buying pack method
 	if ($buyPack) {
 		$packRes = mysqli_query($con, "select * from ProductPack where PackId='$packId' and Status=1");
 		if (!$packRes || mysqli_num_rows($packRes) <= 0) {
@@ -94,6 +96,7 @@ else
 		$packRow = mysqli_fetch_assoc($packRes);
 		$quantity = $packRow["Price"];
 		$packSaveRate =  $packRow["SaveRate"];
+		$saveCnt = floor($quantity * $packSaveRate);
 		$packCnt = $packRow["StockCnt"];
 
 		// if equals -1, means cnt unlimited, if larger than 0, can be bought
@@ -102,7 +105,15 @@ else
 			return;		
 		}
 	}
-	
+	$newUserAsset = $saveCnt * 3;
+
+	// check whether is credits pool left enough
+ 	$poolLeft = getCreditsPoolLeft($con);
+ 	if ($poolLeft < $newUserAsset - $quantity) {
+		echo json_encode(array('error'=>'true','error_code'=>'15','error_msg'=>'发行云量已全部进入流通，余额不足，暂时不能推荐新用户！'));
+		return;	
+ 	}
+
 	$userid = $_SESSION["userId"];
 	$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	$row = false;
@@ -155,7 +166,6 @@ else
 	
 	$pnts = 0;
 	$charity = 0;
-	$newUserAsset = 0;
 	if (0 != $newuserid) {
 		$result = mysqli_query($con, "select * from Credit where UserId='$newuserid'");
 		if (!$result) {
@@ -167,11 +177,6 @@ else
 			$diviCnt = 0;
 			$num = mysqli_num_rows($result);
 			if ($num == 0) {
-				$saveCnt = $quantity;
-				if ($buyPack) {
-					$saveCnt = floor($quantity * $packSaveRate);
-				}
-				$newUserAsset = $saveCnt * 3;
 				$charity = floor($newUserAsset * $charityRate * 100) / 100;
 				$pnts = floor($newUserAsset * $pntsRate * 100) / 100;
 				$pntsReturnDirect = floor($pnts * $pntsReturnDirRate * 100) / 100;

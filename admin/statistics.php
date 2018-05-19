@@ -66,28 +66,30 @@ if ($res3 && mysqli_num_rows($res3) > 0) {
 		<script src="../js/scripts.js" ></script>
 		<script type="text/javascript">
 			
-/*
-			function onConfirm(btn)
-			{
-// 				alert(btn.id);	
-				document.getElementById(btn.id).disabled = true;
-				$.post("../php/credit.php", {"func":"allowWithdraw","index":btn.id}, function(data){
+			function changeCPAmt()
+			{	
+				var amt = document.getElementById("amt_input").value;
+				if (amt == "") {
+					alert("无效的额度");
+					return;
+				}
+
+				if (!confirm("确定要修改云量池额度？")) {
+					return;
+				}
+
+				$.post("../php/changeConfig.php", {"func":"changeCPA","amt":amt}, function(data){
 					
 					if (data.error == "false") {
-						alert("通过申请！" + data.index);	
-						location.href = "pwd.php";
+						alert("修改成功！");	
+						location.reload();
 					}
 					else {
-						alert("申请未通过: " + data.error_msg + " " + data.index);
+						alert("修改失败: " + data.error_msg);
 					}
 				}, "json");
 			}
 			
-			function onDeny(btn)
-			{
-				alert(btn.id);
-			}
-*/
 		</script>
 	</head>
 	<body>
@@ -96,9 +98,10 @@ if ($res3 && mysqli_num_rows($res3) > 0) {
 		        <p>总统计</p>
 		        <table border="1" class="table table-striped" style="max-width: 1000px; text-align: center">
 			    	<tr>
-				        <th>云量池</th><th>慈善金</th><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th><th>虚拟消耗（话费／油费等）</th><th>虚拟消耗手续费</th>
+				        <th>云量池总额</th><th>云量池现额</th><th>慈善金</th><th>用户数</th><th>推荐总额</th><th>复投总额</th><th>分红总额</th><th>交易成交总额</th><th>交易手续费</th><th>虚拟消耗（话费／油费等）</th><th>虚拟消耗手续费</th>
 					</tr>
 					<tr>
+						<td><?php echo $row["CreditsPoolAmt"]; ?></td>
 				        <td><?php echo $row["CreditsPool"]; ?></td>
 				        <td><?php echo $row["CharityPool"]; ?></td>
 				        <td><?php echo $row["UserCount"]; ?></td>
@@ -129,6 +132,14 @@ if ($res3 && mysqli_num_rows($res3) > 0) {
 		        </table>
 	        </div>
 -->
+			<hr>
+			<label>修改云量池总额</label>
+			<div class="input-group" style="width: 400px; margin-bottom: 10px;">
+				<input type="text" id="amt_input" class="form-control" placeholder="<?php echo $row["CreditsPoolAmt"]; ?>" onkeypress="return onlyNumber(event)" />
+				<div class="input-group-btn">
+					<input type="button" class="btn btn-default" value="修改" onclick="changeCPAmt()" />
+				</div>
+			</div>
 		</div>
     </body>
     <div style="text-align:center;">

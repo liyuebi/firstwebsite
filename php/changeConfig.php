@@ -49,6 +49,9 @@ else if ("changeCRR2" == $_POST['func']) {
 else if ("changePWHR" == $_POST['func']) {
 	changePntWithdrawHandleFee();
 }
+else if ("changeCPA" == $_POST['func']) {
+	changeCreditPoolAmt();
+}
 else {
 	tryChangeValue();
 }
@@ -330,6 +333,57 @@ function changePntWithdrawHandleFee()
 	if (!changeConfig("pntWithdrawHandleRate", $val, $err_msg)) {
 		echo json_encode(array('error'=>'true', 'error_code'=>'1','error_msg'=>$err_msg));
 		return;
+	}
+	echo json_encode(array('error'=>'false'));
+}
+
+/*
+ * 修改线下云量提现手续费率
+ */ 
+function changeCreditPoolAmt()
+{
+	include_once 'admin_func.php';
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$val = trim(htmlspecialchars($_POST['amt']));
+	$val = intval($val);
+
+	include_once "database.php";
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！','index'=>$index));
+		return;
+	}
+	else 
+	{
+		$result = mysqli_query($con, "select * from TotalStatis where IndexId=1");
+		if (!$result) {
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查询数据库失败，请稍后重试！'));	
+			return;			
+		}
+		$row = mysqli_fetch_assoc($result);
+
+		$poolAmt = $row["CreditsPoolAmt"];
+		$poolLeft = $row["CreditsPool"];
+
+		$inMarketAmt = $poolAmt - $poolLeft;
+		if ($val < $inMarketAmt) {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'新额度小于已在流通的额度！'));	
+			return;			
+		}
+
+		$poolAmt = $val;
+		$poolLeft = $val - $inMarketAmt;
+		$res = mysqli_query($con, "update TotalStatis set CreditsPoolAmt='$poolAmt', CreditsPool='$poolLeft' where IndexId=1");
+		if (!$res) {
+			echo json_encode(array('error'=>'true','error_code'=>'3','error_msg'=>'无法写入，请稍后重试！'));	
+			return;			
+		}
 	}
 	echo json_encode(array('error'=>'false'));
 }

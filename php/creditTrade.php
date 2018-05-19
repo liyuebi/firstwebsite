@@ -647,6 +647,14 @@ function saveCredit()
 	}
 	else 
 	{
+		include_once 'func.php';
+		$newAsset = $amount * 3;
+     	$poolLeft = getCreditsPoolLeft($con);
+     	if ($poolLeft < $newAsset - $amount) {
+			echo json_encode(array('error'=>'true','error_code'=>'13','error_msg'=>'发行云量已全部进入流通，余额不足，暂时不能进行存储！'));
+			return;	
+     	}
+
 		$userid = $_SESSION['userId'];
 
 		$res5 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
@@ -698,7 +706,7 @@ function saveCredit()
 					$recoTotal = $row7["sum(Amount)"];
 					if ($recoTotal < $total) {
 						$gap = $total - $recoTotal;
-						echo json_encode(array('error'=>'true','error_code'=>'11','error_msg'=>'您的业绩未达标，需'.$gap.'推荐额度才能继续存储！'));
+						echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'您的业绩未达标，需'.$gap.'推荐额度才能继续存储！'));
 						return;	
 					}
 				}	
@@ -715,7 +723,6 @@ function saveCredit()
 			}
 		}
 
-		$newAsset = $amount * 3;
 		$charity = floor($newAsset * $charityRate * 100) / 100;
 		$pnts = floor($newAsset * $pntsRate * 100) / 100;	
 		$pntsReturnDirect = floor($pnts * $pntsReturnDirRate * 100) / 100;
@@ -768,7 +775,6 @@ function saveCredit()
 			}
 		}
 		
-		include_once "func.php";
 		$res4 = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
 		if (!$res4 || mysqli_num_rows($res4) <= 0) {
 			// !!! log error

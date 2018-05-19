@@ -841,7 +841,8 @@ function createStatisticsTable($con)
 function createTotalStatisTable($con)
 {
 	/*
-	 * CreditsPool - 系统云量池
+	 * CreditsPoolAmt - 系统云量池总额
+	 * CreditsPool - 系统云量池当前剩余额度
 	 * CharityPool - 慈善金池
 	 * UserCount - 用户总数
 	 * RecommendTotal - 注册新用户投入了云量总数
@@ -862,6 +863,7 @@ function createTotalStatisTable($con)
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IndexId),
+		CreditsPoolAmt decimal(10,2) default 10000000,
 		CreditsPool	decimal(10,2) DEFAULT 10000000,
 		CharityPool decimal(10,2) default 0,
 		UserCount int DEFAULT 0,
