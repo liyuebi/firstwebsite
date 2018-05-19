@@ -12,10 +12,10 @@
 
 	$regiCreditLeast =300;		// 推荐用户时最少存储积分数
 	$regiCreditMost =2000;		// 推荐用户时最多存储积分数
-	$saveCreditLeast =300;		// 存储云量时最少存储的云量数
+	$saveCreditLeast =100;		// 存储云量时最少存储的云量数
 	$saveCreditMost =2000;		// 存储云量时最多存储的云量数
 	$exchangeLeast =100;		// 挂单最小额度
-	$exchangeMost =500;		// 挂单最大额度
+	$exchangeMost =2200;		// 挂单最大额度
 	$phoneChargeLeast =100;		// 话费充值最小额度
 	$phoneChargeMost =300;		// 话费充值最大额度
 	$oilChargeLeast =10;		// 油费充值最小额度
