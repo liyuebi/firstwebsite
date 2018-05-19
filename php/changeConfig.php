@@ -105,6 +105,9 @@ function tryChangeValue()
 	if ("changeOFLRF" == $func) {
 		$paramStr = "offlineShopRegisterFee";
 	}
+	else if ("changeOFSPC" == $func) {
+		$paramStr = "offlineTradeCeilOneDay";
+	}
 	else if ("changeWFA" == $func) {
 		$paramStr = "profitWithdrawFloorAmt";
 	}

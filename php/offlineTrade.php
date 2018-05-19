@@ -683,8 +683,8 @@ function payOLShop()
 			}
 
 			$amtToday += $cnt;
-			if ($amtToday >= 200) {
-				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'应监管部门要求，每天的交易额度不可超过200线下云量！'));	
+			if ($amtToday > $offlineTradeCeilOneDay) {
+				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'应监管部门要求，每天的交易额度不可超过'.$offlineTradeCeilOneDay.'线下云量！'));	
 				return;									
 			}
 		} 
