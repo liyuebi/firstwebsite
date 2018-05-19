@@ -52,6 +52,15 @@ else if ("cup" == $_POST['func']) {		// change pnts
 else if ("cup1" == $_POST['func']) {	// change profit points
 	changeUserProfit();
 }
+else if ("gcb" == $_POST['func']) {
+	getCreditBank();
+}
+else if ("ccbr" == $_POST['func']) {
+	clearCreditBankRecord();
+}
+else if ('ccbb' == $_POST['func']) {
+	clearCreditBankBalance();
+}
 
 // admin login
 // 判断是否登录
@@ -583,6 +592,167 @@ function changeUserProfit()
 	include_once "func.php";
 	updateCreditPoolStatistics($con, $profit - $val);
 	
+	echo json_encode(array('error'=>'false'));
+}
+
+function getCreditBank()
+{
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$userId = trim(htmlspecialchars($_POST["uid"]));
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{	
+		$res = mysqli_query($con, "select * from CreditBank where UserId='$userId' order by SaveTime desc");
+		if (!$res) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'记录查询失败！'));
+			return;		
+		}
+
+		$arr = array();
+		while ($row = mysqli_fetch_assoc($res)) {
+				
+			$arr1 = array();
+			foreach($row as $key=>$value) {
+
+				$arr1[$key] = $value;
+			}
+
+			array_push($arr, $arr1);
+		}
+
+		echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res),'list'=>$arr));
+	}
+}
+
+function clearCreditBankRecord()
+{
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$idx = trim(htmlspecialchars($_POST["idx"]));
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{	
+		$res = mysqli_query($con, "select * from CreditBank where IdxId='$idx'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'记录查询失败！'));
+			return;		
+		}
+		$row = mysqli_fetch_assoc($res);
+		$userid = $row["UserId"];
+		$balance = $row["Balance"];
+
+		$res1 = mysqli_query($con, "delete from CreditBank where IdxId='$idx'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'删除操作失败！'));
+			return;			
+		}
+
+		$res2 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if ($res2 && mysqli_num_rows($res2) >= 0) {
+
+			$row2 = mysqli_fetch_assoc($res2);
+			$vault = $row2["Vault"];
+			$vault = $vault - $balance;
+			if ($vault < 0) {
+				$vault = 0;
+			}
+			$res2 = mysqli_query($con, "update Credit set Vault='$vault' where UserId='$userid'");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
+		else {
+			// !!! log error
+		}
+
+		include_once "func.php";
+		updateCreditPoolStatistics($con, $balance);
+	}	
+	echo json_encode(array('error'=>'false'));
+}
+
+function clearCreditBankBalance()
+{
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+
+	$idx = trim(htmlspecialchars($_POST["idx"]));
+
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = mysqli_query($con, "select * from CreditBank where IdxId='$idx'");
+		if (!$res || mysqli_num_rows($res) <= 0) {
+			echo json_encode(array('error'=>'true','error_code'=>'31','error_msg'=>'记录查询失败！'));
+			return;		
+		}
+		$row = mysqli_fetch_assoc($res);
+		$userid = $row["UserId"];
+		$balance = $row["Balance"];
+
+		$now = time();
+		$res1 = mysqli_query($con, "update CreditBank set Balance='0', EmptyTime='$now' where IdxId='$idx'");
+		if (!$res1) {
+			echo json_encode(array('error'=>'true','error_code'=>'32','error_msg'=>'清空操作失败！'));
+			return;			
+		}
+
+		$res2 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+		if ($res2 && mysqli_num_rows($res2) >= 0) {
+
+			$row2 = mysqli_fetch_assoc($res2);
+			$vault = $row2["Vault"];
+			$vault = $vault - $balance;
+			if ($vault < 0) {
+				$vault = 0;
+			}
+			$res2 = mysqli_query($con, "update Credit set Vault='$vault' where UserId='$userid'");
+			if (!$res2) {
+				// !!! log error
+			}
+		}
+		else {
+			// !!! log error
+		}
+
+		include_once "func.php";
+		updateCreditPoolStatistics($con, $balance);
+	}
 	echo json_encode(array('error'=>'false'));
 }
 

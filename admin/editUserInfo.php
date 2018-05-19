@@ -184,6 +184,11 @@ if ($con) {
 					}
 				}, "json");
 			}
+
+			function checkVault(e)
+			{
+				location.href = "creditbankrec.php?uid=<?php echo $userid; ?>";
+			}
 		</script>
 	</head>
 	<body>
@@ -239,7 +244,7 @@ if ($con) {
 						<td>财富云量</td>
 						<td><?php echo $row1["Vault"]; ?></td>
 <!-- 						<td><input type="text" id="vault" value="<?php echo $row1["Vault"]; ?>" /></td> -->
-						<td></td>
+						<td><input type="button" name="submit" value="查看" onclick="checkVault(this)" /></td>
 <!-- 						<td><input type="button" name="submit" value="更改" onclick="changeVault()" /></td> -->
 					</tr>
 					<tr>
