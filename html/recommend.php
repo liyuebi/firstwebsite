@@ -61,7 +61,8 @@ if ($con) {
 		<script type="text/javascript">
 			
 			var packId = -1;
-			var isBuyingPack = false;
+			var isBuyingPack = true;
+			var hasPack = <?php if ($hasPack) echo "true"; else echo "false"; ?>;
 
 			function onRegister()
 			{
@@ -82,7 +83,7 @@ if ($con) {
 				}
 
 				var fromPack = 0;
-				if (isBuyingPack) {
+				if (hasPack && isBuyingPack) {
 					num = '0';
 					fromPack = 1;
 				}
@@ -164,7 +165,7 @@ if ($con) {
 
 				$("#nav-tabs li").on("click",function(){
  
-		            isBuyingPack = $(this).index() == 1;
+		            isBuyingPack = $(this).index() == 0;
 		        });
 		    });
 			
@@ -188,20 +189,20 @@ if ($con) {
 
 				<?php if ($hasPack) { ?>		        
 		        <ul class="nav nav-tabs" id="nav-tabs">
-					<li class="active">
+		        	<li class="active"><a href="#pack" data-toggle="tab">云粉产品区</a></li>
+					<li>
 				    	<a href="#amt" data-toggle="tab">使用线上云量</a>
 					</li>
-					<li><a href="#pack" data-toggle="tab">购买产品包</a></li>
 				</ul>
 				<?php } ?> 
 			    <div class="tab-content well">  
-			     	<div class="tab-pane fade in active" id="amt">  
+			     	<div class="tab-pane fade<?php if (!$hasPack) echo " in active"; ?>" id="amt">  
 		            <!-- <p id="blk_amt"> -->
 		            	<input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
 		            	<span class="help-block">注册用户可存储线上云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的线上云量为 <strong><?php echo $mycredit; ?></strong></span>
 		            </div>
 				<?php if ($hasPack) { ?>		        
-		            <div class="tab-pane fade" id="pack">
+		            <div class="tab-pane fade in active" id="pack">
 		            	<label id="label_sel">请选择产品包：</label>
 		            	<div id="blk_seled" style="display: none">
 			            	<label id="label_selected" >选中：<span id="sel_name" class="text-primary"></span></label>
