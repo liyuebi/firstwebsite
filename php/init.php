@@ -76,6 +76,7 @@ mysqli_query($con, "insert into AdminTable (Name, Password, Priority)
 createCreditRecordTable($con);
 createPntsRecordTable($con);
 createProfitPntRecordTable($con);
+createShareCreditRecordTable($con)；
 
 createCreditTradeTable($con);
 createCreditBankTable($con);

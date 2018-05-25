@@ -40,6 +40,9 @@ else if ("cuphone" == $_POST['func']) {
 else if ("cuc" == $_POST['func']) {
 	changeUserCredit();
 }
+else if ("cus" == $_POST['func']) {
+	changeUserShareCredit();
+}
 else if ("auc" == $_POST['func']) {
 	addUserCredit();
 }
@@ -217,6 +220,7 @@ function queryUser()
 		if ($res1 && mysqli_num_rows($res1) > 0) {
 			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
+			$arr1["shareCredit"] = $row1["ShareCredit"];
 			$arr1["pnt"] = $row1["Pnts"];
 			$arr1["profit"] = $row1["ProfitPnt"];
 			$arr1["vault"] = $row1["Vault"];
@@ -442,6 +446,40 @@ function changeUserCredit()
 	$res = mysqli_query($con, "update Credit set Credits='$val' where UserId='$userid'");
 	if (!$res) {
 		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改线上云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;				
+	}
+	
+	include_once "func.php";
+	updateCreditPoolStatistics($con, $credit - $val);
+	
+	echo json_encode(array('error'=>'false'));
+}
+
+function changeUserShareCredit()
+{
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$val = trim(htmlspecialchars($_POST["val"]));
+	
+	$val = floatval($val);
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;
+	}
+	
+	$res = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'修改分享云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;					
+	}
+	$row = mysqli_fetch_assoc($res);
+	$credit = $row["ShareCredit"];
+	
+	$res = mysqli_query($con, "update Credit set ShareCredit='$val' where UserId='$userid'");
+	if (!$res) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改分享云量失败，请稍后重试！','sql_error'=>mysqli_error($con)));
 		return;				
 	}
 	

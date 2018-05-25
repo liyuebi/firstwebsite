@@ -24,11 +24,13 @@ $userid = $_SESSION["userId"];
 $result = false;
 $res = false;
 $res1 = false;
+$res2 = false;
 $con = connectToDB();
 if ($con) {
 	$result = mysqli_query($con, "select * from CreditRecord where UserId='$userid' order by AcceptTime desc, IndexId desc");
 	$res = mysqli_query($con, "select * from PntsRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
 	$res1 = mysqli_query($con, "select * from ProfitPntRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
+	$res2 = mysqli_query($con, "select * from ShareCreditRecord where UserId='$userid' order by ApplyTime desc, IndexId desc");
 }
 	
 date_default_timezone_set('PRC');
@@ -72,6 +74,7 @@ date_default_timezone_set('PRC');
 				<li class="<?php if (!$showTab2) echo 'active'; ?>"><a href="#tab1" data-toggle="tab">线上云量记录</a></li>
 				<li class="<?php if ($showTab2) echo 'active'; ?>"><a href="#tab2" data-toggle="tab">线下云量记录</a></li>
 				<li class="<?php // if ($showTab2) echo 'active'; ?>"><a href="#tab3" data-toggle="tab">消费云量记录</a></li>
+				<li><a href="#tab4" data-toggle="tab">分享云量记录</a></li>
 			</ul>
 			<div class="tab-content">
 		        <div class="tab-pane <?php if (!$showTab2) echo 'active'; ?>" id="tab1">
@@ -233,6 +236,34 @@ date_default_timezone_set('PRC');
 			    	}
 		    	?>
 		    	</div>
+
+		    	<div class="tab-pane" id="tab4">
+		    	<?php
+			    	include "../php/constant.php";
+			        while ($row = mysqli_fetch_assoc($res2)) {
+				?>  	
+				    <p style="margin: 5px 3px;"><?php 
+					    echo date("Y-m-d H:i" ,$row["ApplyTime"]);
+					    echo "<br>";
+				    	if ($row["Type"] == $code4Referer) {
+					    	echo "推荐新用户，使用了" . $row["Amount"] . "分享云量。"; 
+				    	}
+				    	else if ($row["Type"] == $code4CreTradeRec) {
+					    	echo "您通过云量交易购买成功，" . $row["Amount"] . "分享云量到账。";
+				    	}
+				    	else if ($row["Type"] == $code4Save) {
+					    	echo "您进行财富存储，存储了" . $row["Amount"] . "线上云量。";
+				    	}
+				    	
+				    	echo "<br>";
+				    	echo "当前分享云量" . $row["CurrAmount"] . "。";
+					    ?>
+					</p>
+					<hr>
+				<?php       	
+			    	}
+		       	?>
+		       	</div>
 			</div>
         </div>
     </body>

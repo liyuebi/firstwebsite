@@ -103,6 +103,11 @@
 	$code3OlSHopWdDecline = 6;	// 线下商家提现申请被拒 
 	$code3ToCredit = 9;		// 消费云量转换为线上云量
 	$code3ToPnts = 10;		// 消费云量转换为线下云量
+
+	// share credit code
+	$code4CreTradeRec = 1;	// 交易成功，买家收款
+	$code4Referer = 2; 		// 推荐用户，扣除积分
+	$code4Save = 3;			// 存储分享云量
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

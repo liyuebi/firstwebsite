@@ -77,6 +77,7 @@ function createCreditTable($con)
 		UserId int NOT NULL,
 		PRIMARY KEY(UserId),
 		Credits decimal(10,2) DEFAULT 0,
+		ShareCredit decimal(10,2) default 0,
 		Pnts decimal(10,2) DEFAULT 0,
 		ProfitPnt decimal(10,2) default 0,
 		Charity decimal(10,2) DEFAULT 0,
@@ -661,6 +662,42 @@ function createCreditRecordTable($con)
 	}
 	return $result;
 }
+
+function createShareCreditRecordTable($con)
+{
+	/*
+	 * Amount - 实际变动值
+	 * CurrAmount - 变动后的数值
+	 * RelatedAmount - 相关的数值
+	 * HandleFee - 手续费
+	 * ApplyTime - 申请时间，即为变动时间
+	 * ApplyIndexId - 相关数据的记录id
+	 * AcceptTime - 接受时间
+	 * WithUserId - 交易对象的id
+	 * Type - 记录类型
+	 */
+	$sql = "create table if not exists ShareCreditRecord
+	(
+		IndexId int NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY(IndexId),
+		UserId int NOT NULL,
+		Amount decimal(10,2) NOT NULL,
+		CurrAmount decimal(10,2) NOT NULL,
+		RelatedAmount decimal(10,2) default 0,
+		HandleFee decimal(10,2) DEFAULT 0,
+		ApplyTime int NOT NULL,
+		ApplyIndexId int DEFAULT 0,
+		AcceptTime int DEFAULT 0,
+		WithUserId int DEFAULT 0,
+		Type int NOT NULL
+	)";	
+	$result = mysqli_query($con, $sql);
+	if (!$result) {
+		echo "create ShareCreditRecord table error: " . mysqli_error($con) . "<br>";
+	}
+	return $result;
+}
+
 
 function createPntsRecordTable($con)
 {

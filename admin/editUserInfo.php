@@ -93,6 +93,27 @@ if ($con) {
 				}, "json");
 			}
 
+			function changeShareCredit()
+			{
+				var val = document.getElementById("shareCredit").value;
+				val = $.trim(val);
+				if (val.length <= 0) {
+					alert("不能为空！");	
+					return;
+				}
+				
+				$.post("../php/usrMgr.php", {"func":"cus","uid":<?php echo $userid; ?>,"val":val}, function(data){
+						
+					if (data.error == "false") {
+		
+						alert("修改成功！");	
+					}
+					else {
+						alert("修改失败: " + data.error_msg);
+					}
+				}, "json");
+			}
+
 			function changePnts()
 			{
 				var val = document.getElementById("pnts").value;
@@ -229,6 +250,11 @@ if ($con) {
 						<td>线上云量</td>
 						<td><input type="text" id="credit" value="<?php echo $row1["Credits"]; ?>" /></td>
 						<td><input type="button" name="submit" value="更改" onclick="changeCredits()" /></td>
+					</tr>
+					<tr>
+						<td>分享云量</td>
+						<td><input type="text" id="shareCredit" value="<?php echo $row1["ShareCredit"]; ?>" /></td>
+						<td><input type="button" name="submit" value="更改" onclick="changeShareCredit()" /></td>
 					</tr>
 					<tr>
 						<td>线下云量</td>
