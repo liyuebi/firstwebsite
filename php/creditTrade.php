@@ -369,16 +369,16 @@ function buyerRecieveMoney($con, $idx, $status, $buyerId, $sellId, $quantity, $h
 	else {
 		
 		$row3 = mysqli_fetch_assoc($res3);
-		$credit = $row3["Credits"];
+		$credit = $row3["ShareCredit"];
 		$credit += $buyCnt;
 		
-		$res4 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$buyerId'");
+		$res4 = mysqli_query($con, "update Credit set ShareCredit='$credit' where UserId='$buyerId'");
 		if (!$res4) {
 			// !!! log error
 		}
 		else {
-			$res5 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-				VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $codeCreTradeRec)");		
+			$res5 = mysqli_query($con, "insert into ShareCreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+				VALUES($buyerId, $buyCnt, 0, $credit, $now, $now, 0, $code4CreTradeRec)");		
 			if (!$res5) {
 				// !!! log error
 			}
@@ -670,9 +670,9 @@ function saveCredit()
 			return;
 		}
 		$row1 = mysqli_fetch_assoc($res1);
-		$credit = $row1["Credits"];
+		$credit = $row1["ShareCredit"];
 		if ($amount > $credit) {
-			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'存储金额大于您持有的金额，请重新输入！'));
+			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'存储金额大于您持有的分享云量记录，请重新输入！'));
 			return;	
 		}
 		
@@ -754,15 +754,15 @@ function saveCredit()
 		$newPnts = $row1["Pnts"] + $pntsReturnDirect;
 		$newCharity = $row1["Charity"] + $charity;
 		
-		$res2 = mysqli_query($con, "update Credit set Credits='$credit', Vault='$vault', Pnts='$newPnts', Charity='$newCharity' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update Credit set ShareCredit='$credit', Vault='$vault', Pnts='$newPnts', Charity='$newCharity' where UserId='$userid'");
 		if (!$res2) {
 			// echo json_encode(array('error'=>'true','error_code'=>'10','error_msg'=>'更新数据失败，请稍后重试！'));
 			// return;	
 			// !!! log error
 		}
 
-		$res3 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-						VALUES($userid, $amount, 0, $credit,  $now, $now, 0, $codeSave)");
+		$res3 = mysqli_query($con, "insert into ShareCreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+						VALUES($userid, $amount, 0, $credit,  $now, $now, 0, $code4Save)");
 		if (!$res3) {
 			// !!! log error
 		}

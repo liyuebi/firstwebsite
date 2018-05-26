@@ -226,13 +226,15 @@ if ($con) {
 		<div>
 			<table class="t1" border="1" align="center" style="margin-top: 5px; border: 1px solid #e7e7e7;" rules="none">
 				<tr>
-					<td width="24.5%">线上云量</td>
-					<td width="24.5%">线下云量</td>
-					<td width="24.5%">消费云量</td>
-					<td width="24.5%">财富云量</td>
+					<td width="19.9%">线上云量</td>
+					<td width="19.9%">分享云量</td>
+					<td width="19.9%">线下云量</td>
+					<td width="19.9%">消费云量</td>
+					<td width="19.9%">财富云量</td>
 				</tr>
 				<tr>
-					<td id="point" style="color: red;"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
+					<td id="point"><?php if ($row) echo $row["Credits"]; else echo '0'; ?></td>
+					<td id="point" style="color: green;"><?php if ($row) echo $row["ShareCredit"]; else echo '0'; ?></td>
 					<td id=""><?php if ($row) echo $pnts; else echo '0'; ?></td>
 					<td id="" onclick="javascript: location.href='profitPnt.php'"><?php if ($row) echo $row["ProfitPnt"]; else echo '0'; ?></td>
 					<td id="bonuspool"><?php if ($row) echo $row["Vault"]; else echo '0'; ?></td>

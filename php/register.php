@@ -125,14 +125,14 @@ else
 		$row = mysqli_fetch_assoc($res1);
 	}
 
-	if ($row["Credits"] < $quantity) {
-		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的线上云量不足，不能推荐用户！'));
+	if ($row["ShareCredit"] < $quantity) {
+		echo json_encode(array('error'=>'true','error_code'=>'6','error_msg'=>'您的分享云量不足，不能推荐用户！'));
 		return;		
 	}
 	if ($isOlShop && 
-		$row["Credits"] < $quantity + $offlineShopRegisterFee) {
+		$row["ShareCredit"] < $quantity + $offlineShopRegisterFee) {
 		
-		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的线上云量不足，不能推荐线下商家用户！'));
+		echo json_encode(array('error'=>'true','error_code'=>'7','error_msg'=>'您的分享云量不足，不能推荐线下商家用户！'));
 		return;		
 	}
 	
@@ -279,22 +279,24 @@ else
 	// 重新获取积分记录，因为在添加新用户时credit信息可能被改
 	$res3 = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	$vault = 0;
+	$shareCredit = 0;
 	$credit = 0;
 	if (!$res3) {
 	}
 	else {
 		$row3 = mysqli_fetch_assoc($res3);
 		$vault = $row3["Vault"];
-		$credit = $row3["Credits"];	
+		$shareCredit = $row3["ShareCredit"];	
+		$credit = $row3["Credits"];
 	}
 	
-	// 更新推荐人credit，添加消耗记录,若失败不影响返回结果
-	$leftCredit = $credit - $quantity;
+	// 更新推荐人share credit，添加消耗记录,若失败不影响返回结果
+	$leftCredit = $shareCredit - $quantity;
 	if ($isOlShop) {
 		$leftCredit -= $offlineShopRegisterFee;
 	}
 	
-	$res4 = mysqli_query($con, "update Credit set Credits='$leftCredit' where UserId='$userid'");
+	$res4 = mysqli_query($con, "update Credit set ShareCredit='$leftCredit' where UserId='$userid'");
 	if (!$res4) {
 		// !!! log error
 	}
@@ -304,8 +306,8 @@ else
 		if ($isOlShop) {
 			$usedCredit += $offlineShopRegisterFee;
 		}
-		$result = mysqli_query($con, "insert into CreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-									VALUES($userid, $usedCredit, $leftCredit, $now, $now, $newuserid, $codeReferer)");
+		$result = mysqli_query($con, "insert into ShareCreditRecord (UserId, Amount, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+									VALUES($userid, $usedCredit, $leftCredit, $now, $now, $newuserid, $code4Referer)");
 		if (!$result) {
 			// !!! log error
 		}
@@ -316,7 +318,7 @@ else
 		$bonusAmt = floor($quantity * $packSaveRate);
 	}				
 	$addedCredit = $bonusAmt * $referBonusRate;
-	addCreditFromVault($con, $userid, $vault, $leftCredit, $addedCredit, $newuserid, $codeReferBonus);
+	addCreditFromVault($con, $userid, $vault, $credit, $addedCredit, $newuserid, $codeReferBonus);
 								
 	// 分发碰撞奖励
 	attributeCollisionBonus($con, $userid, $newuserid, $bonusAmt, $colliBonusRateRefer, $codeColliBonusNew);

@@ -66,6 +66,9 @@ if (!checkLoginOrJump()) {
 							var d4 = document.createElement("td");
 							d4.innerHTML = list[key].credit;
 							trow.appendChild(d4);
+							var d16 = document.createElement("td");
+							d16.innerHTML = list[key].shareCredit;
+							trow.appendChild(d16);
 							var d5 = document.createElement("td");
 							d5.innerHTML = list[key].pnt;
 							trow.appendChild(d5);
@@ -148,6 +151,7 @@ if (!checkLoginOrJump()) {
 						<th>昵称</th>
 						<th>电话号码</th>
 						<th>线上云量</th>
+						<th>分享云量</th>
 						<th>线下云量</th>
 						<th>消费云量</th>
 						<th>财富云量</th>

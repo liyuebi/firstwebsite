@@ -29,7 +29,7 @@ if ($con) {
 	$result = mysqli_query($con, "select * from Credit where UserId='$userid'");
 	if ($result && mysqli_num_rows($result) > 0) {
 		$row = mysqli_fetch_assoc($result);
-		$mycredit = $row["Credits"];
+		$mycredit = $row["ShareCredit"];
 	}
 
 	$res = mysqli_query($con, "select * from ProductPack where Status>0");
@@ -88,7 +88,7 @@ if ($con) {
 					fromPack = 1;
 				}
 				
-				if (isOlShop && !confirm("确定要推荐为线下商家账号，需要额外使用<?php echo $offlineShopRegisterFee; ?>线上云量？")) {
+				if (isOlShop && !confirm("确定要推荐为线下商家账号，需要额外使用<?php echo $offlineShopRegisterFee; ?>分享云量？")) {
 					return;
 				}
 				if (isOlShop) {
@@ -191,7 +191,7 @@ if ($con) {
 		        <ul class="nav nav-tabs" id="nav-tabs">
 		        	<li class="active"><a href="#pack" data-toggle="tab">云粉产品区</a></li>
 					<li>
-				    	<a href="#amt" data-toggle="tab">使用线上云量</a>
+				    	<a href="#amt" data-toggle="tab">使用分享云量</a>
 					</li>
 				</ul>
 				<?php } ?> 
@@ -199,7 +199,7 @@ if ($con) {
 			     	<div class="tab-pane fade<?php if (!$hasPack) echo " in active"; ?>" id="amt">  
 		            <!-- <p id="blk_amt"> -->
 		            	<input type="text" class="form-control" id="investnum" name="investnum" placeholder="请输入存储数额" onkeypress="return onlyNumber(event)" />
-		            	<span class="help-block">注册用户可存储线上云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的线上云量为 <strong><?php echo $mycredit; ?></strong></span>
+		            	<span class="help-block">注册用户可存储分享云量资产（必须是<strong>100</strong>的倍数）</b>，您可使用的分享云量为 <strong><?php echo $mycredit; ?></strong></span>
 		            </div>
 				<?php if ($hasPack) { ?>		        
 		            <div class="tab-pane fade in active" id="pack">
@@ -217,7 +217,7 @@ if ($con) {
 									</div>
 									<h4 class="text-warning"><?php echo $row["PackName"]; ?></h4>
 									<div style="display: -webkit-flex; display: flex; justify-content: space-between;">
-										<span class="text-info">价格：<?php echo $row["Price"]; ?> 线上云量</span>
+										<span class="text-info">价格：<?php echo $row["Price"]; ?> 分享云量</span>
 										<span class="text-info">存储比例：<?php echo $row["SaveRate"]; ?></span>
 									</div>
 									<div>
@@ -242,7 +242,7 @@ if ($con) {
 				    <label>
 				    	<input type="checkbox" id="ols_check"> 注册为线下商家账号
 				    </label>
-				    <span class="help-block">注册线下商家账号需要额外使用线上云量<strong><?php echo $offlineShopRegisterFee; ?></strong></span>
+				    <span class="help-block">注册线下商家账号需要额外使用分享云量<strong><?php echo $offlineShopRegisterFee; ?></strong></span>
 				</p> -->
 					<label>确认注册：</label>
 					<?php
@@ -270,7 +270,7 @@ if ($con) {
 			    <!-- <p style="margin: 0;">3. 注册为线下商家账号后，请去 <strong>线下商家->我的商家</strong> 完善商家信息。</p> -->
 			    <p style="margin: 0;">3. 须注册商家号请前往“线下商家->我的商家”注册</p>
 			    <?php if ($hasPack) { ?>
-			    <p style="margin: 0;">4. 购买产品包赠送相应数额线上云量存储额的指定比率额度成为云粉。</p>
+			    <p style="margin: 0;">4. 购买产品包赠送相应数额分享云量存储额的指定比率额度成为云粉。</p>
 			    <?php } ?>
 	        </div>
         </div>

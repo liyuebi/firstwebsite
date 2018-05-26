@@ -299,6 +299,7 @@ function queryUserByCondition()
 		if ($res1 && mysqli_num_rows($res1)) {
 			$row1 = mysqli_fetch_assoc($res1);
 			$arr1["credit"] = $row1["Credits"];
+			$arr1["shareCredit"] = $row1["ShareCredit"];
 			$arr1["pnt"] = $row1["Pnts"];
 			$arr1["profit"] = $row1["ProfitPnt"];
 			$arr1["vault"] = $row1["Vault"];
