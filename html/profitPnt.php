@@ -74,6 +74,37 @@ if ($result && mysqli_num_rows($result) > 0) {
 				}, "json");
 			}
 
+			function toShareCredit()
+			{
+				var cnt = document.getElementById("num").value;
+				cnt=$.trim(cnt);
+				var paypwd = document.getElementById("paypwd").value;
+				paypwd=$.trim(paypwd);
+
+				if (cnt == "" || !isValidNum(cnt)) {
+					alert("无效的数量，请重新输入");
+					document.getElementById("num").focus();
+					return;
+				}
+
+				if (!confirm("您确定要将" + cnt + "消费云量转换成等值的分享云量吗？")) {
+					return;
+				}
+
+				paypwd = md5(paypwd);
+				$.post("../php/credit.php", {"func":"pToS", "num":cnt, "paypwd":paypwd}, function(data){
+					
+					if (data.error == "false") {
+						alert("转移成功！");	
+						location.reload();
+					}
+					else {
+						alert("转移失败: " + data.error_msg);
+					}
+				}, "json");
+
+			}
+
 			function toPnt()
 			{
 				var cnt = document.getElementById("num").value;
@@ -128,10 +159,13 @@ if ($result && mysqli_num_rows($result) > 0) {
         	<input type="password" class="form-control" id="paypwd" name="paypwd" placeholder="请输入您的支付密码！" style="margin-top: 10px;" />
         	<div class="container-fluid">
         		<div class="row">
-        			<div class="col-md-6" style="padding: 10px;">
+        			<div class="col-md-4" style="padding: 10px;">
 		        		<button class="btn btn-primary btn-block" onclick="toCredit()">转为线上云量</button>
 		        	</div>
-		        	<div class="col-md-6" style="padding: 10px;">
+        			<div class="col-md-4" style="padding: 10px;">
+		        		<button class="btn btn-info btn-block" onclick="toShareCredit()">转为分享云量</button>
+		        	</div>
+		        	<div class="col-md-4" style="padding: 10px;">
 		        		<button class="btn btn-success btn-block" onclick="toPnt()">转为线下云量</button>
 		        	</div>
 		        </div>

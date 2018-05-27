@@ -226,6 +226,9 @@ date_default_timezone_set('PRC');
 			    	else if ($row1["Type"] == $code3ToPnts) {
 				    	echo "将" . $row1["Amount"] . "消费云量转为线下云量。";
 			    	}
+			    	else if ($row1["Type"] == $code3ToShareCredit) {
+				    	echo "将" . $row1["Amount"] . "消费云量转为分享云量。";
+			    	}
 
 			    	echo "<br>";
 			    	echo "当前消费云量" . $row1["CurrAmount"] . "。";
@@ -252,7 +255,10 @@ date_default_timezone_set('PRC');
 					    	echo "您通过云量交易购买成功，" . $row["Amount"] . "分享云量到账。";
 				    	}
 				    	else if ($row["Type"] == $code4Save) {
-					    	echo "您进行财富存储，存储了" . $row["Amount"] . "线上云量。";
+					    	echo "您进行财富存储，存储了" . $row["Amount"] . "分享云量。";
+				    	}
+				    	else if ($row["Type"] == $code4FromProfit) {
+					    	echo "将" . $row["Amount"] . "消费云量转为分享云量。";
 				    	}
 				    	
 				    	echo "<br>";
