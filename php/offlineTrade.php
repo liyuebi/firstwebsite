@@ -671,23 +671,22 @@ function payOLShop()
 			return;
 		}
 
+		$amtToday = 0;
 		$res6 = mysqli_query($con, "select * from PntsRecord where UserId='$userid' and Type='$code2OlShopPay' order by ApplyTime desc");
 		if ($res6 && mysqli_num_rows($res6) > 0) {
 
-			$amtToday = 0;
 			while ($row6 = mysqli_fetch_assoc($res6)) {
 				if (!isInTheSameDay($now, $row6["ApplyTime"])) {
 					break;
 				}
 				$amtToday += $row6["Amount"];
 			}
-
-			$amtToday += $cnt;
-			if ($amtToday > $offlineTradeCeilOneDay) {
-				echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'应监管部门要求，每天的交易额度不可超过'.$offlineTradeCeilOneDay.'线下云量！'));	
-				return;									
-			}
 		} 
+		$amtToday += $cnt;
+		if ($amtToday > $offlineTradeCeilOneDay) {
+			echo json_encode(array('error'=>'true','error_code'=>'8','error_msg'=>'应监管部门要求，每天的交易额度不可超过'.$offlineTradeCeilOneDay.'线下云量！'));	
+			return;									
+		}
 		
 		$res3 = mysqli_query($con, "select * from Credit where UserId='$sellid'");
 		if (!$res3 || mysqli_num_rows($res3) <= 0) {
