@@ -137,18 +137,18 @@ if ($con) {
 						
 			function goToRecommend()
 			{
-				var credit = document.getElementById("point").innerHTML;
-				credit = $.trim(credit);
-				credit = parseFloat(credit);
+				// var credit = document.getElementById("point").innerHTML;
+				// credit = $.trim(credit);
+				// credit = parseFloat(credit);
 				
-				if (credit <= 0) {
-					if (confirm("您的线上云量为0，是否前去云量交易获取？")) {
-						location.href = "exchange.php";
-					}
-				}
-				else {
+				// if (credit <= 0) {
+				// 	if (confirm("您的线上云量为0，是否前去云量交易获取？")) {
+				// 		location.href = "exchange.php";
+				// 	}
+				// }
+				// else {
 					location.href = "recommend.php";
-				}
+				// }
 			}
 			
 			function limitAccessOpen()
