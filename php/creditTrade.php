@@ -700,16 +700,23 @@ function saveCredit()
 			}
 			// 若现在是第3笔存储，检查该用户之前的推荐额度和存储额度，若推荐额度不大于存储额度，不能继续存储
 			else if ($row["count(*)"] == 2) {
+				$recoTotal = 0;
 				$res7 = mysqli_query($con, "select sum(Amount) from CreditRecord where UserId='$userid' and Type='$codeReferer'");
 				if ($res7 && mysqli_num_rows($res7) > 0) {
 					$row7 = mysqli_fetch_assoc($res7);
 					$recoTotal = $row7["sum(Amount)"];
-					if ($recoTotal < $total) {
-						$gap = $total - $recoTotal;
-						echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'您的业绩未达标，需'.$gap.'推荐额度才能继续存储！'));
-						return;	
-					}
 				}	
+
+				$res8 = mysqli_query($con, "select sum(Amount) from ShareCreditRecord where UserId='$userid' and Type='$code4Referer'");
+				if ($res8 && mysqli_num_rows($res8) > 0) {
+					$row8 = mysqli_fetch_assoc($res8);
+					$recoTotal += $row8["sum(Amount)"];
+				}	
+				if ($recoTotal < $total) {
+					$gap = $total - $recoTotal;
+					echo json_encode(array('error'=>'true','error_code'=>'12','error_msg'=>'您的业绩未达标，需'.$gap.'推荐额度才能继续存储！'));
+					return;	
+				}
 			}
 
 			if ($total >= $saveCreditMost) {
