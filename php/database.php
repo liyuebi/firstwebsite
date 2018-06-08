@@ -612,11 +612,16 @@ function createAlipayTable($con)
 
 function createBankAccountTable($con)
 {
+	/*
+	 * UserId: 用户id
+	 * OriId: 原用户id，账号被弃用后用来记录原属于的用户
+	 */
 	$sql = "create table if not exists BankAccount
 	(
 		IndexId int NOT NULL AUTO_INCREMENT,
 		PRIMARY KEY(IndexId),
 		UserId int NOT NULL,
+		OriId int default 0,
 		BankAcc varchar(32) NOT NULL,
 		AccName varchar(16) NOT NULL,
 		BankName varchar(32) NOT NULL,

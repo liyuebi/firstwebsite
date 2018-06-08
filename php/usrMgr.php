@@ -64,6 +64,9 @@ else if ("ccbr" == $_POST['func']) {
 else if ('ccbb' == $_POST['func']) {
 	clearCreditBankBalance();
 }
+else if ('rbc' == $_POST['func']) {
+	resetBankAccount();
+}
 
 // admin login
 // 判断是否登录
@@ -792,6 +795,31 @@ function clearCreditBankBalance()
 		include_once "func.php";
 		updateCreditPoolStatistics($con, $balance);
 	}
+	echo json_encode(array('error'=>'false'));
+}
+
+function resetBankAccount()
+{
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'数据库连接失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;
+	}
+	
+	$userid = trim(htmlspecialchars($_POST['uid']));
+	$res = mysqli_query($con, "select * from BankAccount where UserId='$userid'");
+	if (!$res || mysqli_num_rows($res) <= 0) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'查找账户失败！','sql_error'=>mysqli_error($con)));
+		return;		
+	}
+	
+	$res2 = mysqli_query($con, "update BankAccount set UserId='0', OriId='$userid' where UserId='$userid'");
+	if (!$res2) {
+		echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'修改数据库失败，请稍后重试！','sql_error'=>mysqli_error($con)));
+		return;				
+	}
+	
 	echo json_encode(array('error'=>'false'));
 }
 

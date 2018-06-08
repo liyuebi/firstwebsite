@@ -10,6 +10,7 @@ $userid = $_GET["idx"];
 
 $res = false;
 $res1 = false;
+$row2 = false;
 
 include "../php/database.php";
 $con = connectToDB();
@@ -17,6 +18,11 @@ if ($con) {
 	
 	$res = mysqli_query($con, "select * from ClientTable where UserId='$userid'");
 	$res1 = mysqli_query($con, "select * from Credit where UserId='$userid'");
+	$res2 = mysqli_query($con, "select * from BankAccount where UserId='$userid'");
+	if ($res2 && mysqli_num_rows($res2) > 0)
+	{
+		$row2 = mysqli_fetch_assoc($res2);
+	}
 }
 	
 ?>
@@ -206,6 +212,25 @@ if ($con) {
 				}, "json");
 			}
 
+			function resetBankAccount(e)
+			{
+				e.disabled = true;
+				if (!confirm("你确定要重置用户的银行账号么？")) {
+
+					return;
+				}
+				$.post("../php/usrMgr.php", {"func":"rbc","uid":<?php echo $userid; ?>}, function(data){
+
+					if (data.error == "false") {
+						alert("重置银行账号成功！");
+						e.parentNode.parentNode.style.textDecoration = "line-through";
+					}
+					else {
+						alert("重置银行账号失败：" + data.error_msg);
+					}
+				}, "json");
+			}
+
 			function checkVault(e)
 			{
 				location.href = "creditbankrec.php?uid=<?php echo $userid; ?>";
@@ -282,6 +307,11 @@ if ($con) {
 						<td>支付密码</td>
 						<td></td>
 						<td><input type="button" name="submit" value="重置" onclick="resetPayPwd(this)" /></td>
+					</tr>
+					<tr>
+						<td>银行账户</td>
+						<td><?php if ($row2) echo $row2["BankAcc"] . '<br>' . $row2['AccName'] . '<br>' . $row2['BankName'] . '<br>' . $row2['BankBranch'];  ?></td>
+						<td><input type="button" name="submit" value="删除" onclick="resetBankAccount(this)" /></td>
 					</tr>
 					<?php
 						}
