@@ -116,10 +116,10 @@ function createOfflineShopAccount()
 			return;
 		}
 		$row = mysqli_fetch_assoc($res);
-		$credit = $row["Credits"];
+		$credit = $row["ShareCredit"];
 		
 		if ($credit < $offlineShopRegisterFee) {
-			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'线上云量不足，请前往交易所交易！'));	
+			echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'分享云量不足，请前往交易所交易！'));	
 			return;
 		}
 
@@ -131,13 +131,13 @@ function createOfflineShopAccount()
 		}
 				
 		$credit = $credit - $offlineShopRegisterFee;
-		$res2 = mysqli_query($con, "update Credit set Credits='$credit' where UserId='$userid'");
+		$res2 = mysqli_query($con, "update Credit set ShareCredit='$credit' where UserId='$userid'");
 		if (!$res2) {
 			// !!! log error
 		}
 		
-		$res3 = mysqli_query($con, "insert into CreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
-											VALUES($userid, $offlineShopRegisterFee, 0, $credit, $now, $now, 0, $codeRegiOlShop)");
+		$res3 = mysqli_query($con, "insert into ShareCreditRecord (UserId, Amount, HandleFee, CurrAmount, ApplyTime, AcceptTime, WithUserId, Type)
+											VALUES($userid, $offlineShopRegisterFee, 0, $credit, $now, $now, 0, $code4RegiOlShop)");
 		if (!$res3) {
 			// !!! log error
 		}

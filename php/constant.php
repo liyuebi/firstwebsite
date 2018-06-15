@@ -110,6 +110,7 @@
 	$code4Referer = 2; 		// 推荐用户，扣除积分
 	$code4Save = 3;			// 存储分享云量
 	$code4FromProfit = 4;	// 消费云量转到分享云量
+	$code4RegiOlShop = 5;	// 使用分享云量注册线下商店
 	
 	// credit trade status
 	$creditTradeInited = 1;		// 卖家创建了交易

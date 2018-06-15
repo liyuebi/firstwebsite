@@ -223,14 +223,14 @@ if ($con) {
 			<div>
 				<h4 class="text-info">注册线下商家</h4>
 				<input type="button" class="btn btn-block btn-success" value="注册线下商家" aria-describedby="helpBlock" onclick="tryRegisterOlShop()">
-				<span id="helpBlock" class="help-block">注册线下商户需要消耗<?php echo $offlineShopRegisterFee; ?>线上云量。</span>
+				<span id="helpBlock" class="help-block">注册线下商户需要消耗<?php echo $offlineShopRegisterFee; ?>分享云量。</span>
 			</div>
 			
 			<hr>
 			<div>
 				<h4 class="text-warning">线下商家打开流程</h4>
 				<ol>
-					<li>支付线上云量获取资格</li>
+					<li>支付分享云量获取资格</li>
 					<li>完善商户信息，上传营业执照照片</li>
 					<li>审核通过，开始运营</li>
 				</ol>

@@ -260,6 +260,9 @@ date_default_timezone_set('PRC');
 				    	else if ($row["Type"] == $code4FromProfit) {
 					    	echo "将" . $row["Amount"] . "消费云量转为分享云量。";
 				    	}
+				    	else if ($row["Type"] == $code4RegiOlShop) {
+				    		echo "您注册了线下商家，使用" . $row["Amount"] . "分享云量。";
+				    	}
 				    	
 				    	echo "<br>";
 				    	echo "当前分享云量" . $row["CurrAmount"] . "。";
