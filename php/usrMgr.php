@@ -67,6 +67,9 @@ else if ('ccbb' == $_POST['func']) {
 else if ('rbc' == $_POST['func']) {
 	resetBankAccount();
 }
+else if ("sRec" == $_POST['func']) {
+	searchUserRecord();
+}
 
 // admin login
 // 判断是否登录
@@ -821,6 +824,71 @@ function resetBankAccount()
 	}
 	
 	echo json_encode(array('error'=>'false'));
+}
+
+function searchUserRecord()
+{
+	include 'constant.php';	
+	include_once "admin_func.php";
+	
+	session_start();
+	if (!isAdminLogin()) {
+		echo json_encode(array('error'=>'true','error_code'=>'20','error_msg'=>'请先登录！'));
+		return;
+	}
+	
+	$userid = trim(htmlspecialchars($_POST["sid"]));
+	$recordType = trim(htmlspecialchars($_POST["type"]));	// 记录类型：1. 线上记录 2. 线下记录 3. 消费云量记录 4. 分享云量记录
+	// $recordType = parseInt($recordType);
+
+	if ("" == $userid) {
+		echo json_encode(array('error'=>'true','error_code'=>'1','error_msg'=>'请输入要搜索的用户id！'));
+		return;
+	}
+	
+	$con = connectToDB();
+	if (!$con)
+	{
+		echo json_encode(array('error'=>'true','error_code'=>'30','error_msg'=>'设置失败，请稍后重试！'));
+		return;
+	}
+	else 
+	{
+		$res = false;
+		if (1 == $recordType) {
+
+			$res = mysqli_query($con, "select * from CreditRecord where UserId='$userid' order by ApplyTime desc");			
+		}
+		else if (2 == $recordType) {
+
+			$res = mysqli_query($con, "select * from PntsRecord where UserId='$userid' order by ApplyTime desc");
+		}
+		else if (3 == $recordType) {
+
+			$res = mysqli_query($con, "select * from ProfitPntRecord where UserId='$userid' order by ApplyTime desc");
+		}
+		else if (4 == $recordType) {
+
+			$res = mysqli_query($con, "select * from ShareCreditRecord where UserId='$userid' order by ApplyTime desc");
+		}
+		else {
+			echo json_encode(array('error'=>'true','error_code'=>'2','error_msg'=>'参数出错！'));
+			return;
+		}
+
+		$arr = array();
+		while ($row = mysqli_fetch_assoc($res)) {
+			
+			$arr1 = array();
+			foreach($row as $key=>$value) {
+
+				$arr1[$key] = $value;
+			}
+			array_push($arr, $arr1);
+		}
+
+		echo json_encode(array('error'=>'false','num'=>mysqli_num_rows($res),'list'=>$arr));
+	}
 }
 
 ?>

@@ -235,6 +235,11 @@ if ($con) {
 			{
 				location.href = "creditbankrec.php?uid=<?php echo $userid; ?>";
 			}
+
+			function searchRecord(e) 
+			{
+				location.href = "userpointrec.php?uid=<?php echo $userid; ?>";	
+			}
 		</script>
 	</head>
 	<body>
@@ -307,6 +312,11 @@ if ($con) {
 						<td>支付密码</td>
 						<td></td>
 						<td><input type="button" name="submit" value="重置" onclick="resetPayPwd(this)" /></td>
+					</tr>
+					<tr>
+						<td>云量记录</td>
+						<td></td>
+						<td><input type="button" name="submit" value="查询" onclick="searchRecord(this)" /></td>
 					</tr>
 					<tr>
 						<td>银行账户</td>
