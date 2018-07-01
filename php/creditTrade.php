@@ -296,7 +296,11 @@ function startTradeOrder()
 			
 			// 修改交易状态
 			mysqli_query($con, "update CreditTrade set Status='$creditTradeExpired' where IdxId='$idx'");
-			// 退款
+			$quantity = $row["Quantity"];
+			$handleRate = $row["HanderRate"];
+			$handleFee = $quantity * $handleRate;
+			$sellid = $row["SellerId"];
+			refundSeller($con, $sellid, $quantity, $handleFee);
 			
 			echo json_encode(array('error'=>'true','error_code'=>'5','error_msg'=>'该交易已过期，请重新选择其他交易！'));	
 			return;	

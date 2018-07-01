@@ -34,7 +34,7 @@ function createClientTable($con)
 		PhoneNum varchar(15) NOT NULL,
 		Lvl	int DEFAULT 1,
 		Name varchar(16) DEFAULT '',
-		NickName varchar(32) default '',
+		NickName varchar(128) default '',
 		IDNum varchar(18) DEFAULT '',
 		Password varchar(256) NOT NULL,
 		PayPwd varchar(256) DEFAULT '',
